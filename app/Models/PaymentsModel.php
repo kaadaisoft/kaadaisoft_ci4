@@ -1,0 +1,315 @@
+<?php
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class PaymentsModel extends Model
+{
+    protected $db;
+
+    public function __construct() {
+        parent::__construct();
+        $this->db = \Config\Database::connect();
+    }
+
+    public function getMembersdetails($counts)
+    {
+        $session = session();
+        if ($session->get('role') == 2) {
+            $coord_id = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND Coordinator_id = '$coord_id' AND isShow = 1 AND Approvedstatus = 'Verified' LIMIT 10 OFFSET $counts");
+            return $query->getResultArray();
+        }
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified' LIMIT 5 OFFSET $counts");
+        return $query->getResultArray();
+    }
+
+    public function get_member_collected($eventid, $familyid)
+    {
+        $query = $this->db->query("SELECT SUM(paidamount) AS total FROM paymentreceipts WHERE eventid = $eventid AND Familymembershipid = '$familyid'");
+        $row = $query->getRow();
+        return $row ? (int) $row->total : 0;
+    }
+
+    public function getTotalmembers()
+    {
+        $session = session();
+        if ($session->get('role') == 2) {
+            $coord_id = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND Coordinator_id = '$coord_id' AND isShow = 1 AND Approvedstatus = 'Verified'");
+            return count($query->getResultArray());
+        }
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
+        return count($query->getResultArray());
+    }
+
+    public function getMembersSearchfields($searchfields)
+    {
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Name LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Taluk LIKE '%$searchfields%' OR Aadharnumber LIKE '%$searchfields%'");
+        return $query->getResultArray();
+    }
+
+    public function getMemberforPayment($memberid)
+    {
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$memberid'");
+        if ($query) {
+            return $query->getRow();
+        } else {
+            return false;
+        }
+    }
+
+    public function getEventsdetails($year)
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE Year = $year AND isShow = 1");
+        return $query->getResultArray();
+    }
+
+    public function getEventdata($eventid)
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE Id = $eventid AND isShow = 1");
+        return $query->getRow();
+    }
+
+    public function getEventsyear()
+    {
+        $query = $this->db->query("SELECT DISTINCT(Year) FROM eventlist WHERE isShow = 1");
+        return $query->getResultArray();
+    }
+
+    public function getStates()
+    {
+        $query = $this->db->query("SELECT * FROM states");
+        return $query->getResultArray();
+    }
+
+    public function getDistrictslist($stateid)
+    {
+        $session = session();
+        if ($session->get("role") == 2) {
+            $CoordinatorId = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM taluks_table WHERE Coordinator_id = '$CoordinatorId'");
+        } else {
+            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM panchayat_table WHERE state_id = $stateid");
+        }
+        return $query->getResultArray();
+    }
+
+    public function getTaluklist($district_name)
+    {
+        $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM panchayat_table WHERE district_name = '$district_name'");
+        return $query->getResult();
+    }
+
+    public function getVillagelist($localareaid)
+    {
+        $query = $this->db->query("SELECT villages.village_id,villages.village_name FROM villages WHERE EXISTS (SELECT local_area_id FROM local_areas WHERE local_areas.local_area_id = villages.local_area_id AND local_area_id  = $localareaid)");
+        return $query->getResultArray();
+    }
+
+    public function getEventslist()
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE isShow = 1");
+        return $query->getResultArray();
+    }
+
+    public function getEventsByYear($eventyear)
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE Year = $eventyear AND isShow = 1");
+        return $query->getResultArray();
+    }
+    public function getEventswithyear($year)
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE year = $year AND isShow = 1");
+        return $query->getResultArray();
+    }
+
+    public function getPaidunpaidusers($stateid = null, $districtname = null, $talukname = null, $eventid, $status, $count = 0)
+    {
+        $builder = $this->db->table('kaadaimembers km');
+        $builder->select("
+            km.Familymembershipid, 
+            km.Name, 
+            km.Approvedstatus, 
+            pr.paymentdate, 
+            pr.paidamount, 
+            km.Phonenumber AS Mobile, 
+            km.Taluk AS MemberTaluk, 
+            pr.eventid, 
+            pr.eventname, 
+            pr.balanceamount
+        ");
+    
+        $builder->join('paymentreceipts pr', 
+            'pr.Familymembershipid = km.Familymembershipid AND pr.eventid = ' . (int)$eventid, 
+            'left'
+        );
+    
+        if (!empty($stateid)) {
+            $builder->where('km.state_id', $stateid);
+        }
+        if (!empty($districtname)) {
+            $builder->where('km.District', $districtname);
+        }
+        if (!empty($talukname)) {
+            $builder->where('km.Taluk', $talukname);
+        }
+    
+        $builder->where('km.Approvedstatus', 'Verified');
+    
+        if ($status == "Pending") {
+            $builder->groupStart();
+            $builder->where('pr.Familymembershipid IS NULL');
+            $builder->orWhere('pr.status', 'Pending');
+            $builder->groupEnd();
+        } else {
+            $builder->where('pr.status', 'Paid');
+        }
+    
+        $builder->limit(5, $count);
+    
+        $query = $builder->get();
+        return $query->getResultArray();
+    }
+    
+    public function getPaidorunpaidusers($stateid = null, $districtname = null, $talukname = null, $eventid, $status)
+    {
+        $builder = $this->db->table('kaadaimembers km');
+        $builder->select("km.Familymembershipid");
+        $builder->join('paymentreceipts pr', 
+            'pr.Familymembershipid = km.Familymembershipid AND pr.eventid = ' . (int)$eventid, 
+            'left'
+        );
+    
+        if (!empty($stateid)) {
+            $builder->where('km.state_id', $stateid);
+        }
+        if (!empty($districtname)) {
+            $builder->where('km.District', $districtname);
+        }
+        if (!empty($talukname)) {
+            $builder->where('km.Taluk', $talukname);
+        }
+    
+        $builder->where('km.Approvedstatus', 'Verified');
+    
+        if ($status == "Pending") {
+            $builder->groupStart();
+            $builder->where('pr.Familymembershipid IS NULL');
+            $builder->orWhere('pr.status', 'Pending');
+            $builder->groupEnd();
+        } else {
+            $builder->where('pr.status', 'Paid');
+        }
+    
+        $query = $builder->get();
+        return $query->getResultArray();
+    }
+
+    public function getVillagedata($villageid)
+    {
+        $query = $this->db->query("SELECT * FROM villages WHERE village_id = $villageid");
+        return $query->getRow();
+    }
+
+    public function getCitieslist($districtid)
+    {
+        $query = $this->db->query("SELECT city.id,city.name FROM city WHERE EXISTS (SELECT districtid FROM districts WHERE city.districtid = districts.districtid AND districtid = $districtid)");
+        return $query->getResultArray();
+    }
+
+    public function getPaydetails($memberid, $eventid)
+    {
+        $query = $this->db->query("SELECT SUM(paidamount) AS paidamount FROM paymentreceipts WHERE Familymembershipid = '$memberid' AND eventid = $eventid");
+        return $query->getRow();
+    }
+
+    public function getEventname($eventid)
+    {
+        $query = $this->db->query("SELECT EventName FROM eventlist WHERE Id = $eventid AND isShow = 1");
+        return $query->getRow();
+    }
+
+    public function getFilteredmembers($villageid, $eventid, $status)
+    {
+        $eventquery = $this->db->query("SELECT EventName FROM eventlist WHERE Id = $eventid AND isShow = 1");
+        $eventdata = $eventquery->getRow();
+        $eventname = $eventdata->EventName;
+        $query = $this->db->query("SELECT * FROM $eventname WHERE Villageid = $villageid AND isPaid = '$status'");
+        return $query->getResultArray();
+    }
+
+    public function getFilteredmembersdetails($searchfields, $villageid, $eventid, $status)
+    {
+        $eventquery = $this->db->query("SELECT EventName FROM eventlist WHERE Id = $eventid AND isShow = 1");
+        $eventdata = $eventquery->getRow();
+        $eventname = $eventdata->EventName;
+        $query = $this->db->query("SELECT * FROM $eventname WHERE Name LIKE '%$searchfields%' OR Mobile LIKE '%$searchfields%' OR Aadhar LIKE '%$searchfields%' OR Userid LIKE '%$searchfields%' OR Area LIKE '%$searchfields%' HAVING(Villageid = $villageid AND isPaid = '$status')");
+        return $query->getResultArray();
+    }
+
+    public function saveTaxreport($eventid, $eventname, $fromdate, $todate, $taxamount, $year, $memberid, $membermobile, $membertaluk, $name, $paymenttype, $paidamount, $bankname, $transactionid, $banknameforcheckque, $checkqueno, $upitranscationid, $cashtype, $balanceamount, $paymentdate, $wheretopay)
+    {
+
+        $duecount = $this->db->query("SELECT count(Familymembershipid) AS dues FROM paymentreceipts WHERE eventid = $eventid AND Familymembershipid = '$memberid'");
+
+        $currentdue = "";
+        // $receiptdate = date("Y-m-d");
+        $collectedamount = $taxamount - $balanceamount;
+        $due = $duecount->getRow();
+        $getdue = $due->dues;
+        $currentdue = (int) $getdue + 1;
+        $status = "";
+        if ($balanceamount == 0) {
+            $status = "Paid";
+        } else {
+            $status = "Pending";
+        }
+
+        $updatereport = $this->db->query("UPDATE paymentreceipts SET status = null WHERE Familymembershipid = '$memberid' AND eventid = $eventid AND status = 'Pending'");
+
+        $savereceipt = $this->db->query("INSERT INTO paymentreceipts (eventid,eventname,fromdate,todate,year,Familymembershipid,Membername,Mobile,MemberTaluk,Taxamount,paymentdate,dues,paidamount,Collectedamount,balanceamount,paymenttype,bankname,transactionid,banknameforcheckque,checkqueno,upitransactionid,wheretopay,status) VALUES($eventid,'$eventname','$fromdate','$todate',$year,'$memberid','$name',$membermobile,'$membertaluk',$taxamount,'$paymentdate',$currentdue,$paidamount,$collectedamount,$balanceamount,'$paymenttype','$bankname','$transactionid','$banknameforcheckque','$checkqueno','$upitranscationid','$wheretopay','$status')");
+        if ($updatereport && $savereceipt) {
+            return $currentdue;
+        } else {
+            return false;
+        }
+    }
+
+    public function getMember($userid)
+    {
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$userid'");
+        return $query->getRow();
+    }
+
+    public function getReceiptdetail($userid, $dues, $eventid)
+    {
+        $query = $this->db->query("SELECT * FROM paymentreceipts WHERE Familymembershipid = '$userid' AND dues = $dues HAVING(eventid = $eventid)");
+        return $query->getRow();
+    }
+
+    public function searchEventforpayment($event)
+    {
+        $query = $this->db->query("SELECT * FROM eventlist WHERE EventName LIKE '%$event%' AND isShow = 1");
+        return $query->getResultArray();
+    }
+
+    public function getReceiptlist($memberid)
+    {
+        $query = $this->db->query("SELECT * FROM paymentreceipts WHERE Familymembershipid = '$memberid' ORDER BY eventid");
+        return $query->getResultArray();
+    }
+
+    public function getCoordinatordata($coord_id)
+    {
+        $query = $this->db->query("SELECT kaadaimembers.Familymembershipid,kaadaimembers.State,taluks_table.* FROM kaadaimembers LEFT JOIN taluks_table ON kaadaimembers.Familymembershipid = taluks_table.Coordinator_id WHERE kaadaimembers.Familymembershipid = '$coord_id' AND kaadaimembers.isShow = 1");
+        return $query->getRow();
+    }
+
+    public function getCoordinatorTaluks($coord_id)
+    {
+        $query = $this->db->query("SELECT taluk_name FROM taluks_table WHERE Coordinator_id = '$coord_id'");
+        return $query->getResultArray();
+    }
+}
+?>

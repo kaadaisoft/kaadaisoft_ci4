@@ -1,0 +1,564 @@
+<?php
+namespace App\Controllers;
+
+use App\Models\PaymentsModel;
+use App\Models\AdminDashboardModel;
+use Dompdf\Dompdf;
+
+class Payments extends BaseController {
+
+    protected $paymentsModel;
+    protected $adminDashboardModel;
+    protected $session;
+    protected $db;
+
+    public function __construct() {
+        $this->paymentsModel = new PaymentsModel();
+        $this->adminDashboardModel = new AdminDashboardModel();
+        $this->session = session();
+        $this->db = \Config\Database::connect();
+        helper(['url', 'form']);
+    }
+
+    public function index(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        $name = $this->session->get('name');
+        $counts = 0;
+        $this->session->set('paymentpagecounts', $counts);
+        $memberslist = $this->paymentsModel->getMembersdetails($counts);
+        $totalpayers = $this->paymentsModel->getTotalmembers();
+        $eventyears = $this->paymentsModel->getEventsyear();
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $this->session->set("pendingcounts", $pendingcounts);
+        $states = $this->paymentsModel->getStates();
+        $member_id = $this->session->get('Kaadaisoft_userId');
+        
+        if($this->session->get('role') == 2 || $this->session->get('role') == 3){
+            $member_data = $this->paymentsModel->getCoordinatordata($member_id);
+            $taluks =  $this->paymentsModel->getCoordinatorTaluks($member_id);
+            return view('paymentpage', array("name"=>$name,"members"=>$memberslist,"counts"=>$totalpayers,"sno"=>$counts,"eventyears"=>$eventyears,"memberdata"=>$member_data, "taluks"=>$taluks));                                                
+        }
+        else{
+            return view('paymentpage', array("name"=>$name,"members"=>$memberslist,"counts"=>$totalpayers,"sno"=>$counts,"eventyears"=>$eventyears,"states"=>$states));
+        }
+    }
+
+    public function uploadBulkPayments()
+    {
+        if (!$this->session->has('Kaadaisoft_userId')) {
+            return redirect()->to('/');
+        }
+
+        $file = $this->request->getFile('csvfile');
+
+        if (!$file->isValid()) {
+            $this->session->setFlashdata('error', 'Please upload a valid CSV file.');
+            return redirect()->to('payments');
+        }
+
+        if (!is_dir(FCPATH.'uploads/temp/')) {
+            mkdir(FCPATH.'uploads/temp/', 0777, true);
+        }
+
+        $newName = $file->getRandomName();
+        $file->move(FCPATH.'uploads/temp/', $newName);
+        $filepath = FCPATH.'uploads/temp/' . $newName;
+
+        $handle = fopen($filepath, 'r');
+        if (!$handle) {
+            $this->session->setFlashdata('error', 'Cannot read CSV file.');
+            @unlink($filepath);
+            return redirect()->to('payments');
+        }
+
+        // Skip header row
+        fgetcsv($handle);
+
+        // 1) Get event from modal (single event for all rows)
+        $eventid = (int)$this->request->getPost('eventid');
+        if (!$eventid) {
+            $this->session->setFlashdata('error', 'Please select event.');
+            fclose($handle);
+            @unlink($filepath);
+            return redirect()->to('payments');
+        }
+
+        // 2) Load event details from eventlist (ONLY source of event data)
+        $geteventdata = $this->paymentsModel->getEventdata($eventid);
+        if (!$geteventdata) {
+            $this->session->setFlashdata('error', 'Selected event not found.');
+            fclose($handle);
+            @unlink($filepath);
+            return redirect()->to('payments');
+        }
+
+        $eventname = $geteventdata->EventName;          // e.g. pongal_2026
+        $taxamount = (int)$geteventdata->TaxAmount;     // e.g. 2000
+        $fromdate  = $geteventdata->From_date;          // e.g. 2026-01-12
+        $todate    = $geteventdata->To_date;            // e.g. 2026-01-19
+        $year      = $geteventdata->Year;               // e.g. 2026
+
+        $success = 0;
+        $error   = 0;
+
+        while (($data = fgetcsv($handle)) !== FALSE && count($data) >= 5) {
+            $familymembershipid = trim($data[0] ?? '');
+            $paymentdate        = trim($data[3] ?? date('Y-m-d'));
+            $paidamount         = (int)($data[4] ?? 0);
+            $membername         = trim($data[5] ?? '');
+            $mobile             = trim($data[6] ?? '');
+            $membertaluk        = trim($data[7] ?? '');
+            $paymenttype        = trim($data[8] ?? 'cash');
+            $transactionid      = trim($data[9] ?? '');
+            $bankname           = trim($data[10] ?? '');
+
+            if ($familymembershipid === '' || $paidamount <= 0) {
+                $error++;
+                continue;
+            }
+
+            // 4) Compute collected & balance based on eventlist.TaxAmount
+            $already_collected = $this->paymentsModel->get_member_collected($eventid, $familymembershipid);
+            $collectedamount   = $already_collected + $paidamount;
+            $balanceamount     = max(0, $taxamount - $collectedamount);
+
+            // 5) Use your existing dues/status logic in saveTaxreport()
+            $savereceipt = $this->paymentsModel->saveTaxreport(
+                $eventid,
+                $eventname,
+                $fromdate,
+                $todate,
+                $taxamount,
+                $year,
+                $familymembershipid,
+                $mobile,
+                $membertaluk,
+                $membername,
+                $paymenttype,
+                $paidamount,
+                $bankname,
+                $transactionid,
+                '', '', '', '',          // banknameforcheckque, checkqueno, upi, cashtype
+                $balanceamount,          // computed: TaxAmount - Collectedamount
+                $paymentdate,
+                'coordinator'
+            );
+
+            if ($savereceipt !== false) {
+                $success++;
+            } else {
+                $error++;
+            }
+        }
+
+        fclose($handle);
+        @unlink($filepath);
+
+        $this->session->setFlashdata(
+            'paymentsuccessstatus',
+            "Bulk upload completed for {$eventname}. Success: {$success}, Errors: {$error}"
+        );
+
+        return redirect()->to('payments');
+    }
+
+    public function gopaymentpage(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        $memberid = $this->request->getGet('memberid');
+        $memberdetails = $this->paymentsModel->getMemberforPayment($memberid);
+        $eventyears = $this->paymentsModel->getEventsyear();
+        if($memberdetails){
+            return view("paymentform",array("memberdetail"=>$memberdetails,"eventyears"=>$eventyears));
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function displayPayers(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        $counts = $this->request->getGet('count');
+        $this->session->set('paymentpagecounts',$counts);
+        if($this->request->isAJAX()){
+            $memberslist = $this->paymentsModel->getMembersdetails($counts);
+            $paymentpagelist = view('paymentpagelist',array("members"=>$memberslist,"sno"=>$counts));
+            echo $paymentpagelist;
+        }
+    }
+
+    public function changepaymentpagepagesetup(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        $initialindex = $this->request->getGet('initialindex');
+        if($initialindex < 0){
+           $initialindex = 0;
+        } 
+        $counts = $initialindex * 5;
+        $this->session->set('paymentpagecounts',$counts);
+        $totalpayers = $this->paymentsModel->getTotalmembers();
+        if($counts > $totalpayers){
+            $counts = 0;  
+            $this->session->set('paymentpagecounts',$counts);   
+        }
+        $memberslist = $this->paymentsModel->getMembersdetails($counts);
+        $eventyears = $this->paymentsModel->getEventsyear();
+        $states = $this->paymentsModel->getStates();
+        return view('paymentpage',array("members"=>$memberslist,"newcounts"=>$totalpayers,"initialindex"=>$initialindex,"eventyears"=>$eventyears,"states"=>$states,"sno"=>$counts));
+    }
+
+    public function sidemenu(){
+        return view("sidemenu");
+    }
+
+    public function topmenu(){
+        return view("topmenu");
+    }
+
+    public function pslogo(){
+        return view("pslogo");
+    }
+
+    public function logout(){
+        $this->session->destroy();
+        return redirect()->to('Loginpage');
+    }
+
+    public function getDistricts(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $stateid = $this->request->getGet('stateid');
+            $districts = $this->paymentsModel->getDistrictslist($stateid);
+            echo json_encode($districts);
+        }
+    }
+
+    public function getTaluks(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $districtname = $this->request->getGet('districtname');
+            $taluks= $this->paymentsModel->getTaluklist($districtname);
+            echo json_encode($taluks);
+        }    
+    }
+
+    public function getVillages(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $localareaid = $this->request->getGet('localareaid');
+            $localareas = $this->paymentsModel->getVillagelist($localareaid);
+            echo "
+            <label id='villages' class='container-fluid' for='district'>Choose Village: <br>
+                    <select onchange='getEvents()' class='container-fluid border rounded' name='villageid' id='villageid' required>
+                    <option value=''>Choose Village</option>";                     
+            foreach ($localareas as $key => $value) {
+            echo "<option value='$value[village_id]'>$value[village_name]</option>";
+            }                  
+                        
+            echo "</select>
+                  </label>";
+            }   
+    }
+
+    public function getAllevents(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+            $year = $this->request->getGet("year");
+            $events = $this->paymentsModel->getEventslist();
+            echo "
+            <label id='eventslist' class='container-fluid' for='events'>Choose Event: <br>
+                      <select class='container-fluid border rounded' name='eventid' id='eventid' required>
+                      <option value=''>Choose Event</option>";
+            foreach ($events as $key => $value) {
+            echo "<option value='$value[Id]'>$value[EventName] - $value[Year]</option>";
+            }                                          
+            echo "</select>
+              </label>";
+    }
+
+    public function getEventsbyyear(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+            $year = $this->request->getGet("year");
+            $events = $this->paymentsModel->getEventswithyear($year);
+            echo "
+            <label id='eventslist' class='container-fluid' for='events'>Choose Events: <br>
+                    
+                      <select class='container-fluid border rounded' name='eventid' id='eventid' required>
+                      <option value=''>Choose Event</option>";
+                      
+            foreach ($events as $key => $value) {
+            echo "<option value='$value[SNo]'>$value[EventName] - $value[year]</option>";
+            }                                          
+            echo "</select>
+              </label>";
+    }
+
+    public function getCities(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $districtid = $this->request->getGet('districtid');
+            $cities = $this->paymentsModel->getCitieslist($districtid);
+            echo "
+            <label id='citieslist' class='container-fluid' for='cities'>Choose Cities: <br>
+                    
+                      <select class='container-fluid border rounded' name='cities' id='cities' required>
+                      <option value=''>Choose Cities</option>";
+                      
+            foreach ($cities as $key => $value) {
+            echo "<option value='$value[id]'>$value[name]</option>";
+            }                  
+                        
+            echo "</select>
+              </label>";
+            }
+    }
+
+    public function getFilteredevents(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $year = $this->request->getGet('year');
+            $eventsdetail = $this->paymentsModel->getEventsdetails($year);
+            echo "
+            <label id='eventnamelabel' class='container-fluid' for='events'>Choose events: <br>
+                    
+            <select onchange='getTaxamount(this)' class='container-fluid border rounded' name='eventid' id='eventnames' required>
+            <option value=''>Choose event</option>";
+                      
+            foreach ($eventsdetail as $key => $value) { 
+            echo "<option value='$value[SNo]'>$value[EventName]</option>";
+            }                  
+                        
+            echo "</select>
+                   </label>";
+        }
+    }
+
+    public function getEventslist(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+        $year = $this->request->getGet('year');
+        $memberid = $this->request->getGet('memberid');
+        $eventsdetail = $this->paymentsModel->getEventsdetails($year);
+        $memberdetail = $this->paymentsModel->getMemberforPayment($memberid);
+        echo "
+         <label id='eventnamelabel' class='container-fluid' for='events'>Choose event: <br>
+                    
+                       <select onchange='getTaxamount(this,`$memberdetail->Familymembershipid`)' class='container-fluid border rounded' name='eventid' id='eventnames' required>
+                       <option value=''>Choose event</option>";
+                      
+         foreach ($eventsdetail as $key => $value) {
+            echo "<option value='$value[Id]'>$value[EventName]</option>";
+         }                  
+                        
+        echo "</select>
+              </label>";
+        }
+    }
+
+    public function searchMembers(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        } 
+        $searchfields = $this->request->getGet('searchfields');
+        if($this->request->isAJAX()){
+            if($searchfields == ""){
+                $counts = $this->session->get("paymentpagecounts");
+                $members = $this->paymentsModel->getMembersdetails($counts);
+                $data = view('searchforpayments',array("members"=>$members,"sno"=>1));
+                echo $data;
+            } 
+            else{
+            $members = $this->paymentsModel->getMembersSearchfields($searchfields);
+            $counts = count($members);
+            if($counts == 0){
+                $data = view('searchforpayments',array("members"=>$members));
+                echo $data;
+            }
+            else{
+            $data = view('searchforpayments',array("members"=>$members,"sno"=>1));
+            echo $data;
+            }
+            }
+        }
+    }
+
+    public function getTaxamount(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        } 
+        if($this->request->isAJAX()){
+            $eventid = $this->request->getGet("eventid");
+            $memberid = $this->request->getGet("memberid");
+            $eventdata = $this->paymentsModel->getEventdata($eventid); // Returns Object
+            $eventname = $eventdata->EventName;
+            $taxamount = $eventdata->TaxAmount;
+            $paydetails = $this->paymentsModel->getPaydetails($memberid,$eventid); // Returns Object or Array
+            $paidamount = $paydetails->paidamount ?? 0;
+            $balanceamount = $taxamount - $paidamount;
+
+            if(!$paidamount){
+                $paidamount = 0;
+            }
+
+            echo "<div class='col-md-12'>
+                    <label class='container-fluid' for='taxamount'>Tax Amount: <br>
+                    <input readonly value='".$eventdata->TaxAmount ."' id='taxamount' name='eventamount' class='border rounded container-fluid'>
+                    </label>
+                    </div>
+
+
+                <div class='col-md-12'>
+                    <label class='container-fluid' for='balanceamount'>Paid Amount:
+                    <input value='$paidamount' id='prevpaid' name='prevpaid' readonly class='container-fluid border rounded' type='text'>
+                    </label>
+                </div>
+                
+                <div class='col-md-12 py-2'>
+                <label class='container-fluid' for='balanceamount'>Balance Amount:
+                  <input id='balance' value='$balanceamount' name='balanceamount' readonly class='container-fluid border rounded' type='text'>
+                </label>
+                </div>"; 
+            
+        }
+    }
+
+    public function saveTaxreceipt(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+         $path = $this->request->getPost("path");   
+         $eventid = $this->request->getPost("eventid");   
+         $memberid = $this->request->getPost("memberid");
+         $membertaluk = $this->request->getPost("membertaluk");
+         $membermobile = $this->request->getPost("membermobile"); 
+         $name = $this->request->getPost("membername");
+         $paidamount = $this->request->getPost("paidamount");
+         $paymenttype = $this->request->getPost("paymenttype");
+         $bankname = $this->request->getPost("bankname");
+         $transactionid = $this->request->getPost("transactionid");
+         $banknameforcheckque = $this->request->getPost("banknameforcheckque");
+         $checkqueno = $this->request->getPost("checkqueno");
+         $upitranscationid = $this->request->getPost("upitransactionid");
+         $cashtype = $this->request->getPost("cashtype");
+         $balanceamount = $this->request->getPost("balanceamount");
+         $paymentdate = $this->request->getPost("paymentdate");
+         $wheretopay = $this->request->getPost("where");
+
+         $geteventdata = $this->paymentsModel->getEventdata($eventid);
+         $eventname = $geteventdata->EventName;
+         $fromdate = $geteventdata->From_date;
+         $todate = $geteventdata->To_date;
+         $taxamount = $geteventdata->TaxAmount;
+         $year = $geteventdata->Year;
+
+         $savereceipt = $this->paymentsModel->saveTaxreport($eventid,$eventname,$fromdate,$todate,$taxamount,$year,$memberid,$membermobile,$membertaluk,$name,$paymenttype,$paidamount,$bankname,$transactionid,$banknameforcheckque,$checkqueno,$upitranscationid,$cashtype,$balanceamount,$paymentdate,$wheretopay);
+
+         if($path == "paymentform"){
+            $userdata = array("userreceiptid"=>$memberid,"userdue"=>$savereceipt,"usereventid"=>$eventid);
+            $this->session->set("userreceiptid",$memberid);
+            $this->session->set("userdue",$savereceipt);
+            $this->session->set("usereventid",$eventid);
+            $this->session->set("paymentsuccessstatus","Receipt added successfully");
+            return redirect()->to("paymentreceiptpdf"); // Route? "Payments/paymentReceiptpdf"?
+            // Original `redirect("paymentreceiptpdf")`.
+            // Check Routes later. Assuming routed.
+         }
+         else{
+            return redirect()->to("filteredusers");
+         }
+    }          
+    
+   
+    public function searchEvents(){  
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        } 
+        if($this->request->isAJAX()){
+            $event = $this->request->getGet("event");
+            if($event == ""){
+                echo "No Events available";
+            }
+            else{
+            $eventresult = $this->paymentsModel->searchEventforpayment($event);
+            if($eventresult){
+                foreach ($eventresult as $key => $event) {
+                    echo "
+                     <span onclick='assignEvent(`".$event['Id']."`,`".$event['EventName']."`)' class='mt-1 searchevent'><img src='$event[Image]' style='width:30px;height:30px;' alt='$event[EventName]'> - $event[EventName] - $event[Year]</span>";
+                 }
+            }
+            else{
+                echo "<span>No Events Found</span>";
+            }
+        }
+        }
+    }    
+
+    public function paymentReceiptpdf(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        } 
+        $userid = $this->request->getGet("memberid") ?? $this->session->get("userreceiptid");
+        $dues = $this->request->getGet("dues") ?? $this->session->get("userdue");
+        $eventid = $this->request->getGet("eventid") ?? $this->session->get("usereventid");
+        $receipt = $this->paymentsModel->getReceiptdetail($userid,$dues,$eventid);
+        return view("paymentreceiptpdf",array("receipt"=>$receipt));       
+    }  
+
+    public function paymentReceiptlist(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+
+        $memberid = ""; 
+        if($this->session->get('role') == 3){
+            $memberid = $this->session->get('Kaadaisoft_userId');
+        }
+        else{
+            $memberid = $this->request->getGet("memberid");
+        } 
+        $receipts = $this->paymentsModel->getReceiptlist($memberid);
+        $member = $this->paymentsModel->getMember($memberid);
+        return view("paymentreceiptlist",array("receipts"=>$receipts,"member"=>$member));
+    }
+
+    public function downloadPdf() {
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        } 
+        $userid = $this->request->getGet("memberid");
+        $dues = $this->request->getGet("dues");
+        $eventid = $this->request->getGet("eventid");
+        $receipt = $this->paymentsModel->getReceiptdetail($userid,$dues,$eventid);
+        $html = view("downloadreceipt",array("receipt"=>$receipt));
+        
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait'); // Optional
+        $dompdf->render();
+        $dompdf->stream(); 
+    }
+
+}
+?>
