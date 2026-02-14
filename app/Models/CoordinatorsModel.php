@@ -45,7 +45,7 @@ class CoordinatorsModel extends Model
 
     public function getVillages()
     {
-        $query = $this->db->query("SELECT * FROM villages");
+        $query = $this->db->query("SELECT * FROM villages ORDER BY village_name ASC");
         return $query->getResultArray();
     }
 

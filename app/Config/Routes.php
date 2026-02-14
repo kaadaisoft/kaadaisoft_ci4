@@ -109,11 +109,18 @@ $routes->get('members/sidemenu', 'Members::sidemenu');
 $routes->get('members/topmenu', 'Members::topmenu');
 $routes->get('members/pslogo', 'Members::pslogo');
 $routes->get('members/topsubmenu', 'Members::topsubmenu');
+$routes->get('members/searchmembers', 'Members::searchmembers');
 
 // Events Routes
 $routes->get('events', 'Events::index');
 $routes->get('changeEventspagesetup', 'Events::changeEventspagesetup');
+$routes->post('events/addevent', 'Events::addevent'); // Fix for 404 on Add Event
+$routes->get('events/getevent', 'Events::getevent'); // For AJAX modal content
+$routes->post('events/updateevent', 'Events::updateevent');
+$routes->get('events/showupdateeventbanner', 'Events::showupdateeventbanner');
+$routes->post('events/updateeventbanner', 'Events::updateeventbanner');
 $routes->match(['get', 'post'], 'events/trash/(:any)', 'Events::movetotrash/$1');
+$routes->get('events/movetotrash', 'Events::movetotrash'); // For AJAX trash call
 $routes->get('events/sidemenu', 'Events::sidemenu');
 $routes->get('events/topmenu', 'Events::topmenu');
 $routes->get('events/pslogo', 'Events::pslogo');
@@ -138,14 +145,27 @@ $routes->get('paymentreceiptpdf', 'Payments::paymentReceiptpdf');
 $routes->get('paymentReceiptlist', 'Payments::paymentReceiptlist');
 $routes->get('downloadpdf', 'Payments::downloadPdf');
 $routes->post('saveTaxreceiptforfiltereduserform', 'Payments::saveTaxreceipt'); 
+$routes->post('payments/saveTaxreceipt', 'Payments::saveTaxreceipt');
 $routes->get('changepaymentpagepagesetup', 'Payments::changepaymentpagepagesetup');
+$routes->get('payments/displayPayers', 'Payments::displayPayers');
+$routes->get('payments/searchMembers', 'Payments::searchMembers');
 $routes->post('uploadBulkPayments', 'Payments::uploadBulkPayments');
+$routes->get('payments/getDistricts', 'Payments::getDistricts');
+$routes->get('payments/getTaluks', 'Payments::getTaluks');
+$routes->get('payments/getPanchayats', 'Payments::getPanchayats');
+$routes->get('payments/getVillagesNew', 'Payments::getVillagesNew');
+$routes->get('payments/getVillages', 'Payments::getVillages');
+$routes->get('payments/getAllevents', 'Payments::getAllevents');
+$routes->get('payments/getEventslist', 'Payments::getEventslist');
+$routes->get('payments/searchEvents', 'Payments::searchEvents');
+$routes->get('payments/getTaxamount', 'Payments::getTaxamount');
 
 // Payments Filter Routes
 $routes->get('filteredusers', 'PaymentsFilter::index');
 $routes->match(['get', 'post'], 'getFilteredusers', 'PaymentsFilter::getFilteredusers');
 $routes->get('filteredUserpaymentform', 'PaymentsFilter::filteredUserpaymentform');
 $routes->get('changefiltereduserspagesetup', 'PaymentsFilter::changefiltereduserspagesetup');
+$routes->post('PaymentsFilter/displayFiltermembers', 'PaymentsFilter::displayFiltermembers');
 
 // Export & Reporting Routes
 $routes->get('excel', 'PaidUnpaidController::excel');
@@ -154,3 +174,5 @@ $routes->get('download_excel', 'ReportingController::download_excel');
 
 // Bulk Upload
 $routes->get('bulk_upload', 'Bulk_upload::index');
+$routes->post('bulk_upload/upload_file', 'Bulk_upload::upload_file');
+

@@ -21,14 +21,13 @@ class Bulk_upload extends BaseController {
     }
 
     public function index() {
+        if (!view_exists('bulk_upload_view')) {
+            return redirect()->to('admindashboard');
+        }
         return view('bulk_upload_view');
     }
 
     public function upload_file() {
-        // Set upload configuration logic manually or via validation
-        // $config['upload_path'] = 'assets/bulk_uploads/';
-        // $config['allowed_types'] = 'xlsx|xls|csv'; 
-
         $file = $this->request->getFile('file');
 
         if (!$file->isValid()) {
@@ -44,7 +43,7 @@ class Bulk_upload extends BaseController {
         }
 
         if (!$file->hasMoved()) {
-            $newName = $file->getName();
+            $newName = $file->getRandomName(); // Use random name for security
             try {
                 $file->move('assets/bulk_uploads/', $newName);
             } catch (Exception $e) {
@@ -82,8 +81,7 @@ class Bulk_upload extends BaseController {
             // Prepare success message
             $message = "Upload Processed. Inserted: $inserted_count. Skipped: $skipped_count.";
             if ($skipped_count > 0) {
-                // You might want to format this list better or just show the count
-                $message .= " <br>Skipped details: <br>" . implode("<br>", array_slice($errors, 0, 5)); // Show first 5 errors
+                $message .= " <br>Skipped details: <br>" . implode("<br>", array_slice($errors, 0, 5)); 
                 if($skipped_count > 5) $message .= "<br>...and " . ($skipped_count - 5) . " more.";
             }
 
@@ -104,17 +102,29 @@ class Bulk_upload extends BaseController {
         $totalmembersverified = 0;
 
         // Load the spreadsheet
-        $spreadsheet = IOFactory::load($file_path);
-        $sheet = $spreadsheet->getActiveSheet();
-        
-        // Get rows as array
-        $rows = $sheet->toArray();
+        try {
+            $spreadsheet = IOFactory::load($file_path);
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+        } catch (Exception $e) {
+            throw new Exception("Unable to load file: " . $e->getMessage());
+        }
+
+        if (empty($rows)) {
+            throw new Exception("File is empty.");
+        }
 
         // Read headers (first row)
         $headers = array_map('trim', $rows[0]);
-
-        // Create a mapping of header -> column index
         $headerIndex = array_flip($headers);
+
+        // Required headers validation
+        $required_headers = ['Name', 'Phonenumber', 'State', 'District', 'Taluk', 'Panchayat', 'Village', 'Street', 'Doornumber', 'Pincode', 'Pannumber', 'Aadharnumber', 'Approvedstatus'];
+        foreach ($required_headers as $req) {
+            if (!isset($headerIndex[$req])) {
+                throw new Exception("Missing required header: $req");
+            }
+        }
 
         // --- PRE-SCAN FOR CONFLICTS START ---
         $mobile_names_map = [];
@@ -133,7 +143,7 @@ class Bulk_upload extends BaseController {
             if (preg_match('/^(91)?[6-9][0-9]{9}$/', $clean_phone)) {
                 $processed_phone = substr($clean_phone, -10);
             } else {
-                $processed_phone = $clean_phone; // Keep original if invalid, validation will catch it later or logic below handles it
+                $processed_phone = $clean_phone; 
             }
 
             $mobile_names_map[$processed_phone][] = $name;
@@ -152,12 +162,10 @@ class Bulk_upload extends BaseController {
         for ($i = 1; $i < count($rows); $i++) {
             $row = $rows[$i];
 
-            // Skip empty rows
             if (empty(array_filter($row))) {
                 continue;
             }
 
-            // Safely access by header name
             $name       = $row[$headerIndex['Name']] ?? '';
             $state      = $row[$headerIndex['State']] ?? '';
             $district   = $row[$headerIndex['District']] ?? '';
@@ -187,21 +195,17 @@ class Bulk_upload extends BaseController {
             }
 
             // --- VALIDATION START ---
-
-            // 1. Strict Conflict Check (Skip BOTH/ALL)
             if (in_array($processed_phone, $conflicting_mobiles)) {
-                $errors[] = "Row " . ($i + 1) . ": Mobile $processed_phone (Name: $name) skipped due to conflicting data (different names for same mobile in file).";
+                $errors[] = "Row " . ($i + 1) . ": Mobile $processed_phone (Name: $name) skipped due to conflicting data.";
                 continue;
             }
 
-            // 2. Duplicate Check (Skip 2nd occurrence of same data)
             if (in_array($processed_phone, $processed_mobiles)) {
                  $errors[] = "Row " . ($i + 1) . ": Mobile $processed_phone (Name: $name) is duplicated in file.";
                  continue;
             }
             $processed_mobiles[] = $processed_phone;
 
-            // 3. DB Check
             $exists = $this->db->table('kaadaimembers')->where('Phonenumber', $processed_phone)->countAllResults();
             if ($exists > 0) {
                 $errors[] = "Row " . ($i + 1) . ": Mobile $processed_phone (Name: $name) already exists in database.";
@@ -211,8 +215,8 @@ class Bulk_upload extends BaseController {
 
             $hashed_password = password_hash($processed_phone, PASSWORD_BCRYPT);
 
-            // Get district_code and state_id
-            $getdistrictcode = $this->db->query("SELECT DISTINCT(district_code) AS district_code, state_id FROM panchayat_table WHERE district_name = '$district'");
+            // Get district_code and state_id with parameter binding
+            $getdistrictcode = $this->db->query("SELECT DISTINCT(district_code) AS district_code, state_id FROM panchayat_table WHERE district_name = ?", [$district]);
             $getcode = $getdistrictcode->getRow();
 
             $familyMembershipId = NULL;
@@ -223,10 +227,11 @@ class Bulk_upload extends BaseController {
                 $districtcode = $getcode->district_code;
                 $state_id = $getcode->state_id;
 
-                // Coordinator
-                $getCoordinatorid = $this->db->query("SELECT Coordinator_id FROM taluks_table WHERE taluk_name = '$taluk'");
-                $coordinatorid = $getCoordinatorid->getRow();
-                $coordid = $coordinatorid ? $coordinatorid->Coordinator_id : null;
+                // Coordinator assignment: Fetch from village_table which is the source of truth for assignments
+                $getCoordinatorid = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table WHERE village_name = ? AND panchayat_name = ? AND taluk_name = ? AND district_name = ?", [$village, $panchayat, $taluk, $district]);
+                $coordinatorRow = $getCoordinatorid->getRow();
+                $coordid = $coordinatorRow ? $coordinatorRow->Coordinator_id : null;
+                $coordid_two = $coordinatorRow ? $coordinatorRow->Coordinator_Two_id : null;
 
                 if($totalmembersverified < 1 && $approvedstatus == 'Verified'){
                     $getmembers = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Verified'");
@@ -238,11 +243,16 @@ class Bulk_upload extends BaseController {
 
                 $newid = $approvedstatus == 'Verified' ? $districtcode . str_pad($totalmembersverified, 5, "0", STR_PAD_LEFT) : NULL;
                 $familyMembershipId = $newid;
+            } else {
+                 // Fallback if district code not found (though headers checked, data integrity might be issue)
+                 // Just continue, familyMembershipId null
+                 $coordid = null;
+                 $coordid_two = null; 
             }
 
             $data[] = array(
                 'Familymembershipid' => $familyMembershipId,
-                'MemberRole' => 'Head', // Member role
+                'MemberRole' => 'Head', 
                 'Name' => $name,
                 'State' => $state,
                 'District' => $district,
@@ -258,11 +268,13 @@ class Bulk_upload extends BaseController {
                 'Approvedstatus' => $approvedstatus,
                 'state_id' => $state_id,
                 'Coordinator_id' => $coordid,
+                'Coordinator_Two_id' => $coordid_two,
                 'Password' => $hashed_password
             );
         }
 
         return ['valid_data' => $data, 'errors' => $errors];
     }
+
 }
 ?>

@@ -128,6 +128,58 @@
             
         <div id="changepage" style="height:inherit;overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
 
+<!---------------------view-manager-success-toast---------------------->
+<div id='managertoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);z-index: 1050;' class='toast hide'>
+  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
+    <strong class='me-auto text-white fs-6'>Success</strong>
+    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+  </div>
+  <div id="managerstatus" class='toast-body text-white fs-6 py-2'></div>
+</div>
+
+<?php if(isset($_SESSION["managersuccessstatus"])): ?>
+<?php $status = $_SESSION['managersuccessstatus']; ?>
+<script>
+    $(document).ready(function() {
+        document.getElementById('managerstatus').innerHTML = '<?= $status ?>';
+        const vmdToast = document.getElementById('managertoast');
+        vmdToast.classList.remove('hide');
+        vmdToast.classList.add('show');
+        vmdToast.style.right = '50px';
+        setTimeout(() => {
+            vmdToast.style.right = '-380px';
+        }, 3000);
+    });
+</script>
+<?php unset($_SESSION["managersuccessstatus"]); ?>
+<?php endif; ?>
+
+<!---------------------view-manager-error-toast---------------------->
+<div id='managererrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index: 1050;' class='toast hide'>
+  <div style="background-color:rgb(250,51,51);" class='toast-header'>
+    <strong class='me-auto text-white fs-6'>Error</strong>
+    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+  </div>
+  <div id="managererrorstatus" class='toast-body text-white fs-6 py-2'></div>
+</div>
+
+<?php if(isset($_SESSION["managererrorstatus"])): ?>
+<?php $status = $_SESSION['managererrorstatus']; ?>
+<script>
+    $(document).ready(function() {
+        document.getElementById('managererrorstatus').innerHTML = '<?= $status ?>';
+        const vmdeToast = document.getElementById('managererrortoast');
+        vmdeToast.classList.remove('hide');
+        vmdeToast.classList.add('show');
+        vmdeToast.style.right = '50px';
+        setTimeout(() => {
+            vmdeToast.style.right = '-380px';
+        }, 3000);
+    });
+</script>
+<?php unset($_SESSION["managererrorstatus"]); ?>
+<?php endif; ?>
+
           <?php if(isset($manager)):?>
             <div class="container-fluid px-4 py-4">   
             <h3 style="font-weight:500;">Manager Details:</h3> 

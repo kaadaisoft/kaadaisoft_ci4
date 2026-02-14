@@ -786,23 +786,30 @@ unset($_SESSION["altereventsindex"]);
 <!-----------------set-index-end----------------->
    <script>
     let eventsData = [];
+    const baseUrl = "<?= base_url() ?>/";
     <?php if (isset($events) && !empty($events)): ?>
     eventsData = <?php echo json_encode($events); ?> || [];
-<?php endif; ?>
+    <?php endif; ?>
 
 function renderEvents(data, sNo) {
     let html = "";
     let i = sNo + 1;
 
     data.forEach(value => {
+        // Ensure image path is clean
+        let imagePath = value.Image;
+        if (imagePath && !imagePath.startsWith('http')) {
+            imagePath = baseUrl + imagePath;
+        }
+
         html += `
             <tr>
            <td style='font-weight:500;'>${i}</td>
                     <td style='font-weight:500;font-size:18px;' class='text-primary'>${value.EventName}</td>
                     <td>
                     <div class='rounded-top' style='width:100px;height:100px;'>
-                    <a href='${value.Image}'>
-                    <img class='rounded-top' style='width:100px;height:75px;' src='${value.Image}' alt='${value.EventName}'/>
+                    <a href='${imagePath}'>
+                    <img class='rounded-top' style='width:100px;height:75px;' src='${imagePath}' alt='${value.EventName}'/>
                     </a>
                     <button <?=(session()->get('role') == 2) ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> onclick='showupdateeventbannermodal(${value.Id},\"${value.EventName}\")' style='width:100px;height:25px;outline:none;border:none;' class = 'rounded-bottom text-center bg-dark text-white'>
                     change
@@ -1059,7 +1066,7 @@ function commonSearch(events){
 
        $.ajax({
         type:"get",
-        url:"events/getevent",
+        url: baseUrl + "events/getevent",
         data:{"id":id},
         success:(result)=>{
            document.getElementById("update-event-form").innerHTML = result;
@@ -1086,7 +1093,7 @@ function commonSearch(events){
       let b = window.innerWidth;
       $.ajax({
         type:"get",
-        url:"events/showupdateeventbanner",
+        url: baseUrl + "events/showupdateeventbanner",
         data:{"id":id,"eventname":eventname},
         success:(result)=>{
            document.getElementById("update-event-banner").innerHTML = result;
@@ -1204,7 +1211,7 @@ function commonSearch(events){
     function movetotrash(id){
     $.ajax({
         type:"get",
-        url:"events/movetotrash",
+        url: baseUrl + "events/movetotrash",
         data:{"id":id},
         success:function(result){
           alert("Moved to trash successfully");

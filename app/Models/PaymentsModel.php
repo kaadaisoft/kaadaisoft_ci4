@@ -17,7 +17,7 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND Coordinator_id = '$coord_id' AND isShow = 1 AND Approvedstatus = 'Verified' LIMIT 10 OFFSET $counts");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' LIMIT 5 OFFSET $counts");
             return $query->getResultArray();
         }
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified' LIMIT 5 OFFSET $counts");
@@ -36,7 +36,7 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND Coordinator_id = '$coord_id' AND isShow = 1 AND Approvedstatus = 'Verified'");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified'");
             return count($query->getResultArray());
         }
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
@@ -79,7 +79,7 @@ class PaymentsModel extends Model
 
     public function getStates()
     {
-        $query = $this->db->query("SELECT * FROM states");
+        $query = $this->db->query("SELECT * FROM states ORDER BY state_title ASC");
         return $query->getResultArray();
     }
 
@@ -88,22 +88,52 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get("role") == 2) {
             $CoordinatorId = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM taluks_table WHERE Coordinator_id = '$CoordinatorId'");
+            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE Coordinator_id = '$CoordinatorId' OR Coordinator_Two_id = '$CoordinatorId' ORDER BY district_name ASC");
         } else {
-            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM panchayat_table WHERE state_id = $stateid");
+            $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE State_id = $stateid ORDER BY district_name ASC");
         }
         return $query->getResultArray();
     }
 
     public function getTaluklist($district_name)
     {
-        $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM panchayat_table WHERE district_name = '$district_name'");
-        return $query->getResult();
+        $session = session();
+        if ($session->get("role") == 2) {
+            $CoordinatorId = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name' AND (Coordinator_id = '$CoordinatorId' OR Coordinator_Two_id = '$CoordinatorId') ORDER BY taluk_name ASC");
+        } else {
+            $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name' ORDER BY taluk_name ASC");
+        }
+        return $query->getResultArray();
     }
 
     public function getVillagelist($localareaid)
     {
-        $query = $this->db->query("SELECT villages.village_id,villages.village_name FROM villages WHERE EXISTS (SELECT local_area_id FROM local_areas WHERE local_areas.local_area_id = villages.local_area_id AND local_area_id  = $localareaid)");
+        $query = $this->db->query("SELECT villages.village_id,villages.village_name FROM villages WHERE EXISTS (SELECT local_area_id FROM local_areas WHERE local_areas.local_area_id = villages.local_area_id AND local_area_id  = $localareaid) ORDER BY villages.village_name ASC");
+        return $query->getResultArray();
+    }
+
+    public function getPanchayatlist($taluk_name)
+    {
+        $session = session();
+        if ($session->get("role") == 2) {
+            $CoordinatorId = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT DISTINCT(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name' AND (Coordinator_id = '$CoordinatorId' OR Coordinator_Two_id = '$CoordinatorId') ORDER BY panchayat_name ASC");
+        } else {
+            $query = $this->db->query("SELECT DISTINCT(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name' ORDER BY panchayat_name ASC");
+        }
+        return $query->getResultArray();
+    }
+
+    public function getVillagelistByNames($panchayat_name)
+    {
+        $session = session();
+        if ($session->get("role") == 2) {
+            $CoordinatorId = $session->get("Kaadaisoft_userId");
+            $query = $this->db->query("SELECT DISTINCT(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' AND (Coordinator_id = '$CoordinatorId' OR Coordinator_Two_id = '$CoordinatorId') ORDER BY village_name ASC");
+        } else {
+            $query = $this->db->query("SELECT DISTINCT(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
+        }
         return $query->getResultArray();
     }
 
@@ -124,7 +154,7 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
 
-    public function getPaidunpaidusers($stateid = null, $districtname = null, $talukname = null, $eventid, $status, $count = 0)
+    public function getPaidunpaidusers($stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null, $eventid, $status, $count = 0)
     {
         $builder = $this->db->table('kaadaimembers km');
         $builder->select("
@@ -154,6 +184,12 @@ class PaymentsModel extends Model
         if (!empty($talukname)) {
             $builder->where('km.Taluk', $talukname);
         }
+        if (!empty($panchayatname)) {
+            $builder->where('km.Panchayat', $panchayatname);
+        }
+        if (!empty($villagename)) {
+            $builder->where('km.Village', $villagename);
+        }
     
         $builder->where('km.Approvedstatus', 'Verified');
     
@@ -172,7 +208,7 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
     
-    public function getPaidorunpaidusers($stateid = null, $districtname = null, $talukname = null, $eventid, $status)
+    public function getPaidorunpaidusers($stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null, $eventid, $status)
     {
         $builder = $this->db->table('kaadaimembers km');
         $builder->select("km.Familymembershipid");
@@ -189,6 +225,12 @@ class PaymentsModel extends Model
         }
         if (!empty($talukname)) {
             $builder->where('km.Taluk', $talukname);
+        }
+        if (!empty($panchayatname)) {
+            $builder->where('km.Panchayat', $panchayatname);
+        }
+        if (!empty($villagename)) {
+            $builder->where('km.Village', $villagename);
         }
     
         $builder->where('km.Approvedstatus', 'Verified');
@@ -302,13 +344,13 @@ class PaymentsModel extends Model
 
     public function getCoordinatordata($coord_id)
     {
-        $query = $this->db->query("SELECT kaadaimembers.Familymembershipid,kaadaimembers.State,taluks_table.* FROM kaadaimembers LEFT JOIN taluks_table ON kaadaimembers.Familymembershipid = taluks_table.Coordinator_id WHERE kaadaimembers.Familymembershipid = '$coord_id' AND kaadaimembers.isShow = 1");
+        $query = $this->db->query("SELECT kaadaimembers.Familymembershipid,kaadaimembers.State,village_table.* FROM kaadaimembers LEFT JOIN village_table ON (kaadaimembers.Familymembershipid = village_table.Coordinator_id OR kaadaimembers.Familymembershipid = village_table.Coordinator_Two_id) WHERE kaadaimembers.Familymembershipid = '$coord_id' AND kaadaimembers.isShow = 1");
         return $query->getRow();
     }
 
     public function getCoordinatorTaluks($coord_id)
     {
-        $query = $this->db->query("SELECT taluk_name FROM taluks_table WHERE Coordinator_id = '$coord_id'");
+        $query = $this->db->query("SELECT DISTINCT(taluk_name) AS taluk_name FROM village_table WHERE Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id'");
         return $query->getResultArray();
     }
 }

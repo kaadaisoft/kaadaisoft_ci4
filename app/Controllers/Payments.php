@@ -253,6 +253,28 @@ class Payments extends BaseController {
         }    
     }
 
+    public function getPanchayats(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $talukname = $this->request->getGet('talukname');
+            $panchayats = $this->paymentsModel->getPanchayatlist($talukname);
+            echo json_encode($panchayats);
+        }
+    }
+
+    public function getVillagesNew(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $panchayatname = $this->request->getGet('panchayatname');
+            $villages = $this->paymentsModel->getVillagelistByNames($panchayatname);
+            echo json_encode($villages);
+        }
+    }
+
     public function getVillages(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
@@ -486,6 +508,10 @@ class Payments extends BaseController {
             // Check Routes later. Assuming routed.
          }
          else{
+            $this->session->set("paymentsuccessstatus","Receipt added successfully");
+            $this->session->set("userreceiptid",$memberid);
+            $this->session->set("userdue",$savereceipt);
+            $this->session->set("usereventid",$eventid);
             return redirect()->to("filteredusers");
          }
     }          

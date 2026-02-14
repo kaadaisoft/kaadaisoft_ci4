@@ -120,6 +120,20 @@
         color:white;
       }
 
+      .pagination-link{
+        border: 1px solid #dee2e6;
+        background-color: white;
+        color: #495057;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .pagination-link:hover:not(.active-page){
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+      }
+
       .active{
         border:none;
         outline:none;
@@ -324,11 +338,19 @@
          <div id="changepage" style='height:inherit;overflow:auto;' class="col-md-10 pt-3"><!-----------main-dashboard------------------------->
           
          <div id="filter-form" class="ps-4">
+         <?php if(session()->has('paymentsuccessstatus')): ?>
+         <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
+           <strong>Success!</strong> <?= session()->get('paymentsuccessstatus') ?>
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>
+         <?php 
+           session()->remove('paymentsuccessstatus');
+         endif; ?>
          <div><!------------------------------------>     
          <div class="pt-2 px-3 pb-4"><!----------filter-start------------>
          <div class="d-flex justify-content-between">
          <span class="text-secondary h4">Payment Status Filter:</span>
-         <a href='download_excel?talukname=<?=$filterlist['talukname']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-sm btn-success fw-bold float-end btn-warning' id ='download' role='button'>Download</a>
+         <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-sm btn-success fw-bold float-end btn-warning' id ='download' role='button'>Download</a>
          </div> 
          <form id="filter-form-height" class="row border py-4 border-4 border-success" method="post" action="<?=base_url('getFilteredusers')?>">
          <div class="col-md-3"><!------------state-choose------------>
@@ -366,23 +388,53 @@
             </div><!------------district-choose-end----------->
            <div id="localareas" class="col-md-3"><!------------local-area-search------------>
             <label class="container-fluid" for="aadhar">Taluks:<br>
-            <select class="container-fluid border rounded" name="talukname" id="talukslist">
+            <select onchange="getPanchayatsFiltered(this)" class="container-fluid border rounded" name="talukname" id="talukslist">
             <option value=''>Choose Taluks</option>
             <?php if(isset($taluks) && session()->get("role") == 1) {
             foreach ($taluks as $key => $value){
+            $val = is_object($value) ? $value->taluk_name : $value['taluk_name'];
             echo 
-            "<option ".($filterlist['talukname'] == $value->taluk_name ? "selected" : '')." value='$value->taluk_name'>$value->taluk_name</option>";
+            "<option ".($filterlist['talukname'] == $val ? "selected" : '')." value='$val'>$val</option>";
             }} 
             elseif(isset($taluks) && session()->get("role") == 2) {
              foreach ($taluks as $row){
-            echo 
-            "<option ".($filterlist['talukname'] == $row['taluk_name'] ? "selected" : '')." value='$row[taluk_name]'>$row[taluk_name]</option>";
-            }
+               $val = is_object($row) ? $row->taluk_name : $row['taluk_name'];
+               echo 
+               "<option ".($filterlist['talukname'] == $val ? "selected" : '')." value='$val'>$val</option>";
+             }
             }
             ?>
             </select>
             </label>
             </div><!------------local-area-search-end----------->
+
+            <div class="col-md-3"><!------------panchayat-choose------------>
+              <label class="container-fluid" for="panchayat">Panchayats:<br>
+                <select onchange="getVillagesFiltered(this)" class="container-fluid border rounded" name="panchayatname" id="panchayatlist">
+                  <option value=''>Choose Panchayat</option>
+                  <?php if (isset($panchayats)): 
+                      foreach($panchayats as $row):
+                        $val = is_object($row) ? $row->panchayat_name : $row['panchayat_name'];
+                  ?>
+                      <option <?= (isset($filterlist['panchayatname']) && $filterlist['panchayatname'] == $val) ? "selected" : "" ?> value="<?= $val ?>"><?= $val ?></option>
+                  <?php endforeach; endif; ?>
+                </select>
+              </label>
+            </div><!------------panchayat-choose-end----------->
+
+            <div class="col-md-3"><!------------village-choose------------>
+              <label class="container-fluid" for="village">Villages:<br>
+                <select class="container-fluid border rounded" name="villagename" id="villagelist">
+                  <option value=''>Choose Village</option>
+                  <?php if (isset($villages)): 
+                      foreach($villages as $row):
+                        $val = is_object($row) ? $row->village_name : $row['village_name'];
+                  ?>
+                      <option <?= (isset($filterlist['villagename']) && $filterlist['villagename'] == $val) ? "selected" : "" ?> value="<?= $val ?>"><?= $val ?></option>
+                  <?php endforeach; endif; ?>
+                </select>
+              </label>
+            </div><!------------village-choose-end----------->
 
            <div class="col-md-3"><!------------choose-years---------------------->
              <label class="container-fluid" for="aadhar">Event year:<br>
@@ -426,9 +478,12 @@
 
           <div style="overflow:auto;" id="paymentdetails">  
                 <?php
-                if(isset($filteredusers) && count($filteredusers) > 0){ 
-                echo "<table class='table table-borderless'>
-                <caption style='caption-side:top;' class='h4'>Taluk: $talukname<span class='float-end'>$title</span></caption>
+                if(isset($filteredusers) && count($filteredusers) > 0){ ?>
+                <table class='table table-bordered'>
+                <caption style='caption-side:top;' class='h4'>
+                  Location: <?= $filterlist['talukname'] . (!empty($filterlist['panchayatname']) ? ' -> ' . $filterlist['panchayatname'] : '') . (!empty($filterlist['villagename']) ? ' -> ' . $filterlist['villagename'] : '') ?>
+                  <span class='float-end'><?= $title ?></span>
+                </caption>
                 <thead>
                 <tr style='font-size:18px;' class='ps-gray'>
                 <th>Sno</th>
@@ -439,12 +494,13 @@
                 <th class='text-center'>Actions</th>
                 </tr>
                 </thead>
-                <tbody id='filteredmembers'>";
+                <tbody id='filteredmembers'>
+                <?php
                 if(isset($filteredusers) && isset($title)){
                     
                    if(count($filteredusers) == 0){
                     echo "<tr>
-                    <td class='fw-bold text-center' colspan='7'>No results found</td>
+                    <td class='fw-bold text-center' colspan='6'>No results found</td>
                     </tr>";
                     }
                     elseif(count($filteredusers) > 0){
@@ -455,104 +511,75 @@
                     <td>$i</td><td class='fw-bold text-primary'>$value[Familymembershipid]</td><td style='font-weight:500;'>$value[Name]</td>
                     <td style='font-weight:500;'>$value[Mobile]</td>
                     <td style='font-weight:500;'>$value[MemberTaluk]</td>
-                    <td class='d-flex justify-content-evenly'><a href='filteredUserpaymentform?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-                    <a href='paymentReceiptlist?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a></td>
+                    <td>
+                      <div class='d-flex justify-content-evenly'>
+                        <a href='filteredUserpaymentform?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
+                        <a href='paymentReceiptlist?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
+                      </div>
+                    </td>
                     </tr>";
                     $i++;
                     }
-                }
-                }
-              }
+                   }
+                  } ?>
+                </tbody>
+                </table>
+              <?php }
               else{
                 echo "<div class='h-100 fw-bold text-muted text-center d-flex justify-content-center align-items-center'>No records found</div>";
               }
                 ?>
-            </tbody>
-          </table>
           </div> 
 
           <div class='d-flex justify-content-center container-fluid'> <!-----------------pagination---------------------->
-        
-        <div class="col-md-6 d-flex justify-content-around align-items-center">
+            <div class="col-md-6 d-flex justify-content-around align-items-center">
+              <?php 
+              $displayCounts = $newcounts ?? $counts ?? 0;
+              $currentIndex = $initialindex ?? 0;
+              $countsperpage = 5;
 
-          <?php 
-        
-          if(isset($counts)){
-            if($counts > 0){
-            $countsperpage = 5;
-            $noofpages = ceil($counts / $countsperpage) - 1;
-            $totalpagesarr = createarr($noofpages);
-            $totalpages = count($totalpagesarr) ;
-            $initialindex = $_SESSION["altermembersinitialindex"] ?? 0;
-            $lastindex = 5;
-            $pages = array_slice($totalpagesarr,$initialindex,$lastindex);
-            echo "<a href='changefiltereduserspagesetup?initialindex=0&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-            $j = 0;
-            foreach ($pages as $key => $value) {
-              $count = $countsperpage * $value;
-              $pageno = $value + 1;
-             
-              if($pageno == 5) {
-                echo "<a href='changefiltereduserspagesetup?initialindex=".($pageno - 1)."&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='".($j==0 ? 'active-page' : '')." active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>"; }
-              else{
-                echo "<button style='width:35px;height:35px;' onclick='displayFiltermembers($count, $j, \"" . $filterlist['talukname'] . "\", \"" . $filterlist['eventid'] . "\", \"" . $filterlist['paymentstatus'] . "\")' class='".($j==0 ? 'active-page' : '')." active rounded-circle'>$pageno</button>";
+              if ($displayCounts > 0) {
+                  $totalpages = ceil($displayCounts / $countsperpage);
+                  $lastindex = 5;
+                  
+                  // Calculate range of pages to show
+                  $startPage = floor($currentIndex / $lastindex) * $lastindex;
+                  $endPage = min($startPage + $lastindex, $totalpages);
+
+                  // Back Arrow
+                  $prevIndex = max(0, $startPage - $lastindex);
+                  echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$prevIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
+
+                  // Page Buttons
+                  for ($p = $startPage; $p < $endPage; $p++) {
+                      $pageno = $p + 1;
+                      $count_offset = $p * $countsperpage;
+                      $activeClass = ($p == $currentIndex) ? 'active-page' : '';
+                      
+                      $js_index = $p - $startPage;
+                       echo "<button style='width:35px;height:35px;' onclick='displayFiltermembers($count_offset, $js_index, \"" . $filterlist['talukname'] . "\", \"" . $filterlist['eventid'] . "\", \"" . $filterlist['paymentstatus'] . "\", \"" . ($filterlist['panchayatname'] ?? '') . "\", \"" . ($filterlist['villagename'] ?? '') . "\")' class='$activeClass pagination-link rounded-circle'>$pageno</button>";
+                  }
+
+                  // Last Page Skip
+                  if ($totalpages > $endPage) {
+                      echo "<span>...</span>";
+                      $lastPageIndex = $totalpages - 1;
+                      echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$lastPageIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
+                  }
+
+                  // Forward Arrow
+                  $nextIndex = $endPage;
+                  if ($nextIndex < $totalpages) {
+                      echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$nextIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
+                  }
               }
-              ++$j;
-            }
 
-            echo "<span>...</span>";
-            $totalcount = ($totalpages - $lastindex);
-            echo "<a href='changefiltereduserspagesetup?initialindex=$totalcount&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-     
-            $newindex = $initialindex + $lastindex; 
-            echo "<a href='changefiltereduserspagesetup?initialindex=$newindex&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
-          }
-
-          // else{
-          //   echo "<div id='dis-no-pages' class='d-flex justify-content-center align-items-center'><span class='fw-bold text-muted'>No records found</span></div>";
-          // }
-          }
-
-          if(isset($initialindex) && isset($newcounts)){
-            $countsperpage = 5;
-            $noofpages = ceil($newcounts / $countsperpage) - 1;
-            $totalpagesarr = createarr($noofpages);
-            $totalpages = count($totalpagesarr);
-            $lastindex = 5;
-            $start = $initialindex > $noofpages ? 0 : $initialindex;
-            $pages = array_slice($totalpagesarr,$start,$lastindex);
-            $start == 0 ? $prevlist = 0 : (($start - $lastindex) < 0 ? $prevlist = 0 : $prevlist = $start - $lastindex) ;
-            echo "<a href='changefiltereduserspagesetup?initialindex=$prevlist&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-
-            $j = 0;
-
-            foreach ($pages as $key => $value) {
-              $count = $countsperpage * $value;
-              $pageno = $value + 1;
-              
-              if($pageno == 5 || $pageno - $start == 5){
-                echo $pageno == $totalpages ? "<button style='width:35px;height:35px;' onclick='displayFiltermembers($count, $j, \"" . $filterlist['talukname'] . "\", \"" . $filterlist['eventid'] . "\", \"" . $filterlist['paymentstatus'] . "\")' class='".($j==0 ? 'active-page' : '')." active rounded-circle'>$pageno</button>" : "<a href='changefiltereduserspagesetup?initialindex=".($pageno - 1)."&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='".($j==0 ? 'active-page' : '')." active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>"; }
-              else{
-                echo "<button style='width:35px;height:35px;' onclick='displayFiltermembers($count, $j, \"" . $filterlist['talukname'] . "\", \"" . $filterlist['eventid'] . "\", \"" . $filterlist['paymentstatus'] . "\")' class='".($j==0 ? 'active-page' : '')." active rounded-circle'>$pageno</button>";
+              function createarr($noofpages){
+                return range(0,$noofpages);
               }
-              ++$j;
-            }
-
-            echo "<span>...</span>";
-            $totalcount = ($totalpages - $lastindex);
-            echo "<a href='changefiltereduserspagesetup?initialindex=$totalcount&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-            
-            $newindex = $start + $lastindex; 
-            echo "<a href='changefiltereduserspagesetup?initialindex=".($totalpages - $start <= $lastindex ? $totalcount : $newindex)."&talukname=". $filterlist['talukname'] . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
-          }
-
-          function createarr($noofpages){
-            return range(0,$noofpages);
-          }
-      
-          ?>
-        </div>
-        </div><!--------------pagination-end--------------------->
+              ?>
+            </div>
+          </div><!--------------pagination-end--------------------->
 
          
           </div>
@@ -673,13 +700,47 @@
     });
     }
 
+    function getPanchayatsFiltered(taluk) {
+      let talukname = taluk.value;
+      $.ajax({
+        type: "get",
+        url: "payments/getPanchayats",
+        data: { "talukname": talukname },
+        success: (result) => {
+          let panchayats = JSON.parse(result);
+          let panchayat_options = "<option value=''>Choose Panchayat</option>";
+          panchayat_options += panchayats.map((panchayat) => {
+              return `<option value='${panchayat.panchayat_name}'>${panchayat.panchayat_name}</option>`
+          }).join("");
+          document.getElementById("panchayatlist").innerHTML = panchayat_options;
+          document.getElementById("villagelist").innerHTML = "<option value=''>Choose Village</option>";
+        }
+      });
+    }
+
+    function getVillagesFiltered(panchayat) {
+      let panchayatname = panchayat.value;
+      $.ajax({
+        type: "get",
+        url: "payments/getVillagesNew",
+        data: { "panchayatname": panchayatname },
+        success: (result) => {
+          let villages = JSON.parse(result);
+          let village_options = "<option value=''>Choose Village</option>";
+          village_options += villages.map((village) => {
+              return `<option value='${village.village_name}'>${village.village_name}</option>`
+          }).join("");
+          document.getElementById("villagelist").innerHTML = village_options;
+        }
+      });
+    }
+
     function setStatus(status){
         statusforpaid = status.value;
     } 
 
-    function displayFiltermembers(counts,index,talukname,eventid,status){
-
-         activepage = document.querySelectorAll(".active");
+    function displayFiltermembers(counts,index,talukname,eventid,status,panchayatname='',villagename=''){
+         let activepage = document.querySelectorAll(".pagination-link");
          let l = activepage.length;
          for(let i=0; i < l ; i++){
           if( i == index ){
@@ -693,8 +754,8 @@
          } 
       $.ajax({
         type:"post",
-        url:"PaymentsFilter/displayFiltermembers",
-        data:{"count":counts,"talukname":talukname,"eventid":eventid,"status":status},
+        url:"<?= base_url('PaymentsFilter/displayFiltermembers') ?>",
+        data:{"count":counts,"talukname":talukname,"eventid":eventid,"status":status,"panchayatname":panchayatname,"villagename":villagename},
         success:function(result){
             document.getElementById('filteredmembers').innerHTML = result;
         },
@@ -800,6 +861,14 @@
        })
     }
 
+    // Auto-hide success alert after 3 seconds
+    const successAlert = document.getElementById('successAlert');
+    if(successAlert) {
+        setTimeout(() => {
+            successAlert.classList.remove('show');
+            setTimeout(() => successAlert.remove(), 150);
+        }, 3000);
+    }
     
 
   </script>

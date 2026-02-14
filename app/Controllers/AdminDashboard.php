@@ -364,6 +364,9 @@ class AdminDashboard extends BaseController {
     $taluk = $this->request->getPost("taluk");
     $panchayat = $this->request->getPost("panchayat");
     $village = $this->request->getPost("village");
+    if ($village === "Others") {
+        $village = $this->request->getPost("village_others");
+    }
     $street = $this->request->getPost("street");
     $doorno = $this->request->getPost("doorno");
     $pincode = $this->request->getPost("pincode");

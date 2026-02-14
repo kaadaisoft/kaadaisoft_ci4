@@ -736,6 +736,9 @@ class Members extends BaseController
         $taluk = $this->request->getPost("taluk");
         $panchayat = $this->request->getPost("panchayat");
         $village = $this->request->getPost("village");
+        if ($village === "Others") {
+            $village = $this->request->getPost("village_others");
+        }
         $street = $this->request->getPost("street");
         $doorno = $this->request->getPost("doorno");
         $pincode = $this->request->getPost("pincode");
@@ -767,11 +770,12 @@ class Members extends BaseController
         $curtaluk = $this->request->getPost('cur_taluk');
         $curpanchayat = $this->request->getPost('cur_panchayat');
         $curvillage = $this->request->getPost('cur_village');
+        if($curvillage === "Others") {
+            $curvillage = $this->request->getPost("cur_village_others");
+        }
         $curstreet = $this->request->getPost('cur_street');
         $curdoorno = $this->request->getPost('cur_doorno');
         $curpincode = $this->request->getPost('cur_pincode');
-
-        $curaddresstype = $this -> request ->getPost('cur_address_type');
 
         // CURRENT NRI ADDRESS FIELD
         $curnricountry = $this->request->getPost('cur_nri_country');
@@ -898,25 +902,30 @@ class Members extends BaseController
 
 
         if (!$insertMember) {
-            if ($this->session->get('role') == 1 || $this->session->get('role') == 2) {
-
-                $this->session->set("membererrorstatus", "Unexpected error please try again.");
-                return redirect()->to("members");
-            } elseif ($this->session->has('Kaadaisoft_userId')) {
-                $this->session->set("registerprocesssuccess", "Unexpected error occured please try again");
-                return redirect()->to("add_family_member");
+            if ($this->session->get('role') == 1) {
+                $this->session->set("managererrorstatus", "Unexpected error please try again.");
+                return redirect()->to("viewManagerdata");
+            } elseif ($this->session->get('role') == 2) {
+                $this->session->set("coorderrorstatus", "Unexpected error please try again.");
+                return redirect()->to("viewCoordinatordata");
+            } elseif ($this->session->get('role') == 3) {
+                $this->session->set("coorderrorstatus", "Unexpected error occured please try again");
+                return redirect()->to("viewMemberdata");
             } else {
                  $this->session->set("registerprocesserror", "Unexpected error occured please try again");
                  return redirect()->to("registrationform");
             }
         } else {
 
-            if ($this->session->get('role') == 1 || $this->session->get('role') == 2) {
-                $this->session->set("membersuccessstatus", "Your application is submitted. Please wait 48 hours.");
-                return redirect()->to("members");
-            } elseif ($this->session->has('Kaadaisoft_userId')) {
-                $this->session->set("registerprocesssuccess", "Your application is submitted. Please wait 48 hours.");
-                return redirect()->to("add_family_member");
+            if ($this->session->get('role') == 1) {
+                $this->session->set("managersuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                return redirect()->to("viewManagerdata");
+            } elseif ($this->session->get('role') == 2) {
+                $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                return redirect()->to("viewCoordinatordata");
+            } elseif ($this->session->get('role') == 3) {
+                $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                return redirect()->to("viewMemberdata");
             } else {
                  // Public Registration
                  $this->session->set("registerprocesssuccess", "Your application is submitted. Please wait 48 hours.");

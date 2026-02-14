@@ -136,27 +136,28 @@ class ReportingController extends BaseController
         }
 
         // Get filter parameters from URL
-        $year      = $this->request->getGet('year');
-        $event     = $this->request->getGet('event');
-        $status    = $this->request->getGet('status');
-        $talukname = $this->request->getGet('talukname');
-        $eventid   = $this->request->getGet('eventid');
+        $year          = $this->request->getGet('year');
+        $event         = $this->request->getGet('event'); // legacy
+        $status        = $this->request->getGet('status');
+        $talukname     = $this->request->getGet('talukname');
+        $panchayatname = $this->request->getGet('panchayatname');
+        $villagename   = $this->request->getGet('villagename');
+        $eventid       = $this->request->getGet('eventid');
 
         $status = ucfirst(strtolower($status));
 
         if (!empty($talukname) && !empty($eventid) && $status) {
-            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($eventid, $status, $talukname);
-            $heading = ucfirst($talukname) . " - " . ucfirst($status);
+            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($eventid, $status, $talukname, $panchayatname, $villagename);
+            $heading = ucfirst($talukname) . (!empty($panchayatname) ? ' - ' . ucfirst($panchayatname) : '') . (!empty($villagename) ? ' - ' . ucfirst($villagename) : '') . " - " . ucfirst($status);
             $safeTaluk = preg_replace('/[^A-Za-z0-9]/', '', $talukname);
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
-            $filename = "{$safeTaluk}-{$safeStatus}-user_report-" . date('Y-m-d') . ".xlsx";
+            $filename = "{$safeTaluk}-{$safeStatus}-report-" . date('Y-m-d') . ".xlsx";
         } else {
-            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($event, $status);
-            $heading = "Year: " . ($year ?: 'All') . " - Event ID: " . ($event ?: 'All') . " - " . ucfirst($status);
+            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($event ?: $eventid, $status);
+            $heading = "Year: " . ($year ?: 'All') . " - Event ID: " . ($event ?: $eventid ?: 'All') . " - " . ucfirst($status);
             $safeYear = preg_replace('/[^A-Za-z0-9]/', '', $year ?: 'All');
-            $safeEvent = preg_replace('/[^A-Za-z0-9]/', '', $event ?: 'All');
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
-            $filename = "Report-Year{$safeYear}-Event-{$safeEvent}-Status-{$safeStatus}-" . date('Y-m-d') . ".xlsx";
+            $filename = "Report-Year{$safeYear}-Status-{$safeStatus}-" . date('Y-m-d') . ".xlsx";
         }
 
         if (empty($filteredusers)) {

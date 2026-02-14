@@ -13,16 +13,20 @@ class AdminDashboardModel extends Model {
         $this->db = \Config\Database::connect();
     }
 
-   public function getPendingapplications(){
-      $session = session();
-      if($session->get('role') == 2){
-         $CoordinatorId = $session->get('Kaadaisoft_userId');
-         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Coordinator_id = '$CoordinatorId' OR Coordinator_Two_id = '$CoordinatorId') AND Approvedstatus = 'Pending'");    
-        return $query->getResult();
-      }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Pending'");    
-        return $query->getResult();
-   } 
+    public function getPendingapplications(){
+       $session = session();
+       if($session->get('role') == 2){
+          $CoordinatorId = trim($session->get('Kaadaisoft_userId'));
+          // Case-insensitive and trimmed comparison
+          $query = $this->db->query("SELECT * FROM kaadaimembers 
+                                     WHERE (TRIM(Coordinator_id) = " . $this->db->escape($CoordinatorId) . " 
+                                     OR TRIM(Coordinator_Two_id) = " . $this->db->escape($CoordinatorId) . ") 
+                                     AND Approvedstatus = 'Pending'");    
+         return $query->getResult();
+       }
+         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Pending'");    
+         return $query->getResult();
+    } 
 
    public function approveMember($applicationid, $userid, $username, $district, $taluk, $village)
  {
@@ -134,27 +138,27 @@ public function rejectMember($applicationid, $rejectreason){
    }
 
    public function getStates(){
-      $query = $this->db->query("SELECT * FROM states");
+      $query = $this->db->query("SELECT * FROM states ORDER BY state_title ASC");
       return $query->getResult();
   }
 
   public function getDistricts($state_id){
-   $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE State_id = $state_id");
+   $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE State_id = $state_id ORDER BY district_name ASC");
    return $query->getResult();
   }
 
   public function getTaluks($district_name){
-   $query = $this->db->query("SELECT DISTINCT(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name'");
+   $query = $this->db->query("SELECT DISTINCT(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name' ORDER BY taluk_name ASC");
    return $query->getResult();
   }
 
   public function getPanchayats($taluk_name){
-   $query = $this->db->query("SELECT DISTINCT(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name'");
+   $query = $this->db->query("SELECT DISTINCT(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name' ORDER BY panchayat_name ASC");
    return $query->getResult();
   }
 
   public function getVillages($panchayat_name){
-   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name'");
+   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
    return $query->getResult();
   }
 
@@ -403,24 +407,38 @@ public function rejectMember($applicationid, $rejectreason){
       $session->set("membererrorstatus","Mobile or Aadharnumber already exit");
       return false; // Replaced redirect with return false
    }
-   $coord_query = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table 
-                                    WHERE village_name = " . $this->db->escape($village) . " 
-                                    AND panchayat_name = " . $this->db->escape($panchayat) . " 
-                                    AND taluk_name = " . $this->db->escape($taluk) . " 
-                                    AND district_name = " . $this->db->escape($district));
-   $coord_row = $coord_query->getRow();
-   $coordid = $coord_row ? $coord_row->Coordinator_id : null;
-   $coordid_two = $coord_row ? $coord_row->Coordinator_Two_id : null;
+    // Trim for safe lookup
+    $village_trimmed = trim($village);
+    $panchayat_trimmed = trim($panchayat);
+    $taluk_trimmed = trim($taluk);
+    $district_trimmed = trim($district);
 
-   $getstatequery = $this->db->query("SELECT state_title FROM states WHERE state_id = $state_id");
-   $getstate = $getstatequery->getRow();
-   $state = $getstate->state_title;
+    $coord_row = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table 
+                                     WHERE LOWER(TRIM(village_name)) = LOWER(TRIM(" . $this->db->escape($village_trimmed) . ")) 
+                                     AND LOWER(TRIM(panchayat_name)) = LOWER(TRIM(" . $this->db->escape($panchayat_trimmed) . ")) 
+                                     AND LOWER(TRIM(taluk_name)) = LOWER(TRIM(" . $this->db->escape($taluk_trimmed) . ")) 
+                                     AND LOWER(TRIM(district_name)) = LOWER(TRIM(" . $this->db->escape($district_trimmed) . "))")->getRow();
+
+    $coordid = $coord_row ? $coord_row->Coordinator_id : null;
+    $coordid_two = $coord_row ? $coord_row->Coordinator_Two_id : null;
+
+    // Fallback: If coordinator is adding a member and lookup fails, assign them
+    $session = session();
+    if (empty($coordid) && $session->get('role') == 2) {
+        $coordid = trim($session->get('Kaadaisoft_userId'));
+    }
+
+    $getstatequery = $this->db->query("SELECT state_title FROM states WHERE state_id = $state_id");
+    $getstate = $getstatequery->getRow();
+    $state = $getstate ? $getstate->state_title : '';
+
    $getmembers = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Verified'");
    $totalmembersverified = count($getmembers->getResultArray()) + 1;
    $newid = str_pad($totalmembersverified,5,"0",STR_PAD_LEFT);
    $membershipid = $districtcode.$newid;
 
-   $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid,Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Pannumber,Aadharnumber,Password,Memberimage,Aadharfrontimage,Aadharbackimage,Communitycertificate, Approvedstatus,Coordinator_id,Coordinator_Two_id,state_id) VALUES('$membershipid','$name','$state','$district','$taluk','$panchayat','$village','$street','$doorno',$pincode,'$existfamilyid',$phoneno,'$panno',$aadharno,'$hashed_password','$documents[0]','$documents[1]','$documents[2]','$documents[3]','Verified','$coordid','$coordid_two',$state_id)");
+   $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Pannumber, Aadharnumber, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id) 
+                               VALUES (" . $this->db->escape($membershipid) . ", " . $this->db->escape($name) . ", " . $this->db->escape($state) . ", " . $this->db->escape($district) . ", " . $this->db->escape($taluk) . ", " . $this->db->escape($panchayat) . ", " . $this->db->escape($village) . ", " . $this->db->escape($street) . ", " . $this->db->escape($doorno) . ", " . $this->db->escape($pincode) . ", " . $this->db->escape($existfamilyid) . ", " . $this->db->escape($phoneno) . ", " . $this->db->escape($panno) . ", " . $this->db->escape($aadharno) . ", " . $this->db->escape($hashed_password) . ", " . $this->db->escape($documents[0]) . ", " . $this->db->escape($documents[1]) . ", " . $this->db->escape($documents[2]) . ", " . $this->db->escape($documents[3]) . ", 'Verified', " . $this->db->escape($coordid) . ", " . $this->db->escape($coordid_two) . ", $state_id)");
 
    if($query){
        return true;

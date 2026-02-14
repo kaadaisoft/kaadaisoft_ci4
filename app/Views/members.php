@@ -816,9 +816,6 @@
                      
 
                      <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-success btn-sm" onclick="applyMemberFilters()">
-                           Apply Filter
-                        </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetMemberFilters()">
                            Clear
                         </button>
@@ -2426,7 +2423,7 @@
 
             $.ajax({
                type: "GET",
-               url: "<?= base_url('Members/searchmembers'); ?>",
+               url: "<?= base_url('members/searchmembers'); ?>",
                dataType: "json",
                data: { searchfields: searchfields },
                success: function (result) {
@@ -2481,19 +2478,7 @@ function resetMemberFilters() {
   $("#gender-dropdown").val("");
   $("#occupation-dropdown").val("");
 
-  $.ajax({
-    type: "GET",
-    url: "<?= base_url('Members/searchmembers'); ?>",
-    dataType: "json",
-    data: { searchfields: "" },
-    success: function (result) {
-      membersData = result.members || [];
-      initPagination();
-    },
-    error: function() {
-       $("#ps-members").html("<tr><td colspan='8' class='text-center text-danger'>Error resetting data</td></tr>");
-    }
-  });
+  commonSearch();
 }
 
 

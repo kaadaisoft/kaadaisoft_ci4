@@ -1100,7 +1100,7 @@
 
         function filterEducationOptionsMember(input) {
             var filter = input.value.toLowerCase();
-            var options = document.querySelectorAll('#education_dropdown-update .education-option');
+            var options = document.querySelectorAll('#education_dropdown-member .education-option');
             var count = 0;
             options.forEach(function(opt) {
                 var text = opt.textContent.toLowerCase();

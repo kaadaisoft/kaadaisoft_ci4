@@ -20,7 +20,7 @@ class MembersModel extends Model
             $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head'");
             return count($query->getResultArray());
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified'");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head'");
         return count($query->getResultArray());
     }
 
@@ -32,7 +32,7 @@ class MembersModel extends Model
             $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC");
             return $query->getResult();
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY updated_at DESC");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC");
         return $query->getResult();
     }
 
@@ -130,15 +130,31 @@ class MembersModel extends Model
         // $education = is_array($education_array) ? json_encode($education_array) : $education_array;
         
         
-        // Fix: Fetch correct coordinators from village_table instead of taluks_table
+        // Fix: Fetch correct coordinators from village_table with robust lookup
         $coordinator_id = null;
         $coordinator_two_id = null;
         
-        $coord_row = $this->getCoordinatorByLocation($village, $panchayat, $taluk, $district);
+        $village_trimmed = trim($village);
+        $panchayat_trimmed = trim($panchayat);
+        $taluk_trimmed = trim($taluk);
+        $district_trimmed = trim($district);
+
+        $coord_row = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table 
+                                         WHERE LOWER(TRIM(village_name)) = LOWER(TRIM(" . $this->db->escape($village_trimmed) . ")) 
+                                         AND LOWER(TRIM(panchayat_name)) = LOWER(TRIM(" . $this->db->escape($panchayat_trimmed) . ")) 
+                                         AND LOWER(TRIM(taluk_name)) = LOWER(TRIM(" . $this->db->escape($taluk_trimmed) . ")) 
+                                         AND LOWER(TRIM(district_name)) = LOWER(TRIM(" . $this->db->escape($district_trimmed) . "))")->getRow();
         
         if ($coord_row) {
             $coordinator_id = $coord_row->Coordinator_id;
             $coordinator_two_id = $coord_row->Coordinator_Two_id;
+        }
+
+        // Fallback: If coordinator (Role 2) is adding a family member and village lookup fails, 
+        // they should still be the coordinator for this record so they can approve it.
+        $session = session();
+        if (empty($coordinator_id) && $session->get('role') == 2) {
+            $coordinator_id = trim($session->get('Kaadaisoft_userId'));
         }
 
         $data = [
@@ -244,31 +260,31 @@ class MembersModel extends Model
 
     public function getStates()
     {
-        $query = $this->db->query("SELECT * FROM states");
+        $query = $this->db->query("SELECT * FROM states ORDER BY state_title ASC");
         return $query->getResult();
     }
 
     public function getDistricts($state_id)
     {
-        $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE State_id = $state_id");
+        $query = $this->db->query("SELECT distinct(district_name) AS district_name FROM village_table WHERE State_id = $state_id ORDER BY district_name ASC");
         return $query->getResult();
     }
 
     public function getTaluks($district_name)
     {
-        $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name'");
+        $query = $this->db->query("SELECT distinct(taluk_name) AS taluk_name FROM village_table WHERE district_name = '$district_name' ORDER BY taluk_name ASC");
         return $query->getResult();
     }
 
     public function getPanchayats($taluk_name)
     {
-        $query = $this->db->query("SELECT distinct(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name'");
+        $query = $this->db->query("SELECT distinct(panchayat_name) AS panchayat_name FROM village_table WHERE taluk_name = '$taluk_name' ORDER BY panchayat_name ASC");
         return $query->getResult();
     }
 
     public function getVillages($panchayat_name)
     {
-        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name'");
+        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
         return $query->getResult();
     }
 
@@ -280,6 +296,7 @@ class MembersModel extends Model
         $builder = $this->db->table('kaadaimembers');
         $builder->where('Role', 3);
         $builder->where('isShow', 1);
+        $builder->where('MemberRole', 'Head');
 
         if (is_array($searchfields)) {
             // Address filters
@@ -531,6 +548,12 @@ class MembersModel extends Model
 
     public function getCoordinatorByLocation($village, $panchayat, $taluk, $district)
     {
+        // Trim location parameters before use
+        $village = trim($village);
+        $panchayat = trim($panchayat);
+        $taluk = trim($taluk);
+        $district = trim($district);
+
         $coord_query = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table 
                                          WHERE village_name = " . $this->db->escape($village) . " 
                                          AND panchayat_name = " . $this->db->escape($panchayat) . " 
@@ -561,4 +584,3 @@ class MembersModel extends Model
         return $query->getRow();
     }
 }
-?>

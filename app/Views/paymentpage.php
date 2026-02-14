@@ -486,15 +486,14 @@
                   </label>
                 </div><!------------state-choose-end----------->
                 <div class="col-md-3"><!------------district-choose------------>
-                  <label class="container-fluid" for="aadhar">Districts:<br>
-                    <select onchange="getTaluks(this)" class="container-fluid border rounded" name="districtname"
-                      id="districtstitle">
+                  <label class="container-fluid" for="district">Districts:<br>
+                    <select onchange="getTaluks(this)" class="container-fluid border rounded" name="districtname" id="districtstitle">
                       <option value=''>Choose District</option>
                       <?php if (session()->get('filterdata')):
                         $districtsData = session()->get('filterdata')['districts'];
                         foreach ($districtsData as $key => $value): ?>
                           <option value='<?= $value['district_name'] ?>'><?= $value['district_name'] ?></option>
-                        <?php endforeach; 
+                        <?php endforeach;
                       endif; ?>
                     </select>
                   </label>
@@ -507,20 +506,52 @@
                       <?php if (session()->get("role") == 1 && session()->get('filterdata')) {
                         $taluksData = session()->get('filterdata')['taluks'];
                         foreach ($taluksData as $value) {
+                          $val = is_object($value) ? $value->taluk_name : $value['taluk_name'];
                           echo
-                            "<option value='$value->taluk_name'>$value->taluk_name</option>";
+                            "<option value='$val'>$val</option>";
                         }
-                      } elseif (session()->get("role") == 2 && session()->get('filterdata')) {
-                        $taluksData = session()->get('filterdata')['taluks'];
+                      } elseif (session()->get("role") == 2) {
+                        $taluksData = session()->get('filterdata')['taluks'] ?? ($taluks ?? []);
                         foreach ($taluksData as $key => $row) {
+                          $val = is_object($row) ? $row->taluk_name : $row['taluk_name'];
                           echo
-                            "<option $value='$row[taluk_name]'>$row[taluk_name]</option>";
+                            "<option value='$val'>$val</option>";
                         }
                       }
                       ?>
                     </select>
                   </label>
                 </div><!------------local-area-search-end----------->
+
+                <div class="col-md-3"><!------------panchayat-choose------------>
+                  <label class="container-fluid" for="panchayat">Panchayats:<br>
+                    <select onchange="getVillagesFiltered(this)" class="container-fluid border rounded" name="panchayatname" id="panchayatlist">
+                      <option value=''>Choose Panchayat</option>
+                      <?php if (session()->get('filterdata')):
+                        $panchayatsData = session()->get('filterdata')['panchayats'] ?? [];
+                        foreach ($panchayatsData as $value): ?>
+                          <?php $val = is_object($value) ? $value->panchayat_name : $value['panchayat_name']; ?>
+                          <option value='<?= $val ?>'><?= $val ?></option>
+                        <?php endforeach; 
+                      endif; ?>
+                    </select>
+                  </label>
+                </div><!------------panchayat-choose-end----------->
+
+                <div class="col-md-3"><!------------village-choose------------>
+                  <label class="container-fluid" for="village">Villages:<br>
+                    <select class="container-fluid border rounded" name="villagename" id="villagelist">
+                      <option value=''>Choose Village</option>
+                      <?php if (session()->get('filterdata')):
+                        $villagesData = session()->get('filterdata')['villages'] ?? [];
+                        foreach ($villagesData as $value): ?>
+                          <?php $val = is_object($value) ? $value->village_name : $value['village_name']; ?>
+                          <option value='<?= $val ?>'><?= $val ?></option>
+                        <?php endforeach; 
+                      endif; ?>
+                    </select>
+                  </label>
+                </div><!------------village-choose-end----------->
 
                 <div class="col-md-3"><!------------choose-years---------------------->
                   <label class="container-fluid" for="aadhar">Choose event year:<br>
@@ -604,7 +635,7 @@
 
                 <div class="col-md-3"><!------------local-area-search------------>
                   <label class="container-fluid" for="aadhar">Taluks:<br>
-                    <select onchange="getTaluks(this)" class="container-fluid border rounded" name="talukname"
+                    <select onchange="getPanchayatsFiltered(this, 'panchayatlist_coord')" class="container-fluid border rounded" name="talukname"
                       id="taluk_list" value="<?= isset($memberdata) ? $memberdata->district_name : ""; ?>" required>
                       <option value="">Choose Taluks</option>
                       <?php if(isset($taluks)) { foreach ($taluks as $key => $taluk) {
@@ -613,6 +644,36 @@
                     </select>
                   </label>
                 </div><!------------local-area-search-end----------->
+
+                <div class="col-md-3"><!------------panchayat-choose------------>
+                  <label class="container-fluid" for="panchayat">Panchayats:<br>
+                    <select onchange="getVillagesFiltered(this, 'villagelist_coord')" class="container-fluid border rounded" name="panchayatname" id="panchayatlist_coord">
+                      <option value=''>Choose Panchayat</option>
+                      <?php if (session()->get('filterdata')):
+                        $panchayatsData = session()->get('filterdata')['panchayats'] ?? [];
+                        foreach ($panchayatsData as $value): ?>
+                          <?php $val = is_object($value) ? $value->panchayat_name : $value['panchayat_name']; ?>
+                          <option value='<?= $val ?>'><?= $val ?></option>
+                        <?php endforeach; 
+                      endif; ?>
+                    </select>
+                  </label>
+                </div><!------------panchayat-choose-end----------->
+
+                <div class="col-md-3"><!------------village-choose------------>
+                  <label class="container-fluid" for="village">Villages:<br>
+                    <select class="container-fluid border rounded" name="villagename" id="villagelist_coord">
+                      <option value=''>Choose Village</option>
+                      <?php if (session()->get('filterdata')):
+                        $villagesData = session()->get('filterdata')['villages'] ?? [];
+                        foreach ($villagesData as $value): ?>
+                          <?php $val = is_object($value) ? $value->village_name : $value['village_name']; ?>
+                          <option value='<?= $val ?>'><?= $val ?></option>
+                        <?php endforeach; 
+                      endif; ?>
+                    </select>
+                  </label>
+                </div><!------------village-choose-end----------->
 
                 <div class="col-md-3"><!------------choose-years---------------------->
                   <label class="container-fluid" for="aadhar">Choose event year:<br>
@@ -656,6 +717,11 @@
           </div><!------------coordinator-filter-end------------------>
 
           <div style="overflow:auto;" id="paymentdetails">
+            <?php if(isset($counts) && $counts > 0): ?>
+            <div class="alert alert-info mb-3" role="alert">
+              <strong>Total Members:</strong> <?= $counts ?>
+            </div>
+            <?php endif; ?>
             <table class='table table-bordered'>
               <thead <?php if (count($members) == 0) {
                 echo "hidden";
@@ -683,7 +749,7 @@
                     <td style='font-weight:500;'>$value[Taluk]</td>
                     <td>
                     <div class='d-flex justify-content-evenly'><a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-                    <a href='paymentReceiptlist?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a><div></td>
+                    <a href='paymentReceiptlist?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a></div></td>
                     </tr>";
                     $i++;
                   }
@@ -699,77 +765,50 @@
             <div class="col-md-6 py-2 d-flex justify-content-around align-items-center">
 
               <?php
+              $total_records = isset($newcounts) ? $newcounts : (isset($counts) ? $counts : 0);
+              $current_offset = isset($sno) ? $sno : 0;
+              $current_page_index = isset($initialindex) ? $initialindex : floor($current_offset / 5);
 
-              if (isset($counts)) {
-                if ($counts > 0) {
-                  $countsperpage = 5;
-                  $noofpages = ceil($counts / $countsperpage) - 1;
-                  $totalpagesarr = createarr($noofpages);
-                  $totalpages = count($totalpagesarr);
-                  $initialindex = 0;
-                  $lastindex = 5;
-                  $pages = array_slice($totalpagesarr, $initialindex, $lastindex);
-                  echo "<a href='changepaymentpagepagesetup?initialindex=0' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-                  $j = 0;
-                  foreach ($pages as $key => $value) {
-                    $count = $countsperpage * $value;
-                    $pageno = $value + 1;
+              if ($total_records > 0) {
+                $limit = 5;
+                $total_pages = ceil($total_records / $limit);
+                $total_pages_array = range(0, $total_pages - 1);
+                
+                $start_index = $current_page_index;
+                $display_limit = 5;
+                $pages_to_show = array_slice($total_pages_array, $start_index, $display_limit);
 
-                    if ($pageno == 5) {
-                      echo "<a style='width:35px;height:35px;' href='changepaymentpagepagesetup?initialindex=$value' class='" . ($j == 0 ? 'active-page' : '') . " active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
-                    } else {
-                      echo "<button style='width:35px;height:35px;' onclick='displayPayers($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>";
-                    }
-                    ++$j;
-                  }
-
-                  echo "<span>...</span>";
-                  $totalcount = ($totalpages - $lastindex);
-                  echo "<a href='changepaymentpagepagesetup?initialindex=$totalcount' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-
-                  $newindex = $initialindex + $lastindex;
-                  echo "<a href='changepaymentpagepagesetup?initialindex=$newindex' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>";
-                }
-              }
-
-              if (isset($initialindex) && isset($newcounts)) {
-
-                $countsperpage = 5;
-                $noofpages = ceil($newcounts / $countsperpage) - 1;
-                $totalpagesarr = createarr($noofpages);
-                $totalpages = count($totalpagesarr);
-                $lastindex = 5;
-                $start = $initialindex > $noofpages ? 0 : $initialindex;
-                $pages = array_slice($totalpagesarr, $start, $lastindex);
-                $start == 0 ? $prevlist = 0 : (($start - $lastindex) < 0 ? $prevlist = 0 : $prevlist = $start - $lastindex);
-                echo "<a href='changepaymentpagepagesetup?initialindex=$prevlist' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
+                // Back Arrow
+                $prev_index = ($start_index - $display_limit) < 0 ? 0 : ($start_index - $display_limit);
+                echo "<a href='changepaymentpagepagesetup?initialindex=$prev_index' style='cursor:pointer;' class='text-dark text-decoration-none'><i id='arrow' class='fa-solid fa-arrow-left-long'></i></a>";
 
                 $j = 0;
-
-                foreach ($pages as $key => $value) {
-                  $count = $countsperpage * $value;
+                foreach ($pages_to_show as $value) {
+                  $offset = $value * $limit;
                   $pageno = $value + 1;
+                  $active_class = ($value == $current_page_index) ? 'active-page text-white' : '';
 
-                  if ($pageno == 5 || $pageno - $start == 5) {
-                    echo $pageno == $totalpages ? "<button style='width:35px;height:35px;'onclick='displayPayers($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>" : "<a href='changepaymentpagepagesetup?initialindex=" . ($pageno - 1) . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='" . ($j == 0 ? 'active-page' : '') . " active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
+                  // Every 5th page or the last page of the slice can be a full reload link for better SEO/UX
+                  if (($pageno % 5 == 0 && $pageno != $total_pages) || ($j == 4 && $pageno < $total_pages)) {
+                     echo "<a style='width:35px;height:35px;' href='changepaymentpagepagesetup?initialindex=$value' class='$active_class active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
                   } else {
-                    echo "<button style='width:35px;height:35px;'onclick='displayPayers($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>";
+                     echo "<button style='width:35px;height:35px;' onclick='displayPayers($offset,$j)' class='$active_class active rounded-circle'>$pageno</button>";
                   }
-                  ++$j;
+                  $j++;
                 }
 
-                echo "<span>...</span>";
-                $totalcount = ($totalpages - $lastindex);
-                echo "<a href='changepaymentpagepagesetup?initialindex=$totalcount' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
+                if ($total_pages > ($start_index + $display_limit)) {
+                  echo "<span>...</span>";
+                  $last_page_val = $total_pages - 1;
+                  echo "<a href='changepaymentpagepagesetup?initialindex=$last_page_val' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$total_pages</a>";
+                }
 
-                $newindex = $start + $lastindex;
-                echo "<a href='changepaymentpagepagesetup?initialindex=" . ($totalpages - $start <= $lastindex ? $totalcount : $newindex) . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>";
+                // Next Arrow
+                $next_index = ($start_index + $display_limit) >= $total_pages ? $start_index : ($start_index + $display_limit);
+                echo "<a href='changepaymentpagepagesetup?initialindex=$next_index' style='cursor:pointer;' class='text-dark text-decoration-none'><i id='arrow' class='fa-solid fa-arrow-right-long'></i></a>";
               }
 
-              function createarr($noofpages)
-              {
-                return range(0, $noofpages);
-              }
+              function createarr($noofpages) { return range(0, $noofpages); }
               ?>
             </div>
           </div><!--------------pagination-end--------------------->
@@ -872,7 +911,7 @@
           document.getElementById('filteredmembers').innerHTML = result;
         },
         error: function (error) {
-          document.getElementById('filteredmembers').innerHTML = error;
+          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>Error loading members data. Please try again.</td></tr>";
         }
       });
     }
@@ -918,6 +957,7 @@
               return `<option value='${taluk.taluk_name}'>${taluk.taluk_name}</option>`
           }).join("");
           document.getElementById("talukslist").innerHTML = taluk_options;
+          document.getElementById("talukslist").setAttribute("onchange", "getPanchayatsFiltered(this)");
         },
         error: (error) => {
           document.getElementById("talukslist").innerHTML = "<option value=''>Error fetching districts</option>";
@@ -936,6 +976,53 @@
         },
         error: (error) => {
           document.getElementById("villages").innerHTML = error;
+        }
+      });
+    }
+
+    function getPanchayatsFiltered(taluk, targetId = 'panchayatlist') {
+      let talukname = taluk.value;
+      $.ajax({
+        type: "get",
+        url: "payments/getPanchayats",
+        data: { "talukname": talukname },
+        success: (result) => {
+          let panchayats = JSON.parse(result);
+          let panchayat_options = "<option value=''>Choose Panchayat</option>";
+          panchayat_options += panchayats.map((panchayat) => {
+              return `<option value='${panchayat.panchayat_name}'>${panchayat.panchayat_name}</option>`
+          }).join("");
+          document.getElementById(targetId).innerHTML = panchayat_options;
+          
+          // Reset villagelist if target is main
+          if (targetId === 'panchayatlist') {
+              document.getElementById("villagelist").innerHTML = "<option value=''>Choose Village</option>";
+          } else {
+              document.getElementById("villagelist_coord").innerHTML = "<option value=''>Choose Village</option>";
+          }
+        }
+      });
+    }
+
+    function getVillagesFiltered(panchayat, targetId = 'villagelist') {
+      let panchayatname = panchayat.value;
+      
+      // Handle the targetId from the onchange if passed
+      if (panchayat.id === 'panchayatlist_coord') {
+          targetId = 'villagelist_coord';
+      }
+
+      $.ajax({
+        type: "get",
+        url: "payments/getVillagesNew",
+        data: { "panchayatname": panchayatname },
+        success: (result) => {
+          let villages = JSON.parse(result);
+          let village_options = "<option value=''>Choose Village</option>";
+          village_options += villages.map((village) => {
+              return `<option value='${village.village_name}'>${village.village_name}</option>`
+          }).join("");
+          document.getElementById(targetId).innerHTML = village_options;
         }
       });
     }
@@ -1032,7 +1119,7 @@
           document.getElementById('filteredmembers').innerHTML = result;
         },
         error: (error) => {
-          document.getElementById('filteredmembers').innerHTML = error;
+          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>No results found or error occurred.</td></tr>";
         }
       })
     };

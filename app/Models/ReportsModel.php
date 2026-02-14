@@ -228,18 +228,22 @@ class ReportsModel extends Model
         return count($this->getTotalmembershistory($eventname, $status));
     }
 
-    public function getMembersHistoryForDownload($eventid, $status, $talukname = null)
+    public function getMembersHistoryForDownload($eventid, $status, $talukname = null, $panchayatname = null, $villagename = null)
     {
         $eventid = $this->db->escape($eventid);
         
-        // Build query manually or via builder
-        // Original used explicit SQL. I'll use builder.
         $builder = $this->db->table('kaadaimembers km');
         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventid", 'left');
 
         if (!empty($talukname)) {
             $builder->where('km.Taluk', $talukname);
+        }
+        if (!empty($panchayatname)) {
+            $builder->where('km.Panchayat', $panchayatname);
+        }
+        if (!empty($villagename)) {
+            $builder->where('km.Village', $villagename);
         }
 
         if (strtolower($status) != 'all') {

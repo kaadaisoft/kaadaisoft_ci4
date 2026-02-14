@@ -30,6 +30,8 @@ class PaymentsFilter extends BaseController {
         $stateid      = $filterlist['stateid'] ?? null;
         $districtname = $filterlist['districtname'] ?? null;
         $talukname    = $filterlist['talukname'] ?? null;
+        $panchayatname = $filterlist['panchayatname'] ?? null;
+        $villagename   = $filterlist['villagename'] ?? null;
         $eventid      = $filterlist['eventid'] ?? null;
         $paymentstatus = $filterlist['paymentstatus'] ?? 'Pending';
 
@@ -39,11 +41,11 @@ class PaymentsFilter extends BaseController {
         $count = 0;
 
         $totalfilteredusers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $paymentstatus
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus
         );
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $paymentstatus, $count
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus, $count
         );
 
         $counts = count($totalfilteredusers);
@@ -57,6 +59,8 @@ class PaymentsFilter extends BaseController {
             "states"        => $filterlist["states"],
             "districts"     => $filterlist["districts"],
             "taluks"        => $filterlist["taluks"],
+            "panchayats"    => $filterlist["panchayats"] ?? [],
+            "villages"      => $filterlist["villages"] ?? [],
             "eventid"       => $eventid,
             "talukname"     => $talukname,
             "events"        => $filterlist["events"],
@@ -75,6 +79,8 @@ class PaymentsFilter extends BaseController {
         $stateid      = $this->request->getPost('stateid');
         $districtname = $this->request->getPost('districtname');
         $talukname    = $this->request->getPost('talukname');
+        $panchayatname = $this->request->getPost('panchayatname');
+        $villagename   = $this->request->getPost('villagename');
         $eventid      = $this->request->getPost('eventid');
         $eventyear    = $this->request->getPost('eventyear');
         $paymentstatus = $this->request->getPost('paymentstatus');
@@ -85,17 +91,19 @@ class PaymentsFilter extends BaseController {
         $count = 0;
 
         $totalfilteredusers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $paymentstatus
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus
         );
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $paymentstatus, $count
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus, $count
         );
 
         $eventyears = $this->paymentsModel->getEventsyear();
         $states = $this->paymentsModel->getStates();
         $districts = $stateid ? $this->paymentsModel->getDistrictslist($stateid) : [];
         $taluks = $districtname ? $this->paymentsModel->getTaluklist($districtname) : [];
+        $panchayats = $talukname ? $this->paymentsModel->getPanchayatlist($talukname) : [];
+        $villages = $panchayatname ? $this->paymentsModel->getVillagelistByNames($panchayatname) : [];
         $events = $this->paymentsModel->getEventslist();
         $eventsbyyear = $eventyear ? $this->paymentsModel->getEventsByYear($eventyear) : [];
 
@@ -103,6 +111,8 @@ class PaymentsFilter extends BaseController {
             "stateid"       => $stateid,
             "districtname"  => $districtname,
             "talukname"     => $talukname,
+            "panchayatname" => $panchayatname,
+            "villagename"   => $villagename,
             "eventid"       => $eventid,
             "eventname"     => $eventname,
             "eventyear"     => $eventyear,
@@ -110,6 +120,8 @@ class PaymentsFilter extends BaseController {
             "states"        => $states,
             "districts"     => $districts,
             "taluks"        => $taluks,
+            "panchayats"    => $panchayats,
+            "villages"      => $villages,
             "events"        => $events,
             "filteredusers" => $filteredusers,
             "eventyears"    => $eventyears,
@@ -117,7 +129,7 @@ class PaymentsFilter extends BaseController {
         ];
 
         $this->session->set("filterdata", $filterdata);
-        
+
         // Pass $filterdata to view, not pull from session again if we just set it
         // Or pull it to be safe
         $filterlist = $this->session->get("filterdata");
@@ -132,8 +144,12 @@ class PaymentsFilter extends BaseController {
             "states"        => $states,
             "districts"     => $districts,
             "taluks"        => $taluks,
+            "panchayats"    => $panchayats,
+            "villages"      => $villages,
             "eventid"       => $eventid,
             "talukname"     => $talukname,
+            "panchayatname" => $panchayatname,
+            "villagename"   => $villagename,
             "eventname"     => $eventname,
             "events"        => $events,
             "title"         => ($paymentstatus == 'Paid' ? "Paid users: $counts" : "Unpaid users: $counts"),
@@ -176,6 +192,8 @@ class PaymentsFilter extends BaseController {
         $stateid      = $filterlist['stateid'] ?? null;
         $districtname = $filterlist['districtname'] ?? null;
         $talukname    = $filterlist['talukname'] ?? null;
+        $panchayatname = $filterlist['panchayatname'] ?? null;
+        $villagename   = $filterlist['villagename'] ?? null;
         $eventid      = $filterlist['eventid'] ?? null;
         $status       = $filterlist['paymentstatus'] ?? 'Pending';
 
@@ -185,7 +203,7 @@ class PaymentsFilter extends BaseController {
         $this->session->set('filteruserscounts', $counts);
 
         $totalmembers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $status
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status
         );
 
         $totalcount = count($totalmembers);
@@ -196,7 +214,7 @@ class PaymentsFilter extends BaseController {
         }
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $eventid, $status, $counts
+            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status, $counts
         );
         
         $title = $status == 'Paid' ? "Paid users: $totalcount" : "Unpaid users: $totalcount";
@@ -208,6 +226,8 @@ class PaymentsFilter extends BaseController {
             "states"        => $filterlist["states"],
             "districts"     => $filterlist["districts"],
             "taluks"        => $filterlist["taluks"],
+            "panchayats"    => $filterlist["panchayats"] ?? [],
+            "villages"      => $filterlist["villages"] ?? [],
             "eventid"       => $eventid,
             "talukname"     => $talukname,
             "events"        => $filterlist["events"],
@@ -230,21 +250,26 @@ class PaymentsFilter extends BaseController {
         $stateid = $filterlist['stateid'] ?? null;
         $districtname = $filterlist['districtname'] ?? null;
         $talukname = $filterlist['talukname'] ?? null;
+        $panchayatname = $filterlist['panchayatname'] ?? null;
+        $villagename = $filterlist['villagename'] ?? null;
         $eventid = $filterlist['eventid'];
         $status = $filterlist['paymentstatus'];
         
         $this->session->set('filteruserscounts', $counts);
         
-        if($this->request->isAJAX()) {
+        if($this->request->isAJAX()) { 
             $members = $this->paymentsModel->getPaidunpaidusers(
-                $stateid, $districtname, $talukname, $eventid, $status, $counts
+                $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status, $counts
             );
             
-            echo view('filtereduserslist', [
+            return view('filtereduserslist', [
                 "filteredusers" => $members,
-                "sno" => $counts,
+                "sno" => (int)$counts,
                 "eventid" => $eventid
             ]);
+        } else {
+            // Handle non-ajax if somehow reached
+            return $this->changefiltereduserspagesetup();
         }
     }
     
@@ -293,29 +318,22 @@ class PaymentsFilter extends BaseController {
              } else {
                  $members = $this->paymentsModel->getFilteredmembersdetails($searchfields, $villageid, $eventid, $status);
              }
-             
-             if(empty($members)) {
-                 echo "<tr><td class='fw-bold text-center' colspan='7'>No search results found.</td></tr>";
-                 return;
+
+             $mapped = [];
+             foreach ($members as $m) {
+                 $mapped[] = [
+                     'Familymembershipid' => $m['Userid'] ?? ($m['Familymembershipid'] ?? ''),
+                     'Name' => $m['Name'] ?? '',
+                     'Mobile' => $m['Mobile'] ?? '',
+                     'MemberTaluk' => $m['Area'] ?? ($m['MemberTaluk'] ?? ($m['Taluk'] ?? ''))
+                 ];
              }
              
-             $i = 1;
-             foreach ($members as $value) {
-                // Assuming result array keys match usage
-                echo "<tr>
-                    <td>$i</td>
-                    <td class='fw-bold text-primary'>{$value['Userid']}</td>
-                    <td style='font-weight:500;'>{$value['Name']}</td>
-                    <td style='font-weight:500;'>{$value['Aadhar']}</td>
-                    <td style='font-weight:500;'>{$value['Mobile']}</td>
-                    <td style='font-weight:500;'>{$value['Area']}</td>
-                    <td class='d-flex justify-content-evenly'>
-                        <a href='filteredUserpaymentform?userid={$value['Userid']}&eventid={$value['Eventid']}&eventname={$value['Eventname']}' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a>&nbsp;&nbsp;
-                        <a href='paymentReceiptlist?userid={$value['Userid']}' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
-                    </td>
-                </tr>";
-                $i++;
-             }
+             echo view('filtereduserslist', [
+                 "filteredusers" => $mapped,
+                 "sno" => 0,
+                 "eventid" => $eventid
+             ]);
          }
     }
 }
