@@ -172,6 +172,20 @@ $routes->get('excel', 'PaidUnpaidController::excel');
 $routes->get('download_members_data', 'ReportingController::download_members_data');
 $routes->get('download_excel', 'ReportingController::download_excel');
 
+// Reports Routes
+$routes->get('reports', 'Reports::index');
+$routes->get('reports/sidemenu', 'Reports::sidemenu');
+$routes->get('reports/topmenu', 'Reports::topmenu');
+$routes->get('reports/pslogo', 'Reports::pslogo');
+$routes->get('reports/getEventsbyYear', 'Reports::getEventsbyYear');
+$routes->get('reports/searchReports', 'Reports::searchReports');
+$routes->get('reports/displayReports', 'Reports::displayReports');
+$routes->get('reports/getSearchevents', 'Reports::getSearchevents');
+$routes->get('changeReportspagesetup', 'Reports::changeReportspagesetup');
+$routes->get('reportFilterPage', 'Reports::reportFilterlist');
+$routes->get('changeFilteredreportspagesetup', 'Reports::changeFilteredreportspagesetup');
+$routes->get('reports/displayFilteredeventsreports', 'Reports::displayFilteredeventsreports');
+
 // Bulk Upload
 $routes->get('bulk_upload', 'Bulk_upload::index');
 $routes->post('bulk_upload/upload_file', 'Bulk_upload::upload_file');

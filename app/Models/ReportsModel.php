@@ -100,7 +100,7 @@ class ReportsModel extends Model
     {
         // $eventid is required.
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
+        $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventid", 'left');
 
         if ($status == 'All') {
@@ -171,7 +171,7 @@ class ReportsModel extends Model
          // Re-implement getFilteredeventreports using logic similar to getMembersHistory but with OFFSET.
          
          $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
+         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventname", 'left');
 
          if ($status == 'All') {

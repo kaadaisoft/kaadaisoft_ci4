@@ -12,7 +12,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="public/css.css">
+  <link rel="stylesheet" href="<?= base_url('css.css'); ?>">
   <style>
     .active-reports {
       background-color: rgb(230, 230, 230);
@@ -42,6 +42,16 @@
       /* Removes any shadow effect */
       border-color: inherit;
       /* Ensures the border doesn't change on focus */
+    }
+
+    .ps-gray {
+      background-color: rgb(248, 245, 245);
+    }
+
+    #search-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     @media screen and (max-width:768px) {
@@ -89,8 +99,7 @@
     }
 
     .main-navbar {
-      position: absolute;
-      top: 45px;
+      margin-top: 60px;
     }
 
     /* Custom Mobile Menu Styles */
@@ -141,17 +150,15 @@
 
       <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
 
-
       </div>
 
-      <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom ps-gray" style="background-color: rgb(248, 245, 245);">
 
       </div>
     </div><!-----------top-bar-end----------------------->
   </div>
 
-  <div class="container-fluid main-navbar" style="position:absolute;">
+  <div class="container-fluid main-navbar">
 
     <div class="row "><!----------main-navbar----------->
 
@@ -311,8 +318,8 @@
                   }
                 } else {
                   echo "<tr>
-                      <td colspan='7' class='text-center'>No search results</td>
-                      <tr>";
+                      <td colspan='9' class='text-center'>No search results</td>
+                    </tr>";
                 }
                 ?>
                 <!-- <td>
@@ -330,10 +337,10 @@
 
               <?php
 
-              if (isset($counts)) {
-                if ($counts > 0) {
+              if (isset($filteredcounts)) {
+                if ($filteredcounts > 0) {
                   $countsperpage = 8;
-                  $noofpages = ceil($counts / $countsperpage) - 1;
+                  $noofpages = ceil($filteredcounts / $countsperpage) - 1;
                   $totalpagesarr = createarr($noofpages);
                   $totalpages = count($totalpagesarr);
                   $initialindex = 0;
@@ -456,11 +463,71 @@
   
   // Also run it immediately if possible
   updateHeights();
+
+  // Load menu components
+  $.ajax({
+    type: "get",
+    url: "<?= base_url('reports/sidemenu'); ?>",
+    success: (result) => {
+      document.getElementById("menu-bar").innerHTML = result;
+      document.getElementById("mobile-menu-content").innerHTML = result;
+    },
+    error: (error) => {
+      console.error('Error loading sidemenu:', error);
+      document.getElementById("menu-bar").innerHTML = "<p class='text-danger'>Error loading menu</p>";
+    }
+  });
+
+  $.ajax({
+    type: "get",
+    url: "<?= base_url('reports/topmenu'); ?>",
+    success: (result) => {
+      document.getElementById("search-bar").innerHTML = result;
+    },
+    error: (error) => {
+      console.error('Error loading topmenu:', error);
+      document.getElementById("search-bar").innerHTML = "<p class='text-danger'>Error loading top menu</p>";
+    }
+  });
+
+  $.ajax({
+    type: "get",
+    url: "<?= base_url('reports/pslogo'); ?>",
+    success: (result) => {
+      document.getElementById("ps-logo").innerHTML = result;
+    },
+    error: (error) => {
+      console.error('Error loading logo:', error);
+      document.getElementById("ps-logo").innerHTML = "<p class='text-danger'>Error loading logo</p>";
+    }
+  });
+
+  // Pagination function
+  function displayFilteredreports(count, index) {
+    $.ajax({
+      type: "get",
+      url: "<?= base_url('reports/displayFilteredeventsreports'); ?>",
+      data: { "count": count },
+      success: (result) => {
+        document.getElementById("filter-event-reports").innerHTML = result;
+        let buttons = document.querySelectorAll("#data-container .active");
+        buttons.forEach((button) => {
+          button.classList.remove("active-page");
+        });
+        if(buttons[index]) {
+          buttons[index].classList.add("active-page");
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+  }
 </script>
 
   <!---------------------offcanvas-end-------------------------------->
-  <script src="public/js.js?v=<?= time() ?>"></script>
-  <script src="public/eventfilter.js?v=<?= time() ?>"></script>
+  <script src="<?= base_url('js.js'); ?>?v=<?= time() ?>"></script>
+  <script src="<?= base_url('eventfilter.js'); ?>?v=<?= time() ?>"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>

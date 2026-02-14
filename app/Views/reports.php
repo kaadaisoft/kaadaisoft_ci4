@@ -35,6 +35,10 @@
       background-color: rgb(120, 50, 186);
     }
 
+    .ps-gray {
+      background-color: rgb(248, 245, 245);
+    }
+
     li:hover {
       background-color: rgb(230, 230, 230);
     }
@@ -46,6 +50,12 @@
       /* Removes any shadow effect */
       border-color: inherit;
       /* Ensures the border doesn't change on focus */
+    }
+
+    #search-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     @media screen and (max-width:768px) {
@@ -132,7 +142,7 @@
 
       </div>
 
-      <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom ps-gray" style="background-color: rgb(248, 245, 245);">
 
       </div>
     </div><!-----------top-bar-end----------------------->
@@ -154,7 +164,7 @@
             <?php if (session()->has('validationmessage')) {
               $validationmessage = session()->get('validationmessage');
               echo "<div id='alertContainer' class='alert alert-danger alert-dismissible fade show h6 fw-normal text-danger '>$validationmessage</div>";
-              // session()->remove('validationmessage'); // CI4 session()->get() doesn't unset like flashdata unless it's set as flashdata.
+              session()->remove('validationmessage');
             } ?>
           </span>
           <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off" id="result-form">
