@@ -33,13 +33,13 @@ class Bulk_upload extends BaseController {
         if (!$file->isValid()) {
              $error = $file->getErrorString();
              $this->session->setFlashdata('upload_error', $error);
-             return redirect()->to('admindashboard');
+             return redirect()->back();
         }
 
         $ext = $file->getExtension();
         if (!in_array($ext, ['xlsx', 'xls', 'csv'])) {
              $this->session->setFlashdata('upload_error', 'Invalid file type. Allowed: xlsx, xls, csv');
-             return redirect()->to('admindashboard');
+             return redirect()->back();
         }
 
         if (!$file->hasMoved()) {
@@ -48,7 +48,7 @@ class Bulk_upload extends BaseController {
                 $file->move('assets/bulk_uploads/', $newName);
             } catch (Exception $e) {
                 $this->session->setFlashdata('upload_error', $e->getMessage());
-                return redirect()->to('admindashboard');
+                return redirect()->back();
             }
 
             $file_path = 'assets/bulk_uploads/' . $newName;
@@ -58,7 +58,7 @@ class Bulk_upload extends BaseController {
                 $result = $this->parse_excel($file_path);
             } catch (Exception $e) {
                 $this->session->setFlashdata('upload_error', 'Error reading file: ' . $e->getMessage());
-                return redirect()->to('admindashboard');
+                return redirect()->back();
             }
             $data = $result['valid_data'];
             $errors = $result['errors'];
@@ -74,7 +74,7 @@ class Bulk_upload extends BaseController {
                     }
                 } catch (Exception $e) {
                     $this->session->setFlashdata('upload_error', 'Something went wrong: ' . $e->getMessage());
-                    return redirect()->to('admindashboard');
+                    return redirect()->back();
                 }
             }
 
@@ -91,7 +91,7 @@ class Bulk_upload extends BaseController {
                 $this->session->setFlashdata('upload_error', $message);
             }
             
-            return redirect()->to('admindashboard');
+            return redirect()->back();
         }
     }
 

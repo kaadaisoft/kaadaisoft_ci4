@@ -50,13 +50,15 @@ html, body {
       color: gray;
     }
     .dashboard-cards{
-    display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(150px,auto));
+    display:flex;
+    flex-wrap:wrap;
     gap:20px;
     }
 
     .card-round{
-      border-radius:20px;
+      width: 220px;
+      border-radius:15px;
+      padding: 15px !important;
     }
 
     ul > li{
@@ -474,6 +476,74 @@ html, body {
 
 
 
+      /* ✅ Premium Table Design */
+      .custom-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none !important;
+        margin-top: 20px;
+      }
+      
+      .custom-table thead th {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 18px !important;
+        border: none !important;
+        text-align: center;
+      }
+      
+      .custom-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .custom-table tbody tr:hover {
+        background-color: rgba(37, 117, 252, 0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      
+      .custom-table td {
+        padding: 15px !important;
+        vertical-align: middle;
+        border: none !important;
+        color: #555;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .custom-table tbody tr:last-child td {
+        border-bottom: none !important;
+      }
+      
+      .custom-table tfoot td {
+        background-color: #fcfcfc;
+        border-top: 2px solid #eee !important;
+        padding: 20px !important;
+      }
+      
+      .total-label {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.1rem;
+        font-weight: 800;
+      }
+      
+      .total-amount {
+        color: #2575fc;
+        font-size: 1.25rem;
+        font-weight: 800;
+      }
+
     </style>
 </head>
 <body>
@@ -636,28 +706,28 @@ if (session()->getFlashdata('upload_error')) {
             echo "hidden";
           } ?>  class="dashboard-cards mt-4 border-bottom pb-5">
 
-            <a href="<?= base_url('coordinators') ?>" class="card-round card1 py-3 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
+            <a href="<?= base_url('coordinators') ?>" class="card-round card1 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
               echo "d-none";
             } else {
-              echo "d-grid";
-            } ?> align-items-center">
+              echo "d-flex";
+            } ?> align-items-center justify-content-center">
 
-            <ul class="nav flex-column align-items-center">
-              <li class="text-center fw-bold">Coordinators</li>
-              <li class="fs-4 text-center"><?= $coordscount ?></li>
+            <ul class="nav flex-column align-items-center mb-0">
+              <li class="text-center fw-bold small opacity-75">Coordinators</li>
+              <li class="fs-4 text-center fw-bold"><?= $coordscount ?></li>
             </ul>
             </a>
-            <a href="<?= base_url('members') ?>" class="card-round card2 py-3 text-white d-grid align-items-center">
-            <ul class="nav flex-column align-items-center">
-              <li class="text-center fw-bold">Total Members</li>
-              <li class="fs-4 text-center"><?= $memberscount ?></li>
+            <a href="<?= base_url('members') ?>" class="card-round card2 text-white d-flex align-items-center justify-content-center">
+            <ul class="nav flex-column align-items-center mb-0">
+              <li class="text-center fw-bold small opacity-75">Total Members</li>
+              <li class="fs-4 text-center fw-bold"><?= $memberscount ?></li>
             </ul>
             </a>
 
-            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 py-3 text-white d-grid align-items-center">
-            <ul class="nav flex-column align-items-center">
-              <li class="text-center fw-bold">Waiting for approval</li>
-              <li class="fs-4 text-center">
+            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 text-white d-flex align-items-center justify-content-center">
+            <ul class="nav flex-column align-items-center mb-0">
+              <li class="text-center fw-bold small opacity-75">Approvals</li>
+              <li class="fs-4 text-center fw-bold">
                 <?php if (!empty($pendingcounts)) {
                   echo "$pendingcounts";
                 } else {
@@ -665,7 +735,6 @@ if (session()->getFlashdata('upload_error')) {
                 }
 
                 ?></li>
-              <li class="text-center small mt-1"><?= !empty($pendingcounts) ? 'New Applications' : 'No Pending Approvals' ?></li>
             </ul>
             </a>
 
@@ -674,19 +743,31 @@ if (session()->getFlashdata('upload_error')) {
         
 
       <!-------------------------------total-pendings-------------------------------->
-<h3>Payment pending details:</h3>
-<div class="modal-body d-flex justify-content-evenly">
-    <table class="table table-bordered">
-        <thead id="nomemberresult">
-            <tr><th>SNo</th><th>Event Name</th><th>Tax Amount</th><th>Balance Amount</th></tr>
-        </thead>
-        <tbody id="showparticipation"></tbody>
-        <tfoot>
-            <tr><td class="fw-bold text-center" colspan="3">Total pending amount:</td>
-                <td id="total_pending" class="fw-bold"></td>
-            </tr>
-        </tfoot>
-    </table>
+<h3 class="mt-5 mb-3 fw-bold" style="color: #444;">Payment pending details</h3>
+<div class="row px-2">
+    <div class="col-12">
+        <table class="table custom-table">
+            <thead id="nomemberresult">
+                <tr>
+                    <th>SNo</th>
+                    <th>Event Name</th>
+                    <th>Tax Amount</th>
+                    <th>Balance Amount</th>
+                </tr>
+            </thead>
+            <tbody id="showparticipation"></tbody>
+            <tfoot>
+                <tr>
+                    <td class="text-end" colspan="3">
+                        <span class="total-label text-uppercase">Total Pending Amount</span>
+                    </td>
+                    <td>
+                        <span id="total_pending" class="total-amount"></span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>
 
 

@@ -504,14 +504,14 @@
 
 <body>
 
-   <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
+   <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
 
       <!---------------------member-status-toast---------------------->
 
       <div id='membertoast' class='toast hide'>
          <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
             <strong class='me-auto text-white fs-6'>Success</strong>
-            <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+            <button type='button' class='btn-close float-end' onclick="document.getElementById('membertoast').style.right='-500px'"></button>
          </div>
          <div id="memberstatus" class='toast-body text-white fs-6 py-2'>
             Member added successfully !...
@@ -528,7 +528,7 @@
         mToast.classList.add('show');
         mToast.style.right = '5%';
         setTimeout(()=>{
-        mToast.style.right = '-380px';
+        mToast.style.right = '-500px';
         },3000)
        </script>";
 
@@ -547,7 +547,7 @@
          rejToast.style.backgroundColor = 'red';
          rejToast.style.border = '4px solid #ff6b6b';
          setTimeout(()=>{
-         rejToast.style.right = '-380px';
+         rejToast.style.right = '-500px';
          },3000)
         </script>";
 
@@ -561,11 +561,11 @@
       <!---------------------error-toast---------------------->
 
       <div id='membererrortoast'
-         style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);'
+         style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-500px;transition:0.5s;background-color:rgb(250,51,51);z-index:9999;'
          class='toast hide'>
          <div style="background-color:rgb(250,51,51);" class='toast-header'>
-            <strong class='me-auto text-white fs-6'>Error</strong>
-            <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+            <strong class='me-auto text-white fs-6'>error</strong>
+            <button type='button' class='btn-close float-end' onclick="document.getElementById('membererrortoast').style.right='-500px'"></button>
          </div>
          <div class='toast-body text-white fs-6 py-2'>
 
@@ -582,7 +582,7 @@
         meToast.classList.add('show');
         meToast.style.right = '50px';
         setTimeout(()=>{
-        meToast.style.right = '-380px';
+        meToast.style.right = '-500px';
         },3000)
        </script>";
 
@@ -590,6 +590,45 @@
 
       }
 
+      if (session()->getFlashdata('upload_success')) {
+         $status = session()->getFlashdata('upload_success');
+         echo "<script>
+               document.getElementById('memberstatus').innerHTML = `$status`;
+               const upSuccToast = document.getElementById('membertoast');
+               upSuccToast.classList.remove('hide');
+               upSuccToast.classList.add('show');
+               upSuccToast.style.right = '5%';
+               setTimeout(()=>{
+               upSuccToast.style.right = '-500px';
+               },6000)
+              </script>";
+       }
+       
+       if (session()->getFlashdata('upload_error')) {
+         $status = session()->getFlashdata('upload_error');
+         echo "<script>
+               const upErrToast = document.getElementById('membererrortoast');
+               const body = upErrToast.querySelector('.toast-body');
+               body.innerHTML = `$status`;
+               upErrToast.style.width = '400px';
+               upErrToast.classList.remove('hide');
+               upErrToast.classList.add('show');
+               upErrToast.style.right = '50px';
+               
+               // Ensure the close button works
+               const closeBtn = upErrToast.querySelector('.btn-close');
+               closeBtn.onclick = function() {
+                  upErrToast.style.right = '-500px';
+                  setTimeout(() => { $(upErrToast).hide(); }, 500);
+               };
+
+               setTimeout(()=>{
+                  if (upErrToast.style.right === '50px') {
+                     upErrToast.style.right = '-500px';
+                  }
+               },10000)
+              </script>";
+       }
       ?>
       <!----------------------------error-toast-end-------------------------------------->
 
@@ -618,224 +657,229 @@
       </div><!-----------top-bar-end----------------------->
 
 
-      <div class="row"><!----------main-navbar----------->
+      <div class="row min-vh-100"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2 ps-gray min-vh-100"><!----------side-bar-------------------->
 
 
          </div><!-----------side-bar-end-------------->
 
-         <div style="overflow:auto;" id="pagecontrol" class="col-md-10">
+         <div id="pagecontrol" class="col-md-10">
             <!-----------main-dashboard------------------------->
 
             <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-between memberpadd">
                <span class="h5">Members</span>
                <div class="d-flex align-items-center">
-                  <a href='download_members_details' style='height:fit-content;'
-                     class='btn btn-sm btn-success fw-bold float-end btn-warning' id='download'
-                     role='button'>Download</a>&nbsp;&nbsp;
-                  <a <?php if (session()->get('role') == 2) {
-                     echo "hidden";
-                   } ?> href="
-                     <?= base_url("assigncoordinator") ?>" class='text-decoration-none ps-add-btn text-white py-1
-                     px-4'>+&nbsp;Assign
-                  </a>&nbsp;
-                  <button onclick="showmembersmodal()"
-                     class='ps-add-btn float-end text-white py-1 px-4'>+&nbsp;Add</button>
-               </div>
-            </div>
+                   <button onclick="toggleFilterSection()" class="btn btn-sm btn-outline-primary fw-bold me-2 px-3 rounded-pill shadow-sm transition-all">
+                       <i class="fas fa-filter me-1"></i>Filter
+                   </button>
+                   <a href='download_members_details' style='height:fit-content;'
+                      class='btn btn-sm btn-success fw-bold float-end btn-warning' id='download'
+                      role='button'>Download</a>&nbsp;&nbsp;
+                   <a <?php if (session()->get('role') == 2) {
+                      echo "hidden";
+                    } ?> href="
+                      <?= base_url("assigncoordinator") ?>" class='text-decoration-none ps-add-btn text-white py-1
+                      px-4'>+&nbsp;Assign
+                   </a>&nbsp;
+                   <button onclick="showmembersmodal()"
+                      class='ps-add-btn float-end text-white py-1 px-4'>+&nbsp;Add</button>
+                </div>
+             </div>
 
             <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
-            <div class="container-fluid px-4 pt-2">
-               <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex justify-content-evenly align-items-center border rounded p-2">
-                  <label for="file" class="mb-0">Upload Members Bulk Data:&nbsp;&nbsp; </label> 
-                  <input type="file" name="file" id="file" required />
-                  <button type="submit" style="height:fit-content;" class="btn text-white ps-btn">Upload</button>
-               </form>
-            </div>
-            <?php endif; ?>
+             <div class="container-fluid px-4 pt-3">
+                <div class="ps-gray p-3 border rounded shadow-sm d-flex align-items-center justify-content-between">
+                   <h6 class="mb-0 fw-bold">Upload Members Bulk Data</h6>
+                   <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                       <input type="file" class="form-control" name="file" id="file" required style="width: auto;">
+                       <button class="btn btn-primary" type="submit">Upload</button>
+                   </form>
+                </div>
+             </div>
+             <?php endif; ?>
 
             <?php if (session()->get('role') != 2 && session()->get('role') != 3): ?>
-            <!-- Members Filter -->
-               <div class="container-fluid px-4 pt-3 memberpadd">
-                  <!-- <h5 class="mb-3">Members Filter:</h5> -->
+             <!-- Members Filter -->
+                <div id="filter-segment" class="container-fluid px-4 pt-3 memberpadd" style="display: none;">
+                   <div class="border rounded p-4 bg-light shadow-sm" style="border-left: 5px solid #ffc107 !important; border-radius: 15px !important;">
+                      <h6 class="mb-3 fw-bold text-dark"><i class="fas fa-search-plus me-2"></i>Advanced Search Filters</h6>
+                      <div class="row mb-3">
+                         <!-- State -->
+                         <div class="col-md-3">
+                            <label class="small fw-bold mb-1 text-muted" for="states-dropdown">State:</label>
+                            <select id="states-dropdown" onchange="setDropdowndistricts(this)"
+                               class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">Choose State</option>
+                               <?php if (isset($states)): ?>
+                                  <?php foreach ($states as $state): ?>
+                                     <option value="<?= $state->state_id ?>"><?= $state->state_title ?></option>
+                                  <?php endforeach; ?>
+                               <?php endif ?>
+                            </select>
+                         </div>
 
-                  <div class="border rounded p-3" style="border-width:2px;">
-                     <div class="row mb-3">
-                        <!-- State -->
-                        <div class="col-md-3">
-                           <label class="fw-bold mb-1" for="states-dropdown">State:</label>
-                           <select id="states-dropdown" onchange="setDropdowndistricts(this)"
-                              class="form-select form-select-sm">
-                              <option value="">Choose State</option>
-                              <?php if (isset($states)): ?>
-                                 <?php foreach ($states as $state): ?>
-                                    <option value="<?= $state->state_id ?>"><?= $state->state_title ?></option>
-                                 <?php endforeach; ?>
-                              <?php endif ?>
-                           </select>
-                        </div>
+                         <!-- District -->
+                         <div class="col-md-3">
+                            <label class="small fw-bold mb-1 text-muted" for="districts-dropdown">Districts:</label>
+                            <select id="districts-dropdown" onchange="setDropdowntaluks(this)"
+                               class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">Choose District</option>
+                            </select>
+                         </div>
 
-                        <!-- District -->
-                        <div class="col-md-3">
-                           <label class="fw-bold mb-1" for="districts-dropdown">Districts:</label>
-                           <select id="districts-dropdown" onchange="setDropdowntaluks(this)"
-                              class="form-select form-select-sm">
-                              <option value="">Choose District</option>
-                           </select>
-                        </div>
+                         <!-- Taluk -->
+                         <div class="col-md-3">
+                            <label class="small fw-bold mb-1 text-muted" for="taluks-dropdown">Taluks:</label>
+                            <select id="taluks-dropdown" onchange="setDropdownpanchayat(this)"
+                               class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">Choose Taluk</option>
+                            </select>
+                         </div>
 
-                        <!-- Taluk -->
-                        <div class="col-md-3">
-                           <label class="fw-bold mb-1" for="taluks-dropdown">Taluks:</label>
-                           <select id="taluks-dropdown" onchange="setDropdownpanchayat(this)"
-                              class="form-select form-select-sm">
-                              <option value="">Choose Taluk</option>
-                           </select>
-                        </div>
+                         <!-- Panchayat -->
+                         <div class="col-md-3">
+                            <label class="small fw-bold mb-1 text-muted" for="panchayat-dropdown">Panchayat:</label>
+                            <select id="panchayat-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">Choose Panchayat</option>
+                            </select>
+                         </div>
+                      </div>
 
-                        <!-- Panchayat -->
-                        <div class="col-md-3">
-                           <label class="fw-bold mb-1" for="panchayat-dropdown">Panchayat:</label>
-                           <select id="panchayat-dropdown" onchange="commonSearch()" class="form-select form-select-sm">
-                              <option value="">Choose Panchayat</option>
-                           </select>
-                        </div>
-                     </div>
+                      <div class="row mb-3">
+                         <!-- Blood Group -->
+                         <div class="col-md-4">
+                            <label class="small fw-bold mb-1 text-muted" for="bloodgroup-dropdown">Blood Group:</label>
+                            <select id="bloodgroup-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">Choose Blood Group</option>
+                               <option value="A+">A+</option>
+                               <option value="A-">A-</option>
+                               <option value="B+">B+</option>
+                               <option value="B-">B-</option>
+                               <option value="O+">O+</option>
+                               <option value="O-">O-</option>
+                               <option value="AB+">AB+</option>
+                               <option value="AB-">AB-</option>
+                            </select>
+                         </div>
 
-                     <div class="row mb-3">
-                        <!-- Blood Group -->
-                        <div class="col-md-4">
-                           <label class="fw-bold mb-1" for="bloodgroup-dropdown">Blood Group:</label>
-                           <select id="bloodgroup-dropdown" onchange="commonSearch()" class="form-select form-select-sm">
-                              <option value="">Choose Blood Group</option>
-                              <option value="A+">A+</option>
-                              <option value="A-">A-</option>
-                              <option value="B+">B+</option>
-                              <option value="B-">B-</option>
-                              <option value="O+">O+</option>
-                              <option value="O-">O-</option>
-                              <option value="AB+">AB+</option>
-                              <option value="AB-">AB-</option>
-                           </select>
-                        </div>
+                         <!-- Gender -->
+                         <div class="col-md-4">
+                            <label class="small fw-bold mb-1 text-muted" for="gender-dropdown">Gender:</label>
+                            <select id="gender-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">All</option>
+                               <option value="Male">Male</option>
+                               <option value="Female">Female</option>
+                               <option value="Other">Other</option>
+                            </select>
+                         </div>
 
-                        <!-- Gender -->
-                        <div class="col-md-4">
-                           <label class="fw-bold mb-1" for="gender-dropdown">Gender:</label>
-                           <select id="gender-dropdown" onchange="commonSearch()" class="form-select form-select-sm">
-                              <option value="">All</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                              <option value="Other">Other</option>
-                           </select>
-                        </div>
+                         <!-- Occupation -->
+                         <div class="col-md-4">
+                            <label class="small fw-bold mb-1 text-muted" for="occupation-dropdown">Occupation:</label>
+                            <select id="occupation-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
+                               <option value="">All</option>
+                               <!-- Existing core professions -->
+                               <option value="Doctor">Doctor</option>
+                               <option value="Lawyer">Lawyer</option>
+                               <option value="Police">Police</option>
+                               <option value="Teacher / Lecturer">Teacher / Lecturer</option>
+                               <option value="Engineer">Engineer</option>
+                               <option value="Government Employee">Government Employee</option>
+                               <option value="Private Employee">Private Employee</option>
+                               <option value="Student">Student</option>
+                               <option value="Farmer">Farmer – Agriculture</option>
 
-                        <!-- Occupation -->
-                        <div class="col-md-4">
-                           <label class="fw-bold mb-1" for="occupation-dropdown">Occupation:</label>
-                           <select id="occupation-dropdown" onchange="commonSearch()" class="form-select form-select-sm">
-                              <option value="">All</option>
-                              <!-- Existing core professions -->
-                              <option value="Doctor">Doctor</option>
-                              <option value="Lawyer">Lawyer</option>
-                              <option value="Police">Police</option>
-                              <option value="Teacher / Lecturer">Teacher / Lecturer</option>
-                              <option value="Engineer">Engineer</option>
-                              <option value="Government Employee">Government Employee</option>
-                              <option value="Private Employee">Private Employee</option>
-                              <option value="Student">Student</option>
-                              <option value="Farmer">Farmer – Agriculture</option>
+                               <!-- Textiles & Apparel -->
+                               <option value="Textile Mill Worker">Textile Mill Worker (Spinning /
+                                  Weaving)
+                               </option>
+                               <option value="Garment Factory Worker">Garment Factory Worker</option>
+                               <option value="Tailor">Tailor / Apparel Stitching</option>
+                               <option value="Pattern Master">Garment Pattern Master / Designer
+                               </option>
+                               <option value="Textile Machinery Technician">Textile Machinery
+                                  Technician /
+                                  Mechanic</option>
+                               <option value="Textile Machinery Service">Textile Machinery Sales &
+                                  Service
+                               </option>
+                               <option value="Loom Operator">Powerloom / Auto‑Loom Operator</option>
+                               <option value="Knitting Machine Operator">Knitting Machine Operator
+                               </option>
 
-                              <!-- Textiles & Apparel -->
-                              <option value="Textile Mill Worker">Textile Mill Worker (Spinning /
-                                 Weaving)
-                              </option>
-                              <option value="Garment Factory Worker">Garment Factory Worker</option>
-                              <option value="Tailor">Tailor / Apparel Stitching</option>
-                              <option value="Pattern Master">Garment Pattern Master / Designer
-                              </option>
-                              <option value="Textile Machinery Technician">Textile Machinery
-                                 Technician /
-                                 Mechanic</option>
-                              <option value="Textile Machinery Service">Textile Machinery Sales &
-                                 Service
-                              </option>
-                              <option value="Loom Operator">Powerloom / Auto‑Loom Operator</option>
-                              <option value="Knitting Machine Operator">Knitting Machine Operator
-                              </option>
+                               <!-- Transport -->
+                               <option value="Truck Driver">Truck / Lorry Driver</option>
+                               <option value="Truck Owner Driver">Truck / Lorry Owner‑cum‑Driver
+                               </option>
+                               <option value="Logistics Staff">Logistics / Transport Staff</option>
+                               <option value="Fleet Manager">Fleet Manager</option>
 
-                              <!-- Transport -->
-                              <option value="Truck Driver">Truck / Lorry Driver</option>
-                              <option value="Truck Owner Driver">Truck / Lorry Owner‑cum‑Driver
-                              </option>
-                              <option value="Logistics Staff">Logistics / Transport Staff</option>
-                              <option value="Fleet Manager">Fleet Manager</option>
+                               <!-- Dairy / Poultry / Allied -->
+                               <option value="Dairy Farmer">Dairy Farmer</option>
+                               <option value="Poultry Farmer">Poultry Farmer</option>
+                               <option value="Animal Husbandry">Goat / Sheep Rearing</option>
 
-                              <!-- Dairy / Poultry / Allied -->
-                              <option value="Dairy Farmer">Dairy Farmer</option>
-                              <option value="Poultry Farmer">Poultry Farmer</option>
-                              <option value="Animal Husbandry">Goat / Sheep Rearing</option>
+                               <!-- Engineering / Manufacturing -->
+                               <option value="Pump Technician">Pump / Motor Technician</option>
+                               <option value="Pump Factory Worker">Pump / Motor Manufacturing Worker
+                               </option>
+                               <option value="Motor Rewinding Technician">Motor Rewinding Technician
+                               </option>
+                               <option value="Machinist / Turner">Machinist / Turner</option>
+                               <option value="Welder / Fabricator">Welder / Fabricator</option>
+                               <option value="Foundry Worker">Steel / Aluminium Foundry Worker</option>
+                               <option value="Mixer Grinder Technician">Mixer‑Grinder Assembly /
+                                  Service
+                                  Technician</option>
+                               <option value="Plastic / Net Unit Worker">Plastic / Net / Packaging Unit
+                                  Worker</option>
 
-                              <!-- Engineering / Manufacturing -->
-                              <option value="Pump Technician">Pump / Motor Technician</option>
-                              <option value="Pump Factory Worker">Pump / Motor Manufacturing Worker
-                              </option>
-                              <option value="Motor Rewinding Technician">Motor Rewinding Technician
-                              </option>
-                              <option value="Machinist / Turner">Machinist / Turner</option>
-                              <option value="Welder / Fabricator">Welder / Fabricator</option>
-                              <option value="Foundry Worker">Steel / Aluminium Foundry Worker</option>
-                              <option value="Mixer Grinder Technician">Mixer‑Grinder Assembly /
-                                 Service
-                                 Technician</option>
-                              <option value="Plastic / Net Unit Worker">Plastic / Net / Packaging Unit
-                                 Worker</option>
+                               <!-- Energy -->
+                               <option value="Windmill Technician">Windmill Maintenance Technician
+                               </option>
+                               <option value="Electrical Technician">Electrical Line / Maintenance
+                                  Technician</option>
 
-                              <!-- Energy -->
-                              <option value="Windmill Technician">Windmill Maintenance Technician
-                              </option>
-                              <option value="Electrical Technician">Electrical Line / Maintenance
-                                 Technician</option>
+                               <!-- Retail & Services -->
+                               <option value="Grocery Shop Staff">Grocery Shop Staff</option>
+                               <option value="Medical Shop Staff">Medical Shop / Pharmacy Staff
+                               </option>
+                               <option value="Retail / Sales Staff">Retail Shop / Sales Staff</option>
+                               <option value="Office Admin / Computer Operator">Office Admin / Computer
+                                  Operator</option>
 
-                              <!-- Retail & Services -->
-                              <option value="Grocery Shop Staff">Grocery Shop Staff</option>
-                              <option value="Medical Shop Staff">Medical Shop / Pharmacy Staff
-                              </option>
-                              <option value="Retail / Sales Staff">Retail Shop / Sales Staff</option>
-                              <option value="Office Admin / Computer Operator">Office Admin / Computer
-                                 Operator</option>
+                               <!-- Finance / Health / IT -->
+                               <option value="Accountant / Finance Staff">Accountant / Finance Staff
+                               </option>
+                               <option value="Bank / NBFC Staff">Bank / NBFC Staff</option>
+                               <option value="Hospital Staff">Hospital Nurse / Lab Tech / Pharmacist
+                               </option>
+                               <option value="Medical Representative">Medical Representative</option>
+                               <option value="IT / Software Employee">IT / Software Employee</option>
 
-                              <!-- Finance / Health / IT -->
-                              <option value="Accountant / Finance Staff">Accountant / Finance Staff
-                              </option>
-                              <option value="Bank / NBFC Staff">Bank / NBFC Staff</option>
-                              <option value="Hospital Staff">Hospital Nurse / Lab Tech / Pharmacist
-                              </option>
-                              <option value="Medical Representative">Medical Representative</option>
-                              <option value="IT / Software Employee">IT / Software Employee</option>
+                               <!-- Others -->
+                               <option value="Home Maker">Home Maker</option>
+                               <option value="Retired">Retired</option>
+                               <option value="Others">Others</option>
+                            </select>
+                         </div>
+                      </div>
 
-                              <!-- Others -->
-                              <option value="Home Maker">Home Maker</option>
-                              <option value="Retired">Retired</option>
-                              <option value="Others">Others</option>
-                           </select>
-                        </div>
-                     </div>
-
-                     
-
-                     <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetMemberFilters()">
-                           Clear
-                        </button>
-                     </div>
-                  </div>
-               </div>
-            <?php endif; ?>
+                      <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                         <button type="button" class="btn btn-sm btn-outline-warning fw-bold px-3" onclick="resetMemberFilters()">
+                            Clear Filters
+                         </button>
+                         <button type="button" class="btn btn-sm btn-secondary fw-bold px-3" onclick="toggleFilterSection()">
+                            Close
+                         </button>
+                      </div>
+                   </div>
+                </div>
+             <?php endif; ?>
 
 
-            <div style="overflow:auto" class="container-fluid pt-3 px-4 memberpadd"><!----------------table-------->
+            <div style="overflow:auto; height: 75vh;" class="container-fluid pt-3 px-4 memberpadd"><!----------------table-------->
                <table class="table table-responsive table-bordered">
                   <thead <?php if (count($members) == 0) {
                      echo "hidden";
@@ -1473,14 +1517,7 @@
       let form_section = document.getElementById("update-member-section");
       form_section.style.height = `${form_height}px`;
 
-      let setheight = document.getElementById("pagecontrol");
-      let a = window.innerHeight;
-      let b = document.getElementById("search-bar").getBoundingClientRect().height;
-      let c = document.getElementById("btn-header").getBoundingClientRect().height;
-      setheight.style.height = a - b + "px";
-      if (document.getElementById("dis-no-pages")) {
-         document.getElementById("dis-no-pages").style.height = `${windowheight - (b + c)}px`;
-      }
+      /* height calculations removed for single full scroll */
    /*  function showmemberslist(){
       $.ajax({
       type:"get",
@@ -1576,11 +1613,10 @@
             })
           } */
 
-      document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
+      /* menu-bar height removed for single scroll */
 
       window.addEventListener("resize", () => {
-         let topbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
-         document.getElementById("menu-bar").style.height = (window.innerHeight - topbarHeight) + "px";
+         /* menu-bar height removed for single scroll */
          
          let addMembersForm = document.getElementById("add-members-form");
          let updateMemberSection = document.getElementById("update-member-section");
@@ -2489,6 +2525,10 @@ function resetMemberFilters() {
   $("#occupation-dropdown").val("");
 
   commonSearch();
+}
+
+function toggleFilterSection() {
+    $("#filter-segment").slideToggle(400);
 }
 
 

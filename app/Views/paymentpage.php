@@ -437,13 +437,13 @@
       </div>
     </div><!-----------top-bar-end----------------------->
 
-    <div class="row"><!----------main-navbar----------->
+    <div class="row min-vh-100"><!----------main-navbar----------->
 
-      <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+      <div id="menu-bar" class="col-md-2 ps-gray min-vh-100"><!----------side-bar-------------------->
 
       </div><!-----------side-bar-end-------------->
 
-      <div id="changepage" style='height:inherit;overflow:auto;' class="col-md-10 pt-3">
+      <div id="changepage" class="col-md-10 pt-3">
         <!-----------main-dashboard------------------------->
         <div id="filter-form" class="ms-4">
 
@@ -716,7 +716,7 @@
             </div><!---------filter-end-------------->
           </div><!------------coordinator-filter-end------------------>
 
-          <div style="overflow:auto;" id="paymentdetails">
+          <div id="paymentdetails">
             <?php if(isset($counts) && $counts > 0): ?>
             <div class="alert alert-info mb-3" role="alert">
               <strong>Total Members:</strong> <?= $counts ?>
@@ -1140,7 +1140,7 @@
     }
 
     window.addEventListener("resize", () => {
-      document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
+      /* menu-bar height removed for single scroll */
       let formmodal = document.getElementById("add-coords-form");
       let b = window.innerWidth;
       if (b > 768) {

@@ -1,39 +1,42 @@
-<div id="commonsearch" style="width:58.33%;display:flex;align-items:baseline;justify-content:space-between;" class="ms-4 ps-gray rounded-2 py-1">
+<div class="flex-grow-1"></div>
+<div id="commonsearch" style="width:30%;display:flex;align-items:center;justify-content:space-between;" class="ps-gray rounded-2 py-1">
     <input onkeyup="commonSearch(this)" type="text" style="outline-style:none;" class="w-75 ps-3 border-0 ps-gray" placeholder="search">
     <span style="cursor:pointer;" class="pe-3">
         <i class="fa-solid fa-magnifying-glass"></i>
     </span>
 </div>
+<div class="flex-grow-1 d-flex justify-content-end">
+    <div id="dashboardsubmenu" style="display:flex;align-items:center;justify-content:space-evenly;" class="col-md-9">
+        <div class="dropdown">
+            <button style="outline-style:none;" class="drop-down-toggle border-0 d-flex align-items-center bg-white shadow-none" data-bs-toggle="dropdown">
+                <span class="p-1 px-2 ps-user rounded-circle"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;
+                <span id="ps-name-line" style="font-weight:500;">
+                    <?php
+                    $name = session()->get('Kaadaisoft_userName');
+                    if ($name) {
+                        echo $name;
+                    } else {
+                        echo "Manager Name";
+                    } ?></span>&nbsp;&nbsp;
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+            <ul class="dropdown-menu border-0 shadow-sm rounded-3">
+                <li><a class="dropdown-item py-2" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fa-solid fa-key me-2"></i>Change Password</a></li>
+                <li class="border-top mb-1"></li>
+                <li><a class="dropdown-item fw-bold text-danger py-2" href="<?= base_url('logout') ?>"><i class="fa-solid fa-power-off me-2"></i>Logout</a></li>
+            </ul>
+        </div>
 
-<div id="dashboardsubmenu" style="display:flex;align-items:baseline;justify-content:space-evenly;" class="col-md-3">
-    <div class="dropdown">
-        <button style="outline-style:none;" class="drop-down-toggle border-0 d-flex align-items-center bg-white" data-bs-toggle="dropdown">
-            <span class="p-1 px-2 ps-user rounded-circle"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;
-            <span id="ps-name-line" style="font-weight:500;">
-                <?php
-                $name = session()->get('Kaadaisoft_userName');
-                if ($name) {
-                    echo $name;
-                } else {
-                    echo "Manager Name";
-                } ?></span>&nbsp;&nbsp;
-            <i class="fa-solid fa-angle-down"></i>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fa-solid fa-key"></i>&nbsp;&nbsp;Change Password</a></li>
-            <li><a class="dropdown-item fw-bold" href="<?= base_url('logout') ?>"><i class="fa-solid fa-power-off"></i>&nbsp;&nbsp;Logout</a></li>
-        </ul>
+        <span class="d-flex fa-bell-icon position-relative ms-3">
+            <span><i class="fa-solid fa-bell fs-5 text-secondary"></i></span>
+            <?php if ((session()->get("role") == 1) || (session()->get("role") == 2)) {
+                $pendingcounts = session()->get("pendingcounts");
+                if ($pendingcounts > 0) {
+                    echo "<sup style='background-color:red;color:white;width:18px;height:18px;font-size:10px;top: -5px;right: -10px;' class='rounded-circle position-absolute d-flex align-items-center justify-content-center fw-bold' id='pendingnotifications'>$pendingcounts</sup>";
+                }
+            } ?>
+        </span>
     </div>
-
-    <span class="d-flex fa-bell-icon">
-        <span><i class="fa-solid fa-bell"></i></span>
-        <?php if ((session()->get("role") == 1) || (session()->get("role") == 2)) {
-            $pendingcounts = session()->get("pendingcounts");
-            if ($pendingcounts > 0) {
-                echo "<sup style='background-color:red;color:white;width:30px;height:30px;' class='rounded-circle d-flex align-items-center justify-content-center fw-bold' id='pendingnotifications'>$pendingcounts</sup>";
-            }
-        } ?>
-    </span>
 </div>
 
 <!-- Change Password Modal -->
