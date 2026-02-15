@@ -17,7 +17,7 @@
 
 <ul id="icons" style="font-size:18px; padding-bottom: 80px;" class="d-flex flex-column list-unstyled">
 
-<li id="hidename" class="nav-item py-3 fs-6"><a href="#" style="font-weight:400;color:grey;" class="d-flex p-2 text-decoration-none">MENU</a></li>
+<!-- <li id="hidename" class="nav-item py-3 fs-6"><a href="#" style="font-weight:400;color:grey;" class="d-flex p-2 text-decoration-none">MENU</a></li> -->
 
 <li class="nav-item py-2">
 <a href="<?=base_url('admindashboard')?>" style="outline:none;border:none;color:black;" name="dashboard" class="active-dash w-100 rounded-3 p-2 text-decoration-none d-flex align-items-center">

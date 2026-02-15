@@ -63,15 +63,41 @@ html, body {
       cursor:pointer;
     }
 
-    .card1{
-    background-color: rgb(88, 194, 255);
+     .card1{
+    background: linear-gradient(135deg, #1fa2ff, #12d8fa, #a6ffcb);
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(31, 162, 255, 0.3);
+    text-decoration: none;
     }
     .card2{
-      background-color: rgb(233, 153, 3);
+      background: linear-gradient(135deg, #f7971e, #ffd200);
+      border: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3);
+      text-decoration: none;
     }
     .card3{
-      background-color: rgb(124, 9, 232);
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      border: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+      text-decoration: none;
      }
+
+     .card1:hover, .card2:hover, .card3:hover {
+        transform: translateY(-8px) scale(1.02);
+        filter: brightness(1.15);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+     }
+
+     .card-round:active {
+        transform: scale(0.98);
+     }
+
      .card4{
       background-color: rgb(35, 154, 43);
      }
@@ -600,68 +626,48 @@ if (session()->getFlashdata('upload_error')) {
          
          <div class="container-fluid px-4 pt-4">
           <div class="d-flex justify-content-between">
-          <button <?php if (session()->get('role') == 2 || session()->get('role') == 3) {
-            echo 'hidden';
-          } ?> style="width:fit-content;height: fit-content;" onclick="showupdatemanagermodal('<?= trim(session()->get('Kaadaisoft_userId')) ?>')" class='updatecoord btn btn-primary fw-bold'>Update</button>
-          <div class="col-md-10 <?php if (session()->get('role') == 1 || session()->get('role') == 2) {
-            echo "d-flex justify-content-evenly";
-          } else {
-            echo "";
-          } ?>" <?php if (session()->get('role') == 3) {
+          <div class="col-md-10" <?php if (session()->get('role') == 3) {
              echo "hidden";
            } ?> >
-          <div <?php if (session()->get('role') == 3) {
-            echo "hidden";
-          } ?>>
-          <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex justify-content-evenly align-items-center border rounded p-2">
-          <label for="file">Upload Members Bulk Data:&nbsp;&nbsp; </label> 
-          <input type="file" name="file" id="file" required />
-          <button type="submit" style="height:fit-content;" class="btn text-white ps-btn">Upload</button>
-          </form>
-          </div>  
 
-          <a href="viewreceivedapplications" style="height:fit-content;" class="btn text-white ps-btn <?php if (session()->get('role') == 1) {
-            echo "";
-          } else {
-            echo "float-end";
-          } ?>">View Received Applications</a>
           </div>
           </div>
           <div <?php if (session()->get('role') == 3) {
             echo "hidden";
           } ?>  class="dashboard-cards mt-4 border-bottom pb-5">
 
-            <div class="card-round card1 shadow-sm py-5 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
+            <a href="<?= base_url('coordinators') ?>" class="card-round card1 py-3 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
               echo "d-none";
             } else {
               echo "d-grid";
             } ?> align-items-center">
 
             <ul class="nav flex-column align-items-center">
-              <li class="text-center">Coordinators</li>
-              <li class="fs-3 text-center"><?= $coordscount ?></li>
+              <li class="text-center fw-bold">Coordinators</li>
+              <li class="fs-4 text-center"><?= $coordscount ?></li>
             </ul>
-            </div>
-            <div class="card-round card2 shadow-sm py-5 text-white d-grid align-items-center">
+            </a>
+            <a href="<?= base_url('members') ?>" class="card-round card2 py-3 text-white d-grid align-items-center">
             <ul class="nav flex-column align-items-center">
-              <li class="text-center">Total Members</li>
-              <li class="fs-3 text-center"><?= $memberscount ?></li>
+              <li class="text-center fw-bold">Total Members</li>
+              <li class="fs-4 text-center"><?= $memberscount ?></li>
             </ul>
-            </div>
+            </a>
 
-            <div class="card-round card3 shadow-sm py-5 text-white d-grid align-items-center">
+            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 py-3 text-white d-grid align-items-center">
             <ul class="nav flex-column align-items-center">
-              <li class="text-center">Waiting for approval</li>
-              <li class="fs-3 text-center">
+              <li class="text-center fw-bold">Waiting for approval</li>
+              <li class="fs-4 text-center">
                 <?php if (!empty($pendingcounts)) {
-                  echo "$pendingcounts Application Received";
+                  echo "$pendingcounts";
                 } else {
                   echo "0";
                 }
 
                 ?></li>
+              <li class="text-center small mt-1"><?= !empty($pendingcounts) ? 'New Applications' : 'No Pending Approvals' ?></li>
             </ul>
-            </div>
+            </a>
 
           </div>
 

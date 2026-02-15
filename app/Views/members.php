@@ -636,7 +636,7 @@
                      role='button'>Download</a>&nbsp;&nbsp;
                   <a <?php if (session()->get('role') == 2) {
                      echo "hidden";
-                  } ?> href="
+                   } ?> href="
                      <?= base_url("assigncoordinator") ?>" class='text-decoration-none ps-add-btn text-white py-1
                      px-4'>+&nbsp;Assign
                   </a>&nbsp;
@@ -644,6 +644,16 @@
                      class='ps-add-btn float-end text-white py-1 px-4'>+&nbsp;Add</button>
                </div>
             </div>
+
+            <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
+            <div class="container-fluid px-4 pt-2">
+               <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex justify-content-evenly align-items-center border rounded p-2">
+                  <label for="file" class="mb-0">Upload Members Bulk Data:&nbsp;&nbsp; </label> 
+                  <input type="file" name="file" id="file" required />
+                  <button type="submit" style="height:fit-content;" class="btn text-white ps-btn">Upload</button>
+               </form>
+            </div>
+            <?php endif; ?>
 
             <?php if (session()->get('role') != 2 && session()->get('role') != 3): ?>
             <!-- Members Filter -->
