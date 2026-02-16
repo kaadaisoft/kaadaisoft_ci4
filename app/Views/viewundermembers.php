@@ -1266,7 +1266,7 @@ function setDropdownpanchayat(taluk){
     function viewMembereventparticipation(id) {
         $.ajax({
         type:"post",
-        url:"coordinators/eventparticipation",
+        url:"<?= base_url('event-participation') ?>",
         data:{"id":id},
         success:function(result){
           
