@@ -27,45 +27,45 @@ $routes->get('dashboard/pslogo', 'Dashboard::pslogo');
 // Admin Dashboard Routes
 $routes->get('admindashboard', 'AdminDashboard::index');
 $routes->get('admindashboard/getmanager', 'AdminDashboard::getmanager'); // For Update Manager Modal
-$routes->post('admindashboard/updateManager', 'AdminDashboard::updateManager'); // For Manager Update Submit
+$routes->post('admindashboard/update-manager', 'AdminDashboard::updateManager'); // For Manager Update Submit
 $routes->get('viewreceivedapplications', 'AdminDashboard::viewReceivedapplications');
 $routes->get('changeapplicationspagesetup', 'AdminDashboard::changeapplicationspagesetup');
-$routes->post('assignCoordinatorsfortaluk', 'AdminDashboard::assignCoordinatorsfortaluk');
+$routes->post('assign-coordinators-for-taluk', 'AdminDashboard::assignCoordinatorsfortaluk');
 $routes->post('approvemember', 'AdminDashboard::approveMember');
 $routes->post('rejectmember', 'AdminDashboard::rejectMember');
 $routes->get('assigncoordinator', 'AdminDashboard::assignCoordinator');
-$routes->match(['get', 'post'], 'getOverallstatus', 'AdminDashboard::getOverallstatus');
+$routes->match(['get', 'post'], 'get-overall-status', 'AdminDashboard::getOverallstatus');
 $routes->match(['get', 'post'], 'register_manager', 'AdminDashboard::register_manager');
 $routes->match(['get', 'post'], 'change_password', 'AdminDashboard::change_password');
-$routes->get('viewManagerdata', 'AdminDashboard::viewManagerdata');
+$routes->get('view-manager-data', 'AdminDashboard::viewManagerdata');
 
 // AdminDashboard AJAX & Form Routes
-$routes->post('AdminDashboard/checkExistvillage', 'AdminDashboard::checkExistvillage');
-$routes->post('AdminDashboard/getOverallstatus', 'AdminDashboard::getOverallstatus'); // Explicit route for consistency
-$routes->get('AdminDashboard/getDistrictsfordropdown', 'AdminDashboard::getDistrictsfordropdown');
-$routes->post('AdminDashboard/getTaluksfordropdown', 'AdminDashboard::getTaluksfordropdown');
-$routes->post('AdminDashboard/getPanchayatsfordropdown', 'AdminDashboard::getPanchayatsfordropdown');
-$routes->post('AdminDashboard/getVillagesfordropdown', 'AdminDashboard::getVillagesfordropdown');
-$routes->post('AdminDashboard/checkExistphoneno', 'Members::checkExistphoneno');
-$routes->post('AdminDashboard/checkExistaadharno', 'Members::checkExistaadharno');
-$routes->get('AdminDashboard/getMembersforassign', 'AdminDashboard::getMembersforassign');
-$routes->post('AdminDashboard/reassignCoordinator', 'AdminDashboard::reassignCoordinator');
-$routes->post('AdminDashboard/addVillage', 'AdminDashboard::addVillage');
-$routes->post('AdminDashboard/removeVillage', 'AdminDashboard::removeVillage');
+$routes->post('AdminDashboard/check-exist-village', 'AdminDashboard::checkExistvillage');
+$routes->post('AdminDashboard/get-overall-status', 'AdminDashboard::getOverallstatus'); 
+$routes->get('AdminDashboard/get-districts-for-dropdown', 'AdminDashboard::getDistrictsfordropdown');
+$routes->post('AdminDashboard/get-taluks-for-dropdown', 'AdminDashboard::getTaluksfordropdown');
+$routes->post('AdminDashboard/get-panchayats-for-dropdown', 'AdminDashboard::getPanchayatsfordropdown');
+$routes->post('AdminDashboard/get-villages-for-dropdown', 'AdminDashboard::getVillagesfordropdown');
+$routes->post('AdminDashboard/check-exist-phoneno', 'Members::checkExistphoneno');
+$routes->post('AdminDashboard/check-exist-aadharno', 'Members::checkExistaadharno');
+$routes->get('AdminDashboard/get-members-for-assign', 'AdminDashboard::getMembersforassign');
+$routes->post('AdminDashboard/reassign-coordinator', 'AdminDashboard::reassignCoordinator');
+$routes->post('AdminDashboard/add-village', 'AdminDashboard::addVillage');
+$routes->post('AdminDashboard/remove-village', 'AdminDashboard::removeVillage');
 
 // Member Update Requests (Admin)
-$routes->get('viewMemberUpdateRequests', 'AdminDashboard::viewMemberUpdateRequests');
-$routes->post('approveMemberUpdate', 'AdminDashboard::approveMemberUpdate');
-$routes->post('rejectMemberUpdate', 'AdminDashboard::rejectMemberUpdate');
+$routes->get('view-member-update-requests', 'AdminDashboard::viewMemberUpdateRequests');
+$routes->post('approve-member-update', 'AdminDashboard::approveMemberUpdate');
+$routes->post('reject-member-update', 'AdminDashboard::rejectMemberUpdate');
 
 // Coordinators Routes
 $routes->get('coordinators', 'Coordinators::index');
 $routes->post('coordinators/getpendingamount', 'Coordinators::getpendingamount'); // Explicit for AJAX
-$routes->post('updateCoordinator', 'Coordinators::updateCoordinator');
+$routes->post('update-coordinator', 'Coordinators::updateCoordinator');
 $routes->get('coordinators/getcoordinator', 'Coordinators::getcoordinator'); 
-$routes->post('coordinators/viewMemberdata', 'Coordinators::viewMemberdata');
-$routes->get('viewCoordinatordata', 'Coordinators::viewCoordinatordata');
-$routes->match(['get', 'post'], 'eventParticipation', 'Coordinators::eventParticipation');
+$routes->post('coordinators/view-member-data', 'Coordinators::viewMemberdata');
+$routes->get('view-coordinator-data', 'Coordinators::viewCoordinatordata');
+$routes->match(['get', 'post'], 'event-participation', 'Coordinators::eventParticipation');
 $routes->get('viewundermembers', 'Coordinators::viewUnderMembers');
 $routes->post('registerCoordinator', 'Coordinators::addcoordinator'); 
 $routes->get('changecoordinatorspagesetup', 'Coordinators::changecoordinatorspagesetup');
@@ -86,17 +86,18 @@ $routes->post('coordinators/checkExistaadharno', 'Members::checkExistaadharno');
 // Members Routes
 $routes->get('members', 'Members::index');
 $routes->get('add_family_member', 'Members::add_family_member');
-$routes->post('addFamilyMember', 'Members::addFamilyMember'); 
-$routes->post('updateMember', 'Members::updateMember');
+$routes->post('add-family-member', 'Members::addFamilyMember'); 
+$routes->post('update-member', 'Members::updateMember');
 $routes->post('members/addFamilyMember', 'Members::addFamilyMember');
 $routes->post('members/updateMember', 'Members::updateMember');
 $routes->post('admindashboard/updateManager', 'AdminDashboard::updateManager');
-$routes->get('viewMemberdata', 'Members::viewMemberdata');
+$routes->get('view-member-data', 'Members::viewMemberdata');
 $routes->get('changememberspagesetup', 'Members::changememberspagesetup');
 $routes->get('registrationform', 'Members::Registrationform');
 $routes->get('members/registrationform', 'Members::Registrationform');
 $routes->post('registerMember', 'Members::registerMember'); 
 $routes->match(['get', 'post'], 'members/trash/(:any)', 'Members::movetotrash/$1');
+$routes->get('members/get-events-by-year', 'Members::getEventsByYear');
 $routes->get('download_members_details', 'ReportingController::download_members_data');
 $routes->get('members/getDistrictsfordropdown', 'Members::getDistrictsfordropdown');
 $routes->get('members/getTaluksfordropdown', 'Members::getTaluksfordropdown');
@@ -142,30 +143,30 @@ $routes->get('payments/topmenu', 'Payments::topmenu');
 $routes->get('payments/pslogo', 'Payments::pslogo');
 $routes->get('gopaymentpage', 'Payments::gopaymentpage');
 $routes->get('paymentreceiptpdf', 'Payments::paymentReceiptpdf');
-$routes->get('paymentReceiptlist', 'Payments::paymentReceiptlist');
+$routes->get('payment-receipt-list', 'Payments::paymentReceiptlist');
 $routes->get('downloadpdf', 'Payments::downloadPdf');
 $routes->post('saveTaxreceiptforfiltereduserform', 'Payments::saveTaxreceipt'); 
-$routes->post('payments/saveTaxreceipt', 'Payments::saveTaxreceipt');
+$routes->post('payments/save-tax-receipt', 'Payments::saveTaxreceipt');
 $routes->get('changepaymentpagepagesetup', 'Payments::changepaymentpagepagesetup');
-$routes->get('payments/displayPayers', 'Payments::displayPayers');
-$routes->get('payments/searchMembers', 'Payments::searchMembers');
-$routes->post('uploadBulkPayments', 'Payments::uploadBulkPayments');
-$routes->get('payments/getDistricts', 'Payments::getDistricts');
-$routes->get('payments/getTaluks', 'Payments::getTaluks');
-$routes->get('payments/getPanchayats', 'Payments::getPanchayats');
-$routes->get('payments/getVillagesNew', 'Payments::getVillagesNew');
-$routes->get('payments/getVillages', 'Payments::getVillages');
-$routes->get('payments/getAllevents', 'Payments::getAllevents');
-$routes->get('payments/getEventslist', 'Payments::getEventslist');
-$routes->get('payments/searchEvents', 'Payments::searchEvents');
-$routes->get('payments/getTaxamount', 'Payments::getTaxamount');
+$routes->get('payments/display-payers', 'Payments::displayPayers');
+$routes->get('payments/search-members', 'Payments::searchMembers');
+$routes->post('payments/upload-bulk-payments', 'Payments::uploadBulkPayments');
+$routes->get('payments/get-districts', 'Payments::getDistricts');
+$routes->get('payments/get-taluks', 'Payments::getTaluks');
+$routes->get('payments/get-panchayats', 'Payments::getPanchayats');
+$routes->get('payments/get-villages-new', 'Payments::getVillagesNew');
+$routes->get('payments/get-villages', 'Payments::getVillages');
+$routes->get('payments/get-all-events', 'Payments::getAllevents');
+$routes->get('payments/get-events-list', 'Payments::getEventslist');
+$routes->get('payments/search-events', 'Payments::searchEvents');
+$routes->get('payments/get-tax-amount', 'Payments::getTaxamount');
 
 // Payments Filter Routes
 $routes->get('filteredusers', 'PaymentsFilter::index');
-$routes->match(['get', 'post'], 'getFilteredusers', 'PaymentsFilter::getFilteredusers');
-$routes->get('filteredUserpaymentform', 'PaymentsFilter::filteredUserpaymentform');
-$routes->get('changefiltereduserspagesetup', 'PaymentsFilter::changefiltereduserspagesetup');
-$routes->post('PaymentsFilter/displayFiltermembers', 'PaymentsFilter::displayFiltermembers');
+$routes->match(['get', 'post'], 'get-filtered-users', 'PaymentsFilter::getFilteredusers');
+$routes->get('filtered-user-payment-form', 'PaymentsFilter::filteredUserpaymentform');
+$routes->get('change-filtered-users-page-setup', 'PaymentsFilter::changefiltereduserspagesetup');
+$routes->post('payments-filter/display-filter-members', 'PaymentsFilter::displayFiltermembers');
 
 // Export & Reporting Routes
 $routes->get('excel', 'PaidUnpaidController::excel');

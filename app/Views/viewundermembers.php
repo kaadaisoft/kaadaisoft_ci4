@@ -1206,7 +1206,7 @@ function setDropdownpanchayat(taluk){
   function viewMemberdata(id) {
     $.ajax({
         type:"post",
-        url:"coordinators/viewMemberdata",
+        url:"coordinators/view-member-data",
         data:{"id":id},
         success:function(result){
         let member_data = JSON.parse(result);

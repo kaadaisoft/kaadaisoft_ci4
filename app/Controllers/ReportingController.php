@@ -102,7 +102,7 @@ class ReportingController extends BaseController
 
         $colIndex = 1;
         foreach ($columns as $column) {
-            $sheet->setCellValueByColumnAndRow($colIndex, 1, ucfirst($column));
+            $sheet->setCellValue([$colIndex, 1], ucfirst($column));
             $colIndex++;
         }
 
@@ -110,7 +110,7 @@ class ReportingController extends BaseController
         foreach ($filteredusers as $value) {
             $colIndex = 1;
             foreach ($columns as $column) {
-                $sheet->setCellValueByColumnAndRow($colIndex, $rowIndex, $value[$column]);
+                $sheet->setCellValue([$colIndex, $rowIndex], $value[$column]);
                 $colIndex++;
             }
             $rowIndex++;
@@ -177,7 +177,7 @@ class ReportingController extends BaseController
 
         $colIndex = 1;
         foreach ($columns as $column) {
-            $sheet->setCellValueByColumnAndRow($colIndex, 2, ucfirst($column));
+            $sheet->setCellValue([$colIndex, 2], ucfirst($column));
             $colIndex++;
         }
         $sheet->getStyle("A2:{$lastCol}2")->getFont()->setBold(true);
@@ -186,7 +186,7 @@ class ReportingController extends BaseController
         foreach ($filteredusers as $value) {
             $colIndex = 1;
             foreach ($columns as $column) {
-                $sheet->setCellValueByColumnAndRow($colIndex, $rowIndex, $value[$column]);
+                $sheet->setCellValue([$colIndex, $rowIndex], $value[$column]);
                 $colIndex++;
             }
             $rowIndex++;

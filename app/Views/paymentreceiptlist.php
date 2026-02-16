@@ -368,12 +368,12 @@
 
         <div class="row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
               
          </div><!-----------side-bar-end-------------->
              
-         <div id="pagecontrol" style="overflow:auto;" class="col-md-10 "><!-----------main-dashboard------------------------->
-         <div style="overflow:auto;" class="ps-4 mt-2">
+         <div id="pagecontrol" class="col-md-10 "><!-----------main-dashboard------------------------->
+         <div class="ps-4 mt-2">
          <?php 
          echo " <table class='table-bordered border-secondary col-md-4'>";
          if(isset($member)){
@@ -520,7 +520,7 @@
       }
     });
 
-     let setheight = document.getElementById("pagecontrol");
+     /* let setheight = document.getElementById("pagecontrol");
      let pageheight = window.innerHeight;
      let b = document.getElementById("search-bar").getBoundingClientRect().height;
      setheight.style.height = pageheight - b+"px";
@@ -531,7 +531,7 @@
          let currentTopbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
          document.getElementById("menu-bar").style.height = (currentHeight - currentTopbarHeight) + "px";
          setheight.style.height = (currentHeight - currentTopbarHeight) + "px";
-     });
+     }); */
 
      function viewReceipt(url){
       var link = document.createElement('a');

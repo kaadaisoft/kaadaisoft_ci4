@@ -243,7 +243,7 @@
               echo "<h6 class = 'py-2 text-secondary'>Total Members: $counts </h6>";
             }
             ?>
-            <a href='./ReportingController/excel' style='height:fit-content;'
+            <a href="<?= base_url('download_excel') . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" style='height:fit-content;'
               class='btn btn-sm btn-success fw-bold float-end btn-warning' id='download' role='button'>Download</a>
           </div>
 

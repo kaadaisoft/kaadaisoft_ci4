@@ -344,6 +344,14 @@ class MembersModel extends Model
             $builder->groupEnd();
         }
 
+        if (session()->get('role') == 2) {
+            $coord_id = session()->get("Kaadaisoft_userId");
+            $builder->groupStart()
+                    ->where('Coordinator_id', $coord_id)
+                    ->orWhere('Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+        }
+
         return $builder->get()->getResult();
     }
 

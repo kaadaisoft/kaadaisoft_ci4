@@ -90,16 +90,14 @@
     .sticky-top {
       position: sticky;
       top: 0;
-      /* Position the bar at the top of the viewport */
-      z-index: 100;
-      /* Ensure it stays above other elements */
+      z-index: 1000;
       background-color: #ffffff;
-      /* Add background color to prevent content overlap */
-      /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); Optional: Add a shadow for visual separation */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .main-navbar {
-      margin-top: 60px;
+      margin-top: 0;
+      padding-top: 10px;
     }
 
     /* Custom Mobile Menu Styles */
@@ -145,7 +143,7 @@
 
 <body>
 
-  <div class="container-fluid sticky-top" style="position: fixed;">
+  <div class="container-fluid sticky-top">
     <div class="row"><!-----top-bar--------------->
 
       <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
@@ -256,7 +254,7 @@
               var event = $('#eventid').val();
               var status = $('input[name="paymentstatus"]:checked').val();
 
-              window.location.href = "<?= base_url('ReportingController/download_excel') ?>"
+              window.location.href = "<?= base_url('download_excel') ?>"
                 + "?year=" + encodeURIComponent(year)
                 + "&event=" + encodeURIComponent(event)
                 + "&status=" + encodeURIComponent(status);

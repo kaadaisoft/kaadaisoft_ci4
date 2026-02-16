@@ -791,6 +791,15 @@ unset($_SESSION["altereventsindex"]);
     eventsData = <?php echo json_encode($events); ?> || [];
     <?php endif; ?>
 
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateString;
+}
+
 function renderEvents(data, sNo) {
     let html = "";
     let i = sNo + 1;
@@ -816,8 +825,8 @@ function renderEvents(data, sNo) {
                     </button>
                     </div>
                     </td>
-                    <td style='font-weight:500;'>${value.From_date}</td>
-                    <td style='font-weight:500;'>${value.To_date}</td>
+                    <td style='font-weight:500;'>${formatDate(value.From_date)}</td>
+                    <td style='font-weight:500;'>${formatDate(value.To_date)}</td>
                     <td style='font-weight:500;'>${value.TaxAmount}</td>
                     <td class='px-3' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>
                     <div class='d-flex justify-content-evenly'>

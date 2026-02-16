@@ -484,7 +484,7 @@
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
 <!---------------------add-toast---------------------->
  
   <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
@@ -567,11 +567,11 @@ unset($_SESSION["coorderrorstatus"]);
 
         <div id="pagecontrol" class="row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
        
         </div><!-----------side-bar-end-------------->
             
-        <div style="height:inherit;overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div class="col-md-10"><!-----------main-dashboard------------------------->
 
          <!------------------------------coordinator-data--------------------------->
          <?php if(isset($coordinator)):?>
@@ -1113,10 +1113,10 @@ $.ajax({
 
     }
 
-     let setheight = document.getElementById("pagecontrol");
+     /* let setheight = document.getElementById("pagecontrol");
      let pageheight = window.innerHeight;
      let b = document.getElementById("search-bar").getBoundingClientRect().height;
-     setheight.style.height = pageheight - b+"px";
+     setheight.style.height = pageheight - b+"px"; */
 
      function getmemberdata(areas){
         let area = areas.value;
@@ -1415,7 +1415,7 @@ function setDropdownpanchayat(taluk){
     function viewMemberdata(id) {
     $.ajax({
         type:"post",
-        url:"<?= base_url('coordinators/viewMemberdata') ?>",
+        url:"<?= base_url('coordinators/view-member-data') ?>",
         data:{"id":id},
         success:function(result){
         let member_data = JSON.parse(result);

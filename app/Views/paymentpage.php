@@ -373,7 +373,7 @@
           </div>
           <div class="modal-body p-4">
             <form id="bulkUploadForm" enctype="multipart/form-data" method="POST"
-              action="<?= base_url('payments/uploadBulkPayments') ?>">
+              action="<?= base_url('payments/upload-bulk-payments') ?>">
               <div class="row">
                 <div class="col-md-6 mb-4">
                   <label class="form-label fw-bold fs-6 mb-3">Event Year:</label>
@@ -450,14 +450,20 @@
           <div class="pt-3 pb-4 px-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
               <span class="text-secondary fs-4 fw-bold">📊 Bulk Payment Upload</span>
-              <button type="button" class="btn btn-success fw-bold px-4 py-2" data-bs-toggle="modal"
-                data-bs-target="#bulkUploadModal">
-                <i class="fas fa-upload me-2"></i>Upload CSV
-              </button>
+              <div class="d-flex align-items-center gap-2">
+                <button onclick="toggleFilterSection()" class="btn btn-outline-primary fw-bold px-4 py-2 shadow-sm rounded">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <button type="button" class="btn btn-success fw-bold px-4 py-2" data-bs-toggle="modal"
+                    data-bs-target="#bulkUploadModal">
+                    <i class="fas fa-upload me-2"></i>Upload CSV
+                </button>
+              </div>
             </div>
           </div>
 
 
+          <div id="filter-segment" style="display: none;">
           <div <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
             echo "hidden";
           } ?>
@@ -469,7 +475,7 @@
             </div>
             <div class="pt-2 pb-4 px-3"><!----------filter-start------------>
               <form class="row border py-4 border-4 border-success" method="POST" style="row-gap:20px;"
-                action="<?= base_url("getFilteredusers") ?>">
+                action="<?= base_url("get-filtered-users") ?>">
                 <div class="col-md-3"><!------------state-choose------------>
                   <label class="container-fluid" for="aadhar">State:<br>
                     <select onchange="getDistricts(this)" class="container-fluid border rounded" name="stateid"
@@ -612,7 +618,7 @@
                 </div>
               </div>
               <form class="row border py-4 border-4 border-success" method="POST" style="row-gap:20px;"
-                action="<?= base_url("getFilteredusers") ?>">
+                action="<?= base_url("get-filtered-users") ?>">
                 <div class="col-md-3"><!------------state-choose------------>
                   <label class="container-fluid" for="aadhar">State:<br>
                     <input class="container-fluid border rounded" name="statename" id="statename" readonly
@@ -715,6 +721,7 @@
               </form>
             </div><!---------filter-end-------------->
           </div><!------------coordinator-filter-end------------------>
+          </div> <!-- Filter Segment End -->
 
           <div id="paymentdetails">
             <?php if(isset($counts) && $counts > 0): ?>
@@ -905,7 +912,7 @@
 
       $.ajax({
         type: "get",
-        url: "payments/displayPayers",
+        url: "payments/display-payers",
         data: { "count": counts },
         success: function (result) {
           document.getElementById('filteredmembers').innerHTML = result;
@@ -928,7 +935,7 @@
 
       $.ajax({
         type: "get",
-        url: "payments/getDistricts",
+        url: "payments/get-districts",
         data: { "stateid": stateid },
       success: (result) => {
           let districts = JSON.parse(result);
@@ -948,7 +955,7 @@
       let districtname = district.value;
       $.ajax({
         type: "get",
-        url: "payments/getTaluks",
+        url: "payments/get-taluks",
         data: { "districtname": districtname },
         success: (result) => {
           let taluks = JSON.parse(result);
@@ -969,7 +976,7 @@
       let localareaid = area.value;
       $.ajax({
         type: "get",
-        url: "payments/getVillages",
+        url: "payments/get-villages",
         data: { "localareaid": localareaid },
         success: (result) => {
           document.getElementById("villages").innerHTML = result;
@@ -984,7 +991,7 @@
       let talukname = taluk.value;
       $.ajax({
         type: "get",
-        url: "payments/getPanchayats",
+        url: "payments/get-panchayats",
         data: { "talukname": talukname },
         success: (result) => {
           let panchayats = JSON.parse(result);
@@ -1014,7 +1021,7 @@
 
       $.ajax({
         type: "get",
-        url: "payments/getVillagesNew",
+        url: "payments/get-villages-new",
         data: { "panchayatname": panchayatname },
         success: (result) => {
           let villages = JSON.parse(result);
@@ -1054,7 +1061,7 @@
       let year = yeardata.value;
       $.ajax({
         type: "get",
-        url: "payments/getAllevents",
+        url: "payments/get-all-events",
         data: { "year": year },
         success: (result) => {
           document.getElementById("showevents").innerHTML = result;
@@ -1070,7 +1077,7 @@
       let districtid = district.value;
       $.ajax({
         type: "get",
-        url: "payments/getCities",
+        url: "payments/get-cities",
         data: { "districtid": districtid },
         success: (result) => {
           document.getElementById("citiestitle").innerHTML = result;
@@ -1113,7 +1120,7 @@
 
       $.ajax({
         type: "get",
-        url: "payments/searchMembers",
+        url: "payments/search-members",
         data: { "searchfields": searchfields },
         success: (result) => {
           document.getElementById('filteredmembers').innerHTML = result;
@@ -1202,7 +1209,7 @@
       let year = yeardata.value;
       $.ajax({
         type: "get",
-        url: "payments/getAllevents",
+        url: "payments/get-all-events",
         data: { "year": year },
         success: (result) => {
           document.getElementById("showevents").innerHTML = result;
@@ -1228,7 +1235,7 @@
 
       $.ajax({
         type: "get",
-        url: "<?= base_url('payments/getAllevents'); ?>",
+        url: "<?= base_url('payments/get-all-events'); ?>",
         data: { "year": year },
         success: (result) => {
           eventSelect.innerHTML = result;
@@ -1288,6 +1295,9 @@
 
 
 
+    function toggleFilterSection() {
+        $("#filter-segment").slideToggle(400);
+    }
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

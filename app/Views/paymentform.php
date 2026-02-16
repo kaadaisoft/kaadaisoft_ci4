@@ -273,7 +273,7 @@
          
          <div id="mobile-paymentform" class='col-md-12 mt-3 ps-4'> <!--------------payment-form-start------->
             <?php if(isset($memberdetail)):?>
-            <form method="POST" autocomplete="off" action="<?=base_url("payments/saveTaxreceipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
+            <form method="POST" autocomplete="off" action="<?=base_url("payments/save-tax-receipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
 
                 <h3 class='text-center ps-logo-text'>Payment Details</h3>
                 <input id="path" name="path" hidden class="container-fluid border rounded" type="text" readonly value="paymentform">
@@ -782,7 +782,7 @@ const BankList = [
       else{
       $.ajax({
       type:"get",
-      url:"payments/getEventslist",
+      url:"payments/get-events-list",
       data:{"year":year,"memberid":memberid},
       success:(result)=>{
            document.getElementById("showevents").innerHTML = result;
@@ -801,7 +801,7 @@ const BankList = [
         console.log(event)
         $.ajax({
         type:"get",
-        url:"payments/searchEvents",
+        url:"payments/search-events",
         data:{"event":event},
         success:(result)=>{
            document.getElementById("eventsearchresult").style.visibility = "visible";
@@ -831,7 +831,7 @@ const BankList = [
        console.log(event.value,memberid);
       $.ajax({
       type:"get",
-      url:"payments/getTaxamount",
+      url:"payments/get-tax-amount",
       data:{"eventid":eventid,"memberid":memberid},
       success:(result)=>{
            document.getElementById("taxdetails").innerHTML = result;
@@ -850,7 +850,7 @@ const BankList = [
        console.log(event,memberid);
       $.ajax({
       type:"get",
-      url:"payments/getTaxamount",
+      url:"payments/get-tax-amount",
       data:{"eventid":SNo,"memberid":memberid},
       success:(result)=>{
            document.getElementById("taxdetails").innerHTML = result;
@@ -920,7 +920,7 @@ const BankList = [
      console.log(paymentdata)
      $.ajax({
       type:"post",
-      url:"payments/saveTaxreceipt",
+      url:"payments/save-tax-receipt",
       data:paymentdata,
       success:(result)=>{
            document.getElementById("taxamount").innerHTML = result;

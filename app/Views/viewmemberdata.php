@@ -435,6 +435,8 @@
             width:90%;
             padding:8%;
           }
+      }
+      
       /* Mobile Menu CSS */
       #custom-mobile-menu {
         display: none;
@@ -461,7 +463,6 @@
       
       #mobile-menu-content {
         margin-top: 60px;
-      }
       }
 
       .green-underline {
@@ -495,7 +496,7 @@
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
 <!---------------------add-toast---------------------->
  
   <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
@@ -622,12 +623,12 @@ foreach($toast_msgs as $key => $toast_id) {
 
         <div id="pagecontrol" class="row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
        
               
         </div><!-----------side-bar-end-------------->
             
-        <div id="main-dashboard" style="overflow-y:auto;height:inherit;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="main-dashboard" class="col-md-10"><!-----------main-dashboard------------------------->
 
          <!------------------------------coordinator-data--------------------------->
          <?php if(isset($member)):?>
@@ -768,7 +769,7 @@ foreach($toast_msgs as $key => $toast_id) {
 
         
          
-        <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
+        <div class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
        
         <table class="table table-bordered">
             <thead>
@@ -1108,10 +1109,10 @@ $.ajax({
      let form_height = windowheight*(95/100);
      let form_section = document.getElementById("update-member-section");
      form_section.style.height = `${form_height}px`;
-     let setheight = document.getElementById("pagecontrol");
+     /* let setheight = document.getElementById("pagecontrol");
      let pageheight = window.innerHeight;
      let b = document.getElementById("search-bar").getBoundingClientRect().height;
-     setheight.style.height = pageheight - b+"px";
+     setheight.style.height = pageheight - b+"px"; */
 
      window.addEventListener("resize",()=>{
                document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
@@ -1163,7 +1164,7 @@ $.ajax({
       });
     }
   
-    document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
+    // document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
 
         function commonSearch(coords){
              

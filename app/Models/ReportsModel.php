@@ -101,7 +101,8 @@ class ReportsModel extends Model
         // $eventid is required.
         $builder = $this->db->table('kaadaimembers km');
         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
-        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventid", 'left');
+        $escapedEventId = $this->db->escape($eventid);
+        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if ($status == 'All') {
             $builder->limit(8);
@@ -126,7 +127,8 @@ class ReportsModel extends Model
     {
         $builder = $this->db->table('kaadaimembers km');
         $builder->select('km.Familymembershipid, km.Name, km.Role, pr.paymentdate, pr.paidamount, pr.Mobile, pr.Taxamount, pr.balanceamount, pr.paymentdate');
-        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventid", 'left');
+        $escapedEventId = $this->db->escape($eventid);
+        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if ($status == "Pending") {
             $builder->groupStart()
@@ -172,7 +174,8 @@ class ReportsModel extends Model
          
          $builder = $this->db->table('kaadaimembers km');
          $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
-         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventname", 'left');
+         $escapedEventId = $this->db->escape($eventname);
+         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
          if ($status == 'All') {
             // No status filter
@@ -230,11 +233,14 @@ class ReportsModel extends Model
 
     public function getMembersHistoryForDownload($eventid, $status, $talukname = null, $panchayatname = null, $villagename = null)
     {
-        $eventid = $this->db->escape($eventid);
+        if (empty($eventid)) {
+            return [];
+        }
+        $escapedEventId = $this->db->escape($eventid);
         
         $builder = $this->db->table('kaadaimembers km');
         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
-        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $eventid", 'left');
+        $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if (!empty($talukname)) {
             $builder->where('km.Taluk', $talukname);

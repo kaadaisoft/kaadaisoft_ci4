@@ -52,6 +52,7 @@ html, body {
     .dashboard-cards{
     display:flex;
     flex-wrap:wrap;
+    justify-content: center;
     gap:20px;
     }
 
@@ -743,7 +744,7 @@ if (session()->getFlashdata('upload_error')) {
         
 
       <!-------------------------------total-pendings-------------------------------->
-<h3 class="mt-5 mb-3 fw-bold" style="color: #444;">Payment pending details</h3>
+<h3 class="mt-5 mb-3 fw-bold text-center" style="color: #444;">Payment pending details</h3>
 <div class="row px-2">
     <div class="col-12">
         <table class="table custom-table">

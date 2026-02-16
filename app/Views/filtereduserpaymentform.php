@@ -257,7 +257,7 @@
          
         <div id="mobile-paymentform" class='col-md-12 mt-3 ps-4'> <!--------------payment-form-start------->
         <?php if(isset($memberdetail)):?>
-        <form method="POST" autocomplete="off" action="<?=base_url("payments/saveTaxreceipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
+        <form method="POST" autocomplete="off" action="<?=base_url("payments/save-tax-receipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
 
         <h3 class='text-center ps-logo-text'>Payment Details</h3>
         <input id="path" name="path" hidden class="container-fluid border rounded" type="text" readonly value="filtereduserform">
@@ -752,7 +752,7 @@ const BankList = [
       else{
       $.ajax({
       type:"get",
-      url:"payments/getEventslist",
+      url:"payments/get-events-list",
       data:{"year":year,"userid":userid},
       success:(result)=>{
            document.getElementById("showevents").innerHTML = result;
@@ -771,7 +771,7 @@ const BankList = [
         console.log(event)
         $.ajax({
         type:"get",
-        url:"payments/searchEvents",
+        url:"payments/search-events",
         data:{"event":event},
         success:(result)=>{
            document.getElementById("eventsearchresult").style.visibility = "visible";

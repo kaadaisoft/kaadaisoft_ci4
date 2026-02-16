@@ -123,6 +123,7 @@
          display: flex;
          align-items: center;
          justify-content: space-between;
+         padding: 10px 20px;
       }
 
       .ham-menu {
@@ -400,7 +401,18 @@
          }
 
          .memberpadd {
-            padding: 5% 0 0 0 !important;
+            padding: 2% !important;
+         }
+
+         #btn-header .d-flex {
+            flex-wrap: wrap;
+            justify-content: center !important;
+            gap: 10px;
+         }
+
+         #btn-header button, #btn-header a {
+            flex: 0 0 auto;
+            margin: 2px !important;
          }
 
          #hidename {
@@ -667,9 +679,13 @@
          <div id="pagecontrol" class="col-md-10">
             <!-----------main-dashboard------------------------->
 
-            <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-between memberpadd">
-               <span class="h5">Members</span>
-               <div class="d-flex align-items-center">
+            <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-md-end justify-content-center memberpadd">
+               <div class="d-flex align-items-center flex-wrap justify-content-center gap-2">
+                   <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
+                   <button onclick="toggleBulkUploadSection()" class="btn btn-sm btn-outline-info fw-bold me-2 px-3 rounded-pill shadow-sm">
+                       <i class="fas fa-file-upload me-1"></i>Upload Bulk Data
+                   </button>
+                   <?php endif; ?>
                    <button onclick="toggleFilterSection()" class="btn btn-sm btn-outline-primary fw-bold me-2 px-3 rounded-pill shadow-sm transition-all">
                        <i class="fas fa-filter me-1"></i>Filter
                    </button>
@@ -688,23 +704,23 @@
              </div>
 
             <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
-             <div class="container-fluid px-4 pt-3">
-                <div class="ps-gray p-3 border rounded shadow-sm d-flex align-items-center justify-content-between">
+             <div id="bulk-upload-segment" class="container-fluid px-4 pt-3" style="display: none;">
+                <div class="ps-gray p-3 border rounded shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
                    <h6 class="mb-0 fw-bold">Upload Members Bulk Data</h6>
-                   <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
-                       <input type="file" class="form-control" name="file" id="file" required style="width: auto;">
-                       <button class="btn btn-primary" type="submit">Upload</button>
+                   <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex flex-column flex-sm-row align-items-center gap-2 w-100 w-md-auto">
+                       <input type="file" class="form-control" name="file" id="file" required style="max-width: 100%;">
+                       <button class="btn btn-primary px-4" type="submit">Upload</button>
                    </form>
                 </div>
              </div>
              <?php endif; ?>
 
-            <?php if (session()->get('role') != 2 && session()->get('role') != 3): ?>
+            <?php if (session()->get('role') != 3): ?>
              <!-- Members Filter -->
                 <div id="filter-segment" class="container-fluid px-4 pt-3 memberpadd" style="display: none;">
                    <div class="border rounded p-4 bg-light shadow-sm" style="border-left: 5px solid #ffc107 !important; border-radius: 15px !important;">
                       <h6 class="mb-3 fw-bold text-dark"><i class="fas fa-search-plus me-2"></i>Advanced Search Filters</h6>
-                      <div class="row mb-3">
+                      <div class="row mb-3" <?php if (session()->get('role') == 2) echo 'style="display:none;"'; ?>>
                          <!-- State -->
                          <div class="col-md-3">
                             <label class="small fw-bold mb-1 text-muted" for="states-dropdown">State:</label>
@@ -879,7 +895,7 @@
              <?php endif; ?>
 
 
-            <div style="overflow:auto; height: 75vh;" class="container-fluid pt-3 px-4 memberpadd"><!----------------table-------->
+            <div style="overflow-x:auto; height: 75vh;" class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
                <table class="table table-responsive table-bordered">
                   <thead <?php if (count($members) == 0) {
                      echo "hidden";
@@ -955,7 +971,7 @@
             </div>
 
             <form name="memberregistration" id="registration-form" onsubmit="return validateMemberaddform()"
-               action="<?= base_url("AdminDashboard/registerMember"); ?>" method="post" enctype="multipart/form-data"
+               action="<?= base_url("registerMember"); ?>" method="post" enctype="multipart/form-data"
                autocomplete="off">
 
 
@@ -1300,7 +1316,7 @@
                     <button <?php if (session()->get('role') == 2) {
                        echo "hidden";
                     } ?> data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
-                    <button onclick ="viewMemberdata('viewMemberdata?member_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='viewCoordinatordata' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='viewCoordinatordata' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
                     </td>
             </tr>
         `;
@@ -2447,7 +2463,7 @@
           
       }       */
 
-      <?php if (session()->get('role') != 2 && session()->get('role') != 3): ?>
+      <?php if (session()->get('role') != 3): ?>
          function applyMemberFilters() {
             const stateId = $("#states-dropdown").val();
             const district = $("#districts-dropdown").val();
@@ -2501,7 +2517,7 @@ function getEventsByYear(sel) {
 
   $.ajax({
     type: "GET",
-    url: "<?= base_url('Members/getEventsByYear'); ?>",
+    url: "<?= base_url('members/get-events-by-year'); ?>",
     data: { year: year },
     success: function (html) {
       $("#eventid-dropdown").html(html);
@@ -2529,6 +2545,10 @@ function resetMemberFilters() {
 
 function toggleFilterSection() {
     $("#filter-segment").slideToggle(400);
+}
+
+function toggleBulkUploadSection() {
+    $("#bulk-upload-segment").slideToggle(400);
 }
 
 

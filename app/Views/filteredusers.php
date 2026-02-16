@@ -352,7 +352,7 @@
          <span class="text-secondary h4">Payment Status Filter:</span>
          <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-sm btn-success fw-bold float-end btn-warning' id ='download' role='button'>Download</a>
          </div> 
-         <form id="filter-form-height" class="row border py-4 border-4 border-success" method="post" action="<?=base_url('getFilteredusers')?>">
+         <form id="filter-form-height" class="row border py-4 border-4 border-success" method="post" action="<?=base_url('get-filtered-users')?>">
          <div class="col-md-3"><!------------state-choose------------>
            <label class="container-fluid" for="aadhar">Choose State: <br>
            <select onchange = "getDistricts(this)" class="container-fluid border rounded" name="stateid" id="stateid">
@@ -513,8 +513,8 @@
                     <td style='font-weight:500;'>$value[MemberTaluk]</td>
                     <td>
                       <div class='d-flex justify-content-evenly'>
-                        <a href='filteredUserpaymentform?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-                        <a href='paymentReceiptlist?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
+                        <a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
+                        <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
                       </div>
                     </td>
                     </tr>";
@@ -548,7 +548,7 @@
 
                   // Back Arrow
                   $prevIndex = max(0, $startPage - $lastindex);
-                  echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$prevIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
+                  echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$prevIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
 
                   // Page Buttons
                   for ($p = $startPage; $p < $endPage; $p++) {
@@ -564,13 +564,13 @@
                   if ($totalpages > $endPage) {
                       echo "<span>...</span>";
                       $lastPageIndex = $totalpages - 1;
-                      echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$lastPageIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
+                      echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$lastPageIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
                   }
 
                   // Forward Arrow
                   $nextIndex = $endPage;
                   if ($nextIndex < $totalpages) {
-                      echo "<a href='".base_url('changefiltereduserspagesetup')."?initialindex=$nextIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
+                      echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$nextIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
                   }
               }
 
@@ -664,7 +664,7 @@
 
       $.ajax({
       type:"get",
-      url:"payments/getDistricts",
+      url:"payments/get-districts",
       data:{"stateid":stateid},
       success:(result)=>{
           let districts = JSON.parse(result);
@@ -684,7 +684,7 @@
     let districtname = district.value;
     $.ajax({
     type:"get",
-    url:"payments/getTaluks",
+    url:"payments/get-taluks",
     data:{"districtname":districtname},
     success:(result)=>{
       let taluks = JSON.parse(result);
@@ -704,7 +704,7 @@
       let talukname = taluk.value;
       $.ajax({
         type: "get",
-        url: "payments/getPanchayats",
+        url: "payments/get-panchayats",
         data: { "talukname": talukname },
         success: (result) => {
           let panchayats = JSON.parse(result);
@@ -722,7 +722,7 @@
       let panchayatname = panchayat.value;
       $.ajax({
         type: "get",
-        url: "payments/getVillagesNew",
+        url: "payments/get-villages-new",
         data: { "panchayatname": panchayatname },
         success: (result) => {
           let villages = JSON.parse(result);
@@ -754,7 +754,7 @@
          } 
       $.ajax({
         type:"post",
-        url:"<?= base_url('PaymentsFilter/displayFiltermembers') ?>",
+        url:"<?= base_url('payments-filter/display-filter-members') ?>",
         data:{"count":counts,"talukname":talukname,"eventid":eventid,"status":status,"panchayatname":panchayatname,"villagename":villagename},
         success:function(result){
             document.getElementById('filteredmembers').innerHTML = result;
@@ -786,7 +786,7 @@
         let year = yeardata.value;
       $.ajax({
         type:"get",
-        url:"payments/getAllevents",
+        url:"payments/get-all-events",
         data:{"year":year},
         success:(result)=>{
         document.getElementById("showevents").innerHTML = result;
