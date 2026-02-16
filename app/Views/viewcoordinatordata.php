@@ -586,7 +586,7 @@ unset($_SESSION["coorderrorstatus"]);
 
                     <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$coordinator->Familymembershipid?>')">Event Partcipation</button>
 
-                     <button <?php if(session()->get('role') == 3){echo 'hidden';} ?> style="width:fit-content;" onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" class='updatecoord btn btn-primary fw-bold'>Update</button>
+                     <button <?php if(session()->get('role') == 3){echo 'hidden';} ?> style="width:fit-content;" onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" class='updatecoord btn btn-primary fw-bold'>Update Details</button>
                      <?php if(session()->get('role') == 2 || session()->get('role') == 3): ?>
                         <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
                      <?php endif; ?>

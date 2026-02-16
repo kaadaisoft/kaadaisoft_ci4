@@ -481,7 +481,7 @@
                         <div class="card mb-3 border-0">
                             <div class="card-body">
                                 <h5 class="mb-3 section-title">
-                                    <i class="bi bi-briefcase-fill text-primary me-2"></i>Occupation Details
+                                    <i class="bi bi-briefcase-fill text-primary me-2"></i>Education & Career Details
                                 </h5>
                                 <div class="row g-3">
 

@@ -552,9 +552,9 @@ unset($_SESSION["membererrorstatus"]);
                     <td style='font-weight:500;'><?=$value->District?></td>
                     <td style='font-weight:500;'><?=!empty($value->Area_one) ? "$value->Area_one" : ""?><?=!empty($value->Area_two) ? ", $value->Area_two" : ""?><?=!empty($value->Area_three) ? ",  $value->Area_three" : ""?><?=!empty($value->Area_four) ?  ", $value->Area_four" : ""?></td>
                     <td class='d-flex justify-content-evenly'>
-                    <button onclick="showupdatemembermodal('<?=trim($value->Familymembershipid)?>')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                    <button onclick="showupdatemembermodal('<?=trim($value->Familymembershipid)?>')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
                     <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="trashmember('<?=trim($value->Familymembershipid)?>','<?=trim($value->Name)?>','<?=trim($value->Taluk)?>')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-trash-can'></i><span class='trashtooltip'>Trash</span></button>
-                    <button onclick ="viewMemberdata('<?=$value->Familymembershipid?>')" data-bs-toggle='tooltip' title='viewCoordinatordata' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <button onclick ="viewMemberdata('<?=$value->Familymembershipid?>')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
                     </td>
                     </tr>
                 <?php ++$i; endforeach; ?>

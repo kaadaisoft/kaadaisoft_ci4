@@ -41,17 +41,27 @@ $routes->get('view-manager-data', 'AdminDashboard::viewManagerdata');
 
 // AdminDashboard AJAX & Form Routes
 $routes->post('AdminDashboard/check-exist-village', 'AdminDashboard::checkExistvillage');
+$routes->post('AdminDashboard/checkExistvillage', 'AdminDashboard::checkExistvillage');
 $routes->post('AdminDashboard/get-overall-status', 'AdminDashboard::getOverallstatus'); 
+$routes->post('AdminDashboard/getOverallstatus', 'AdminDashboard::getOverallstatus'); 
 $routes->get('AdminDashboard/get-districts-for-dropdown', 'AdminDashboard::getDistrictsfordropdown');
+$routes->get('AdminDashboard/getDistrictsfordropdown', 'AdminDashboard::getDistrictsfordropdown');
 $routes->post('AdminDashboard/get-taluks-for-dropdown', 'AdminDashboard::getTaluksfordropdown');
+$routes->post('AdminDashboard/getTaluksfordropdown', 'AdminDashboard::getTaluksfordropdown');
 $routes->post('AdminDashboard/get-panchayats-for-dropdown', 'AdminDashboard::getPanchayatsfordropdown');
+$routes->post('AdminDashboard/getPanchayatsfordropdown', 'AdminDashboard::getPanchayatsfordropdown');
 $routes->post('AdminDashboard/get-villages-for-dropdown', 'AdminDashboard::getVillagesfordropdown');
+$routes->post('AdminDashboard/getVillagesfordropdown', 'AdminDashboard::getVillagesfordropdown');
 $routes->post('AdminDashboard/check-exist-phoneno', 'Members::checkExistphoneno');
 $routes->post('AdminDashboard/check-exist-aadharno', 'Members::checkExistaadharno');
 $routes->get('AdminDashboard/get-members-for-assign', 'AdminDashboard::getMembersforassign');
+$routes->get('AdminDashboard/getMembersforassign', 'AdminDashboard::getMembersforassign');
 $routes->post('AdminDashboard/reassign-coordinator', 'AdminDashboard::reassignCoordinator');
+$routes->post('AdminDashboard/reassignCoordinator', 'AdminDashboard::reassignCoordinator');
 $routes->post('AdminDashboard/add-village', 'AdminDashboard::addVillage');
+$routes->post('AdminDashboard/addVillage', 'AdminDashboard::addVillage');
 $routes->post('AdminDashboard/remove-village', 'AdminDashboard::removeVillage');
+$routes->post('AdminDashboard/removeVillage', 'AdminDashboard::removeVillage');
 
 // Member Update Requests (Admin)
 $routes->get('view-member-update-requests', 'AdminDashboard::viewMemberUpdateRequests');
@@ -79,6 +89,7 @@ $routes->get('coordinators/topsubmenu', 'Coordinators::topsubmenu');
 $routes->get('coordinators/getDistrictsfordropdown', 'Members::getDistrictsfordropdown');
 $routes->get('coordinators/getTaluksfordropdown', 'Members::getTaluksfordropdown');
 $routes->get('coordinators/getPanchayatsfordropdown', 'Members::getPanchayatsfordropdown');
+$routes->get('coordinators/getVillagesfordropdown', 'Members::getVillagesfordropdown');
 $routes->post('coordinators/checkExistphoneno', 'Members::checkExistphoneno');
 $routes->post('coordinators/checkExistaadharno', 'Members::checkExistaadharno');
 
@@ -91,6 +102,7 @@ $routes->post('update-member', 'Members::updateMember');
 $routes->post('members/addFamilyMember', 'Members::addFamilyMember');
 $routes->post('members/updateMember', 'Members::updateMember');
 $routes->post('admindashboard/updateManager', 'AdminDashboard::updateManager');
+$routes->get('view-manager-data', 'AdminDashboard::viewManagerdata');
 $routes->get('view-member-data', 'Members::viewMemberdata');
 $routes->get('changememberspagesetup', 'Members::changememberspagesetup');
 $routes->get('registrationform', 'Members::Registrationform');
@@ -144,6 +156,7 @@ $routes->get('payments/pslogo', 'Payments::pslogo');
 $routes->get('gopaymentpage', 'Payments::gopaymentpage');
 $routes->get('paymentreceiptpdf', 'Payments::paymentReceiptpdf');
 $routes->get('payment-receipt-list', 'Payments::paymentReceiptlist');
+$routes->get('downloadpdf', 'Payments::downloadPdf');
 $routes->get('downloadpdf', 'Payments::downloadPdf');
 $routes->post('saveTaxreceiptforfiltereduserform', 'Payments::saveTaxreceipt'); 
 $routes->post('payments/save-tax-receipt', 'Payments::saveTaxreceipt');

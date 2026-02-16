@@ -830,7 +830,7 @@ function renderEvents(data, sNo) {
                     <td style='font-weight:500;'>${value.TaxAmount}</td>
                     <td class='px-3' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>
                     <div class='d-flex justify-content-evenly'>
-                    <button onclick='showupdateeventmodal(${value.Id})' style='width:30px;height:30px;outline:none;border:none;' class='updateevent text-dark table-btn rounded-circle shadow-sm'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                    <button onclick='showupdateeventmodal(${value.Id})' style='width:30px;height:30px;outline:none;border:none;' class='updateevent text-dark table-btn rounded-circle shadow-sm'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
                     <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick='deleteevent(${value.Id},\"${value.EventName}\")' style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashevent table-btn rounded-circle shadow-sm'><i class='fa-solid fa-trash-can'></i><span class='trashtooltip'>Trash</span></button></div></td>
             </tr>
         `;

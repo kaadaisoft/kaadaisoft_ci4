@@ -157,11 +157,31 @@ class MembersModel extends Model
             $coordinator_id = trim($session->get('Kaadaisoft_userId'));
         }
 
+        // Generate Familymembershipid Logic
+        $district_code = strtoupper(substr($district, 0, 3)); // Default fallback
+        
+        // 1. Get District Code from DB
+        $code_query = $this->db->query("SELECT district_code FROM panchayat_table WHERE district_name = ?", [$district]);
+        $code_row = $code_query->getRow();
+        
+        if ($code_row && !empty($code_row->district_code)) {
+            $district_code = $code_row->district_code;
+        }
+
+        // 2. Generate Next Numeric ID (Global Sequence)
+        // Extract numeric part from existing IDs (assuming format XXX00000)
+        $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num FROM kaadaimembers WHERE Familymembershipid REGEXP '^[A-Z]{3}[0-9]+$'");
+        $max_row = $max_query->getRow();
+        $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
+        
+        // 3. Construct ID
+        $new_membership_id = $district_code . sprintf('%05d', $next_num);
+
         $data = [
             'Name' => $name,
             'Coordinator_id' => $coordinator_id,
             'Coordinator_Two_id' => $coordinator_two_id,
-            'Approvedstatus' => 'Pending',
+            'Approvedstatus' => (session()->get('role') == 1) ? 'Verified' : 'Pending',
             'Dob' => $dob,
             'Gender' => $gender,
             'Bloodgroup' => $bloodgroup,
@@ -213,6 +233,7 @@ class MembersModel extends Model
             'Communitycertificate' => $communitycertificate,
             'MemberRole' => $memberRole,
             'is_dead' => $is_dead,
+            'Familymembershipid' => $new_membership_id,
         ];
 
         $insert = $this->db->table('kaadaimembers')->insert($data);

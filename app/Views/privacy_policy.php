@@ -77,7 +77,7 @@
     <nav class="navbar navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="<?= base_url() ?>">Kaadaisoft</a>
-            <a href="javascript:history.back()" class="back-btn">
+            <a href="<?= base_url() ?>" class="back-btn">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>

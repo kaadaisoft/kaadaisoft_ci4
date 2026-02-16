@@ -188,7 +188,7 @@
                   <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
                   
                   <div style="gap:10px;" class="row mt-4 pb-3">
-                     <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update</button>
+                     <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update Details</button>
                       <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
                   </div>
               </div>  

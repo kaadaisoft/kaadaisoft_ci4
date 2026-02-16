@@ -754,8 +754,8 @@ function renderCoordinators(data, sNo) {
                     <td style='font-weight:500;'>${value.Panchayat}</td>
                     <td style='font-weight:500;' class='${value.VillageNames ? '' : 'text-center'}'>${value.VillageNames ? value.VillageNames : '-'}</td>
                     <td class='d-flex justify-content-evenly'>
-                    <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
-                    <button onclick ="viewCoordinatordata('viewCoordinatordata?coord_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='viewCoordinatordata' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
+                    <button onclick ="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
                     </td>
             </tr>`
          i++;

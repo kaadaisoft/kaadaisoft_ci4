@@ -440,7 +440,7 @@ class Members extends BaseController
         $currentMember = $this->membersModel->getMemberdata($Familymembershipid);
         if ($currentMember && isset($currentMember->is_dead) && $currentMember->is_dead == 1) {
             $this->session->set("coorderrorstatus", "Dead member details cannot be updated.");
-            return redirect()->to("viewMemberdata?member_id=" . $Familymembershipid);
+            return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
         }
 
         $data["Name"] = $this->request->getPost("name" . $suffix);
@@ -654,15 +654,15 @@ class Members extends BaseController
         if ($updateMember) {
             if ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Your update request has been sent to your coordinator for approval.");
-                return redirect()->to("viewMemberdata?member_id=" . $Familymembershipid);
+                return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
             } else if ($this->session->get('role') == 2) {
                 if ($reason == "updatemember") {
                     $this->session->set("membersuccessstatus", "The Member $Familymembershipid details updated successfully.");
-                    return redirect()->to("viewMemberdata?member_id=" . $Familymembershipid);
+                    return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
                 }
 
                 $this->session->set("coordsuccessstatus", "The Coordinator ".$data['Name']." data is updated.");
-                return redirect()->to("viewCoordinatordata?coord_id=" . $Familymembershipid);
+                return redirect()->to("view-coordinator-data?coord_id=" . $Familymembershipid);
             } else if ($this->session->get('role') == 1 && $path == "coordinator") {
                 $this->session->set("coordsuccessstatus", "The Manager $Familymembershipid details updated successfully.");
                 return redirect()->to("coordinators");
@@ -904,13 +904,13 @@ class Members extends BaseController
         if (!$insertMember) {
             if ($this->session->get('role') == 1) {
                 $this->session->set("managererrorstatus", "Unexpected error please try again.");
-                return redirect()->to("viewManagerdata");
+                return redirect()->to("view-manager-data");
             } elseif ($this->session->get('role') == 2) {
                 $this->session->set("coorderrorstatus", "Unexpected error please try again.");
-                return redirect()->to("viewCoordinatordata");
+                return redirect()->to("view-coordinator-data");
             } elseif ($this->session->get('role') == 3) {
                 $this->session->set("coorderrorstatus", "Unexpected error occured please try again");
-                return redirect()->to("viewMemberdata");
+                return redirect()->to("view-member-data");
             } else {
                  $this->session->set("registerprocesserror", "Unexpected error occured please try again");
                  return redirect()->to("registrationform");
@@ -919,13 +919,13 @@ class Members extends BaseController
 
             if ($this->session->get('role') == 1) {
                 $this->session->set("managersuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
-                return redirect()->to("viewManagerdata");
+                return redirect()->to("view-manager-data");
             } elseif ($this->session->get('role') == 2) {
                 $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
-                return redirect()->to("viewCoordinatordata");
+                return redirect()->to("view-coordinator-data");
             } elseif ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
-                return redirect()->to("viewMemberdata");
+                return redirect()->to("view-member-data");
             } else {
                  // Public Registration
                  $this->session->set("registerprocesssuccess", "Your application is submitted. Please wait 48 hours.");

@@ -295,7 +295,7 @@
             <div class="card mb-4 border-0 shadow-sm rounded-3">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-briefcase text-primary me-2"></i>Occupation Details
+                        <i class="fa-solid fa-briefcase text-primary me-2"></i>Education & Career Details
                     </h5>
                     <div class="row g-3">
                         <!-- Education -->
@@ -689,7 +689,7 @@
                     <label for="correctdetails-member" class="form-check-label ms-2 font-weight-bold">I confirm that the above details are correct.</label>
                 </div>
                 <div>
-                    <button id="membersubmitbutton" disabled type="submit" class="btn btn-lg rounded-pill px-5">Update Member</button>
+                    <button id="membersubmitbutton" disabled type="submit" class="btn btn-lg rounded-pill px-5">Update Details</button>
                 </div>
             </div>
         </form>

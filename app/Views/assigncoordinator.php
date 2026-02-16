@@ -846,7 +846,7 @@ function closeMobileMenu() {
 
       $.ajax({
       type:"get",
-      url:"AdminDashboard/getDistrictsfordropdown",
+      url:"<?= base_url('AdminDashboard/getDistrictsfordropdown') ?>",
       data:{"state_id":stateid},
       success:(result)=>{
            document.getElementById("districtid").innerHTML = result;
@@ -863,7 +863,7 @@ function closeMobileMenu() {
     type:"post",
     dataType: 'JSON',
     cache: false,
-    url:"AdminDashboard/getTaluksfordropdown",
+    url:"<?= base_url('AdminDashboard/getTaluksfordropdown') ?>",
     data:{"district_name":districtname},
     success:(result)=>{
        let dropdown = document.getElementById("talukid");
@@ -881,7 +881,7 @@ function closeMobileMenu() {
     type:"post",
     dataType: 'JSON',
     cache: false,
-    url:"AdminDashboard/getPanchayatsfordropdown",
+    url:"<?= base_url('AdminDashboard/getPanchayatsfordropdown') ?>",
     data:{"taluk_name":talukname},
     success:(result)=>{
        let dropdown = document.getElementById("panchayatid");
@@ -899,7 +899,7 @@ function closeMobileMenu() {
     type:"post",
     dataType: 'JSON',
     cache: false,
-    url:"AdminDashboard/getVillagesfordropdown",
+    url:"<?= base_url('AdminDashboard/getVillagesfordropdown') ?>",
     data:{"panchayat_name":panchayatname},
     success:(result)=>{
        displayVillage(result);       

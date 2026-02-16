@@ -383,7 +383,7 @@
                         <div class="card mb-3 border-0">
                             <div class="card-body">
                                 <h5 class="mb-3 section-title">
-                                    <i class="bi bi-briefcase-fill text-primary me-2"></i>Occupation Details
+                                    <i class="bi bi-briefcase-fill text-primary me-2"></i>Education & Career Details
                                 </h5>
                                 <div class="row g-3">
 
@@ -1059,7 +1059,7 @@
             let state_id = state.value;
             $.ajax({
                 type: "get",
-                url: "getDistrictsfordropdown",
+                url: "<?= base_url('coordinators/getDistrictsfordropdown') ?>",
                 data: { "state_id": state_id },
                 success: (result) => {
                     document.getElementById("districts-dropdown").innerHTML = result;
@@ -1075,7 +1075,7 @@
             let district_name = district.value;
             $.ajax({
                 type: "get",
-                url: "getTaluksfordropdown",
+                url: "<?= base_url('coordinators/getTaluksfordropdown') ?>",
                 data: { "district_name": district_name },
                 success: (result) => {
                     document.getElementById("taluks-dropdown").innerHTML = result;
@@ -1090,7 +1090,7 @@
             let taluk_name = taluk.value;
             $.ajax({
                 type: "get",
-                url: "getPanchayatsfordropdown",
+                url: "<?= base_url('coordinators/getPanchayatsfordropdown') ?>",
                 data: { "taluk_name": taluk_name },
                 success: (result) => {
                     document.getElementById("panchayat-dropdown").innerHTML = result;
@@ -1104,7 +1104,7 @@
             let state_id = state.value;
             $.ajax({
                 type: "get",
-                url: "getDistrictsfordropdown",
+                url: "<?= base_url('coordinators/getDistrictsfordropdown') ?>",
                 data: { state_id: state_id },
                 success: function (result) {
                     document.getElementById("cur_districts_dropdown").innerHTML = result;
@@ -1119,7 +1119,7 @@
             let district_name = district.value;
             $.ajax({
                 type: "get",
-                url: "getTaluksfordropdown",
+                url: "<?= base_url('coordinators/getTaluksfordropdown') ?>",
                 data: { district_name: district_name },
                 success: function (result) {
                     document.getElementById("cur_taluks_dropdown").innerHTML = result;
@@ -1134,7 +1134,7 @@
             let taluk_name = taluk.value;
             $.ajax({
                 type: "get",
-                url: "getPanchayatsfordropdown",
+                url: "<?= base_url('coordinators/getPanchayatsfordropdown') ?>",
                 data: { taluk_name: taluk_name },
                 success: function (result) {
                     document.getElementById("cur_panchayat_dropdown").innerHTML = result;
@@ -1194,9 +1194,11 @@
 
             if (field_name == "phoneno") {
                 if (field_value.length >= 10 || field_value.length == 0) {
+                     // Clear length error immediately
+                     document.getElementById("phonenoerror").innerHTML = "";
                     $.ajax({
                         type: "post",
-                        url: "checkExistphoneno",
+                        url: "<?= base_url('coordinators/checkExistphoneno') ?>",
                         data: { "phoneno": field_value },
                         success: (result) => {
                             console.log(result)
@@ -1208,7 +1210,7 @@
                             }
                         },
                         error: (error) => {
-                            document.getElementById("menu-bar").innerHTML = "Error fetching Phone Number";
+                            console.error("Error checking phone number", error);
                         }
                     });
                 }
@@ -1237,9 +1239,11 @@
 
             if (field_name == "aadharno") {
                 if (field_value.length == 12 || field_value.length == 0) {
+                    // Clear length error immediately
+                    document.getElementById("aadharnoerror").innerHTML = "";
                     $.ajax({
                         type: "post",
-                        url: "checkExistaadharno",
+                        url: "<?= base_url('coordinators/checkExistaadharno') ?>",
                         data: { "aadharno": field_value },
                         success: (result) => {
                             if (result.trim() == "true") {
@@ -1250,7 +1254,7 @@
                             }
                         },
                         error: (error) => {
-                            document.getElementById("menu-bar").innerHTML = "Error fetching Aadhar Number";
+                            console.error("Error checking aadhar number", error);
                         }
                     });
                 }
@@ -1815,7 +1819,7 @@
             // 2. District (needs AJAX fill for current dropdown)
             $.ajax({
                 type: "get",
-                url: "getDistrictsfordropdown",
+                url: "<?= base_url('coordinators/getDistrictsfordropdown') ?>",
                 data: { state_id: n_state.value },
                 success: function (result) {
                     c_district.innerHTML = result;
@@ -1825,7 +1829,7 @@
                     // 3. Taluk
                     $.ajax({
                         type: "get",
-                        url: "getTaluksfordropdown",
+                        url: "<?= base_url('coordinators/getTaluksfordropdown') ?>",
                         data: { district_name: n_district.value },
                         success: function (resultTaluk) {
                             c_taluk.innerHTML = resultTaluk;
@@ -1835,7 +1839,7 @@
                             // 4. Panchayat
                             $.ajax({
                                 type: "get",
-                                url: "getPanchayatsfordropdown",
+                                url: "<?= base_url('coordinators/getPanchayatsfordropdown') ?>",
                                 data: { taluk_name: n_taluk.value },
                                 success: function (resultPanchayat) {
                                     c_panchayat.innerHTML = resultPanchayat;
@@ -2053,7 +2057,7 @@
 
             $.ajax({
                 type: "get",
-                url: "getVillagesfordropdown",
+                url: "<?= base_url('coordinators/getVillagesfordropdown') ?>",
                 data: { panchayat_name: panchayat_name },
                 success: function(result) {
                     villageSelect.innerHTML = result;
@@ -2113,7 +2117,7 @@
 
             $.ajax({
                 type: "get",
-                url: "getVillagesfordropdown",
+                url: "<?= base_url('coordinators/getVillagesfordropdown') ?>",
                 data: { panchayat_name: panchayat_name },
                 success: function(result) {
                     villageSelect.innerHTML = result;

@@ -242,10 +242,10 @@
                 </p>
                 <div class="text-center mt-3">
                     <small style="font-size: 20px;">
-                        <a href="<?= base_url('terms-and-conditions') ?>" class="text-muted"
-                            style="color: #ff0000 !important; text-decoration: underline;">Terms and Conditions</a> |
-                        <a href="<?= base_url('privacy-policy') ?>" class="text-muted"
-                            style="color: #ff0000 !important; text-decoration: underline;">Privacy Policy</a>
+                        <a href="<?= base_url('terms-and-conditions') ?>" 
+                            style="color: #ffffff !important; text-decoration: underline;">Terms and Conditions</a> |
+                        <a href="<?= base_url('privacy-policy') ?>" 
+                            style="color: #ffffff !important; text-decoration: underline;">Privacy Policy</a>
                     </small>
                 </div>
 
