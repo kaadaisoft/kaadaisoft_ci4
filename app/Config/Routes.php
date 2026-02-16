@@ -31,6 +31,8 @@ $routes->post('admindashboard/update-manager', 'AdminDashboard::updateManager');
 $routes->get('viewreceivedapplications', 'AdminDashboard::viewReceivedapplications');
 $routes->get('changeapplicationspagesetup', 'AdminDashboard::changeapplicationspagesetup');
 $routes->post('assign-coordinators-for-taluk', 'AdminDashboard::assignCoordinatorsfortaluk');
+$routes->get('assignCoordinatorsfortaluk', 'AdminDashboard::assignCoordinator'); // Redirect or show form on GET
+$routes->post('assignCoordinatorsfortaluk', 'AdminDashboard::assignCoordinatorsfortaluk');
 $routes->post('approvemember', 'AdminDashboard::approveMember');
 $routes->post('rejectmember', 'AdminDashboard::rejectMember');
 $routes->get('assigncoordinator', 'AdminDashboard::assignCoordinator');
