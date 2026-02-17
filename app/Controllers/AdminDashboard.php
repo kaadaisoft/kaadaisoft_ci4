@@ -602,7 +602,7 @@ public function change_password() {
                 $villages = $this->adminDashboardModel->getVillages($manager->Panchayat);
             }
         } else {
-             return "Manager not found.";
+             return "Manager not found."; 
         }
         
         return view("updatemanager", [
