@@ -128,57 +128,103 @@
             
         <div id="changepage" style="height:inherit;overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
 
-<!---------------------view-manager-success-toast---------------------->
-<div id='managertoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);z-index: 1050;' class='toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="managerstatus" class='toast-body text-white fs-6 py-2'></div>
+<!---------------------view-manager-status-notifications---------------------->
+<style>
+    .custom-toast {
+        position: fixed;
+        top: 20px;
+        right: -400px;
+        min-width: 320px;
+        padding: 16px 24px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 9999;
+        border-left: 6px solid #43a047;
+    }
+    .custom-toast.error { border-left-color: #e53935; }
+    .toast-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+    .toast-icon.success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
+    .toast-icon.error { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
+    .toast-content { flex-grow: 1; }
+    .toast-title { font-weight: 700; margin-bottom: 2px; }
+    .toast-msg { font-size: 0.9rem; color: #666; font-weight: 500; }
+    .toast-close { cursor: pointer; color: #ccc; transition: color 0.2s; }
+    .toast-close:hover { color: #333; }
+</style>
+
+<div id="managernotify" class="custom-toast">
+    <div id="notify-icon-bg" class="toast-icon success">
+        <i id="notify-icon" class="bi bi-check-lg" style="font-size: 1.2rem;"></i>
+    </div>
+    <div class="toast-content">
+        <div id="notify-title" class="toast-title text-success">Success</div>
+        <div id="notify-msg" class="toast-msg"></div>
+    </div>
+    <i class="bi bi-x-lg toast-close" onclick="hideNotification()"></i>
 </div>
 
-<?php if(isset($_SESSION["managersuccessstatus"])): ?>
-<?php $status = $_SESSION['managersuccessstatus']; ?>
 <script>
+    function showNotification(type, message) {
+        const toast = document.getElementById('managernotify');
+        const iconBg = document.getElementById('notify-icon-bg');
+        const icon = document.getElementById('notify-icon');
+        const title = document.getElementById('notify-title');
+        const msg = document.getElementById('notify-msg');
+
+        if (type === 'success') {
+            toast.classList.remove('error');
+            iconBg.className = 'toast-icon success';
+            icon.className = 'bi bi-check-lg';
+            title.innerText = 'Success';
+            title.className = 'toast-title text-success';
+            toast.style.borderLeftColor = '#43a047';
+        } else {
+            toast.classList.add('error');
+            iconBg.className = 'toast-icon error';
+            icon.className = 'bi bi-exclamation-circle';
+            title.innerText = 'Error';
+            title.className = 'toast-title text-danger';
+            toast.style.borderLeftColor = '#e53935';
+        }
+
+        msg.innerHTML = message;
+        toast.style.right = '20px';
+
+        setTimeout(hideNotification, 5000);
+    }
+
+    function hideNotification() {
+        document.getElementById('managernotify').style.right = '-400px';
+    }
+
     $(document).ready(function() {
-        document.getElementById('managerstatus').innerHTML = '<?= $status ?>';
-        const vmdToast = document.getElementById('managertoast');
-        vmdToast.classList.remove('hide');
-        vmdToast.classList.add('show');
-        vmdToast.style.right = '50px';
-        setTimeout(() => {
-            vmdToast.style.right = '-380px';
-        }, 3000);
+        <?php if(isset($_SESSION["managersuccessstatus"])): ?>
+            showNotification('success', '<?= $_SESSION["managersuccessstatus"] ?>');
+            <?php unset($_SESSION["managersuccessstatus"]); ?>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION["managererrorstatus"])): ?>
+            showNotification('error', '<?= $_SESSION["managererrorstatus"] ?>');
+            <?php unset($_SESSION["managererrorstatus"]); ?>
+        <?php endif; ?>
     });
 </script>
-<?php unset($_SESSION["managersuccessstatus"]); ?>
-<?php endif; ?>
-
-<!---------------------view-manager-error-toast---------------------->
-<div id='managererrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index: 1050;' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="managererrorstatus" class='toast-body text-white fs-6 py-2'></div>
-</div>
-
-<?php if(isset($_SESSION["managererrorstatus"])): ?>
-<?php $status = $_SESSION['managererrorstatus']; ?>
-<script>
-    $(document).ready(function() {
-        document.getElementById('managererrorstatus').innerHTML = '<?= $status ?>';
-        const vmdeToast = document.getElementById('managererrortoast');
-        vmdeToast.classList.remove('hide');
-        vmdeToast.classList.add('show');
-        vmdeToast.style.right = '50px';
-        setTimeout(() => {
-            vmdeToast.style.right = '-380px';
-        }, 3000);
-    });
-</script>
-<?php unset($_SESSION["managererrorstatus"]); ?>
-<?php endif; ?>
+<!---------------------view-manager-status-end---------------------->
 
           <?php if(isset($manager)):?>
             <div class="container-fluid px-4 py-4">   
@@ -213,6 +259,7 @@
             </table>
             </div>  
             </div> 
+            
             
             <?php if(isset($family_members) && !empty($family_members)): ?>
             <div class="row mt-5">

@@ -550,127 +550,131 @@ html, body {
 <body>
        
     <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
-       <!-----------------------------------add-toast---------------------------------------->
+        <!---------------------admindashboard-status-notifications---------------------->
+        <style>
+            .custom-toast {
+                position: fixed;
+                top: 20px;
+                right: -400px;
+                min-width: 320px;
+                padding: 16px 24px;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                z-index: 9999;
+                border-left: 6px solid #43a047;
+            }
+            .custom-toast.error { border-left-color: #e53935; }
+            .toast-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                flex-shrink: 0;
+            }
+            .toast-icon.success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
+            .toast-icon.error { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
+            .toast-content { flex-grow: 1; }
+            .toast-title { font-weight: 700; margin-bottom: 2px; }
+            .toast-msg { font-size: 0.9rem; color: #666; font-weight: 500; }
+            .toast-close { cursor: pointer; color: #ccc; transition: color 0.2s; }
+            .toast-close:hover { color: #333; }
+        </style>
 
-<div id='eventtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class='toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' onclick="document.getElementById('eventtoast').style.right='-380px'"></button>
-  </div>
-  <div id="eventstatus" class='toast-body text-white fs-6 py-2'>
-  
-  </div>
-  </div>
-<?php
-if (session()->getFlashdata('password_success')) {
-  $status = session()->getFlashdata('password_success');
-  echo "<script>
-       document.getElementById('eventstatus').innerHTML = '$status';
-       const succToast = document.getElementById('eventtoast');
-       succToast.classList.remove('hide');
-       succToast.classList.add('show');
-       succToast.style.right = '5%';
-       setTimeout(()=>{
-       succToast.style.right = '-380px';
-       },3000)
-       
-      </script>";
+        <div id="adminnotify" class="custom-toast">
+            <div id="notify-icon-bg" class="toast-icon success">
+                <i id="notify-icon" class="bi bi-check-lg" style="font-size: 1.2rem;"></i>
+            </div>
+            <div class="toast-content">
+                <div id="notify-title" class="toast-title text-success">Success</div>
+                <div id="notify-msg" class="toast-msg"></div>
+            </div>
+            <i class="bi bi-x-lg toast-close" onclick="hideNotification()"></i>
+        </div>
 
-}
+        <script>
+            function showNotification(type, message) {
+                const toast = document.getElementById('adminnotify');
+                const iconBg = document.getElementById('notify-icon-bg');
+                const icon = document.getElementById('notify-icon');
+                const title = document.getElementById('notify-title');
+                const msg = document.getElementById('notify-msg');
 
-if (session()->get('managersuccessstatus')) {
-  $status = session()->get('managersuccessstatus');
-  echo "<script>
-       document.getElementById('eventstatus').innerHTML = '$status';
-       const mSuccToast = document.getElementById('eventtoast');
-       mSuccToast.classList.remove('hide');
-       mSuccToast.classList.add('show');
-       mSuccToast.style.right = '5%';
-       setTimeout(()=>{
-       mSuccToast.style.right = '-380px';
-       },3000)
-       
-      </script>";
-  session()->remove('managersuccessstatus');
-}
+                if (type === 'success') {
+                    toast.classList.remove('error');
+                    iconBg.className = 'toast-icon success';
+                    icon.className = 'bi bi-check-lg';
+                    title.innerText = 'Success';
+                    title.className = 'toast-title text-success';
+                    toast.style.borderLeftColor = '#43a047';
+                } else {
+                    toast.classList.add('error');
+                    iconBg.className = 'toast-icon error';
+                    icon.className = 'bi bi-exclamation-circle';
+                    title.innerText = 'Error';
+                    title.className = 'toast-title text-danger';
+                    toast.style.borderLeftColor = '#e53935';
+                }
 
-if (session()->get('managererrorstatus')) {
-  $status = session()->get('managererrorstatus');
-  echo "<script>
-       document.getElementById('eventerrorstatus').innerHTML = '$status';
-       const mErrToast = document.getElementById('eventerrortoast');
-       mErrToast.classList.remove('hide');
-       mErrToast.classList.add('show');
-       mErrToast.style.right = '50px';
-       setTimeout(()=>{
-       mErrToast.style.right = '-380px';
-       },3000)
-       
-      </script>";
-  session()->remove('managererrorstatus');
-}
-?>
-<!---------------------add-toast-end------------------>
+                msg.innerHTML = message;
+                toast.style.right = '20px';
 
-<!---------------------event-error-toast---------------------->
+                setTimeout(hideNotification, 5000);
+            }
 
-<div id='eventerrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index:1;' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>error</strong>
-    <button type='button' class='btn-close float-end' onclick="document.getElementById('eventerrortoast').style.right='-380px'"></button>
-  </div>
-  <div id="eventerrorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
+            function hideNotification() {
+                if(document.getElementById('adminnotify')) {
+                    document.getElementById('adminnotify').style.right = '-400px';
+                }
+            }
 
-<?php
+            $(document).ready(function() {
+                <?php if(session()->get('eventsuccessstatus')): ?>
+                    showNotification('success', '<?= session()->get('eventsuccessstatus') ?>');
+                    <?php session()->remove('eventsuccessstatus'); ?>
+                <?php endif; ?>
 
-if (session()->getFlashdata('password_error')) {
-  $status = session()->getFlashdata('password_error');
-  echo "<script>
-       document.getElementById('eventerrorstatus').innerHTML = '$status';
-       const errToast = document.getElementById('eventerrortoast');
-       errToast.classList.remove('hide');
-       errToast.classList.add('show');
-       errToast.style.right = '50px';
-       setTimeout(()=>{
-       errToast.style.right = '-380px';
-       },3000)
-       
-      </script>";
+                <?php if(session()->get('eventerrorstatus')): ?>
+                    showNotification('error', '<?= session()->get('eventerrorstatus') ?>');
+                    <?php session()->remove('eventerrorstatus'); ?>
+                <?php endif; ?>
 
-}
+                <?php if(session()->get('managersuccessstatus')): ?>
+                    showNotification('success', '<?= session()->get('managersuccessstatus') ?>');
+                    <?php session()->remove('managersuccessstatus'); ?>
+                <?php endif; ?>
 
-?>
-<?php
-if (session()->getFlashdata('upload_success')) {
-  $status = session()->getFlashdata('upload_success');
-  echo "<script>
-        document.getElementById('eventstatus').innerHTML = '$status';
-        const upSuccToast = document.getElementById('eventtoast');
-        upSuccToast.classList.remove('hide');
-        upSuccToast.classList.add('show');
-        upSuccToast.style.right = '5%';
-      </script>";
+                <?php if(session()->get('managererrorstatus')): ?>
+                    showNotification('error', '<?= session()->get('managererrorstatus') ?>');
+                    <?php session()->remove('managererrorstatus'); ?>
+                <?php endif; ?>
 
-}
+                <?php if(session()->getFlashdata('password_success')): ?>
+                    showNotification('success', '<?= session()->getFlashdata('password_success') ?>');
+                <?php endif; ?>
 
-?>
-<?php
-if (session()->getFlashdata('upload_error')) {
-  $status = session()->getFlashdata('upload_error');
-  echo "<script>
-       document.getElementById('eventerrorstatus').innerHTML = '$status';
-       const upErrToast = document.getElementById('eventerrortoast');
-       upErrToast.classList.remove('hide');
-       upErrToast.classList.add('show');
-       upErrToast.style.right = '50px';
-      </script>";
+                <?php if(session()->getFlashdata('password_error')): ?>
+                    showNotification('error', '<?= session()->getFlashdata('password_error') ?>');
+                <?php endif; ?>
 
-}
+                <?php if(session()->getFlashdata('upload_success')): ?>
+                    showNotification('success', '<?= session()->getFlashdata('upload_success') ?>');
+                <?php endif; ?>
 
-?>
+                <?php if(session()->getFlashdata('upload_error')): ?>
+                    showNotification('error', '<?= session()->getFlashdata('upload_error') ?>');
+                <?php endif; ?>
+            });
+        </script>
+        <!---------------------admindashboard-status-end---------------------->
 <!----------------------------event-error-toast-end-------------------------------------->
       <div class="row"><!-----top-bar--------------->
 

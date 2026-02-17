@@ -140,17 +140,50 @@
     </div>
 
     <div class="container py-4">
-        <!---------------------register-toast---------------------->
-        <div id="registerstatusmodal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header fw-bold fs-5">
-                        Member registration status
-                        <button data-bs-dismiss="modal" class="btn btn-close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="memberregisterstatus" style="font-weight:500;" class="fs-5"></div>
-                        <button data-bs-dismiss="modal" class="btn btn-danger mt-3">Ok</button>
+        <!---------------------register-status-modal---------------------->
+        <style>
+            .status-modal-content {
+                border-radius: 24px;
+                border: none;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+            .success-gradient { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); }
+            .error-gradient { background: linear-gradient(135deg, #ef5350 0%, #e53935 100%); }
+            .success-text { color: #2e7d32; }
+            .error-text { color: #c62828; }
+            .success-btn { background: linear-gradient(135deg, #43a047 0%, #388e3c 100%); }
+            .error-btn { background: linear-gradient(135deg, #e53935 0%, #d32f2f 100%); }
+            .status-icon-wrapper {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 2rem;
+                transition: transform 0.3s ease;
+            }
+            .status-icon-wrapper:hover { transform: scale(1.1); }
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-up { animation: fadeInUp 0.5s ease-out forwards; }
+        </style>
+
+        <div id="registerstatusmodal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content status-modal-content">
+                    <div class="modal-body p-5 text-center">
+                        <div id="status-icon-bg" class="status-icon-wrapper shadow-lg">
+                            <i id="status-icon" class="bi" style="font-size: 3.5rem; color: white;"></i>
+                        </div>
+                        <h2 id="status-title" class="fw-bold mb-3 animate-up" style="animation-delay: 0.1s;"></h2>
+                        <div id="memberregisterstatus" class="fs-5 text-muted mb-4 animate-up" style="animation-delay: 0.2s; font-weight: 500; line-height: 1.6;"></div>
+                        <button type="button" id="status-btn" class="btn btn-lg px-5 py-3 rounded-pill fw-bold text-white shadow transition-all animate-up" 
+                                style="animation-delay: 0.3s; min-width: 200px; border: none;" data-bs-dismiss="modal">
+                            Continue
+                        </button>
                     </div>
                 </div>
             </div>
@@ -159,8 +192,21 @@
         <?php if (isset($_SESSION["registerprocesssuccess"])):
             $status = $_SESSION['registerprocesssuccess']; ?>
             <script>
-                document.getElementById('memberregisterstatus').innerHTML = "<?php echo $status; ?>";
                 window.onload = function () {
+                    const iconBg = document.getElementById('status-icon-bg');
+                    const icon = document.getElementById('status-icon');
+                    const title = document.getElementById('status-title');
+                    const btn = document.getElementById('status-btn');
+                    const msg = document.getElementById('memberregisterstatus');
+
+                    iconBg.classList.add('success-gradient');
+                    icon.className = 'bi bi-check-lg';
+                    title.innerText = 'Application Submitted!';
+                    title.classList.add('success-text');
+                    btn.classList.add('success-btn');
+                    btn.innerText = 'Great, Thank you!';
+                    msg.innerHTML = "<?php echo $status; ?>";
+
                     var myModal = new bootstrap.Modal(document.getElementById('registerstatusmodal'), {
                         backdrop: 'static',
                         keyboard: false
@@ -173,8 +219,21 @@
         <?php if (isset($_SESSION["registerprocesserror"])):
             $status = $_SESSION['registerprocesserror']; ?>
             <script>
-                document.getElementById('memberregisterstatus').innerHTML = <?= $status ?>;
                 window.onload = function () {
+                    const iconBg = document.getElementById('status-icon-bg');
+                    const icon = document.getElementById('status-icon');
+                    const title = document.getElementById('status-title');
+                    const btn = document.getElementById('status-btn');
+                    const msg = document.getElementById('memberregisterstatus');
+
+                    iconBg.classList.add('error-gradient');
+                    icon.className = 'bi bi-exclamation-circle';
+                    title.innerText = 'Oops! Something went wrong';
+                    title.classList.add('error-text');
+                    btn.classList.add('error-btn');
+                    btn.innerText = 'Try Again';
+                    msg.innerHTML = "<?php echo $status; ?>";
+
                     var myModal = new bootstrap.Modal(document.getElementById('registerstatusmodal'), {
                         backdrop: 'static',
                         keyboard: false
@@ -183,7 +242,7 @@
                 };
             </script>
             <?php unset($_SESSION["registerprocesserror"]); endif; ?>
-        <!---------------------register-error-toast-end------------------>
+        <!---------------------register-status-modal-end------------------>
 
         <div class="mx-auto" style="max-width: 1150px;">
             <div class="card shadow-lg border-0 rounded-3">

@@ -485,73 +485,105 @@
 <body>
         
 <div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
-<!---------------------add-toast---------------------->
- 
-  <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="coordinatorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
+<!---------------------view-coordinator-status-notifications---------------------->
+<style>
+    .custom-toast {
+        position: fixed;
+        top: 20px;
+        right: -400px;
+        min-width: 320px;
+        padding: 16px 24px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 9999;
+        border-left: 6px solid #43a047;
+    }
+    .custom-toast.error { border-left-color: #e53935; }
+    .toast-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+    .toast-icon.success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
+    .toast-icon.error { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
+    .toast-content { flex-grow: 1; }
+    .toast-title { font-weight: 700; margin-bottom: 2px; }
+    .toast-msg { font-size: 0.9rem; color: #666; font-weight: 500; }
+    .toast-close { cursor: pointer; color: #ccc; transition: color 0.2s; }
+    .toast-close:hover { color: #333; }
+</style>
 
-<?php  if(isset($_SESSION["coordsuccessstatus"])){
-     $status = $_SESSION['coordsuccessstatus'];
-echo "<script>
-       document.getElementById('coordinatorstatus').innerHTML = '$status';
-       const vcdToast = document.getElementById('coordtoast');
-       vcdToast.classList.remove('hide');
-       vcdToast.classList.add('show');
-       vcdToast.style.right = '50px';
-       setTimeout(()=>{
-       vcdToast.style.right = '-380px';
-       },3000);
-       
-      </script>"; 
+<div id="coordnotify" class="custom-toast">
+    <div id="notify-icon-bg" class="toast-icon success">
+        <i id="notify-icon" class="bi bi-check-lg" style="font-size: 1.2rem;"></i>
+    </div>
+    <div class="toast-content">
+        <div id="notify-title" class="toast-title text-success">Success</div>
+        <div id="notify-msg" class="toast-msg"></div>
+    </div>
+    <i class="bi bi-x-lg toast-close" onclick="hideNotification()"></i>
+</div>
 
-unset($_SESSION["coordsuccessstatus"]);
+<script>
+    function showNotification(type, message) {
+        const toast = document.getElementById('coordnotify');
+        const iconBg = document.getElementById('notify-icon-bg');
+        const icon = document.getElementById('notify-icon');
+        const title = document.getElementById('notify-title');
+        const msg = document.getElementById('notify-msg');
 
-} 
+        if (type === 'success') {
+            toast.classList.remove('error');
+            iconBg.className = 'toast-icon success';
+            icon.className = 'bi bi-check-lg';
+            title.innerText = 'Success';
+            title.className = 'toast-title text-success';
+            toast.style.borderLeftColor = '#43a047';
+        } else {
+            toast.classList.add('error');
+            iconBg.className = 'toast-icon error';
+            icon.className = 'bi bi-exclamation-circle';
+            title.innerText = 'Error';
+            title.className = 'toast-title text-danger';
+            toast.style.borderLeftColor = '#e53935';
+        }
 
-?>
-<!---------------------add-toast-end------------------>
+        msg.innerHTML = message;
+        toast.style.right = '20px';
 
-<!---------------------coord-error-toast---------------------->
+        setTimeout(hideNotification, 5000);
+    }
 
-<div id='coorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
+    function hideNotification() {
+        if(document.getElementById('coordnotify')) {
+            document.getElementById('coordnotify').style.right = '-400px';
+        }
+    }
 
-<?php 
+    $(document).ready(function() {
+        <?php if(isset($_SESSION["coordsuccessstatus"])): ?>
+            showNotification('success', '<?= $_SESSION["coordsuccessstatus"] ?>');
+            <?php unset($_SESSION["coordsuccessstatus"]); ?>
+        <?php endif; ?>
 
-if(isset($_SESSION["coorderrorstatus"])){
-  $status = $_SESSION['coorderrorstatus'];
-echo "<script>
-       document.getElementById('coorderrortoast').querySelector('.toast-body').innerHTML = '$status';
-       const vcdeToast = document.getElementById('coorderrortoast');
-       vcdeToast.classList.remove('hide');
-       vcdeToast.classList.add('show');
-       vcdeToast.style.right = '50px';
-       setTimeout(()=>{
-       vcdeToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["coorderrorstatus"]);
-
-}
-
-?>
-<!---------------------coord-error-toast-end------------------>
+        <?php if(isset($_SESSION["coorderrorstatus"])): ?>
+            showNotification('error', '<?= $_SESSION["coorderrorstatus"] ?>');
+            <?php unset($_SESSION["coorderrorstatus"]); ?>
+        <?php endif; ?>
+    });
+</script>
+<!---------------------view-coordinator-status-end---------------------->
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
 
