@@ -12,7 +12,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="<?= base_url('css.css'); ?>">
   <style>
     .active-reports {
       background-color: rgb(230, 230, 230);
@@ -462,6 +461,15 @@
   // Also run it immediately if possible
   updateHeights();
 
+  // Mobile Menu Functions
+  function openMobileMenu() {
+    document.getElementById('custom-mobile-menu').style.display = 'block';
+  }
+
+  function closeMobileMenu() {
+    document.getElementById('custom-mobile-menu').style.display = 'none';
+  }
+
   // Load menu components
   $.ajax({
     type: "get",
@@ -521,11 +529,71 @@
       }
     });
   }
+
+  function getEventsbyYear(yeardata) {
+    let year = yeardata.value;
+    if (year == "search") {
+      let height = document.getElementById("eventnamelabel").getBoundingClientRect().width;
+      document.getElementById("eventnamelabel").innerHTML = `Search Event:<br><input id='eventname' name="eventname" onkeyup='searchEvent(this)' class='container-fluid border rounded' type='text'><div id='searchresults' style='width:${height}px;display:none;' class='rounded border position-absolute bg-white px-2'></div>`;
+    } else if (year == "") {
+      document.getElementById("showevents").innerHTML = ` <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose Events: <br>                                       
+        <select class="container-fluid border rounded" name="eventid" id="eventid" required>
+        <option value="">Choose Event</option>
+        </select>
+        </label>`;
+    } else {
+      $.ajax({
+        type: "get",
+        url: "<?= base_url('reports/getEventsbyYear'); ?>",
+        data: { "year": year },
+        success: (result) => {
+          document.getElementById("showevents").innerHTML = result;
+        },
+        error: (error) => {
+          document.getElementById("showevents").innerHTML = "error fetching";
+        }
+      });
+    }
+  }
+
+  function searchEvent(events) {
+    let event = events.value;
+    document.getElementById("searchresults").style.display = "block";
+    if (event == "") {
+      document.getElementById("searchresults").innerHTML = "No Events Available";
+    } else {
+      $.ajax({
+        type: "get",
+        url: "<?= base_url('reports/getSearchevents'); ?>",
+        data: { "event": event },
+        success: function (result) {
+          document.getElementById('searchresults').innerHTML = result;
+        },
+        error: function (err) {
+          document.getElementById('searchresults').innerHTML = "Error";
+        }
+      });
+    }
+  }
+
+  function setEventname(year, eventname) {
+    document.getElementById("eventyear").value = year;
+    document.getElementById("eventid").value = eventname;
+  }
+
+  function setStatus(status) {
+    document.getElementById("sentstatus").value = status.value;
+  }
+
+  window.onclick = (event) => {
+    if (event.target !== document.getElementById("searchresults")) {
+      const results = document.getElementById("searchresults");
+      if(results) results.style.display = "none";
+    }
+  }
 </script>
 
   <!---------------------offcanvas-end-------------------------------->
-  <script src="<?= base_url('js.js'); ?>?v=<?= time() ?>"></script>
-  <script src="<?= base_url('eventfilter.js'); ?>?v=<?= time() ?>"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>

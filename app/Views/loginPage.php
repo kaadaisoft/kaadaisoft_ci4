@@ -214,11 +214,6 @@
                             } ?>"
                             placeholder="Enter Mobile Number" onkeypress="return isNumberKey(event)"
                             maxlength="12">
-                        <p class="error"><?php if (isset($usererror)) {
-                            echo $usererror;
-                        } else {
-                            echo ' ';
-                        } ?></p>
                     </div>
 
                     <div class="form-group mb-3">
@@ -227,9 +222,6 @@
                             echo $password;
                         } ?>"
                             id="password" name="password" placeholder="Enter your Password">
-                        <p class="error"><?php if (isset($passworderror)) {
-                            echo $passworderror;
-                        } ?></p>
                     </div>
 
                     <button type="submit" name="save" value="Submit"
@@ -253,51 +245,12 @@
         </div>
     </div>
 
-    <!-- Rejection Modal -->
-    <div class="modal fade" id="rejectionModal" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content"
-                style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                <div class="modal-header"
-                    style="background: #ff6b6b; color: white; border-radius: 20px 20px 0 0; border: none;">
-                    <h5 class="modal-title fw-bold" id="rejectionModalLabel">Application Rejected</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
-                    </div>
-                    <p class="text-dark fw-bold mb-2">your registration account has been rejected for this reason.</p>
-                    <div class="p-3 bg-light rounded" style="border-left: 5px solid #ff6b6b;">
-                        <span class="fw-bold text-muted d-block mb-1">Reason for Rejection:</span>
-                        <p class="mb-0 text-dark" style="font-size: 1.1rem;">
-                            <?php if (isset($rejectreason)) {
-                                echo $rejectreason;
-                            } ?></p>
-                    </div>
-                    <p class="mt-3 text-muted small">Please contact the administrator for more information or try
-                        registering again with the correct details.</p>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4"
-                        data-dismiss="modal">Close</button>
-                    <a href="<?php echo base_url('members/registrationform'); ?>"
-                        class="btn btn-primary rounded-pill px-4">Register Again</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <?php if (isset($rejectreason)): ?>
-        <script>
-            // Moved to bottom after jQuery
-        </script>
-    <?php endif; ?>
-
-    <!-- All Original JavaScript Functions - 100% Unchanged -->
     <script>
         function isNumberKey(evt) {
             var charCode = evt.which ? evt.which : evt.keyCode;
@@ -306,65 +259,79 @@
             }
             return true;
         }
-    </script>
 
-    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.querySelector('form');
             const username = document.getElementById('username');
             const password = document.getElementById('password');
 
             form.addEventListener('submit', function (e) {
-                let isValid = true;
-
-
-
                 if (username.value.trim() === "") {
-                    displayError(username, "Username cannot be empty.");
-                    isValid = false;
-                } else {
-                    clearError(username);
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Mobile Number Required',
+                        text: 'Please enter your Mobile Number.',
+                        confirmButtonColor: '#6c5ce7'
+                    });
+                    return;
                 }
 
                 if (password.value.trim() === "") {
-                    displayError(password, "Password cannot be empty.");
-                    isValid = false;
-                } else {
-                    clearError(password);
-                }
-
-                if (!isValid) {
                     e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Password Required',
+                        text: 'Please enter your password.',
+                        confirmButtonColor: '#6c5ce7'
+                    });
+                    return;
                 }
             });
 
-            function displayError(input, message) {
-                let errorElement = input.nextElementSibling;
-                if (errorElement && errorElement.classList.contains('error')) {
-                    errorElement.textContent = message;
-                }
-            }
+            // Handle Server Side Errors
+            <?php if (isset($usererror)): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Error',
+                    text: '<?= $usererror ?>',
+                    confirmButtonColor: '#6c5ce7'
+                });
+            <?php endif; ?>
 
-            function clearError(input) {
-                let errorElement = input.nextElementSibling;
-                if (errorElement && errorElement.classList.contains('error')) {
-                    errorElement.textContent = "";
-                }
-            }
+            <?php if (isset($passworderror)): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Password',
+                    text: '<?= $passworderror ?>',
+                    confirmButtonColor: '#6c5ce7'
+                });
+            <?php endif; ?>
+
+            <?php if (isset($rejectreason)): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Application Rejected',
+                    html: `<div class="text-start">
+                        <p>Your registration account has been rejected for the following reason:</p>
+                        <div class="p-3 bg-light rounded border-start border-danger border-4 mb-3">
+                            <strong>Reason:</strong> <?= $rejectreason ?>
+                        </div>
+                        <p class="small text-muted">Please contact the administrator or try registering again with correct details.</p>
+                    </div>`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Register Again',
+                    cancelButtonText: 'Close',
+                    confirmButtonColor: '#6c5ce7',
+                    cancelButtonColor: '#aaa'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '<?= base_url('members/registrationform') ?>';
+                    }
+                });
+            <?php endif; ?>
         });
     </script>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <?php if (isset($rejectreason)): ?>
-        <script>
-            $(document).ready(function () {
-                $('#rejectionModal').modal('show');
-            });
-        </script>
-    <?php endif; ?>
 </body>
 
 </html>

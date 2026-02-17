@@ -553,7 +553,7 @@ public function change_password() {
                 $this->session->set("approvederror", "Failed to approve member update.");
             }
         }
-        return redirect()->to("viewMemberUpdateRequests");
+        return redirect()->to("view-member-update-requests");
     }
 
     public function rejectMemberUpdate() {
@@ -567,7 +567,7 @@ public function change_password() {
         } else {
             $this->session->set("rejectederror", "Failed to reject member update.");
         }
-        return redirect()->to("viewMemberUpdateRequests");
+        return redirect()->to("view-member-update-requests");
     }
 
     public function getmanager() {

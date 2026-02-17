@@ -294,13 +294,13 @@ if(session()->get("rejectedsuccess")){
                                                 title="View Diff">
                                             <i class="fa-solid fa-eye text-primary"></i>
                                         </button>
-                                        <form action="<?= base_url('approveMemberUpdate') ?>" method="POST" class="d-inline">
+                                        <form action="<?= base_url('approve-member-update') ?>" method="POST" class="d-inline">
                                             <input type="hidden" name="request_id" value="<?= $req->id ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-success border-0 rounded-circle ms-2" title="Approve">
                                                 <i class="fa-solid fa-check"></i>
                                             </button>
                                         </form>
-                                        <form action="<?= base_url('rejectMemberUpdate') ?>" method="POST" class="d-inline">
+                                        <form action="<?= base_url('reject-member-update') ?>" method="POST" class="d-inline">
                                             <input type="hidden" name="request_id" value="<?= $req->id ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle ms-2" title="Reject">
                                                 <i class="fa-solid fa-xmark"></i>
@@ -353,11 +353,11 @@ if(session()->get("rejectedsuccess")){
                 </div>
             </div>
             <div class="modal-footer">
-                <form action="<?= base_url('rejectMemberUpdate') ?>" method="POST">
+                <form action="<?= base_url('reject-member-update') ?>" method="POST">
                     <input type="hidden" name="request_id" id="reject_request_id">
                     <button type="submit" class="btn btn-danger">Reject</button>
                 </form>
-                <form action="<?= base_url('approveMemberUpdate') ?>" method="POST">
+                <form action="<?= base_url('approve-member-update') ?>" method="POST">
                     <input type="hidden" name="request_id" id="approve_request_id">
                     <button type="submit" class="btn btn-success">Approve Update</button>
                 </form>

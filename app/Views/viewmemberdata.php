@@ -10,6 +10,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <style>
+      body {
+        overflow-x: hidden;
+      }
+      .toast {
+          z-index: 9999 !important;
+          opacity: 1 !important;
+          visibility: hidden; /* Prevent tab focus when hidden */
+          pointer-events: none;
+      }
+      .toast.show {
+          visibility: visible;
+          pointer-events: auto;
+      }
       .ps-logo{
         display:flex;
         align-items:center;
@@ -496,46 +509,29 @@
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
+<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative; overflow-x: hidden;">
 <!---------------------add-toast---------------------->
  
-  <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
+  <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18); z-index: 9999;' class=' toast hide'>
   <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
     <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+    <button type='button' class='btn-close float-end' onclick="hideCustomToast('coordtoast')"></button>
   </div>
   <div id="coordinatorstatus" class='toast-body text-white fs-6 py-2'>
     
   </div>
   </div>
-
-<?php  if(isset($_SESSION["coordsuccessstatus"])){
-     $status = $_SESSION['coordsuccessstatus'];
-echo "<script>
-       document.getElementById('coordinatorstatus').innerHTML = '$status';
-       const cToast = document.getElementById('coordtoast');
-       cToast.classList.remove('hide');
-       cToast.classList.add('show');
-       cToast.style.right = '50px';
-       setTimeout(()=>{
-       cToast.style.right = '-380px';
-       },3000);
-       
-      </script>"; 
-
-unset($_SESSION["coordsuccessstatus"]);
-
-} 
-
+<?php 
+// Standardized toast handling below
 ?>
 <!---------------------add-toast-end------------------>
 
 <!---------------------coord-error-toast---------------------->
 
-<div id='coorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='toast hide'>
+<div id='coorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51); z-index: 9999;' class='toast hide'>
   <div style="background-color:rgb(250,51,51);" class='toast-header'>
     <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+    <button type='button' class='btn-close float-end' onclick="hideCustomToast('coorderrortoast')"></button>
   </div>
   <div class='toast-body text-white fs-6 py-2'>
     
@@ -569,7 +565,7 @@ unset($_SESSION["coorderrorstatus"]);
 <div id='updatetoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);z-index: 1050;' class='toast hide'>
   <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
     <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+    <button type='button' class='btn-close float-end' onclick="hideCustomToast('updatetoast')"></button>
   </div>
   <div id="updatestatus" class='toast-body text-white fs-6 py-2'></div>
 </div>
@@ -577,30 +573,45 @@ unset($_SESSION["coorderrorstatus"]);
 <div id='updateerrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index: 1050;' class='toast hide'>
   <div style="background-color:rgb(250,51,51);" class='toast-header'>
     <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
+    <button type='button' class='btn-close float-end' onclick="hideCustomToast('updateerrortoast')"></button>
   </div>
   <div id="updateerrorstatus" class='toast-body text-white fs-6 py-2'></div>
 </div>
 
+<script>
+function hideCustomToast(id) {
+    const tEl = document.getElementById(id);
+    if(tEl) {
+        tEl.style.right = '-380px';
+        setTimeout(() => {
+            if(tEl.style.right === '-380px') {
+                tEl.classList.remove('show');
+                tEl.classList.add('hide');
+            }
+        }, 500);
+    }
+}
+</script>
+
 <?php 
 $toast_msgs = array(
-    'updatesuccess' => 'updatetoast',
-    'approvedsuccess' => 'updatetoast',
     'updateerror' => 'updateerrortoast',
-    'approvederror' => 'updateerrortoast'
+    'approvederror' => 'updateerrortoast',
+    'membersuccessstatus' => 'coordtoast',
+    'coordsuccessstatus' => 'coordtoast'
 );
 
 foreach($toast_msgs as $key => $toast_id) {
     if(isset($_SESSION[$key])) {
         $msg = $_SESSION[$key];
-        $status_id = ($toast_id == 'updatetoast') ? 'updatestatus' : 'updateerrorstatus';
+        $status_id = ($toast_id == 'updatetoast') ? 'updatestatus' : (($toast_id == 'coordtoast') ? 'coordinatorstatus' : 'updateerrorstatus');
         echo "<script>
             document.getElementById('$status_id').innerHTML = '$msg';
             const tEl = document.getElementById('$toast_id');
             tEl.classList.remove('hide');
             tEl.classList.add('show');
             tEl.style.right = '50px';
-            setTimeout(()=>{ tEl.style.right = '-380px'; }, 4000);
+            setTimeout(()=>{ hideCustomToast('$toast_id'); }, 4000);
         </script>";
         unset($_SESSION[$key]);
     }
@@ -633,14 +644,15 @@ foreach($toast_msgs as $key => $toast_id) {
          <!------------------------------coordinator-data--------------------------->
          <?php if(isset($member)):?>
             <div class="container-fluid px-4 py-2 bg-white">   
-            <h3 style="font-weight:500;">Member Details</h3> 
-            <?php if(isset($pending_update) && !empty($pending_update)): 
-                $updated_data = json_decode($pending_update->updated_data, true);
-            ?>
-            <div class="alert alert-warning py-2 mb-3">
-                <i class="fa-solid fa-triangle-exclamation"></i> In Review
-            </div>
-            <?php endif; ?>
+            <h3 style="font-weight:500;" class="d-flex align-items-center">Member Details 
+                <?php if(isset($pending_update) && !empty($pending_update)): 
+                    $updated_data = json_decode($pending_update->updated_data, true);
+                ?>
+                <span class="badge bg-warning text-dark fs-6 ms-2 px-3 py-2" style="border-radius:50px; font-weight:500; font-size: 0.7em !important;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> In Review
+                </span>
+                <?php endif; ?>
+            </h3> 
             <div class="row">
               <div class="col-md-4 bg-white">
                   <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $member->Memberimage) ?>" alt="Member Image">
@@ -667,7 +679,7 @@ foreach($toast_msgs as $key => $toast_id) {
                 function getDisplayVal($field, $member, $updated_data) {
                     $original = $member->$field;
                     if (isset($updated_data[$field]) && $updated_data[$field] != $original) {
-                        return '<span class="green-underline">' . htmlspecialchars($updated_data[$field]) . '</span> <span class="update-info">(Original: ' . htmlspecialchars($original) . ')</span>';
+                        return htmlspecialchars($updated_data[$field]);
                     }
                     return htmlspecialchars($original);
                 }
