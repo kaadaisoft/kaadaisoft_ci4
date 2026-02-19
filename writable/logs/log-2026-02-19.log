@@ -1284,3 +1284,68 @@ in APPPATH\Models\AdminDashboardModel.php on line 594.
  6 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
  7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-02-19 09:54:31 --> Unknown column 'otp' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(769): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(686): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `kaadaimembers` SET `otp` = :otp:, `otp_expiry` = :otp_expiry:
+WHERE `Phonenumber` = :Phonenumber:', [...], false)
+ 5 APPPATH\Models\KaadailoginModel.php(30): CodeIgniter\Database\BaseBuilder->update([...])
+ 6 APPPATH\Controllers\Loginpage.php(168): App\Models\KaadailoginModel->updateOTP('Phonenumber', '9791265880', 293550, '2026-02-19 10:09:31')
+ 7 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+ 8 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+ 9 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-19 09:54:31 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'otp' in 'field list'
+[Method: POST, Route: send-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 724.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `kaadaimembers` SET `otp` = :otp:, `otp_expiry` = :otp_expiry:
+WHERE `Phonenumber` = :Phonenumber:', [...], false)
+ 2 APPPATH\Models\KaadailoginModel.php(30): CodeIgniter\Database\BaseBuilder->update([...])
+ 3 APPPATH\Controllers\Loginpage.php(168): App\Models\KaadailoginModel->updateOTP('Phonenumber', '9791265880', 293550, '2026-02-19 10:09:31')
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-19 09:54:31 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'otp' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 310.
+ 1 SYSTEMPATH\Database\BaseConnection.php(769): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(686): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `kaadaimembers` SET `otp` = :otp:, `otp_expiry` = :otp_expiry:
+WHERE `Phonenumber` = :Phonenumber:', [...], false)
+ 4 APPPATH\Models\KaadailoginModel.php(30): CodeIgniter\Database\BaseBuilder->update([...])
+ 5 APPPATH\Controllers\Loginpage.php(168): App\Models\KaadailoginModel->updateOTP('Phonenumber', '9791265880', 293550, '2026-02-19 10:09:31')
+ 6 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+ 7 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+ 8 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-19 09:54:31 --> [Caused by] mysqli_sql_exception: Unknown column 'otp' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 300.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(300): mysqli->query('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(769): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(686): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `kaadaimembers` SET `otp` = 293550, `otp_expiry` = \'2026-02-19 10:09:31\'
+WHERE `Phonenumber` = \'9791265880\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `kaadaimembers` SET `otp` = :otp:, `otp_expiry` = :otp_expiry:
+WHERE `Phonenumber` = :Phonenumber:', [...], false)
+ 5 APPPATH\Models\KaadailoginModel.php(30): CodeIgniter\Database\BaseBuilder->update([...])
+ 6 APPPATH\Controllers\Loginpage.php(168): App\Models\KaadailoginModel->updateOTP('Phonenumber', '9791265880', 293550, '2026-02-19 10:09:31')
+ 7 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+ 8 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+ 9 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

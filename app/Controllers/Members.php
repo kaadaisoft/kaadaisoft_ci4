@@ -434,9 +434,8 @@ class Members extends BaseController
 
         $data = [];
         $documents = [];
-        $count = "";
         
-        $Familymembershipid = $this->request->getPost("membershipid" . $suffix);
+        $Familymembershipid = trim($this->request->getPost("membershipid" . $suffix));
         
         // Check if member is already dead
         $currentMember = $this->membersModel->getMemberdata($Familymembershipid);
@@ -445,88 +444,42 @@ class Members extends BaseController
             return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
         }
 
-        $data["Name"] = $this->request->getPost("name" . $suffix);
-        $data["Aadharnumber"] = $this->request->getPost("aadharno" . $suffix);
-        $data["Phonenumber"] = $this->request->getPost("phoneno" . $suffix);
+        $data["Name"] = trim($this->request->getPost("name" . $suffix));
+        $data["Aadharnumber"] = trim($this->request->getPost("aadharno" . $suffix));
+        $data["Phonenumber"] = trim($this->request->getPost("phoneno" . $suffix));
         $state_id = $this->request->getPost("state" . $suffix);
         $data["state_id"] = $state_id;
-        $getstate = $this->db->query("SELECT state_title FROM states WHERE state_id = '$state_id'");
-        $getstatename = $getstate->getRow();
-        $data["State"] = $getstatename ? $getstatename->state_title : "";
+        
+        $getstatename = null;
+        if (!empty($state_id)) {
+            $getstate = $this->db->query("SELECT state_title FROM states WHERE state_id = '$state_id'");
+            $getstatename = $getstate->getRow();
+        }
+        $data["State"] = $getstatename ? $getstatename->state_title : ($currentMember ? $currentMember->State : "");
         
         $data["District"] = $this->request->getPost("district" . $suffix);
         $data["Taluk"] = $this->request->getPost("taluk" . $suffix);
         $data["Panchayat"] = $this->request->getPost("panchayat" . $suffix);
         
-        $village_val = $this->request->getPost("village" . $suffix);
-        $village_others = $this->request->getPost("village_others" . $suffix); // Assuming the input name is like village_others-update if we followed pattern, but in view it is village_others_member
-
-        // In the view logic for member update:
-        // select name="village-update"
-        // input name="village_others_member" (Wait, the view script renames them!)
-        
-        // Let's look at the view script logic again:
-        // if Others selected: select name removed, input name="village-member" (which is actually village-update in PHP side because of how names work? No wait.)
-        
-        // In the view:
-        // Select element name is 'village-update' normally.
-        // Input element name is 'village_others_member' initially.
-        
-        // JS toggleVillageOthersMember: 
-        // if Others: select name removed. Input name becomes 'village-member'.
-        // Wait, the view has PHP echo name="village-update". The JS sets name='village-member'. 
-        // 'village-member' DOES NOT MATCH 'village-update' expected by controller!
-        
-        // The controller expects field names to end with -update or -coord.
-        // The view has `name="village-update"` hardcoded on the select.
-        // The JS sets `name="village-member"` on the input? That seems wrong. It should probably set it to whatever the select had, or consistent with the controller.
-        
-        // Let's fix the controller to look for likely alternatives if the main one is missing or 'Others'.
-        // But actually, the best fix is in the View's JS to likely name it 'village-update' instead of 'village-member'.
-        
-        // However, I cannot easily change the JS logic effectively if I am not 100% sure of the dynamic naming.
-        // Let's look at the controller variables.
-        // $suffix is "-update" or "-coord".
-        
-        // If the JS sets the input name to 'village-member', then $this->request->getPost("village-update") will be null or empty if the select name was removed!
-        // The controller code: $data["Village"] = $this->request->getPost("village" . $suffix);
-        
-        // If suffix is "-update", it looks for "village-update".
-        // If the user selected "Others", the JS removed the name from the select.
-        // The JS then added name="village-member" to the input.
-        // So "village-update" is NOT sent. "village-member" IS sent.
-        
-        // So we need to check for "village-member" (or "village-coord"?) if "village-update" is missing?
-        // OR better, we simply check for the 'others' specific field if the main one is missing.
-        
-        // Let's try to grab the value from multiple possible keys to be safe.
+        // Robust Village selection
         $val = $this->request->getPost("village" . $suffix);
         if (empty($val)) {
-             // Try the specific hardcoded names the JS might offer
-             if ($suffix === "-update") {
-                 $val = $this->request->getPost("village-member"); 
-             } else {
-                 $val = $this->request->getPost("village-coord"); // guessing for coordinator form
-             }
+             // Try common variations if main suffix fails
+             $val = $this->request->getPost("village-member") ?: $this->request->getPost("village-coord");
         }
         
-        // Also check if the value is "Others" (in case JS didn't remove name but user sent "Others")
-        if ($val === "Others" || $val === "other") {
-             // Then we definitely need the manual input
-             // In view: input name="village_others_member" (hidden typically) or "village-member" (if active)
-             
-             // If JS was active, it might have swapped names.
-             // Let's just look for the other input field.
-             $other_val = $this->request->getPost("village_others_member");
+        // If "Others" was used, check the manual input fields
+        if ($val === "Others" || $val === "other" || empty($val)) {
+             $other_val = $this->request->getPost("village_others_member") ?: $this->request->getPost("village_others_coord");
              if (!empty($other_val)) $val = $other_val;
         }
         
-        $data["Village"] = $val;
+        $data["Village"] = trim($val);
 
         $data["Street"] = $this->request->getPost("street" . $suffix);
         $data["Doornumber"] = $this->request->getPost("doorno" . $suffix);
         $data["Pincode"] = $this->request->getPost("pincode" . $suffix);
-        $data["Existfamilyid"] = $this->request->getPost("existfamilyid" . $suffix);
+        $data["Existfamilyid"] = trim($this->request->getPost("existfamilyid" . $suffix));
         
         $coord_row = $this->membersModel->getCoordinatorByLocation(
              $data["Village"],
@@ -538,13 +491,14 @@ class Members extends BaseController
         $new_coord_id = $coord_row ? $coord_row->Coordinator_id : NULL;
         $new_coord_two_id = $coord_row ? $coord_row->Coordinator_Two_id : NULL;
 
+        // Keep existing coordinator if location hasn't changed and no new coord found
         if (
             (empty($new_coord_id) && empty($new_coord_two_id)) && 
             $currentMember &&
-            $currentMember->Village == $data["Village"] &&
-            $currentMember->Panchayat == $data["Panchayat"] &&
-            $currentMember->Taluk == $data["Taluk"] &&
-            $currentMember->District == $data["District"]
+            trim($currentMember->Village) == trim($data["Village"]) &&
+            trim($currentMember->Panchayat) == trim($data["Panchayat"]) &&
+            trim($currentMember->Taluk) == trim($data["Taluk"]) &&
+            trim($currentMember->District) == trim($data["District"])
         ) {
              $data["Coordinator_id"] = $currentMember->Coordinator_id;
              $data["Coordinator_Two_id"] = $currentMember->Coordinator_Two_id;
@@ -558,8 +512,8 @@ class Members extends BaseController
         $data["Dob"] = $this->request->getPost("dob" . $suffix);
         $data["Gender"] = $this->request->getPost("gender" . $suffix);
         $data["Bloodgroup"] = $this->request->getPost("bloodgroup" . $suffix);
-        $data["Email"] = $this->request->getPost("email" . $suffix);
-        $data["Whatsappnumber"] = $this->request->getPost("whatsappno" . $suffix);
+        $data["Email"] = trim($this->request->getPost("email" . $suffix));
+        $data["Whatsappnumber"] = trim($this->request->getPost("whatsappno" . $suffix));
         $data["Married"] = $this->request->getPost("married" . $suffix);
         $data["Valuvu"] = $this->request->getPost("valuvu" . $suffix);
         $data["Thottam"] = $this->request->getPost("thottam" . $suffix);
@@ -568,7 +522,8 @@ class Members extends BaseController
         $data["Business"] = $this->request->getPost("business" . $suffix);
         $data["BusinessWebsite"] = $this->request->getPost("business_website" . $suffix);
         
-        $education = $this->request->getPost("education" . $suffix);
+        // Education fix: check both -update and -coord suffixes as JS might mismatch
+        $education = $this->request->getPost("education" . $suffix) ?: $this->request->getPost("education-update");
         $data["Education"] = is_array($education) ? implode(', ', $education) : $education;
 
         $data["is_dead"] = $this->request->getPost("is_dead" . $suffix);
@@ -580,21 +535,16 @@ class Members extends BaseController
         $data["Curpanchayat"] = $this->request->getPost("cur_panchayat" . $suffix);
         
         $cur_village_val = $this->request->getPost("cur_village" . $suffix);
-        
         if (empty($cur_village_val)) {
-             if ($suffix === "-update") {
-                 $cur_village_val = $this->request->getPost("cur_village-member"); 
-             } else {
-                 $cur_village_val = $this->request->getPost("cur_village-coord"); 
-             }
+             $cur_village_val = $this->request->getPost("cur_village-member") ?: $this->request->getPost("cur_village-coord");
         }
         
-        if ($cur_village_val === "Others" || $cur_village_val === "other") {
-             $cur_other_val = $this->request->getPost("cur_village_others_member");
+        if ($cur_village_val === "Others" || $cur_village_val === "other" || empty($cur_village_val)) {
+             $cur_other_val = $this->request->getPost("cur_village_others_member") ?: $this->request->getPost("cur_village_others_coord");
              if (!empty($cur_other_val)) $cur_village_val = $cur_other_val;
         }
 
-        $data["Curvillage"] = $cur_village_val;
+        $data["Curvillage"] = trim($cur_village_val);
 
         $data["Curstreet"] = $this->request->getPost("cur_street" . $suffix);
         $data["Curdoorno"] = $this->request->getPost("cur_doorno" . $suffix);
@@ -627,11 +577,10 @@ class Members extends BaseController
 
         $data['updated_at'] = date('Y-m-d H:i:s');
 
-        $trimaadhar = substr($data["Aadharnumber"], 8, 12);
-        $trimphoneno = substr($data["Phonenumber"], 6, 10);
+        $trimaadhar = substr((string)$data["Aadharnumber"], 8, 12);
+        $trimphoneno = substr((string)$data["Phonenumber"], 6, 10);
 
         $imagenames = ["Memberimage", "Aadharfrontimage", "Aadharbackimage", "Communitycertificate"];
-        $filecount = count($imagenames);
         
         foreach ($imagenames as $imgField) {
             $file = $this->request->getFile($imgField);

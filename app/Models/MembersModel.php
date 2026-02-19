@@ -491,27 +491,29 @@ class MembersModel extends Model
     public function processMemberupdate($Familymembershipid, $data, $path, $reason)
     {
         $session = session();
-        
-        // Determine flashdata key based on path
-        $errorKey = 'membererrorstatus';
-        if ($path === 'manager') $errorKey = 'managererrorstatus';
-        if ($path === 'coordinator' || $session->get('role') == 2) $errorKey = 'coorderrorstatus';
+        $Familymembershipid = trim($Familymembershipid);
+        $errorKey = ($path === "coordinator" || $reason === "updatecoordinator") ? "coorderrorstatus" : "membererrorstatus";
 
         // Check uniqueness for Phone (Allow same phone for same family)
         if (!empty($data['Phonenumber'])) {
             // Get current member's family ID to allow sharing within family
-            $currentMember = $this->db->table('kaadaimembers')->select('Familymembershipid, Existfamilyid')->where('Familymembershipid', $Familymembershipid)->get()->getRow();
+            $currentMember = $this->db->table('kaadaimembers')
+                ->select('Familymembershipid, Existfamilyid')
+                ->where('TRIM(Familymembershipid)', $Familymembershipid)
+                ->get()->getRow();
+                
             $myFamilyId = $currentMember ? ($currentMember->Existfamilyid ?: $currentMember->Familymembershipid) : $Familymembershipid;
+            $myFamilyId = trim($myFamilyId);
 
             $checkPhoneBuilder = $this->db->table('kaadaimembers')
                 ->where('Phonenumber', $data['Phonenumber'])
-                ->where('Familymembershipid !=', $Familymembershipid); // Don't match self
+                ->where('TRIM(Familymembershipid) !=', $Familymembershipid); // Don't match self
 
             // If we have a family ID, exclude members of the same family from the conflict check
             if (!empty($myFamilyId)) {
                 $checkPhoneBuilder->groupStart()
-                    ->where('Existfamilyid !=', $myFamilyId)
-                    ->where('Familymembershipid !=', $myFamilyId)
+                    ->where('TRIM(Existfamilyid) !=', $myFamilyId)
+                    ->where('TRIM(Familymembershipid) !=', $myFamilyId)
                     ->groupEnd();
             }
 
@@ -523,15 +525,14 @@ class MembersModel extends Model
             }
         }
 
-        // Check uniqueness for Aadhaar
+        // Search uniqueness check for Aadhaar
         if (!empty($data['Aadharnumber'])) {
-            $checkAadhaar = $this->db->table('kaadaimembers')
+            $checkAadhar = $this->db->table('kaadaimembers')
                 ->where('Aadharnumber', $data['Aadharnumber'])
-                ->where('Familymembershipid !=', $Familymembershipid)
+                ->where('TRIM(Familymembershipid) !=', $Familymembershipid)
                 ->countAllResults();
-
-            if ($checkAadhaar > 0) {
-                $session->setFlashdata($errorKey, "Aadhaar number already exists for another member.");
+            if ($checkAadhar > 0) {
+                $session->setFlashdata($errorKey, "Aadhar number already exists.");
                 return false;
             }
         }
@@ -552,7 +553,7 @@ class MembersModel extends Model
              $compositeCheck = $this->db->table('kaadaimembers')
                  ->where('Phonenumber', $checkPhone)
                  ->where('Aadharnumber', $checkAadhar)
-                 ->where('Familymembershipid !=', $Familymembershipid)
+                 ->where('TRIM(Familymembershipid) !=', $Familymembershipid)
                  ->countAllResults();
                  
              if ($compositeCheck > 0) {
@@ -579,7 +580,7 @@ class MembersModel extends Model
             }
         }
 
-        return $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->update($data);
+        return $this->db->table('kaadaimembers')->where('TRIM(Familymembershipid)', $Familymembershipid)->update($data);
     }
 
     public function getMembersdetails()

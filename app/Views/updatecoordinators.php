@@ -58,7 +58,7 @@
             padding: 5px;
         }
 
-        #education_tags-update .badge {
+        #education_tags-coord .badge {
             margin-right: 4px;
             margin-bottom: 4px;
             background-color: #3E2723 !important;
@@ -1223,7 +1223,7 @@
                 container.appendChild(badge);
                 const hidden = document.createElement("input");
                 hidden.type = "hidden";
-                hidden.name = "education-update[]";
+                hidden.name = "education-coord[]";
                 hidden.value = val;
                 hiddenContainer.appendChild(hidden);
             });
