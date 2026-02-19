@@ -338,14 +338,7 @@
          <div id="changepage" style='height:inherit;overflow:auto;' class="col-md-10 pt-3"><!-----------main-dashboard------------------------->
           
          <div id="filter-form" class="ps-4">
-         <?php if(session()->has('paymentsuccessstatus')): ?>
-         <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
-           <strong>Success!</strong> <?= session()->get('paymentsuccessstatus') ?>
-           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>
-         <?php 
-           session()->remove('paymentsuccessstatus');
-         endif; ?>
+         <?= view('notification_toast') ?>
          <div><!------------------------------------>     
          <div class="pt-2 px-3 pb-4"><!----------filter-start------------>
          <div class="d-flex justify-content-between">
@@ -513,8 +506,8 @@
                     <td style='font-weight:500;'>$value[MemberTaluk]</td>
                     <td>
                       <div class='d-flex justify-content-evenly'>
-                        <a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-                        <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
+                        " . (($filterlist['paymentstatus'] != 'Paid') ? "<a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;" : "") . "
+                        <a target='_blank' href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
                       </div>
                     </td>
                     </tr>";
@@ -861,15 +854,7 @@
        })
     }
 
-    // Auto-hide success alert after 3 seconds
-    const successAlert = document.getElementById('successAlert');
-    if(successAlert) {
-        setTimeout(() => {
-            successAlert.classList.remove('show');
-            setTimeout(() => successAlert.remove(), 150);
-        }, 3000);
-    }
-    
+
 
   </script>
 

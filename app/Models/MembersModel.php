@@ -48,7 +48,6 @@ class MembersModel extends Model
         $pincode,
         $existfamilyid,
         $phoneno,
-        $panno,
         $aadharno,
         $hashed_password,
         $documents,
@@ -224,7 +223,6 @@ class MembersModel extends Model
 
             'Existfamilyid' => $existfamilyid,
             'Phonenumber' => $phoneno,
-            'Pannumber' => $panno,
             'Aadharnumber' => $aadharno,
             'Password' => $hashed_password,
             'Memberimage' => $memberimage,
@@ -234,6 +232,7 @@ class MembersModel extends Model
             'MemberRole' => $memberRole,
             'is_dead' => $is_dead,
             'Familymembershipid' => $new_membership_id,
+            'Id_who_assign_coord' => session()->get('Kaadaisoft_userId'),
         ];
 
         $insert = $this->db->table('kaadaimembers')->insert($data);
@@ -457,8 +456,25 @@ class MembersModel extends Model
 
     public function saveUpdateMemberRequest($Familymembershipid, $data)
     {
-        $member = $this->getMemberdata($Familymembershipid);
-        $Coordinator_id = $member->Coordinator_id;
+        $member_row = $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->get()->getRowArray();
+        if (!$member_row) return false;
+
+        // Check if anything actually changed
+        $changed = false;
+        foreach ($data as $key => $value) {
+             if ($key === 'updated_at') continue;
+             $dbVal = $member_row[$key] ?? '';
+             $newVal = $value ?? '';
+             if (trim((string)$dbVal) !== trim((string)$newVal)) {
+                 $changed = true;
+                 break;
+             }
+        }
+        if (!$changed) {
+             return 'no_changes';
+        }
+
+        $Coordinator_id = $member_row['Coordinator_id'];
         
         $insert_data = array(
             'Familymembershipid' => $Familymembershipid,
@@ -521,11 +537,9 @@ class MembersModel extends Model
         }
 
         // Composite Check to prevent DB crash on unique key 'phoneno_aadharno'
-        // This catches cases where updating one field creates a collision due to pre-existing duplicate data in the other field
         $checkPhone = !empty($data['Phonenumber']) ? $data['Phonenumber'] : null;
         $checkAadhar = !empty($data['Aadharnumber']) ? $data['Aadharnumber'] : null;
         
-        // If either is missing from data, fetch from DB to perform the check
         if ($checkPhone === null || $checkAadhar === null) {
              $current = $this->db->table('kaadaimembers')->select('Phonenumber, Aadharnumber')->where('Familymembershipid', $Familymembershipid)->get()->getRow();
              if ($current) {
@@ -542,14 +556,27 @@ class MembersModel extends Model
                  ->countAllResults();
                  
              if ($compositeCheck > 0) {
-                 $msg = "Update failed: This Phone Number and Aadhaar combination already exists.";
-                 // If the phone was allowed by family logic, the conflict implies a duplicate Aadhaar
-                 if (!empty($data['Phonenumber'])) {
-                     $msg .= " Please check if the Aadhaar number is unique.";
-                 }
-                 $session->setFlashdata($errorKey, $msg);
+                 $session->setFlashdata($errorKey, "Update failed: Phone and Aadhaar combination already exists.");
                  return false;
              }
+        }
+
+        // Check if anything actually changed (ignoring updated_at)
+        $currentRecord = $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->get()->getRowArray();
+        if ($currentRecord) {
+            $changed = false;
+            foreach ($data as $key => $value) {
+                if ($key === 'updated_at') continue;
+                $dbVal = $currentRecord[$key] ?? '';
+                $newVal = $value ?? '';
+                if (trim((string)$dbVal) !== trim((string)$newVal)) {
+                    $changed = true;
+                    break;
+                }
+            }
+            if (!$changed) {
+                return 'no_changes';
+            }
         }
 
         return $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->update($data);
@@ -559,11 +586,11 @@ class MembersModel extends Model
     {
         $session = session();
         if ($session->get('role') == 1) {
-            $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Pannumber,Aadharnumber FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
+            $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Aadharnumber FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
             return $query->getResultArray();
         } elseif ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Pannumber,Aadharnumber FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified'");
+            $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Aadharnumber FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified'");
             return $query->getResultArray();
         }
     }

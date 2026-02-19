@@ -518,143 +518,9 @@
 
    <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
 
-      <!---------------------member-status-toast---------------------->
+      <?= view('notification_toast') ?>
 
-      <div id='membertoast' class='toast hide'>
-         <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-            <strong class='me-auto text-white fs-6'>Success</strong>
-            <button type='button' class='btn-close float-end' onclick="document.getElementById('membertoast').style.right='-500px'"></button>
-         </div>
-         <div id="memberstatus" class='toast-body text-white fs-6 py-2'>
-            Member added successfully !...
-         </div>
-      </div>
 
-      <?php
-      if (isset($_SESSION["membersuccessstatus"])) {
-         $status = $_SESSION["membersuccessstatus"];
-          echo "<script>
-        document.getElementById('memberstatus').innerHTML = '$status';
-        const mToast = document.getElementById('membertoast');
-        mToast.classList.remove('hide');
-        mToast.classList.add('show');
-        mToast.style.right = '5%';
-        setTimeout(()=>{
-        mToast.style.right = '-500px';
-        },3000)
-       </script>";
-
-         unset($_SESSION["membersuccessstatus"]);
-
-      }
-
-      if (isset($_SESSION["rejectedsuccess"])) {
-         $status = $_SESSION["rejectedsuccess"];
-          echo "<script>
-         document.getElementById('memberstatus').innerHTML = '$status';
-         const rejToast = document.getElementById('membertoast');
-         rejToast.classList.remove('hide');
-         rejToast.classList.add('show');
-         rejToast.style.right = '5%';
-         rejToast.style.backgroundColor = 'red';
-         rejToast.style.border = '4px solid #ff6b6b';
-         setTimeout(()=>{
-         rejToast.style.right = '-500px';
-         },3000)
-        </script>";
-
-         unset($_SESSION["rejectedsuccess"]);
-
-      }
-
-      ?>
-      <!---------------------member-status-toast-end------------------>
-
-      <!---------------------error-toast---------------------->
-
-      <div id='membererrortoast'
-         style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-500px;transition:0.5s;background-color:rgb(250,51,51);z-index:9999;'
-         class='toast hide'>
-         <div style="background-color:rgb(250,51,51);" class='toast-header'>
-            <strong class='me-auto text-white fs-6'>error</strong>
-            <button type='button' class='btn-close float-end' onclick="document.getElementById('membererrortoast').style.right='-500px'"></button>
-         </div>
-         <div class='toast-body text-white fs-6 py-2'>
-
-         </div>
-      </div>
-
-      <?php
-
-      if (isset($_SESSION["membererrorstatus"])) {
-
-          echo "<script>
-        const meToast = document.getElementById('membererrortoast');
-        meToast.classList.remove('hide');
-        meToast.classList.add('show');
-        meToast.style.right = '50px';
-        setTimeout(()=>{
-        meToast.style.right = '-500px';
-        },3000)
-       </script>";
-
-         unset($_SESSION["membererrorstatus"]);
-
-      }
-
-      if (session()->getFlashdata('upload_success')) {
-         $status = session()->getFlashdata('upload_success');
-         echo "<script>
-               document.getElementById('memberstatus').innerHTML = `$status`;
-               const upSuccToast = document.getElementById('membertoast');
-               upSuccToast.classList.remove('hide');
-               upSuccToast.classList.add('show');
-               upSuccToast.style.right = '5%';
-               setTimeout(()=>{
-               upSuccToast.style.right = '-500px';
-               },6000)
-              </script>";
-       }
-       
-       if (session()->getFlashdata('upload_error')) {
-         $status = session()->getFlashdata('upload_error');
-         echo "<script>
-               const upErrToast = document.getElementById('membererrortoast');
-               const body = upErrToast.querySelector('.toast-body');
-               body.innerHTML = `$status`;
-               upErrToast.style.width = '400px';
-               upErrToast.classList.remove('hide');
-               upErrToast.classList.add('show');
-               upErrToast.style.right = '50px';
-               
-               // Ensure the close button works
-               const closeBtn = upErrToast.querySelector('.btn-close');
-               closeBtn.onclick = function() {
-                  upErrToast.style.right = '-500px';
-                  setTimeout(() => { $(upErrToast).hide(); }, 500);
-               };
-
-               setTimeout(()=>{
-                  if (upErrToast.style.right === '50px') {
-                     upErrToast.style.right = '-500px';
-                  }
-               },10000)
-              </script>";
-       }
-      ?>
-      <!----------------------------error-toast-end-------------------------------------->
-
-      <!--------------------delete-toast-end------------------->
-      <div id='deletetoast' style='position:absolute;top:10%;right:-380px;transition:0.5s;' class='bg-white toast hide'>
-         <div class='toast-header'>
-            <strong class='me-auto fs-5'>Message</strong>
-            <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-         </div>
-         <div class='toast-body text-success fs-5 py-2'>
-            Moved successfully !...
-         </div>
-      </div>
-      <!--------------------delete-toast-end------------------->
 
       <div class="row"><!-----top-bar--------------->
 
@@ -689,9 +555,9 @@
                    <button onclick="toggleFilterSection()" class="btn btn-sm btn-outline-primary fw-bold me-2 px-3 rounded-pill shadow-sm transition-all">
                        <i class="fas fa-filter me-1"></i>Filter
                    </button>
-                   <a href='download_members_details' style='height:fit-content;'
-                      class='btn btn-sm btn-success fw-bold float-end btn-warning' id='download'
-                      role='button'>Download</a>&nbsp;&nbsp;
+                   <button onclick="downloadMembersExcel()" style="height:fit-content;" 
+                      class="btn btn-sm btn-success fw-bold float-end btn-warning" id="download"
+                      >Download</button>&nbsp;&nbsp;
                    <a <?php if (session()->get('role') == 2) {
                       echo "hidden";
                     } ?> href="
@@ -1076,18 +942,12 @@
                   <div class="col-md-4"><!--------------col-third------------------->
 
                      <div class="d-flex mt-2 py-2">
-                        <label for="panno">Phone Number:&nbsp;<span style="color:red;">*</span><br>
+                        <label for="phoneno">Phone Number:&nbsp;<span style="color:red;">*</span><br>
                            <input id="phonenofield" class="rounded border" type="number"
                               onkeyup="validateInputfield(this)" name="phoneno">
                            <small id="phonenoerror" style="color:red;"></small></label>
                      </div>
 
-                     <div class="d-flex mt-2 py-2">
-                        <label for="panno">PAN Number:&nbsp;<br>
-                           <input id="pannofield" onkeyup="validateInputfield(this)" class="rounded border" type="text"
-                              name="panno">
-                           <small id="pannoerror" style="color:red;"></small></label>
-                     </div>
 
                      <div class="d-flex mt-2 py-2">
                         <label for="aadharno">Aadhar Number:&nbsp;<span style="color:red;">*</span><br><input
@@ -1098,65 +958,50 @@
                      </div>
 
                   </div><!--------------col-third-end------------------>
-                  <div><span style="color:#295CF5;">Note: Image size should below 2MB.</span></div>
+
                   <div class="row"><!----------------file-row-------------->
-
                      <div class="col-md-3">
-                        <div class="d-flex mt-2 py-2">
-                           <label for="passportphoto" class="custom-file-input">Upload Your Passport size
-                              photo:&nbsp;<span style="color:red;">*</span><br>
-                              <input onchange="uploadFileaddmemberform(this)" id="passportphoto" class="rounded"
+                        <div class="mt-2 py-2">
+                           <label for="passportphoto" class="custom-file-input" style="min-height: 40px; display: block; font-size: 14px; font-weight: 500;">Upload Your Passport size photo:&nbsp;<span style="color: #ff0000 !important; font-weight: bold;">*</span></label>
+                           <input onchange="uploadFileaddmemberform(this)" id="passportphoto" class="rounded container-fluid border"
                                  type="file" name="selfimage" accept="image/jpg,image/jpeg,image/png">
-                              <small style="color:red;" class="selfimage"></small></label>
-                        </div>
-                        <div>
-                           <img id="selfimage" style="width:150px;height:200px;display:none;" src="" alt="">
-                           <div></div>
+                           <small style="color:red;" class="selfimage"></small>
                         </div>
                      </div>
 
                      <div class="col-md-3">
-                        <div class="d-flex mt-2 py-2">
-                           <label for="aadharfrontimage">Upload Aadhar Front image:&nbsp;<span
-                                 style="color:red;">*</span><br><input onchange="uploadFileaddmemberform(this)"
-                                 class="rounded" type="file" name="aadharfrontimage"
+                        <div class="mt-2 py-2">
+                           <label for="aadharfrontimage" style="min-height: 40px; display: block; font-size: 14px; font-weight: 500;">Upload Aadhar Front image:&nbsp;<span style="color: #ff0000 !important; font-weight: bold;">*</span></label>
+                           <input onchange="uploadFileaddmemberform(this)"
+                                 class="rounded container-fluid border" type="file" name="aadharfrontimage"
                                  accept="image/jpg,image/jpeg,image/png">
-                              <small style="color:red;" class="aadharfrontimage"></small></label>
-                        </div>
-                        <div>
-                           <img id="aadharfrontimage" style="width:300px;height:200px;display:none;" src="" alt="">
-                           <div></div>
+                           <small style="color:red;" class="aadharfrontimage"></small>
                         </div>
                      </div>
 
                      <div class="col-md-3">
-                        <div class="d-flex mt-2 py-2">
-                           <label for="aadharbackimage">Upload Aadhar Back image:&nbsp;<span
-                                 style="color:red;">*</span><br><input onchange="uploadFileaddmemberform(this)"
-                                 class="rounded" type="file" name="aadharbackimage"
+                        <div class="mt-2 py-2">
+                           <label for="aadharbackimage" style="min-height: 40px; display: block; font-size: 14px; font-weight: 500;">Upload Aadhar Back image:&nbsp;<span style="color: #ff0000 !important; font-weight: bold;">*</span></label>
+                           <input onchange="uploadFileaddmemberform(this)"
+                                 class="rounded container-fluid border" type="file" name="aadharbackimage"
                                  accept="image/jpg,image/jpeg,image/png">
-                              <small style="color:red;" class="aadharbackimage"></small></label>
-                        </div>
-                        <div>
-                           <img id="aadharbackimage" style="width:300px;height:200px;display:none;" src="" alt="">
-                           <div></div>
+                           <small style="color:red;" class="aadharbackimage"></small>
                         </div>
                      </div>
 
                      <div class="col-md-3">
-                        <div class="d-flex mt-2 py-2">
-                           <label for="communitycertificate">Upload Community Certificate:&nbsp;<span
-                                 style="color:red;">*</span><br><input onchange="uploadFileaddmemberform(this)"
-                                 class="rounded" type="file" name="communitycertificate"
+                        <div class="mt-2 py-2">
+                           <label for="communitycertificate" style="min-height: 40px; display: block; font-size: 14px; font-weight: 500;">Upload Community Certificate:&nbsp;<span style="color: #ff0000 !important; font-weight: bold;">*</span></label>
+                           <input onchange="uploadFileaddmemberform(this)"
+                                 class="rounded container-fluid border" type="file" name="communitycertificate"
                                  accept="image/jpg,image/jpeg,image/png">
-                              <small style="color:red;" class="communitycertificate"></small></label>
-                        </div>
-                        <div>
-                           <img id="communitycertificate" style="width:200px;height:300px;display:none;" src="" alt="">
-                           <div></div>
+                           <small style="color:red;" class="communitycertificate"></small>
                         </div>
                      </div>
                   </div><!----------------file-row-end------------->
+                  <div class="mt-2 text-center">
+                      <span style="color:#295CF5;">Note: File Size should be below 2MB.</span>
+                  </div>
 
                </div><!---------------row-end-------------------->
 
@@ -1820,14 +1665,6 @@
             }
          }
 
-         if (field_name == "panno") {
-            if (field_value !== "" && !field_value.match(alphanumericregex)) {
-               field.nextElementSibling.innerHTML = "PAN number not valid";
-            }
-            else {
-               field.nextElementSibling.innerHTML = "";
-            }
-         }
 
          if (field_name == "aadharno") {
             if (field_value.length == 12 || field_value.length == 0) {
@@ -1913,7 +1750,7 @@
 
          }
 
-         if (field_name == "existfamilyid-update" || field_name == "panno-update") {
+         if (field_name == "existfamilyid-update") {
             if (field_value !== "" && !field_value.match(alphanumericregex)) {
                field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
             }
@@ -1945,7 +1782,6 @@
          let pincode = memberregistrationform["pincode-update"].value.trim();
          let existfamilyid = memberregistrationform["existfamilyid-update"].value.trim();
          let phoneno = memberregistrationform["phoneno-update"].value.trim();
-         let panno = memberregistrationform["panno-update"].value.trim();
          let aadharno = memberregistrationform["aadharno-update"].value.trim();
          let selfimage = memberregistrationform["Memberimage"].value.trim();
          let aadharfrontimage = memberregistrationform["Aadharfrontimage"].value.trim();
@@ -2049,13 +1885,6 @@
             return false;
          }
 
-         if (panno !== "") {
-            if (!panno.match(panvalidate)) {
-               document.getElementById("pannoerror-update").innerHTML = "PAN number not valid";
-
-               return false;
-            }
-         }
 
          if (aadharno == "") {
             document.getElementById("aadharnoerror-update").innerHTML = "Please fill aadharno field.";
@@ -2070,28 +1899,18 @@
       }
 
       function uploadFile(file) {
-         let imageid = file.name;
-         let imageclass = file.name;
-         let errorbox = document.querySelector(`.${imageclass}`);
-         let filereader = new FileReader();
+         let errorbox = document.querySelector(`.${file.name}`);
          let imagesize = 2000000;
-         let uploadedimagesize = file.files[0].size;
+         let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
 
          if (uploadedimagesize > imagesize) {
-            errorbox.textContent = "Image size should below 2MB";
+            errorbox.textContent = "File Size should be below 2MB";
             file.value = "";
             return false;
          }
          else {
             errorbox.textContent = "";
          }
-
-         let imgurl = URL.createObjectURL(file.files[0]);
-         let image = document.getElementById(imageid);
-         image.style.display = "block";
-         image.src = imgurl;
-         image.nextElementSibling.innerHTML = `<button class='ps-img-btn mt-2 rounded' type='button' onclick='removeImage(this,${file.name})'>Remove</button>`;
-
       }
 
       function removeImage(button, file) {
@@ -2169,28 +1988,18 @@
       }
 
       function uploadFileaddmemberform(file) {
-         let imageid = file.name;
-         let imageclass = file.name;
-         let errorbox = document.querySelector(`.${imageclass}`);
-         let filereader = new FileReader();
+         let errorbox = document.querySelector(`.${file.name}`);
          let imagesize = 2000000;
-         let uploadedimagesize = file.files[0].size;
+         let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
 
          if (uploadedimagesize > imagesize) {
-            errorbox.textContent = "Image size should below 2MB";
+            errorbox.textContent = "File Size should be below 2MB";
             file.value = "";
             return false;
          }
          else {
             errorbox.textContent = "";
          }
-
-         let imgurl = URL.createObjectURL(file.files[0]);
-         let image = document.getElementById(imageid);
-         image.style.display = "block";
-         image.src = imgurl;
-         image.nextElementSibling.innerHTML = `<button class='ps-img-btn mt-2 rounded' type='button' onclick='removeImageaddmemberform(this,${file.name})'>Remove</button>`;
-
       }
 
       function removeImageaddmemberform(button, file) {
@@ -2225,7 +2034,6 @@
          let pincode = memberregistrationform["pincode"].value.trim();
          let existfamilyid = memberregistrationform["existfamilyid"].value.trim();
          let phoneno = memberregistrationform["phoneno"].value.trim();
-         let panno = memberregistrationform["panno"].value.trim();
          let aadharno = memberregistrationform["aadharno"].value.trim();
          let selfimage = memberregistrationform["selfimage"].value.trim();
          let aadharfrontimage = memberregistrationform["aadharfrontimage"].value.trim();
@@ -2332,13 +2140,6 @@
             return false;
          }
 
-         if (panno !== "") {
-            if (!panno.match(normalregex)) {
-               document.getElementById("pannoerror").innerHTML = "PAN number not valid";
-
-               return false;
-            }
-         }
 
          if (aadharno == "") {
             document.getElementById("aadharnoerror").innerHTML = "Please fill aadharno field.";
@@ -2413,13 +2214,10 @@
             data: { "id": id },
             success: function (result) {
                document.getElementById('ps-members').innerHTML = result;
-               document.getElementById('deletetoast').style.right = '50px';
-               setTimeout(() => {
-                  document.getElementById('deletetoast').style.right = '-380px';
-               }, 3000)
+               psShowToast('success', 'Moved successfully!');
             },
             error: function (error) {
-               document.getElementById('deletetoast').innerHTML = error;
+               psShowToast('error', 'An error occurred. Please try again.');
             }
          })
       }
@@ -2552,6 +2350,35 @@ function toggleBulkUploadSection() {
 }
 
 
+function downloadMembersExcel() {
+    let search = "";
+    let inputEl = document.querySelector("#commonsearch input");
+    if (inputEl) {
+        search = inputEl.value;
+    }
+
+    let state = document.getElementById("states-dropdown").value;
+    let district = document.getElementById("districts-dropdown").value;
+    let taluk = document.getElementById("taluks-dropdown").value;
+    let panchayat = document.getElementById("panchayat-dropdown").value;
+    let bloodgroup = document.getElementById("bloodgroup-dropdown").value;
+    let gender = document.getElementById("gender-dropdown").value;
+    let occupation = document.getElementById("occupation-dropdown").value;
+
+    let baseUrl = "<?= base_url('download_members_excel'); ?>";
+    let params = new URLSearchParams({
+        "search": search,
+        "state_id": state,
+        "district": district,
+        "taluk": taluk,
+        "panchayat": panchayat,
+        "bloodgroup": bloodgroup,
+        "gender": gender,
+        "occupation": occupation
+    });
+
+    window.location.href = baseUrl + "?" + params.toString();
+}
 
    </script>
 

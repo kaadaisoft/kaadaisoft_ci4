@@ -33,8 +33,11 @@ class AdminDashboard extends BaseController {
         $totalmembers = $this->membersModel->getTotalMembers();
         $states = $this->adminDashboardModel->getStates();
         $pendingcounts = count($pendingapplications);
+        $updaterequests = $this->adminDashboardModel->getMemberUpdateRequests();
+        $updaterequestcounts = count($updaterequests);
         $this->session->set("pendingcounts", $pendingcounts);
-        return view("admindashboard", array("applications" => $pendingapplications, "states" => $states, "pendingcounts" => $pendingcounts, "memberscount" => $totalmembers, "coordscount" => $totalcoordinators));
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
+        return view("admindashboard", array("applications" => $pendingapplications, "states" => $states, "pendingcounts" => $pendingcounts, "updaterequestcounts" => $updaterequestcounts, "memberscount" => $totalmembers, "coordscount" => $totalcoordinators));
     }
 
     public function viewManagerdata(){
@@ -371,7 +374,6 @@ class AdminDashboard extends BaseController {
     $doorno = $this->request->getPost("doorno");
     $pincode = $this->request->getPost("pincode");
     $existfamilyid = $this->request->getPost("existfamilyid");
-    $panno = $this->request->getPost("panno");
     $selfimage = $this->request->getPost("selfimage");
     $aadharfrontimage = $this->request->getPost("aadharfrontimage");
     $aadharbackimage = $this->request->getPost("aadharbackimage");
@@ -431,7 +433,7 @@ class AdminDashboard extends BaseController {
     $insertMember = $this->adminDashboardModel->processRegisteration(
         $name,$state_id,$district,$taluk,$panchayat,$village,
         $street,$doorno,$pincode,$existfamilyid,$processed_phone,
-        $panno,$aadharno,$hashed_password,$documents
+        $aadharno,$hashed_password,$documents
     );
 
     if($insertMember){
@@ -537,7 +539,9 @@ public function change_password() {
             return redirect()->to("/");
         }
         $requests = $this->adminDashboardModel->getMemberUpdateRequests();
-        return view("viewmemberupdaterequests", array("requests" => $requests));
+        $updaterequestcounts = count($requests);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
+        return view("viewmemberupdaterequests", array("requests" => $requests, "updaterequestcounts" => $updaterequestcounts));
     }
 
     public function approveMemberUpdate() {
@@ -636,7 +640,6 @@ public function change_password() {
         $data["Gender"] = $this->request->getPost("gender-update");
         $data["Bloodgroup"] = $this->request->getPost("bloodgroup-update");
         $data["Married"] = $this->request->getPost("married-update");
-        $data["Pannumber"] = $this->request->getPost("panno-update");
         
         // Native Address & Geography
         $state_id = $this->request->getPost("state-update");
@@ -732,6 +735,11 @@ public function change_password() {
         // Perform Update
         $updated = $this->membersModel->processMemberupdate($id, $data, $path, $reason);
         
+        if ($updated === 'no_changes') {
+            $this->session->set('managersuccessstatus', "No changes were made to the details.");
+            return redirect()->back();
+        }
+
         if($updated) {
              $this->session->set('managersuccessstatus', "Manager $id updated successfully.");
         } else {

@@ -411,7 +411,7 @@
                     accept=".csv" required>
                   <div class="mt-2 small text-muted">
                     <strong>CSV Priority:</strong> Familymembershipid,EventName,EventId,paymentdate,paidamount,...<br>
-                    <!-- <strong>CSV EventId wins over modal!</strong> -->
+                    <span style="color:#295CF5;">Note: File Size should be below 2MB.</span>
                   </div>
                 </div>
               </div>

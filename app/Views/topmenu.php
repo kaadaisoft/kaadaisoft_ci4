@@ -27,15 +27,29 @@
             </ul>
         </div>
 
-        <span class="d-flex fa-bell-icon position-relative ms-3">
-            <span><i class="fa-solid fa-bell fs-5 text-secondary"></i></span>
-            <?php if ((session()->get("role") == 1) || (session()->get("role") == 2)) {
+        <?php if ((session()->get("role") == 1) || (session()->get("role") == 2)): ?>
+            <!-- Tasks: Approvals -->
+            <a href="<?= base_url('viewreceivedapplications') ?>" class="text-decoration-none d-flex fa-bell-icon position-relative ms-3" title="Approvals">
+                <span><i class="fa-solid fa-bell fs-5 text-secondary"></i></span>
+                <?php
                 $pendingcounts = session()->get("pendingcounts");
                 if ($pendingcounts > 0) {
                     echo "<sup style='background-color:red;color:white;width:18px;height:18px;font-size:10px;top: -5px;right: -10px;' class='rounded-circle position-absolute d-flex align-items-center justify-content-center fw-bold' id='pendingnotifications'>$pendingcounts</sup>";
                 }
-            } ?>
-        </span>
+                ?>
+            </a>
+
+            <!-- Tasks: Update Requests -->
+            <a href="<?= base_url('view-member-update-requests') ?>" class="text-decoration-none d-flex fa-bell-icon position-relative ms-4" title="Update Requests">
+                <span><i class="fa-solid fa-user-pen fs-5 text-secondary"></i></span>
+                <?php
+                $updaterequestcounts = session()->get("updaterequestcounts");
+                if ($updaterequestcounts > 0) {
+                    echo "<sup style='background-color:#6a11cb;color:white;width:18px;height:18px;font-size:10px;top: -5px;right: -10px;' class='rounded-circle position-absolute d-flex align-items-center justify-content-center fw-bold' id='updaterequestnotifications'>$updaterequestcounts</sup>";
+                }
+                ?>
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 

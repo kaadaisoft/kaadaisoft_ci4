@@ -34,7 +34,9 @@ class Coordinators extends BaseController{
            $this->session->set('coordscounts',$counts);
            $pendingapplications = $this->adminDashboardModel->getPendingapplications();
            $pendingcounts = count($pendingapplications);
+           $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
            $this->session->set("pendingcounts",$pendingcounts);
+           $this->session->set("updaterequestcounts",$updaterequestcounts);
            $totalcoordinators = $this->coordinatorsModel->getTotalCoordinators();
            $coordinators = $this->coordinatorsModel->getCoordinators($counts);
            $states = $this->membersModel->getStates();
@@ -391,7 +393,6 @@ class Coordinators extends BaseController{
             $data["Doornumber"] = $this->request->getPost("doorno");
             $data["Pincode"] = $this->request->getPost("pincode");
             $data["Existfamilyid"] = $this->request->getPost("existfamilyid");
-            $data["Pannumber"] = $this->request->getPost("panno");
               
            
               
@@ -419,6 +420,11 @@ class Coordinators extends BaseController{
             $updateCoordinator = $this->coordinatorsModel->processCoordinatorupdate($Familymembershipid,$data);
             if (!empty($images)) {
                  $this->coordinatorsModel->processUpdateimages($Familymembershipid,$images);
+            }
+    
+            if ($updateCoordinator === 'no_changes') {
+                $this->session->set("coordsuccessstatus", "No changes were made to the details.");
+                return redirect()->back();
             }
     
           if($updateCoordinator === null || $updateCoordinator === true) { // processCoordinatorupdate might return void/null in original logic

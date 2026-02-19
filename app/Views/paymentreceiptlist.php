@@ -534,9 +534,7 @@
      }); */
 
      function viewReceipt(url){
-      var link = document.createElement('a');
-      link.href = url;
-      link.dispatchEvent(new MouseEvent('click'));
+      window.open(url, '_blank');
      }
 
      function downloadReceipt(url){

@@ -551,131 +551,7 @@ html, body {
        
     <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
         <!---------------------admindashboard-status-notifications---------------------->
-        <style>
-            .custom-toast {
-                position: fixed;
-                top: 20px;
-                right: -400px;
-                min-width: 320px;
-                padding: 16px 24px;
-                border-radius: 16px;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-                z-index: 9999;
-                border-left: 6px solid #43a047;
-            }
-            .custom-toast.error { border-left-color: #e53935; }
-            .toast-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                flex-shrink: 0;
-            }
-            .toast-icon.success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
-            .toast-icon.error { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
-            .toast-content { flex-grow: 1; }
-            .toast-title { font-weight: 700; margin-bottom: 2px; }
-            .toast-msg { font-size: 0.9rem; color: #666; font-weight: 500; }
-            .toast-close { cursor: pointer; color: #ccc; transition: color 0.2s; }
-            .toast-close:hover { color: #333; }
-        </style>
-
-        <div id="adminnotify" class="custom-toast">
-            <div id="notify-icon-bg" class="toast-icon success">
-                <i id="notify-icon" class="bi bi-check-lg" style="font-size: 1.2rem;"></i>
-            </div>
-            <div class="toast-content">
-                <div id="notify-title" class="toast-title text-success">Success</div>
-                <div id="notify-msg" class="toast-msg"></div>
-            </div>
-            <i class="bi bi-x-lg toast-close" onclick="hideNotification()"></i>
-        </div>
-
-        <script>
-            function showNotification(type, message) {
-                const toast = document.getElementById('adminnotify');
-                const iconBg = document.getElementById('notify-icon-bg');
-                const icon = document.getElementById('notify-icon');
-                const title = document.getElementById('notify-title');
-                const msg = document.getElementById('notify-msg');
-
-                if (type === 'success') {
-                    toast.classList.remove('error');
-                    iconBg.className = 'toast-icon success';
-                    icon.className = 'bi bi-check-lg';
-                    title.innerText = 'Success';
-                    title.className = 'toast-title text-success';
-                    toast.style.borderLeftColor = '#43a047';
-                } else {
-                    toast.classList.add('error');
-                    iconBg.className = 'toast-icon error';
-                    icon.className = 'bi bi-exclamation-circle';
-                    title.innerText = 'Error';
-                    title.className = 'toast-title text-danger';
-                    toast.style.borderLeftColor = '#e53935';
-                }
-
-                msg.innerHTML = message;
-                toast.style.right = '20px';
-
-                setTimeout(hideNotification, 5000);
-            }
-
-            function hideNotification() {
-                if(document.getElementById('adminnotify')) {
-                    document.getElementById('adminnotify').style.right = '-400px';
-                }
-            }
-
-            $(document).ready(function() {
-                <?php if(session()->get('eventsuccessstatus')): ?>
-                    showNotification('success', '<?= session()->get('eventsuccessstatus') ?>');
-                    <?php session()->remove('eventsuccessstatus'); ?>
-                <?php endif; ?>
-
-                <?php if(session()->get('eventerrorstatus')): ?>
-                    showNotification('error', '<?= session()->get('eventerrorstatus') ?>');
-                    <?php session()->remove('eventerrorstatus'); ?>
-                <?php endif; ?>
-
-                <?php if(session()->get('managersuccessstatus')): ?>
-                    showNotification('success', '<?= session()->get('managersuccessstatus') ?>');
-                    <?php session()->remove('managersuccessstatus'); ?>
-                <?php endif; ?>
-
-                <?php if(session()->get('managererrorstatus')): ?>
-                    showNotification('error', '<?= session()->get('managererrorstatus') ?>');
-                    <?php session()->remove('managererrorstatus'); ?>
-                <?php endif; ?>
-
-                <?php if(session()->getFlashdata('password_success')): ?>
-                    showNotification('success', '<?= session()->getFlashdata('password_success') ?>');
-                <?php endif; ?>
-
-                <?php if(session()->getFlashdata('password_error')): ?>
-                    showNotification('error', '<?= session()->getFlashdata('password_error') ?>');
-                <?php endif; ?>
-
-                <?php if(session()->getFlashdata('upload_success')): ?>
-                    showNotification('success', '<?= session()->getFlashdata('upload_success') ?>');
-                <?php endif; ?>
-
-                <?php if(session()->getFlashdata('upload_error')): ?>
-                    showNotification('error', '<?= session()->getFlashdata('upload_error') ?>');
-                <?php endif; ?>
-            });
-        </script>
-        <!---------------------admindashboard-status-end---------------------->
-<!----------------------------event-error-toast-end-------------------------------------->
+<?= view('notification_toast') ?>
       <div class="row"><!-----top-bar--------------->
 
         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
@@ -1120,7 +996,7 @@ function validateUpdateInputfield(field){
       
    }
 
-   if(field_name == "existfamilyid-update" || field_name == "panno-update"){
+   if(field_name == "existfamilyid-update"){
       if(field_value !== "" && !field_value.match(alphanumericregex)){
          field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
       }
@@ -1153,7 +1029,6 @@ function validateManagerform() {
       let pincode = managerregistrationform["pincode-update"].value.trim();
       let existfamilyid = managerregistrationform["existfamilyid-update"].value.trim();
       let phoneno = managerregistrationform["phoneno-update"].value.trim();
-      let panno = managerregistrationform["panno-update"].value.trim();
       let aadharno = managerregistrationform["aadharno-update"].value.trim();
       let selfimage = managerregistrationform["Memberimage"].value.trim();
       let aadharfrontimage = managerregistrationform["Aadharfrontimage"].value.trim();
@@ -1258,13 +1133,6 @@ function validateManagerform() {
          return false;
       }
 
-      if(panno !== ""){
-         if(!panno.match(normalregex)){
-            document.getElementById("pannoerror-update").innerHTML = "Only letters and numbers are allowed.";
-        
-            return false;
-         }
-      }
 
       if(aadharno == ""){
          document.getElementById("aadharnoerror-update").innerHTML = "Please fill aadharno field.";

@@ -419,84 +419,9 @@
         
 <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
       
-<!---------------------member-status-toast---------------------->
+<?= view('notification_toast') ?>
 
-<div id='membertoast' class='toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="memberstatus" class='toast-body text-white fs-6 py-2'>
-    Member added successfully !...
-  </div>
-  </div>
 
-<?php 
-if(isset($_SESSION["membersuccessstatus"])){
-      $status = $_SESSION["membersuccessstatus"];
-echo "<script>
-       document.getElementById('memberstatus').innerHTML = '$status';
-       const umToast = document.getElementById('membertoast');
-       umToast.classList.remove('hide');
-       umToast.classList.add('show');
-       umToast.style.right = '5%';
-       setTimeout(()=>{
-       umToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["membersuccessstatus"]);
-
-}
-
-?>
-<!---------------------member-status-toast-end------------------>
-
-<!---------------------error-toast---------------------->
-
-<div id='membererrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div class='toast-body text-white fs-6 py-2'>
-    Member updated successfully !...
-  </div>
-  </div>
-
-<?php 
-
-if(isset($_SESSION["membererrorstatus"])){
-
-echo "<script>
-       const umeToast = document.getElementById('membererrortoast');
-       umeToast.classList.remove('hide');
-       umeToast.classList.add('show');
-       umeToast.style.right = '50px';
-       setTimeout(()=>{
-       umeToast.style.right = '-380px';
-       },3000)
-      </script>"; 
-
-unset($_SESSION["membererrorstatus"]);
-
-}
-
-?>
-<!----------------------------error-toast-end-------------------------------------->
-
-<!--------------------delete-toast-end------------------->
-<div id='deletetoast' style='position:absolute;top:10%;right:-380px;transition:0.5s;' class='bg-white toast hide'>
-  <div class='toast-header'>
-    <strong class='me-auto fs-5'>Message</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div class='toast-body text-success fs-5 py-2'>
-    Moved successfully !...
-  </div>
-  </div>
-<!--------------------delete-toast-end------------------->
 
       <div class="row"><!-----top-bar--------------->
 
@@ -1192,13 +1117,10 @@ function setDropdownpanchayat(taluk){
         data:{"id":id},
         success:function(result){
         document.getElementById('ps-members').innerHTML = result;
-        document.getElementById('deletetoast').style.right = '50px';
-        setTimeout(()=>{
-        document.getElementById('deletetoast').style.right = '-380px';
-        },3000)
+        psShowToast('success', 'Moved successfully!');
         },
         error:function(error){
-            document.getElementById('deletetoast').innerHTML = error;
+            psShowToast('error', 'An error occurred. Please try again.');
         }
       })
   }
@@ -1245,7 +1167,7 @@ function setDropdownpanchayat(taluk){
         membermodal.show();
         },
         error:function(error){
-            document.getElementById('deletetoast').innerHTML = error;
+            psShowToast('error', 'An error occurred. Please try again.');
         }
       })
   }

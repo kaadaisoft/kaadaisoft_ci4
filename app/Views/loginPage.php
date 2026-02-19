@@ -157,6 +157,96 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
+        /* MUI Alert Styles */
+        .mui-alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            width: 100%;
+            max-width: 500px;
+            padding: 0 20px;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mui-alert {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            pointer-events: auto;
+            animation: muiSlideIn 0.4s ease-out;
+            transition: opacity 0.3s ease, transform 0.3s ease, margin 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        @keyframes muiSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .mui-alert-icon {
+            margin-right: 12px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+
+        .mui-alert-message {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .mui-alert-close {
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 2px 8px;
+            line-height: 1;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            background: transparent;
+            border: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mui-alert-close:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+        }
+
+        /* MUI Variants - Light Mode Like Website */
+        .mui-alert-success {
+            background-color: #edf7ed;
+            color: #1e4620;
+            border: 1px solid #c3e6cb;
+        }
+        .mui-alert-error {
+            background-color: #fdeded;
+            color: #5f2120;
+            border: 1px solid #f5c6cb;
+        }
+        .mui-alert-warning {
+            background-color: #fff4e5;
+            color: #663c00;
+            border: 1px solid #ffeeba;
+        }
+        .mui-alert-info {
+            background-color: #e5f6fd;
+            color: #014361;
+            border: 1px solid #bee5eb;
+        }
+
         @media (max-width: 992px) {
             .login-main-container {
                 padding: 20px !important;
@@ -187,11 +277,17 @@
             .login-title {
                 font-size: 1.8rem !important;
             }
+
+            .mui-alert-container {
+                top: 10px;
+                padding: 0 10px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div id="mui-alert-container" class="mui-alert-container"></div>
     <div class="login-wrapper">
         <!-- Full Screen Background Image -->
         <div class="login-image">
@@ -224,9 +320,15 @@
                             id="password" name="password" placeholder="Enter your Password">
                     </div>
 
-                    <button type="submit" name="save" value="Submit"
-                        class="btn btn-primary btn-block mt-2">Login</button>
+                    <div class="text-right">
+                        <button type="submit" name="save" value="Submit"
+                            class="btn btn-primary mt-2">Login</button>
+                    </div>
                 </form>
+
+                <div class="text-center mt-2">
+                    <a href="<?= base_url('forgot-password') ?>" style="color: #000; font-weight: 600;">Forgot Password?</a>
+                </div>
 
                 
                 <p class="text-center mt-3 mb-0" style="color: #000000ff; font-weight: bold;">
@@ -269,44 +371,65 @@
             form.addEventListener('submit', function (e) {
                 if (username.value.trim() === "") {
                     e.preventDefault();
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Mobile Number Required',
-                        text: 'Please enter your Mobile Number.',
-                        confirmButtonColor: '#6c5ce7'
-                    });
+                    showMuiAlert('warning', '<strong>Mobile Number Required</strong><br>Please enter your Mobile Number.');
                     return;
                 }
 
                 if (password.value.trim() === "") {
                     e.preventDefault();
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Password Required',
-                        text: 'Please enter your password.',
-                        confirmButtonColor: '#6c5ce7'
-                    });
+                    showMuiAlert('warning', '<strong>Password Required</strong><br>Please enter your password.');
                     return;
                 }
             });
 
+            // MUI Alert Function
+            window.showMuiAlert = function(type, message, duration = 5000) {
+                const container = document.getElementById('mui-alert-container');
+                const alert = document.createElement('div');
+                alert.className = `mui-alert mui-alert-${type}`;
+                
+                let icon = '';
+                if (type === 'success') icon = '<i class="fa-solid fa-circle-check"></i>';
+                else if (type === 'error') icon = '<i class="fa-solid fa-circle-xmark"></i>';
+                else if (type === 'warning') icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                else icon = '<i class="fa-solid fa-circle-info"></i>';
+
+                alert.innerHTML = `
+                    <div class="mui-alert-icon">${icon}</div>
+                    <div class="mui-alert-message">${message}</div>
+                    <button class="mui-alert-close" onclick="closeMuiAlert(this.parentElement)">&times;</button>
+                `;
+
+                container.appendChild(alert);
+
+                if (duration > 0) {
+                    setTimeout(() => {
+                        closeMuiAlert(alert);
+                    }, duration);
+                }
+            };
+
+            window.closeMuiAlert = function(alertElement) {
+                alertElement.style.opacity = '0';
+                alertElement.style.transform = 'translateY(-10px)';
+                setTimeout(() => alertElement.remove(), 300);
+            };
+
             // Handle Server Side Errors
             <?php if (isset($usererror)): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Error',
-                    text: '<?= $usererror ?>',
-                    confirmButtonColor: '#6c5ce7'
-                });
+                showMuiAlert('error', '<strong>Login Error</strong><br><?= addslashes($usererror) ?>');
             <?php endif; ?>
 
             <?php if (isset($passworderror)): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Password',
-                    text: '<?= $passworderror ?>',
-                    confirmButtonColor: '#6c5ce7'
-                });
+                showMuiAlert('error', '<strong>Invalid Password</strong><br><?= addslashes($passworderror) ?>');
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('error')): ?>
+                showMuiAlert('error', '<strong>Error</strong><br><?= addslashes(session()->getFlashdata('error')) ?>');
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('success')): ?>
+                showMuiAlert('success', '<strong>Success</strong><br><?= addslashes(session()->getFlashdata('success')) ?>');
             <?php endif; ?>
 
             <?php if (isset($rejectreason)): ?>
@@ -316,7 +439,7 @@
                     html: `<div class="text-start">
                         <p>Your registration account has been rejected for the following reason:</p>
                         <div class="p-3 bg-light rounded border-start border-danger border-4 mb-3">
-                            <strong>Reason:</strong> <?= $rejectreason ?>
+                            <strong>Reason:</strong> <?= addslashes($rejectreason) ?>
                         </div>
                         <p class="small text-muted">Please contact the administrator or try registering again with correct details.</p>
                     </div>`,

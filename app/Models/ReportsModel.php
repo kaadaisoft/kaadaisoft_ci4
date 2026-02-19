@@ -265,6 +265,58 @@ class ReportsModel extends Model
         
         return $builder->get()->getResultArray();
     }
+
+    public function getFilteredMembersForDownload($searchfields)
+    {
+        $builder = $this->db->table('kaadaimembers');
+        $builder->where('Role', 3);
+        $builder->where('isShow', 1);
+        $builder->where('MemberRole', 'Head');
+
+        if (is_array($searchfields)) {
+            if (!empty($searchfields['state_id'])) {
+                $builder->where('state_id', $searchfields['state_id']);
+            }
+            if (!empty($searchfields['district'])) {
+                $builder->where('District', $searchfields['district']);
+            }
+            if (!empty($searchfields['taluk'])) {
+                $builder->where('Taluk', $searchfields['taluk']);
+            }
+            if (!empty($searchfields['panchayat'])) {
+                $builder->where('Panchayat', $searchfields['panchayat']);
+            }
+            if (!empty($searchfields['bloodgroup'])) {
+                $builder->where('Bloodgroup', $searchfields['bloodgroup']);
+            }
+            if (!empty($searchfields['gender'])) {
+                $builder->where('Gender', $searchfields['gender']);
+            }
+            if (!empty($searchfields['occupation'])) {
+                $builder->where('Profession', $searchfields['occupation']);
+            }
+            if (!empty($searchfields['search'])) {
+                $term = $searchfields['search'];
+                $builder->groupStart();
+                $builder->like('Name', $term);
+                $builder->orLike('Familymembershipid', $term);
+                $builder->orLike('Phonenumber', $term);
+                $builder->orLike('Aadharnumber', $term);
+                $builder->orLike('District', $term);
+                $builder->groupEnd();
+            }
+        }
+
+        if (session()->get('role') == 2) {
+            $coord_id = session()->get("Kaadaisoft_userId");
+            $builder->groupStart()
+                    ->where('Coordinator_id', $coord_id)
+                    ->orWhere('Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+        }
+
+        return $builder->get()->getResultArray();
+    }
     
     public function getMemberById($id) {
          return $this->db->table('kaadaimembers')->where('Familymembershipid', $id)->get()->getRowArray();

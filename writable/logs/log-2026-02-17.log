@@ -228,3 +228,120 @@ in SYSTEMPATH\Router\Router.php on line 768.
  5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
  6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-17 09:38:01 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "1766751578Screenshot-(222).png"
+[Method: GET, Route: assets/kaadaieventuploads/1766751578Screenshot-%28222%29.png]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(219): CodeIgniter\Router\Router->checkDisallowedChars('assets/kaadaieventuploads/1766751578Screenshot-(222).png')
+ 2 SYSTEMPATH\CodeIgniter.php(829): CodeIgniter\Router\Router->handle('assets/kaadaieventuploads/1766751578Screenshot-(222).png')
+ 3 SYSTEMPATH\CodeIgniter.php(441): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2026-02-17 10:43:27 --> Email: sendWithMail throwed ErrorException: mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php:1776
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'mail(): Failed ...', 'D:\\xampp\\htdocs...', 1776)
+#1 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1776): mail('kalaivelliangir...', '=?UTF-8?Q?Passw...', 'Your OTP for pa...', 'Date: Tue, 17 F...', '-f noreply@kaad...')
+#2 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1708): CodeIgniter\Email\Email->sendWithMail()
+#3 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1602): CodeIgniter\Email\Email->spoolEmail()
+#4 D:\xampp\htdocs\kaadaisoft_ci4\app\Controllers\Loginpage.php(176): CodeIgniter\Email\Email->send()
+#5 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+#6 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+#7 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\xampp\htdocs\kaadaisoft_ci4\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2026-02-17 10:43:27 --> Email: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.
+ERROR - 2026-02-17 10:43:27 --> 
+ERROR - 2026-02-17 10:43:27 --> Email failed to send: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 17 Feb 2026 10:43:25 +0000
+From: &quot;Poondurai Kaadai Kulam&quot; &lt;noreply@kaadaikulam.org&gt;
+Return-Path: &lt;noreply@kaadaikulam.org&gt;
+Reply-To: &lt;noreply@kaadaikulam.org&gt;
+User-Agent: CodeIgniter
+X-Sender: noreply@kaadaikulam.org
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;6994464db676b2.70171883@kaadaikulam.org&gt;
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+</pre>
+ERROR - 2026-02-17 10:45:12 --> Email: sendWithMail throwed ErrorException: mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php:1776
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'mail(): Failed ...', 'D:\\xampp\\htdocs...', 1776)
+#1 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1776): mail('kalaivelliangir...', '=?UTF-8?Q?Passw...', 'Your OTP for pa...', 'Date: Tue, 17 F...', '-f noreply@kaad...')
+#2 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1708): CodeIgniter\Email\Email->sendWithMail()
+#3 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1602): CodeIgniter\Email\Email->spoolEmail()
+#4 D:\xampp\htdocs\kaadaisoft_ci4\app\Controllers\Loginpage.php(176): CodeIgniter\Email\Email->send()
+#5 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+#6 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+#7 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\xampp\htdocs\kaadaisoft_ci4\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2026-02-17 10:45:12 --> Email: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.
+ERROR - 2026-02-17 10:45:12 --> 
+ERROR - 2026-02-17 10:45:12 --> Email failed to send: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 17 Feb 2026 10:45:10 +0000
+From: &quot;Poondurai Kaadai Kulam&quot; &lt;noreply@kaadaikulam.org&gt;
+Return-Path: &lt;noreply@kaadaikulam.org&gt;
+Reply-To: &lt;noreply@kaadaikulam.org&gt;
+User-Agent: CodeIgniter
+X-Sender: noreply@kaadaikulam.org
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;699446b6896877.46792329@kaadaikulam.org&gt;
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+</pre>
+ERROR - 2026-02-17 10:45:51 --> Email: sendWithMail throwed ErrorException: mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php:1776
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'mail(): Failed ...', 'D:\\xampp\\htdocs...', 1776)
+#1 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1776): mail('kalaivelliangir...', '=?UTF-8?Q?Passw...', 'Your OTP for pa...', 'Date: Tue, 17 F...', '-f noreply@kaad...')
+#2 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1708): CodeIgniter\Email\Email->sendWithMail()
+#3 D:\xampp\htdocs\kaadaisoft_ci4\system\Email\Email.php(1602): CodeIgniter\Email\Email->spoolEmail()
+#4 D:\xampp\htdocs\kaadaisoft_ci4\app\Controllers\Loginpage.php(176): CodeIgniter\Email\Email->send()
+#5 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(951): App\Controllers\Loginpage->send_otp()
+#6 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Loginpage))
+#7 D:\xampp\htdocs\kaadaisoft_ci4\system\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#9 D:\xampp\htdocs\kaadaisoft_ci4\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 D:\xampp\htdocs\kaadaisoft_ci4\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2026-02-17 10:45:51 --> Email: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.
+ERROR - 2026-02-17 10:45:51 --> 
+ERROR - 2026-02-17 10:45:51 --> Email failed to send: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 17 Feb 2026 10:45:49 +0000
+From: &quot;Poondurai Kaadai Kulam&quot; &lt;noreply@kaadaikulam.org&gt;
+Return-Path: &lt;noreply@kaadaikulam.org&gt;
+Reply-To: &lt;noreply@kaadaikulam.org&gt;
+User-Agent: CodeIgniter
+X-Sender: noreply@kaadaikulam.org
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;699446dd99eb18.68084973@kaadaikulam.org&gt;
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+</pre>
+CRITICAL - 2026-02-17 11:41:04 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "keerthu56783456.jpeg alt="
+[Method: GET, Route: assets/membersdocuments/keerthu56783456.jpeg%20alt=]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(219): CodeIgniter\Router\Router->checkDisallowedChars('assets/membersdocuments/keerthu56783456.jpeg alt=')
+ 2 SYSTEMPATH\CodeIgniter.php(829): CodeIgniter\Router\Router->handle('assets/membersdocuments/keerthu56783456.jpeg alt=')
+ 3 SYSTEMPATH\CodeIgniter.php(441): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-17 11:46:52 --> CodeIgniter\HTTP\Exceptions\BadRequestException: The URI you submitted has disallowed characters: "1766751578Screenshot-(222).png"
+[Method: GET, Route: assets/kaadaieventuploads/1766751578Screenshot-%28222%29.png]
+in SYSTEMPATH\Router\Router.php on line 768.
+ 1 SYSTEMPATH\Router\Router.php(219): CodeIgniter\Router\Router->checkDisallowedChars('assets/kaadaieventuploads/1766751578Screenshot-(222).png')
+ 2 SYSTEMPATH\CodeIgniter.php(829): CodeIgniter\Router\Router->handle('assets/kaadaieventuploads/1766751578Screenshot-(222).png')
+ 3 SYSTEMPATH\CodeIgniter.php(441): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 4 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

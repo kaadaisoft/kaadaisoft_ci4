@@ -196,19 +196,32 @@ class CoordinatorsModel extends Model
                 ->where('Familymembershipid !=', $Familymembershipid)
                 ->countAllResults();
             if ($compositeCount > 0) {
-                 $session->setFlashdata("coorderrorstatus", "The combination of Phone and Aadhaar already exists (Likely Duplicate Aadhaar).");
+                 $session->setFlashdata("coorderrorstatus", "The combination of Phone and Aadhaar already exists.");
                  return false;
             }
         }
-        
+
+        // Check if anything actually changed (ignoring updated_at)
+        $currentRecord = $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->get()->getRowArray();
+        if ($currentRecord) {
+            $changed = false;
+            foreach ($data as $key => $value) {
+                if ($key === 'updated_at') continue;
+                $dbVal = $currentRecord[$key] ?? '';
+                $newVal = $value ?? '';
+                if (trim((string)$dbVal) !== trim((string)$newVal)) {
+                    $changed = true;
+                    break;
+                }
+            }
+            if (!$changed) {
+                return 'no_changes';
+            }
+        }
+
         return $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->update($data);
     }
 
-    /* public function processCoordinatorupdate($Familymembershipid,$data) {
-        // var_dump($data);
-        $this->db->query("UPDATE kaadaimembers SET Name = '$data[Name]',Aadharnumber = '$data[Aadharnumber]',Phonenumber = '$data[Phonenumber]',State = '$data[State]',District = $data['District'],Taluk = '$data[Taluk]',Panchayat = '$data[Panchayat]',Village = '$data[Village]',Street = '$data[Street]',Doornumber = '$data[Doornumber]',Pincode = '$data[Pincode]',Existfamilyid = '$data[Existfamilyid]',Pannumber = '$data[Pannumber]' WHERE Familymembershipid = '$Familymembershipid'");
-
-    } */
 
     public function processUpdateimages($Familymembershipid, $images)
     {

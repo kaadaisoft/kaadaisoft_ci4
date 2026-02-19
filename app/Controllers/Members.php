@@ -31,7 +31,9 @@ class Members extends BaseController
             $totalmembers = $this->membersModel->getTotalMembers();
             $pendingapplications = $this->adminDashboardModel->getPendingapplications();
             $pendingcounts = count($pendingapplications);
+            $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
             $this->session->set("pendingcounts", $pendingcounts);
+            $this->session->set("updaterequestcounts", $updaterequestcounts);
             $members = $this->membersModel->getMembers($counts);
             $states = $this->membersModel->getStates();
             
@@ -551,7 +553,6 @@ class Members extends BaseController
              $data["Coordinator_Two_id"] = $new_coord_two_id;
         }
 
-        $data["Pannumber"] = $this->request->getPost("panno" . $suffix);
         
         // Detailed fields added to match add_family_member
         $data["Dob"] = $this->request->getPost("dob" . $suffix);
@@ -651,6 +652,13 @@ class Members extends BaseController
             $updateMember = $this->membersModel->processMemberupdate($Familymembershipid, $data, $path, $reason);
         }
 
+        if ($updateMember === 'no_changes') {
+            $this->session->set("coordsuccessstatus", "No changes were made to the details.");
+            $this->session->set("membersuccessstatus", "No changes were made to the details.");
+            $this->session->set("managersuccessstatus", "No changes were made to the details.");
+            return redirect()->back();
+        }
+
         if ($updateMember) {
             if ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Your update request has been sent to your coordinator for approval.");
@@ -743,7 +751,6 @@ class Members extends BaseController
         $doorno = $this->request->getPost("doorno");
         $pincode = $this->request->getPost("pincode");
         $existfamilyid = $this->request->getPost("existfamilyid");
-        $panno = $this->request->getPost("panno");
 
         // MISSING FIELDS - ADD THESE
         $dob = $this->request->getPost('dob');
@@ -857,7 +864,6 @@ class Members extends BaseController
             $pincode,
             $existfamilyid,
             $processed_phone,
-            $panno,
             $aadharno,
             $hashed_password,
             $documents,
@@ -918,13 +924,13 @@ class Members extends BaseController
         } else {
 
             if ($this->session->get('role') == 1) {
-                $this->session->set("managersuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                $this->session->set("managersuccessstatus", "Family member added successfully.");
                 return redirect()->to("view-manager-data");
             } elseif ($this->session->get('role') == 2) {
-                $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                $this->session->set("coordsuccessstatus", "Family member added successfully.");
                 return redirect()->to("view-coordinator-data");
             } elseif ($this->session->get('role') == 3) {
-                $this->session->set("coordsuccessstatus", "Your family member application is submitted. Please wait 48 hours.");
+                $this->session->set("coordsuccessstatus", "Family member added successfully.");
                 return redirect()->to("view-member-data");
             } else {
                  // Public Registration
