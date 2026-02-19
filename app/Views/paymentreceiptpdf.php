@@ -319,38 +319,8 @@
 
   <div style="overflow:hidden;position:absolute;" class="container-fluid">
 
-    <!---------------------add-toast---------------------->
+    <?= view('notification_toast') ?>
 
-    <div id='paymenttoast'
-      style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);'
-      class=' toast hide'>
-      <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-        <strong class='me-auto text-white fs-6'>Success</strong>
-        <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-      </div>
-      <div id="paymentstatus" class='toast-body text-white fs-6 py-2'>
-
-      </div>
-    </div>
-
-    <?php if (isset($_SESSION["paymentsuccessstatus"])) {
-      $status = $_SESSION['paymentsuccessstatus'];
-      echo "<script>
-       document.getElementById('paymentstatus').innerHTML = '$status';
-       const pToast = document.getElementById('paymenttoast');
-       pToast.classList.remove('hide');
-       pToast.classList.add('show');
-       pToast.style.right = '50px';
-       setTimeout(()=>{
-       pToast.style.right = '-380px';
-       },3000);       
-      </script>";
-
-      unset($_SESSION["paymentsuccessstatus"]);
-
-    }
-
-    ?>
     <!---------------------add-toast-end------------------>
 
 
@@ -606,13 +576,12 @@
 
     function printReceipt() {
       let divContents = document.getElementById("printreceipt").innerHTML;
+      let currentDate = '<?php echo date("Y/m/d"); ?>';
       let printWindow = window.open('', '', 'height=auto, width=auto');
       printWindow.document.open();
       printWindow.document.write(`
                 <html>
                 <head>
-                
-    
                     <title>Print Receipt</title>
                     <style>
                             .ps-logo{
@@ -631,13 +600,17 @@
                                 }     
                              .printuse{
                            text-align:center;
-                            }
+                             }
                     </style>
                 </head>
                 <body>
                    <div>
-                   <table style='border:2px solid grey;border-radius:15px;padding:20px;' style='width:400px;'>
-                        
+                   <table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>
+                        <tr>
+                            <td colspan="3" style="text-align:center;">
+                                <span class="heading-kaadaisoft">KAADAISOFT</span>
+                            </td>
+                        </tr>
                         <tr>
                             <td style="font-weight:bold;">உறுப்பினர் விவரம்</td>
                             <td style="font-weight:bold;"></td>
@@ -645,7 +618,7 @@
                         </tr>
                         <tr>
                             <td style="font-weight:bold;">
-                             தேதி : <?php echo date("Y/m/d"); ?>
+                             தேதி : ${currentDate}
                             </td>                          
                             </tr>                        
                     ${divContents}
@@ -658,128 +631,11 @@
       printWindow.print();
     }
 
-
     document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-
-    function searchcoordinators(coords) {
-
-      let searchfields = coords.value;
-
-      $.ajax({
-        type: "get",
-        url: "coordinators/searchcoordinators",
-        data: { "searchfields": searchfields },
-        success: (result) => {
-          document.getElementById('ps-coords').innerHTML = result;
-        },
-        error: (error) => {
-          document.getElementById('ps-coords').innerHTML = error;
-        }
-      })
-    };
-
-    function displayCoordinators(counts, index) {
-
-      activepage = document.querySelectorAll(".active");
-      let l = activepage.length;
-      for (let i = 0; i < l; i++) {
-        if (i == index) {
-          activepage[i].classList.add("active-page");
-        }
-        else {
-          if (activepage[i].classList.contains("active-page")) {
-            activepage[i].classList.remove("active-page")
-          }
-        }
-      }
-
-      $.ajax({
-        type: "get",
-        url: "coordinators/displaycoordinators",
-        data: { "count": counts },
-        success: function (result) {
-          document.getElementById('ps-coords').innerHTML = result;
-        },
-        error: function (error) {
-          document.getElementById('ps-coords').innerHTML = error;
-        }
-      })
-    }
-
-    function changecoordinatorspagesetup(initialIndex) {
-
-      $.ajax({
-        type: "get",
-        url: "coordinators/changecoordinatorspagesetup",
-        data: { "initialindex": initialIndex },
-        success: function (result) {
-          document.getElementById('changepage').innerHTML = result;
-        },
-        error: function (err) {
-          document.getElementById('ps-coords').innerHTML = err;
-        }
-      });
-    }
 
     window.addEventListener("resize", () => {
       document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-      let formmodal = document.getElementById("add-coords-form");
-      let b = window.innerWidth;
-      if (b > 768) {
-        formmodal.style.left = "29%";
-      }
-      else {
-        formmodal.style.left = "5%";
-      }
-    })
-
-    let show = document.getElementById("coords-modal-hide");
-
-    function showcoordsmodal() {
-      let show = document.getElementById("coords-modal-hide");
-      show.style.display = "block";
-      let formmodal = document.getElementById("add-coords-form");
-      let b = window.innerWidth;
-      if (b > 768) {
-        show.style.left = "0%";
-        formmodal.style.left = "29%";
-      }
-      else {
-        show.style.left = "0%";
-        formmodal.style.left = "5%";
-      }
-    }
-
-    window.onclick = function (event) {
-
-      if (event.target == show) {
-        let formmodal = document.getElementById("add-coords-form");
-        let b = window.innerWidth;
-        if (b > 768) {
-          show.style.left = "-100%";
-          formmodal.style.left = "-42%";
-        }
-        else {
-          show.style.left = "-100%";
-          formmodal.style.left = "-90%";
-        }
-      }
-    }
-
-    function hidecoordsform() {
-      let formmodal = document.getElementById("add-coords-form");
-      let b = window.innerWidth;
-      if (b > 768) {
-        show.style.left = "-100%";
-        formmodal.style.left = "-42%";
-      }
-      else {
-        show.style.left = "-100%";
-        formmodal.style.left = "-90%";
-      }
-    }
-
-
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

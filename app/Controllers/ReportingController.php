@@ -207,5 +207,104 @@ class ReportingController extends BaseController
         $writer->save('php://output');
         exit;
     }
+
+    public function download_members_excel()
+    {
+        if (!$this->session->has('Kaadaisoft_userId')) {
+            return redirect()->to('/');
+        }
+
+        $search = $this->request->getGet('search');
+        $state_id = $this->request->getGet('state_id');
+        $district = $this->request->getGet('district');
+        $taluk = $this->request->getGet('taluk');
+        $panchayat = $this->request->getGet('panchayat');
+        $bloodgroup = $this->request->getGet('bloodgroup');
+        $gender = $this->request->getGet('gender');
+        $occupation = $this->request->getGet('occupation');
+
+        $searchfields = [
+            'search' => $search,
+            'state_id' => $state_id,
+            'district' => $district,
+            'taluk' => $taluk,
+            'panchayat' => $panchayat,
+            'bloodgroup' => $bloodgroup,
+            'gender' => $gender,
+            'occupation' => $occupation
+        ];
+
+        $members = $this->reportsModel->getFilteredMembersForDownload($searchfields);
+
+        if (empty($members)) {
+            echo "No data available for the selected filters.";
+            return;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $spreadsheet->getProperties()->setCreator('Kaadaisoft')
+            ->setTitle('Filtered Members Export');
+
+        $headers = [
+            'A1' => 'User ID',
+            'B1' => 'Name',
+            'C1' => 'Mobile',
+            'D1' => 'State',
+            'E1' => 'District',
+            'F1' => 'Taluk',
+            'G1' => 'Panchayat',
+            'H1' => 'Village',
+            'I1' => 'Street',
+            'J1' => 'Door No',
+            'K1' => 'Pincode',
+            'L1' => 'Aadhar No',
+            'M1' => 'Blood Group',
+            'N1' => 'Gender',
+            'O1' => 'Occupation'
+        ];
+
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
+
+        $row = 2;
+        foreach ($members as $member) {
+            $sheet->setCellValue('A' . $row, $member['Familymembershipid']);
+            $sheet->setCellValue('B' . $row, $member['Name']);
+            $sheet->setCellValue('C' . $row, $member['Phonenumber']);
+            $sheet->setCellValue('D' . $row, $member['State']);
+            $sheet->setCellValue('E' . $row, $member['District']);
+            $sheet->setCellValue('F' . $row, $member['Taluk']);
+            $sheet->setCellValue('G' . $row, $member['Panchayat']);
+            $sheet->setCellValue('H' . $row, $member['Village']);
+            $sheet->setCellValue('I' . $row, $member['Street']);
+            $sheet->setCellValue('J' . $row, $member['Doornumber']);
+            $sheet->setCellValue('K' . $row, $member['Pincode']);
+            $sheet->setCellValue('L' . $row, $member['Aadharnumber']);
+            $sheet->setCellValue('M' . $row, $member['Bloodgroup']);
+            $sheet->setCellValue('N' . $row, $member['Gender']);
+            $sheet->setCellValue('O' . $row, $member['Profession']);
+            $row++;
+        }
+
+        foreach (range('A', 'O') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $filename = "Members_Report_" . date('Y-m-d') . ".xlsx";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        ob_clean();
+        flush();
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
 }
 ?>

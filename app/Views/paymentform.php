@@ -758,12 +758,17 @@ const BankList = [
 
     function enablesubmitbutton(checked){
         let check = checked.checked;
+        let pay = document.getElementById("pay").value;
         console.log(check)
-        if(check){
+        if(check && Number(pay) > 0){
            document.getElementById("savereceipt").removeAttribute("disabled");
            document.getElementById("savereceipt").style.opacity = "1";
         }
         else{
+          if (check && Number(pay) <= 0) {
+             document.getElementById("payalert").innerHTML = "Please enter an amount greater than 0.";
+             checked.checked = false;
+          }
           document.getElementById("savereceipt").setAttribute("disabled",true);
           document.getElementById("savereceipt").style.opacity = "0.4";
         }
@@ -829,13 +834,24 @@ const BankList = [
     function getTaxamount(event,memberid) {
        let eventid = event.value;
        console.log(event.value,memberid);
+       // Clear previous pay value and alerts
+       document.getElementById("pay").value = "";
+       document.getElementById("payalert").innerHTML = "";
+       
       $.ajax({
       type:"get",
       url:"payments/get-tax-amount",
       data:{"eventid":eventid,"memberid":memberid},
       success:(result)=>{
            document.getElementById("taxdetails").innerHTML = result;
-           document.getElementById("pay").removeAttribute("readonly");
+           let balanceValue = document.getElementById("balance").value;
+           if (Number(balanceValue) <= 0) {
+               document.getElementById("pay").setAttribute("readonly", true);
+               document.getElementById("payalert").innerHTML = "You already paid";
+               document.getElementById("payalert").style.color = "red";
+           } else {
+               document.getElementById("pay").removeAttribute("readonly");
+           }
            console.log(result);
       },
       error:(error)=>{
@@ -848,13 +864,24 @@ const BankList = [
     function getTaxamountbysearch(event,memberid){
        let SNo = event;
        console.log(event,memberid);
+       // Clear previous pay value and alerts
+       document.getElementById("pay").value = "";
+       document.getElementById("payalert").innerHTML = "";
+
       $.ajax({
       type:"get",
       url:"payments/get-tax-amount",
       data:{"eventid":SNo,"memberid":memberid},
       success:(result)=>{
            document.getElementById("taxdetails").innerHTML = result;
-           document.getElementById("pay").removeAttribute("readonly");
+           let balanceValue = document.getElementById("balance").value;
+           if (Number(balanceValue) <= 0) {
+               document.getElementById("pay").setAttribute("readonly", true);
+               document.getElementById("payalert").innerHTML = "You already paid";
+               document.getElementById("payalert").style.color = "red";
+           } else {
+               document.getElementById("pay").removeAttribute("readonly");
+           }
            console.log(result)
       },
       error:(error)=>{
@@ -884,10 +911,21 @@ const BankList = [
        let pay = document.getElementById("pay");
        pay.setAttribute("maxlength",max);
        console.log(prevpaid)
-       if(Number(tax) < Number(currentpay) ) {
-          amount.value = '';
-          document.getElementById("payalert").innerHTML = "You enter the wrong amount. ";
+       if(Number(currentpay) <= 0){
+           document.getElementById("payalert").innerHTML = "Please enter an amount greater than 0. ";
+           document.getElementById("savereceipt").setAttribute("disabled",true);
+           document.getElementById("savereceipt").style.opacity = "0.4";
+           // Also uncheck the confirmation if it was checked
+           let confirmCheck = document.querySelector('input[type="checkbox"][onchange="enablesubmitbutton(this)"]');
+           if(confirmCheck) confirmCheck.checked = false;
        }
+       else if(Number(tax) < (Number(prevpaid) + Number(currentpay)) ) {
+          amount.value = '';
+          document.getElementById("payalert").innerHTML = "Total paid amount cannot exceed Tax amount. ";
+          document.getElementById(id).value = tax - prevpaid;
+          return;
+       }
+       
        let balance = tax - prevpaid - currentpay;
        document.getElementById(id).value = balance;
        }

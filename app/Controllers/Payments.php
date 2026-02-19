@@ -32,7 +32,9 @@ class Payments extends BaseController {
         $eventyears = $this->paymentsModel->getEventsyear();
         $pendingapplications = $this->adminDashboardModel->getPendingapplications();
         $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
         $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         $states = $this->paymentsModel->getStates();
         $member_id = $this->session->get('Kaadaisoft_userId');
         
@@ -487,6 +489,22 @@ class Payments extends BaseController {
          $balanceamount = $this->request->getPost("balanceamount");
          $paymentdate = $this->request->getPost("paymentdate");
          $wheretopay = $this->request->getPost("where");
+
+         // Check if already paid
+         $paydetails = $this->paymentsModel->getPaydetails($memberid, $eventid);
+         $current_paid = $paydetails->paidamount ?? 0;
+         $eventdata = $this->paymentsModel->getEventdata($eventid);
+         $tax_amount = $eventdata->TaxAmount;
+
+         if (($tax_amount - $current_paid) <= 0) {
+            $this->session->setFlashdata('error', 'You have already fully paid for this event.');
+            return redirect()->back()->withInput();
+         }
+
+         if ($paidamount <= 0) {
+            $this->session->setFlashdata('error', 'Paid amount must be greater than zero.');
+            return redirect()->back()->withInput();
+         }
 
          $geteventdata = $this->paymentsModel->getEventdata($eventid);
          $eventname = $geteventdata->EventName;

@@ -119,7 +119,7 @@ class Bulk_upload extends BaseController {
         $headerIndex = array_flip($headers);
 
         // Required headers validation
-        $required_headers = ['Name', 'Phonenumber', 'State', 'District', 'Taluk', 'Panchayat', 'Village', 'Street', 'Doornumber', 'Pincode', 'Pannumber', 'Aadharnumber', 'Approvedstatus'];
+        $required_headers = ['Name', 'Phonenumber', 'State', 'District', 'Taluk', 'Panchayat', 'Village', 'Street', 'Doornumber', 'Pincode', 'Aadharnumber', 'Approvedstatus'];
         foreach ($required_headers as $req) {
             if (!isset($headerIndex[$req])) {
                 throw new Exception("Missing required header: $req");
@@ -176,7 +176,6 @@ class Bulk_upload extends BaseController {
             $doornumber = $row[$headerIndex['Doornumber']] ?? '';
             $pincode    = $row[$headerIndex['Pincode']] ?? '';
             $original_phone = $row[$headerIndex['Phonenumber']] ?? '';
-            $pannumber  = $row[$headerIndex['Pannumber']] ?? '';
             $aadharnumber = $row[$headerIndex['Aadharnumber']] ?? '';
             $approvedstatus = $row[$headerIndex['Approvedstatus']] ?? '';
 
@@ -263,7 +262,6 @@ class Bulk_upload extends BaseController {
                 'Doornumber' => $doornumber,
                 'Pincode' => $pincode,
                 'Phonenumber' => $processed_phone,
-                'Pannumber' => $pannumber,
                 'Aadharnumber' => $aadharnumber,
                 'Approvedstatus' => $approvedstatus,
                 'state_id' => $state_id,

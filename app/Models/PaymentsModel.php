@@ -154,7 +154,7 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
 
-    public function getPaidunpaidusers($stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null, $eventid, $status, $count = 0)
+    public function getPaidunpaidusers($eventid = null, $status = null, $stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null, $count = 0)
     {
         $builder = $this->db->table('kaadaimembers km');
         $builder->select("
@@ -208,7 +208,7 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
     
-    public function getPaidorunpaidusers($stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null, $eventid, $status)
+    public function getPaidorunpaidusers($eventid = null, $status = null, $stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null)
     {
         $builder = $this->db->table('kaadaimembers km');
         $builder->select("km.Familymembershipid");

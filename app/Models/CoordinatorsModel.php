@@ -148,6 +148,7 @@ class CoordinatorsModel extends Model
     public function processCoordinatorupdate($Familymembershipid, $data)
     {
         $session = session();
+        $Familymembershipid = trim($Familymembershipid);
         
         // Check uniqueness for Phone (Allow same phone for same family)
         if (!empty($data['Phonenumber'])) {
@@ -171,44 +172,44 @@ class CoordinatorsModel extends Model
 
             if ($checkPhoneCount > 0) {
                  // Set error message in session for controller to pick up
-                 // Controller looks for 'coorderrorstatus'
                  $session->setFlashdata("coorderrorstatus", "Phone number already exists for another family.");
                  return false;
             }
         }
         
-        // Composite check to prevent duplicate entry crash
-        $checkPhone = !empty($data['Phonenumber']) ? $data['Phonenumber'] : null;
-        $checkAadhar = !empty($data['Aadharnumber']) ? $data['Aadharnumber'] : null;
-        
-        if ($checkPhone === null || $checkAadhar === null) {
-            $currentData = $this->db->table('kaadaimembers')->select('Phonenumber, Aadharnumber')->where('Familymembershipid', $Familymembershipid)->get()->getRow();
-            if ($currentData) {
-                if ($checkPhone === null) $checkPhone = $currentData->Phonenumber;
-                if ($checkAadhar === null) $checkAadhar = $currentData->Aadharnumber;
-            }
-        }
-        
-        if ($checkPhone && $checkAadhar) {
-            $compositeCount = $this->db->table('kaadaimembers')
-                ->where('Phonenumber', $checkPhone)
-                ->where('Aadharnumber', $checkAadhar)
+        // Aadhaar uniqueness check
+        if (!empty($data['Aadharnumber'])) {
+            $checkAadhar = $this->db->table('kaadaimembers')
+                ->where('Aadharnumber', $data['Aadharnumber'])
                 ->where('Familymembershipid !=', $Familymembershipid)
                 ->countAllResults();
-            if ($compositeCount > 0) {
-                 $session->setFlashdata("coorderrorstatus", "The combination of Phone and Aadhaar already exists (Likely Duplicate Aadhaar).");
+            if ($checkAadhar > 0) {
+                 $session->setFlashdata("coorderrorstatus", "Aadhar number already exists.");
                  return false;
             }
         }
-        
-        return $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->update($data);
+
+        // Check if anything actually changed (ignoring updated_at)
+        $currentRecord = $this->db->table('kaadaimembers')->where('Familymembershipid', $Familymembershipid)->get()->getRowArray();
+        if ($currentRecord) {
+            $changed = false;
+            foreach ($data as $key => $value) {
+                if ($key === 'updated_at' || !array_key_exists($key, $currentRecord)) continue;
+                $dbVal = $currentRecord[$key];
+                $newVal = $value;
+                if (trim((string)$dbVal) !== trim((string)$newVal)) {
+                    $changed = true;
+                    break;
+                }
+            }
+            if (!$changed) {
+                return 'no_changes';
+            }
+        }
+
+        return $this->db->table('kaadaimembers')->where('TRIM(Familymembershipid)', $Familymembershipid)->update($data);
     }
 
-    /* public function processCoordinatorupdate($Familymembershipid,$data) {
-        // var_dump($data);
-        $this->db->query("UPDATE kaadaimembers SET Name = '$data[Name]',Aadharnumber = '$data[Aadharnumber]',Phonenumber = '$data[Phonenumber]',State = '$data[State]',District = $data['District'],Taluk = '$data[Taluk]',Panchayat = '$data[Panchayat]',Village = '$data[Village]',Street = '$data[Street]',Doornumber = '$data[Doornumber]',Pincode = '$data[Pincode]',Existfamilyid = '$data[Existfamilyid]',Pannumber = '$data[Pannumber]' WHERE Familymembershipid = '$Familymembershipid'");
-
-    } */
 
     public function processUpdateimages($Familymembershipid, $images)
     {

@@ -491,73 +491,7 @@
 <body>
         
 <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
-<!---------------------add-toast---------------------->
- 
-  <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="coordinatorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php  if(isset($_SESSION["coordsuccessstatus"])){
-     $status = $_SESSION['coordsuccessstatus'];
-echo "<script>
-       document.getElementById('coordinatorstatus').innerHTML = '$status';
-       const cToast = document.getElementById('coordtoast');
-       cToast.classList.remove('hide');
-       cToast.classList.add('show');
-       cToast.style.right = '50px';
-       setTimeout(()=>{
-       cToast.style.right = '-380px';
-       },3000);
-       
-      </script>"; 
-
-unset($_SESSION["coordsuccessstatus"]);
-
-} 
-
-?>
-<!---------------------add-toast-end------------------>
-
-<!---------------------coord-error-toast---------------------->
-
-<div id='coorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php 
-
-if(isset($_SESSION["coorderrorstatus"])){
-  $status = $_SESSION['coorderrorstatus'];
-echo "<script>
-       document.getElementById('coorderrortoast').querySelector('.toast-body').innerHTML = '$status';
-       const ceToast = document.getElementById('coorderrortoast');
-       ceToast.classList.remove('hide');
-       ceToast.classList.add('show');
-       ceToast.style.right = '50px';
-       setTimeout(()=>{
-       ceToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["coorderrorstatus"]);
-
-}
-
-?>
-<!---------------------coord-error-toast-end------------------>
+<?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
 
@@ -1100,11 +1034,7 @@ function setDropdownpanchayat(taluk){
     	      
           },
           error:(error)=>{
-            document.getElementById('coordinatorstatus').innerHTML = "Something went wrong";
-            document.getElementById('coordtoast').style.right = '5%';
-            setTimeout(()=>{
-            document.getElementById('coordtoast').style.right = '-380px';
-            },3000)
+            psShowToast('error', 'Something went wrong. Please try again.');
           }
           });  
           } 
@@ -1281,7 +1211,7 @@ function validateInputfield(field){
       }
    }
 
-   if(field_name == "existfamilyid" || field_name == "panno"){
+   if(field_name == "existfamilyid"){
       if(field_value !== "" && !field_value.match(alphanumericregex)){
          field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
       }
@@ -1357,7 +1287,7 @@ function validateUpdateInputfield(field){
       
    }
 
-   if(field_name == "existfamilyid-update" || field_name == "panno-update"){
+   if(field_name == "existfamilyid-update"){
       if(field_value !== "" && !field_value.match(alphanumericregex)){
          field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
       }
@@ -1390,7 +1320,6 @@ function validateCoordinatorform() {
       let pincode = coordinatorregistrationform["pincode-update"].value.trim();
       let existfamilyid = coordinatorregistrationform["existfamilyid-update"].value.trim();
       let phoneno = coordinatorregistrationform["phoneno-update"].value.trim();
-      let panno = coordinatorregistrationform["panno-update"].value.trim();
       let aadharno = coordinatorregistrationform["aadharno-update"].value.trim();
       let selfimage = coordinatorregistrationform["Memberimage"].value.trim();
       let aadharfrontimage = coordinatorregistrationform["Aadharfrontimage"].value.trim();
@@ -1495,13 +1424,6 @@ function validateCoordinatorform() {
          return false;
       }
 
-      if(panno !== ""){
-         if(!panno.match(normalregex)){
-            document.getElementById("pannoerror-update").innerHTML = "Only letters and numbers are allowed.";
-        
-            return false;
-         }
-      }
 
       if(aadharno == ""){
          document.getElementById("aadharnoerror-update").innerHTML = "Please fill aadharno field.";
@@ -1694,13 +1616,10 @@ let searchmemberdata = document.getElementById("searchmemberdata")
         data:{"id":id},
         success:function(result){
         document.getElementById('ps-coords').innerHTML = result;
-        document.getElementById('deletetoast').style.right = '50px';
-        setTimeout(()=>{
-        document.getElementById('deletetoast').style.right = '-350px';
-        },3000)
+        psShowToast('success', 'Moved to trash successfully!');
         },
         error:function(error){
-            document.getElementById('deletetoast').innerHTML = error;
+            psShowToast('error', 'An error occurred. Please try again.');
         }
       })
   }
@@ -1724,7 +1643,6 @@ let searchmemberdata = document.getElementById("searchmemberdata")
       let pincode = memberregistrationform["pincode"].value.trim();
       let existfamilyid = memberregistrationform["existfamilyid"].value.trim();
       let phoneno = memberregistrationform["phoneno"].value.trim();
-      let panno = memberregistrationform["panno"].value.trim();
       let aadharno = memberregistrationform["aadharno"].value.trim();
       let selfimage = memberregistrationform["selfimage"].value.trim();
       let aadharfrontimage = memberregistrationform["aadharfrontimage"].value.trim();
@@ -1734,7 +1652,6 @@ let searchmemberdata = document.getElementById("searchmemberdata")
       let textregex = /^([A-Za-z\s]{3,})+$/;
       let alphanumericregex = /^[a-zA-Z0-9/()\s]+$/;
       let normalregex = /^[A-Za-z0-9]+$/;
-      let panvalidate = /^[a-zA-Z]{5}[0-9]{4}[a-zA-Z]+$/;
       // let phonenoregex = /^[6-9]\d{9}+$/;
 
       if(name == ""){
@@ -1830,13 +1747,6 @@ let searchmemberdata = document.getElementById("searchmemberdata")
          return false;
       }
 
-      if(panno !== ""){
-         if(!panno.match(panvalidate)){
-            document.getElementById("pannoerror").innerHTML = "Only letters and numbers are allowed.";
-        
-            return false;
-         }
-      }
 
       if(aadharno == ""){
          document.getElementById("aadharnoerror").innerHTML = "Please fill aadharno field.";

@@ -489,86 +489,9 @@
         
 <div class="container-fluid" style="position:absolute;overflow:hidden;">
 
-<!---------------------add-toast---------------------->
-
-<div id='eventtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class='toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="eventstatus" class='toast-body text-white fs-6 py-2'>
-  
-  </div>
-  </div>
-
-<?php 
-if(isset($_SESSION["eventsuccessstatus"])){
-  $status = $_SESSION["eventsuccessstatus"];
-echo "<script>
-       document.getElementById('eventstatus').innerHTML = '$status';
-       const eToast = document.getElementById('eventtoast');
-       eToast.classList.remove('hide');
-       eToast.classList.add('show');
-       eToast.style.right = '5%';
-       setTimeout(()=>{
-       eToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["eventsuccessstatus"]);
-
-}
-
-?>
-<!---------------------add-toast-end------------------>
-
-<!---------------------event-error-toast---------------------->
-
-<div id='eventerrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index:1;' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="eventerrorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php 
-
-if(isset($_SESSION["eventerrorstatus"])){
-  $status = $_SESSION["eventerrorstatus"];
-echo "<script>
-       document.getElementById('eventerrorstatus').innerHTML = '$status';
-       const eeToast = document.getElementById('eventerrortoast');
-       eeToast.classList.remove('hide');
-       eeToast.classList.add('show');
-       eeToast.style.right = '50px';
-       setTimeout(()=>{
-       eeToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["eventerrorstatus"]);
-
-}
-
-?>
-<!----------------------------event-error-toast-end-------------------------------------->
+<?= view('notification_toast') ?>
       
-<!--------------------delete-toast-end------------------->
-<div id='deletetoast' style='position:absolute;top:10%;right:-380px;transition:0.5s;' class='bg-white toast hide'>
-  <div class='toast-header'>
-    <strong class='me-auto fs-5'>Message</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div class='toast-body text-success fs-5 py-2'>
-    Moved successfully !...
-  </div>
-  </div>
-<!--------------------delete-toast-end------------------->
+
       <div class="row"><!-----top-bar--------------->
 
         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
@@ -645,6 +568,9 @@ unset($_SESSION["eventerrorstatus"]);
                 <label for="eventimage" class="form-label">Image</label>
                 <input type="file" onchange="uploadFile(this)" accept="image/jpg,image/jpeg,image/png" class="form-control input-style file-input p-3" id="eventimage" name="eventimage" required>
                 <small id="eventimageerror" style="color:red;" class="mt-1 eventimage"></small>
+                <div class="mt-1">
+                    <span style="color:#295CF5; font-size: 0.85rem;">Note: File Size should be below 2MB.</span>
+                </div>
             </div>
 
             <div class="form-group mb-3">
@@ -1227,26 +1153,23 @@ function commonSearch(events){
           window.location.reload();
         },
         error:function(error){
-          console.log(error)
-            document.getElementById('deletetoast').innerHTML = error;
+          console.log(error);
+          psShowToast('error', 'An error occurred. Please try again.');
         }
       })
   }
 
-  function uploadFile(file){
-    let imageid = file.name;
-    let imageclass = file.name;
-    let errorbox = document.querySelector(`.${imageclass}`);
+  function uploadFile(file) {
+    let errorbox = document.querySelector(`.${file.name}`);
     let imagesize = 2000000;
-    let uploadedimagesize = file.files[0].size;
+    let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
 
-    if(uploadedimagesize > imagesize){
-        errorbox.textContent = "Image size should below 2MB";
-            file.value = "";
-            return false;
-    }
-    else{
-        errorbox.textContent = "";
+    if (uploadedimagesize > imagesize) {
+        if (errorbox) errorbox.textContent = "File Size should be below 2MB";
+        file.value = "";
+        return false;
+    } else {
+        if (errorbox) errorbox.textContent = "";
     }
   }
 

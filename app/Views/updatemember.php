@@ -75,6 +75,33 @@
         }
     </style>
 
+    <style>
+        /* Flowbite-style file input */
+        .ps-file-upload-wrapper { position: relative; }
+        .ps-file-upload-wrapper input[type="file"] { display: none; }
+        .ps-file-upload-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 7px 12px;
+            font-size: 13px;
+            border: 1.5px solid #ced4da;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            color: #6c757d;
+            transition: border-color 0.2s, background-color 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ps-file-upload-btn:hover { background-color: #e9ecef; border-color: #86b7fe; }
+        .ps-file-upload-btn .ps-file-icon { flex-shrink: 0; font-size: 15px; color: #495057; }
+        .ps-file-upload-btn .ps-file-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .ps-file-upload-btn.file-selected { border-color: #0d6efd; background-color: #e7f1ff; color: #0a3d91; font-weight: 500; }
+    </style>
+
     <?php if (isset($member)) : ?>
         <div class="bg-custom-header py-3 px-4 border-bottom shadow-sm">
             <div class="d-flex justify-content-between align-items-center">
@@ -150,13 +177,6 @@
                             <small id="phonenoerror-member" class="text-danger"></small>
                         </div>
 
-                        <!-- PAN Number -->
-                        <div class="col-md-4">
-                            <label for="panno-member">PAN Number</label>
-                            <input id="panno-member" onkeyup="validateMemberInput(this)" class="form-control" type="text" name="panno-update" value="<?= $member->Pannumber ?>">
-                            <small id="pannoerror-member" class="text-danger"></small>
-                        </div>
-
                         <!-- Aadhar Number -->
                         <div class="col-md-4">
                             <label for="aadharno-member">Aadhar Number</label>
@@ -181,6 +201,10 @@
                             <div class="form-check form-check-inline">
                                 <input type="radio" id="gender_female-member" name="gender-update" value="Female" <?= ($member->Gender == 'Female') ? 'checked' : '' ?> onchange="validateMemberInput(this)">
                                 <label class="form-check-label" for="gender_female-member">Female</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" id="gender_other-member" name="gender-update" value="Other" <?= ($member->Gender == 'Other') ? 'checked' : '' ?> onchange="validateMemberInput(this)">
+                                <label class="form-check-label" for="gender_other-member">Other</label>
                             </div>
                             <div><small id="gendererror-member" class="text-danger"></small></div>
                         </div>
@@ -303,33 +327,131 @@
                             <label for="education_input-member">Education</label>
                             <div class="border rounded p-2" id="education_wrapper">
                                 <div id="education_tags-member" class="mb-1"></div>
-                                <input type="text" id="education_input-member" class="form-control border-0 p-0" placeholder="Type and select education" onkeyup="filterEducationOptionsMember(this)">
+                                <input type="text" id="education_input-member"
+                                    class="form-control border-0 p-0"
+                                    placeholder="Type and select education"
+                                    onfocus="filterEducationOptionsMember(this)"
+                                    oninput="filterEducationOptionsMember(this)">
+
                             </div>
                             <small id="educationerror-member" class="text-danger"></small>
                             <div id="education_hidden_container-member"></div>
                             <div class="border rounded mt-1 bg-white" id="education_dropdown-member" style="max-height:200px; overflow:auto; display:none; position:absolute; width: calc(100% - 3rem); z-index: 1000;">
                                 <?php 
                                     $edu_map = [
-                                        "UG - BA" => "Bachelor of Arts (B.A.)",
-                                        "UG - BSc" => "Bachelor of Science (B.Sc.)",
-                                        "UG - BCom" => "Bachelor of Commerce (B.Com.)",
-                                        "UG - BBA" => "BBA",
-                                        "UG - BCA" => "BCA",
-                                        "UG - BE/BTech" => "BE/BTech",
-                                        "UG - MBBS" => "MBBS",
-                                        "UG - BALLB" => "B.A. LL.B.",
-                                        "PG - MA" => "M.A.",
-                                        "PG - MSc" => "M.Sc.",
-                                        "PG - MCom" => "M.Com.",
-                                        "PG - MBA" => "MBA",
-                                        "PG - MCA" => "MCA",
-                                        "PG - ME/MTech" => "M.E./M.Tech.",
-                                        "DIP - Polytechnic" => "Diploma in Engineering",
-                                        "DIP - Nursing" => "Diploma in Nursing",
-                                        "DIP - ITI" => "ITI / Vocational",
-                                        "MPhil" => "M.Phil.",
-                                        "PhD" => "Ph.D."
+                                        "10th (SSLC)" => "10th (SSLC)",
+                                        "12th (HSC – Science)" => "12th (HSC – Science)",
+                                        "12th (HSC – Commerce)" => "12th (HSC – Commerce)",
+                                        "12th (HSC – Arts)" => "12th (HSC – Arts)",
+                                        "Diploma in Mechanical Engineering" => "Diploma in Mechanical Engineering",
+                                        "Diploma in Civil Engineering" => "Diploma in Civil Engineering",
+                                        "Diploma in Electrical Engineering" => "Diploma in Electrical Engineering",
+                                        "Diploma in Electronics and Communication Engineering" => "Diploma in Electronics and Communication Engineering",
+                                        "Diploma in Computer Engineering" => "Diploma in Computer Engineering",
+                                        "Diploma in Information Technology" => "Diploma in Information Technology",
+                                        "Diploma in Automobile Engineering" => "Diploma in Automobile Engineering",
+                                        "Diploma in Mechatronics" => "Diploma in Mechatronics",
+                                        "Diploma in Marine Engineering" => "Diploma in Marine Engineering",
+                                        "Diploma in Agriculture" => "Diploma in Agriculture",
+                                        "Diploma in Nursing" => "Diploma in Nursing",
+                                        "Diploma in Pharmacy" => "Diploma in Pharmacy",
+                                        "Diploma in Hotel Management" => "Diploma in Hotel Management",
+                                        "Diploma in Fashion Designing" => "Diploma in Fashion Designing",
+                                        "Diploma in Interior Designing" => "Diploma in Interior Designing",
+                                        "Diploma in Multimedia" => "Diploma in Multimedia",
+                                        "ITI Fitter" => "ITI Fitter",
+                                        "ITI Electrician" => "ITI Electrician",
+                                        "ITI Turner" => "ITI Turner",
+                                        "ITI Mechanic" => "ITI Mechanic",
+                                        "ITI Welder" => "ITI Welder",
+                                        "ITI Plumber" => "ITI Plumber",
+                                        "ITI Draughtsman Civil" => "ITI Draughtsman Civil",
+                                        "ITI Draughtsman Mechanical" => "ITI Draughtsman Mechanical",
+                                        "ITI COPA" => "ITI COPA",
+                                        "ITI Refrigeration and Air Conditioning" => "ITI Refrigeration and Air Conditioning",
+                                        "B.E Computer Science and Engineering" => "B.E Computer Science and Engineering",
+                                        "B.E Mechanical Engineering" => "B.E Mechanical Engineering",
+                                        "B.E Civil Engineering" => "B.E Civil Engineering",
+                                        "B.E Electrical and Electronics Engineering" => "B.E Electrical and Electronics Engineering",
+                                        "B.E Electronics and Communication Engineering" => "B.E Electronics and Communication Engineering",
+                                        "B.E Automobile Engineering" => "B.E Automobile Engineering",
+                                        "B.E Mechatronics Engineering" => "B.E Mechatronics Engineering",
+                                        "B.Tech Information Technology" => "B.Tech Information Technology",
+                                        "B.Tech Artificial Intelligence" => "B.Tech Artificial Intelligence",
+                                        "B.Tech Data Science" => "B.Tech Data Science",
+                                        "B.Tech Biotechnology" => "B.Tech Biotechnology",
+                                        "B.Tech Chemical Engineering" => "B.Tech Chemical Engineering",
+                                        "B.Tech Aeronautical Engineering" => "B.Tech Aeronautical Engineering",
+                                        "B.Tech Aerospace Engineering" => "B.Tech Aerospace Engineering",
+                                        "B.Tech Marine Engineering" => "B.Tech Marine Engineering",
+                                        "B.A Tamil" => "B.A Tamil",
+                                        "B.A English" => "B.A English",
+                                        "B.A History" => "B.A History",
+                                        "B.A Economics" => "B.A Economics",
+                                        "B.A Political Science" => "B.A Political Science",
+                                        "B.Sc Mathematics" => "B.Sc Mathematics",
+                                        "B.Sc Physics" => "B.Sc Physics",
+                                        "B.Sc Chemistry" => "B.Sc Chemistry",
+                                        "B.Sc Computer Science" => "B.Sc Computer Science",
+                                        "B.Sc Information Technology" => "B.Sc Information Technology",
+                                        "B.Sc Biotechnology" => "B.Sc Biotechnology",
+                                        "B.Sc Microbiology" => "B.Sc Microbiology",
+                                        "B.Sc Zoology" => "B.Sc Zoology",
+                                        "B.Sc Botany" => "B.Sc Botany",
+                                        "B.Sc Visual Communication" => "B.Sc Visual Communication",
+                                        "BCA" => "BCA",
+                                        "BBA" => "BBA",
+                                        "B.Com General" => "B.Com General",
+                                        "B.Com Computer Applications" => "B.Com Computer Applications",
+                                        "B.Com Accounting and Finance" => "B.Com Accounting and Finance",
+                                        "MBBS" => "MBBS",
+                                        "BDS" => "BDS",
+                                        "BAMS" => "BAMS",
+                                        "BHMS" => "BHMS",
+                                        "BUMS" => "BUMS",
+                                        "B.Pharm" => "B.Pharm",
+                                        "B.Sc Nursing" => "B.Sc Nursing",
+                                        "LLB" => "LLB",
+                                        "B.Ed" => "B.Ed",
+                                        "B.Sc Agriculture" => "B.Sc Agriculture",
+                                        "B.Arch" => "B.Arch",
+                                        "BPT (Physiotherapy)" => "BPT (Physiotherapy)",
+                                        "BHM (Hotel Management)" => "BHM (Hotel Management)",
+                                        "M.E Computer Science and Engineering" => "M.E Computer Science and Engineering",
+                                        "M.E Structural Engineering" => "M.E Structural Engineering",
+                                        "M.Tech Information Technology" => "M.Tech Information Technology",
+                                        "M.Tech Artificial Intelligence" => "M.Tech Artificial Intelligence",
+                                        "M.Tech Data Science" => "M.Tech Data Science",
+                                        "M.Tech Biotechnology" => "M.Tech Biotechnology",
+                                        "M.A Tamil" => "M.A Tamil",
+                                        "M.A English" => "M.A English",
+                                        "M.A Economics" => "M.A Economics",
+                                        "M.Sc Mathematics" => "M.Sc Mathematics",
+                                        "M.Sc Physics" => "M.Sc Physics",
+                                        "M.Sc Chemistry" => "M.Sc Chemistry",
+                                        "M.Sc Computer Science" => "M.Sc Computer Science",
+                                        "M.Sc Information Technology" => "M.Sc Information Technology",
+                                        "M.Sc Biotechnology" => "M.Sc Biotechnology",
+                                        "MCA" => "MCA",
+                                        "MBA" => "MBA",
+                                        "M.Com" => "M.Com",
+                                        "M.Pharm" => "M.Pharm",
+                                        "M.Sc Nursing" => "M.Sc Nursing",
+                                        "LLM" => "LLM",
+                                        "M.Ed" => "M.Ed",
+                                        "M.Sc Agriculture" => "M.Sc Agriculture",
+                                        "Ph.D Computer Science" => "Ph.D Computer Science",
+                                        "Ph.D Mathematics" => "Ph.D Mathematics",
+                                        "Ph.D Commerce" => "Ph.D Commerce",
+                                        "Ph.D Engineering" => "Ph.D Engineering",
+                                        "Ph.D Biotechnology" => "Ph.D Biotechnology",
+                                        "Ph.D Physics" => "Ph.D Physics",
+                                        "Ph.D Chemistry" => "Ph.D Chemistry",
+                                        "Ph.D Tamil" => "Ph.D Tamil",
+                                        "Ph.D English" => "Ph.D English",
+                                        "Others" => "Others"
                                     ];
+
                                     foreach($edu_map as $val => $text) {
                                         echo "<div class='education-option p-2 border-bottom' data-value='$val'>$text</div>";
                                     }
@@ -339,65 +461,69 @@
 
                         <!-- Profession -->
                         <div class="col-md-4">
-                            <label for="profession-member">Profession</label>
-                            <select id="profession-member" name="profession-update" class="form-select" onchange="handleProfessionChangeMember(this); validateMemberInput(this)">
-                                <option value="">Select Profession</option>
+                            <?php 
+                                $profession_map = [
+                                    "Doctor" => "Doctor", "Lawyer" => "Lawyer", "Police" => "Police", 
+                                    "Teacher / Lecturer" => "Teacher / Lecturer", "Engineer" => "Engineer", 
+                                    "Government Employee" => "Government Employee", "Private Employee" => "Private Employee", 
+                                    "Student" => "Student", "Farmer" => "Farmer – Agriculture", 
+                                    "Textile Mill Worker" => "Textile Mill Worker (Spinning / Weaving)", 
+                                    "Garment Factory Worker" => "Garment Factory Worker", 
+                                    "Tailor" => "Tailor / Apparel Stitching", 
+                                    "Pattern Master" => "Garment Pattern Master / Designer", 
+                                    "Textile Machinery Technician" => "Textile Machinery Technician / Mechanic", 
+                                    "Textile Machinery Service" => "Textile Machinery Sales & Service", 
+                                    "Loom Operator" => "Powerloom / Auto‑Loom Operator", 
+                                    "Knitting Machine Operator" => "Knitting Machine Operator", 
+                                    "Truck Driver" => "Truck / Lorry Driver", 
+                                    "Truck Owner Driver" => "Truck / Lorry Owner‑cum‑Driver", 
+                                    "Logistics Staff" => "Logistics / Transport Staff", "Fleet Manager" => "Fleet Manager", 
+                                    "Dairy Farmer" => "Dairy Farmer", "Poultry Farmer" => "Poultry Farmer", 
+                                    "Animal Husbandry" => "Goat / Sheep Rearing", "Pump Technician" => "Pump / Motor Technician", 
+                                    "Pump Factory Worker" => "Pump / Motor Manufacturing Worker", 
+                                    "Motor Rewinding Technician" => "Motor Rewinding Technician", 
+                                    "Machinist / Turner" => "Machinist / Turner", "Welder / Fabricator" => "Welder / Fabricator", 
+                                    "Foundry Worker" => "Steel / Aluminium Foundry Worker", 
+                                    "Mixer Grinder Technician" => "Mixer‑Grinder Assembly / Service Technician", 
+                                    "Plastic / Net Unit Worker" => "Plastic / Net / Packaging Unit Worker", 
+                                    "Windmill Technician" => "Windmill Maintenance Technician", 
+                                    "Electrical Technician" => "Electrical Line / Maintenance Technician", 
+                                    "Grocery Shop Staff" => "Grocery Shop Staff", "Medical Shop Staff" => "Medical Shop / Pharmacy Staff", 
+                                    "Retail Shop / Sales Staff" => "Retail Shop / Sales Staff", 
+                                    "Office Admin / Computer Operator" => "Office Admin / Computer Operator", 
+                                    "Accountant / Finance Staff" => "Accountant / Finance Staff", "Bank / NBFC Staff" => "Bank / NBFC Staff", 
+                                    "Hospital Staff" => "Hospital Nurse / Lab Tech / Pharmacist", 
+                                    "Medical Representative" => "Medical Representative", "IT / Software Employee" => "IT / Software Employee", 
+                                    "Home Maker" => "Home Maker", "Retired" => "Retired", "Others" => "Others"
+                                ];
+                                $display_prof = $member->Profession;
+                                if (isset($profession_map[$member->Profession])) {
+                                    $display_prof = $profession_map[$member->Profession];
+                                }
+                            ?>
+                            <label for="profession_input-member">Profession <span class="text-danger">*</span></label>
+                            <div class="border rounded p-1 bg-white" id="profession_wrapper-member" style="cursor: pointer;">
+                                <input type="text" id="profession_input-member" 
+                                    class="form-control border-0 bg-transparent" 
+                                    placeholder="Type or click to select profession"
+                                    onfocus="filterProfessionOptionsMember(this)"
+                                    oninput="filterProfessionOptionsMember(this)"
+                                    readonly 
+                                    style="cursor: pointer;"
+                                    value="<?= esc($display_prof) ?>">
+                                <input type="hidden" id="profession-member" name="profession-update" value="<?= esc($member->Profession) ?>">
+                            </div>
+                            <div class="border rounded mt-1 bg-white" id="profession_dropdown-member" 
+                                style="max-height:250px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
                                 <?php 
-                                    $professions = [
-                                        "Doctor" => "Doctor",
-                                        "Lawyer" => "Lawyer",
-                                        "Police" => "Police",
-                                        "Teacher / Lecturer" => "Teacher / Lecturer",
-                                        "Engineer" => "Engineer",
-                                        "Government Employee" => "Government Employee",
-                                        "Private Employee" => "Private Employee",
-                                        "Student" => "Student",
-                                        "Farmer" => "Farmer – Agriculture",
-                                        "Textile Mill Worker" => "Textile Mill Worker (Spinning / Weaving)",
-                                        "Garment Factory Worker" => "Garment Factory Worker",
-                                        "Tailor" => "Tailor / Apparel Stitching",
-                                        "Pattern Master" => "Garment Pattern Master / Designer",
-                                        "Textile Machinery Technician" => "Textile Machinery Technician / Mechanic",
-                                        "Textile Machinery Service" => "Textile Machinery Sales & Service",
-                                        "Loom Operator" => "Powerloom / Auto‑Loom Operator",
-                                        "Knitting Machine Operator" => "Knitting Machine Operator",
-                                        "Truck Driver" => "Truck / Lorry Driver",
-                                        "Truck Owner Driver" => "Truck / Lorry Owner‑cum‑Driver",
-                                        "Logistics Staff" => "Logistics / Transport Staff",
-                                        "Fleet Manager" => "Fleet Manager",
-                                        "Dairy Farmer" => "Dairy Farmer",
-                                        "Poultry Farmer" => "Poultry Farmer",
-                                        "Animal Husbandry" => "Goat / Sheep Rearing",
-                                        "Pump Technician" => "Pump / Motor Technician",
-                                        "Pump Factory Worker" => "Pump / Motor Manufacturing Worker",
-                                        "Motor Rewinding Technician" => "Motor Rewinding Technician",
-                                        "Machinist / Turner" => "Machinist / Turner",
-                                        "Welder / Fabricator" => "Welder / Fabricator",
-                                        "Foundry Worker" => "Steel / Aluminium Foundry Worker",
-                                        "Mixer Grinder Technician" => "Mixer‑Grinder Assembly / Service Technician",
-                                        "Plastic / Net Unit Worker" => "Plastic / Net / Packaging Unit Worker",
-                                        "Windmill Technician" => "Windmill Maintenance Technician",
-                                        "Electrical Technician" => "Electrical Line / Maintenance Technician",
-                                        "Grocery Shop Staff" => "Grocery Shop Staff",
-                                        "Medical Shop Staff" => "Medical Shop / Pharmacy Staff",
-                                        "Retail / Sales Staff" => "Retail Shop / Sales Staff",
-                                        "Office Admin / Computer Operator" => "Office Admin / Computer Operator",
-                                        "Accountant / Finance Staff" => "Accountant / Finance Staff",
-                                        "Bank / NBFC Staff" => "Bank / NBFC Staff",
-                                        "Hospital Staff" => "Hospital Nurse / Lab Tech / Pharmacist",
-                                        "Medical Representative" => "Medical Representative",
-                                        "IT / Software Employee" => "IT / Software Employee",
-                                        "Home Maker" => "Home Maker",
-                                        "Retired" => "Retired",
-                                        "Others" => "Others"
-                                    ];
-                                    foreach($professions as $val => $text) {
-                                        echo "<option value='$val' ".($member->Profession == $val ? 'selected' : '').">$text</option>";
+                                    foreach($profession_map as $val => $text) {
+                                        echo "<div class='profession-option p-2 border-bottom' data-value='$val'>$text</div>";
                                     }
                                 ?>
-                            </select>
+                            </div>
                             <small id="professionerror-member" class="text-danger"></small>
                         </div>
+
 
                         <!-- Business -->
                         <div class="col-md-4" id="business-extra-wrapper-member" style="display:<?= ($member->Profession == 'Others') ? 'block' : 'none' ?>;">
@@ -504,7 +630,7 @@
                         <h5 class="mb-0 section-title">
                             <i class="fa-solid fa-location-dot text-success me-2"></i>Current Address
                         </h5>
-                        <button type="button" id="btn_same_as_native-member" class="btn btn-outline-success btn-sm" onclick="copyNativeAddressMember()">
+                        <button type="button" id="btn_same_as_native-member" class="btn btn-outline-success btn-sm" onclick="copyNativeAddressMember()" style="display: <?= ($member->Curaddresstype == 'India') ? 'inline-block' : 'none' ?>;">
                             Same as Native Address
                         </button>
                     </div>
@@ -592,25 +718,25 @@
                     <!-- NRI CURRENT ADDRESS BLOCK -->
                     <div id="cur_nri_block-member" style="display:<?= ($member->Curaddresstype == 'NRI') ? 'block' : 'none' ?>;">
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="cur_nri_country-member">Country</label>
-                                <select id="cur_nri_country-member" name="cur_nri_country-update" class="form-select" onchange="loadNRIStatesMember(this.value); syncNRICountryCodeMember(this.value); validateMemberInput(this)">
+                                <select id="cur_nri_country-member" name="cur_nri_country-update" class="form-select" onchange="loadNRIStatesMember(this.value); validateMemberInput(this)">
                                     <option value="<?= $member->Curnricountry ?>"><?= $member->Curnricountry ?: 'Select Country' ?></option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="cur_nri_state-member">State / Region</label>
                                 <select id="cur_nri_state-member" name="cur_nri_state-update" class="form-select" onchange="loadNRICitiesMember(this.value); validateMemberInput(this)">
                                     <option value="<?= $member->Curnristate ?>"><?= $member->Curnristate ?: 'Select State' ?></option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="cur_nri_city-member">City</label>
                                 <select id="cur_nri_city-member" name="cur_nri_city-update" class="form-select" onchange="validateMemberInput(this)">
                                     <option value="<?= $member->Curnricity ?>"><?= $member->Curnricity ?: 'Select City' ?></option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="cur_nri_zip-member">Zip Code</label>
                                 <input id="cur_nri_zip-member" name="cur_nri_zip-update" class="form-control" type="text" value="<?= $member->Curnrizip ?>" onkeyup="validateMemberInput(this)">
                             </div>
@@ -629,55 +755,54 @@
                     <h5 class="mb-4 section-title">
                         <i class="fa-solid fa-image text-primary me-2"></i>Documents
                     </h5>
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Passport Photo</label>
-                            <input onchange="uploadFileMember(this)" class="form-control" type="file" name="Memberimage" accept="image/*">
-                            <div class="mt-2 text-center">
-                                <?php if (!empty($member->Memberimage)): ?>
-                                    <img id="Memberimage-preview" style="width:100px; height:120px; object-fit:cover; border: 1px solid #ddd;" src="<?= base_url('assets/membersdocuments/'.$member->Memberimage) ?>">
-                                <?php else: ?>
-                                    <img id="Memberimage-preview" style="width:100px; height:120px; object-fit:cover; border: 1px solid #ddd; display:none;" src="">
-                                    <div class="small text-muted">No photo uploaded</div>
-                                <?php endif; ?>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3 d-flex flex-column">
+                            <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Passport Photo</label>
+                            <div class="ps-file-upload-wrapper">
+                                <label for="update_memberimage" class="ps-file-upload-btn" id="update_memberimage_btn">
+                                    <i class="bi bi-upload ps-file-icon"></i>
+                                    <span class="ps-file-label">Choose file...</span>
+                                </label>
+                                <input onchange="uploadFileStyledMember(this, 'update_memberimage_btn')" id="update_memberimage" type="file" name="Memberimage" accept="image/*">
                             </div>
+                            <small class="text-danger Memberimage"></small>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Aadhar Front</label>
-                            <input onchange="uploadFileMember(this)" class="form-control" type="file" name="Aadharfrontimage" accept="image/*">
-                            <div class="mt-2 text-center">
-                                <?php if (!empty($member->Aadharfrontimage)): ?>
-                                    <img id="Aadharfrontimage-preview" style="width:150px; height:100px; object-fit:cover; border: 1px solid #ddd;" src="<?= base_url('assets/membersdocuments/'.$member->Aadharfrontimage) ?>">
-                                <?php else: ?>
-                                    <img id="Aadharfrontimage-preview" style="width:150px; height:100px; object-fit:cover; border: 1px solid #ddd; display:none;" src="">
-                                    <div class="small text-muted">No Aadhar Front</div>
-                                <?php endif; ?>
+                        <div class="col-md-3 d-flex flex-column">
+                            <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Aadhar Front</label>
+                            <div class="ps-file-upload-wrapper">
+                                <label for="update_aadharfront" class="ps-file-upload-btn" id="update_aadharfront_btn">
+                                    <i class="bi bi-upload ps-file-icon"></i>
+                                    <span class="ps-file-label">Choose file...</span>
+                                </label>
+                                <input onchange="uploadFileStyledMember(this, 'update_aadharfront_btn')" id="update_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
                             </div>
+                            <small class="text-danger Aadharfrontimage"></small>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Aadhar Back</label>
-                            <input onchange="uploadFileMember(this)" class="form-control" type="file" name="Aadharbackimage" accept="image/*">
-                            <div class="mt-2 text-center">
-                                <?php if (!empty($member->Aadharbackimage)): ?>
-                                    <img id="Aadharbackimage-preview" style="width:150px; height:100px; object-fit:cover; border: 1px solid #ddd;" src="<?= base_url('assets/membersdocuments/'.$member->Aadharbackimage) ?>">
-                                <?php else: ?>
-                                    <img id="Aadharbackimage-preview" style="width:150px; height:100px; object-fit:cover; border: 1px solid #ddd; display:none;" src="">
-                                    <div class="small text-muted">No Aadhar Back</div>
-                                <?php endif; ?>
+                        <div class="col-md-3 d-flex flex-column">
+                            <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Aadhar Back</label>
+                            <div class="ps-file-upload-wrapper">
+                                <label for="update_aadharback" class="ps-file-upload-btn" id="update_aadharback_btn">
+                                    <i class="bi bi-upload ps-file-icon"></i>
+                                    <span class="ps-file-label">Choose file...</span>
+                                </label>
+                                <input onchange="uploadFileStyledMember(this, 'update_aadharback_btn')" id="update_aadharback" type="file" name="Aadharbackimage" accept="image/*">
                             </div>
+                            <small class="text-danger Aadharbackimage"></small>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Community Certificate</label>
-                            <input onchange="uploadFileMember(this)" class="form-control" type="file" name="Communitycertificate" accept="image/*">
-                            <div class="mt-2 text-center">
-                                <?php if (!empty($member->Communitycertificate)): ?>
-                                    <img id="Communitycertificate-preview" style="width:100px; height:120px; object-fit:cover; border: 1px solid #ddd;" src="<?= base_url('assets/membersdocuments/'.$member->Communitycertificate) ?>">
-                                <?php else: ?>
-                                    <img id="Communitycertificate-preview" style="width:100px; height:120px; object-fit:cover; border: 1px solid #ddd; display:none;" src="">
-                                    <div class="small text-muted">No Certificate</div>
-                                <?php endif; ?>
+                        <div class="col-md-3 d-flex flex-column">
+                            <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Community Certificate</label>
+                            <div class="ps-file-upload-wrapper">
+                                <label for="update_communitycert" class="ps-file-upload-btn" id="update_communitycert_btn">
+                                    <i class="bi bi-upload ps-file-icon"></i>
+                                    <span class="ps-file-label">Choose file...</span>
+                                </label>
+                                <input onchange="uploadFileStyledMember(this, 'update_communitycert_btn')" id="update_communitycert" type="file" name="Communitycertificate" accept="image/*">
                             </div>
+                            <small class="text-danger Communitycertificate"></small>
                         </div>
+                    </div>
+                    <div class="mt-2 text-center">
+                        <span style="color:#295CF5; font-size: 13px;">Note: File Size should be below 2MB. (JPG, JPEG, PNG only)</span>
                     </div>
                 </div>
             </div>
@@ -922,10 +1047,12 @@
             const selected = document.querySelector('input[name="cur_address_type-update"]:checked');
             const indiaBlock = document.getElementById('cur_india_block-member');
             const nriBlock = document.getElementById('cur_nri_block-member');
+            const sameBtn = document.getElementById('btn_same_as_native-member');
 
             if (selected.value === 'India') {
                 indiaBlock.style.display = 'block';
                 nriBlock.style.display = 'none';
+                if (sameBtn) sameBtn.style.display = 'inline-block';
                 // Clear NRI fields
                 document.getElementById('cur_nri_country-member').value = "";
                 document.getElementById('cur_nri_state-member').value = "";
@@ -935,6 +1062,7 @@
             } else {
                 indiaBlock.style.display = 'none';
                 nriBlock.style.display = 'block';
+                if (sameBtn) sameBtn.style.display = 'none';
                 // Clear India fields
                 document.getElementById('cur_state-member').value = "";
                 document.getElementById('cur_district-member').innerHTML = '<option value="">Select District</option>';
@@ -1036,12 +1164,41 @@
         }
 
         function uploadFileMember(file) {
-            if (file.files && file.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById(file.name + '-preview').src = e.target.result;
-                };
-                reader.readAsDataURL(file.files[0]);
+            let errorbox = document.querySelector(`.${file.name}`);
+            let imagesize = 2000000;
+            let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
+
+            if (uploadedimagesize > imagesize) {
+                if (errorbox) errorbox.textContent = "File Size should be below 2MB";
+                file.value = "";
+                return false;
+            } else {
+                if (errorbox) errorbox.textContent = "";
+            }
+        }
+
+        function uploadFileStyledMember(file, btnId) {
+            let errorbox = document.querySelector(`.${file.name}`);
+            let imagesize = 2000000;
+            let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
+            let btn = document.getElementById(btnId);
+
+            if (uploadedimagesize > imagesize) {
+                if (errorbox) errorbox.textContent = "File Size should be below 2MB";
+                file.value = "";
+                if (btn) {
+                    btn.classList.remove('file-selected');
+                    btn.querySelector('.ps-file-label').textContent = "Choose file...";
+                    btn.querySelector('.ps-file-icon').className = "bi bi-upload ps-file-icon";
+                }
+                return false;
+            } else {
+                if (errorbox) errorbox.textContent = "";
+                if (btn && file.files[0]) {
+                    btn.classList.add('file-selected');
+                    btn.querySelector('.ps-file-label').textContent = file.files[0].name;
+                    btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                }
             }
         }
 
@@ -1049,26 +1206,119 @@
         var selectedEducationsMember = '<?= (isset($member->Education)) ? $member->Education : "" ?>'.split(', ').filter(x => x);
         
         var educationMapMember = {
-            "UG - BA": "Bachelor of Arts (B.A.)",
-            "UG - BSc": "Bachelor of Science (B.Sc.)",
-            "UG - BCom": "Bachelor of Commerce (B.Com.)",
-            "UG - BBA": "BBA",
-            "UG - BCA": "BCA",
-            "UG - BE/BTech": "BE/BTech",
-            "UG - MBBS": "MBBS",
-            "UG - BALLB": "B.A. LL.B.",
-            "PG - MA": "M.A.",
-            "PG - MSc": "M.Sc.",
-            "PG - MCom": "M.Com.",
-            "PG - MBA": "MBA",
-            "PG - MCA": "MCA",
-            "PG - ME/MTech": "M.E./M.Tech.",
-            "DIP - Polytechnic": "Diploma in Engineering",
-            "DIP - Nursing": "Diploma in Nursing",
-            "DIP - ITI": "ITI / Vocational",
-            "MPhil": "M.Phil.",
-            "PhD": "Ph.D."
+            "10th (SSLC)": "10th (SSLC)",
+            "12th (HSC – Science)": "12th (HSC – Science)",
+            "12th (HSC – Commerce)": "12th (HSC – Commerce)",
+            "12th (HSC – Arts)": "12th (HSC – Arts)",
+            "Diploma in Mechanical Engineering": "Diploma in Mechanical Engineering",
+            "Diploma in Civil Engineering": "Diploma in Civil Engineering",
+            "Diploma in Electrical Engineering": "Diploma in Electrical Engineering",
+            "Diploma in Electronics and Communication Engineering": "Diploma in Electronics and Communication Engineering",
+            "Diploma in Computer Engineering": "Diploma in Computer Engineering",
+            "Diploma in Information Technology": "Diploma in Information Technology",
+            "Diploma in Automobile Engineering": "Diploma in Automobile Engineering",
+            "Diploma in Mechatronics": "Diploma in Mechatronics",
+            "Diploma in Marine Engineering": "Diploma in Marine Engineering",
+            "Diploma in Agriculture": "Diploma in Agriculture",
+            "Diploma in Nursing": "Diploma in Nursing",
+            "Diploma in Pharmacy": "Diploma in Pharmacy",
+            "Diploma in Hotel Management": "Diploma in Hotel Management",
+            "Diploma in Fashion Designing": "Diploma in Fashion Designing",
+            "Diploma in Interior Designing": "Diploma in Interior Designing",
+            "Diploma in Multimedia": "Diploma in Multimedia",
+            "ITI Fitter": "ITI Fitter",
+            "ITI Electrician": "ITI Electrician",
+            "ITI Turner": "ITI Turner",
+            "ITI Mechanic": "ITI Mechanic",
+            "ITI Welder": "ITI Welder",
+            "ITI Plumber": "ITI Plumber",
+            "ITI Draughtsman Civil": "ITI Draughtsman Civil",
+            "ITI Draughtsman Mechanical": "ITI Draughtsman Mechanical",
+            "ITI COPA": "ITI COPA",
+            "ITI Refrigeration and Air Conditioning": "ITI Refrigeration and Air Conditioning",
+            "B.E Computer Science and Engineering": "B.E Computer Science and Engineering",
+            "B.E Mechanical Engineering": "B.E Mechanical Engineering",
+            "B.E Civil Engineering": "B.E Civil Engineering",
+            "B.E Electrical and Electronics Engineering": "B.E Electrical and Electronics Engineering",
+            "B.E Electronics and Communication Engineering": "B.E Electronics and Communication Engineering",
+            "B.E Automobile Engineering": "B.E Automobile Engineering",
+            "B.E Mechatronics Engineering": "B.E Mechatronics Engineering",
+            "B.Tech Information Technology": "B.Tech Information Technology",
+            "B.Tech Artificial Intelligence": "B.Tech Artificial Intelligence",
+            "B.Tech Data Science": "B.Tech Data Science",
+            "B.Tech Biotechnology": "B.Tech Biotechnology",
+            "B.Tech Chemical Engineering": "B.Tech Chemical Engineering",
+            "B.Tech Aeronautical Engineering": "B.Tech Aeronautical Engineering",
+            "B.Tech Aerospace Engineering": "B.Tech Aerospace Engineering",
+            "B.Tech Marine Engineering": "B.Tech Marine Engineering",
+            "B.A Tamil": "B.A Tamil",
+            "B.A English": "B.A English",
+            "B.A History": "B.A History",
+            "B.A Economics": "B.A Economics",
+            "B.A Political Science": "B.A Political Science",
+            "B.Sc Mathematics": "B.Sc Mathematics",
+            "B.Sc Physics": "B.Sc Physics",
+            "B.Sc Chemistry": "B.Sc Chemistry",
+            "B.Sc Computer Science": "B.Sc Computer Science",
+            "B.Sc Information Technology": "B.Sc Information Technology",
+            "B.Sc Biotechnology": "B.Sc Biotechnology",
+            "B.Sc Microbiology": "B.Sc Microbiology",
+            "B.Sc Zoology": "B.Sc Zoology",
+            "B.Sc Botany": "B.Sc Botany",
+            "B.Sc Visual Communication": "B.Sc Visual Communication",
+            "BCA": "BCA",
+            "BBA": "BBA",
+            "B.Com General": "B.Com General",
+            "B.Com Computer Applications": "B.Com Computer Applications",
+            "B.Com Accounting and Finance": "B.Com Accounting and Finance",
+            "MBBS": "MBBS",
+            "BDS": "BDS",
+            "BAMS": "BAMS",
+            "BHMS": "BHMS",
+            "BUMS": "BUMS",
+            "B.Pharm": "B.Pharm",
+            "B.Sc Nursing": "B.Sc Nursing",
+            "LLB": "LLB",
+            "B.Ed": "B.Ed",
+            "B.Sc Agriculture": "B.Sc Agriculture",
+            "B.Arch": "B.Arch",
+            "BPT (Physiotherapy)": "BPT (Physiotherapy)",
+            "BHM (Hotel Management)": "BHM (Hotel Management)",
+            "M.E Computer Science and Engineering": "M.E Computer Science and Engineering",
+            "M.E Structural Engineering": "M.E Structural Engineering",
+            "M.Tech Information Technology": "M.Tech Information Technology",
+            "M.Tech Artificial Intelligence": "M.Tech Artificial Intelligence",
+            "M.Tech Data Science": "M.Tech Data Science",
+            "M.Tech Biotechnology": "M.Tech Biotechnology",
+            "M.A Tamil": "M.A Tamil",
+            "M.A English": "M.A English",
+            "M.A Economics": "M.A Economics",
+            "M.Sc Mathematics": "M.Sc Mathematics",
+            "M.Sc Physics": "M.Sc Physics",
+            "M.Sc Chemistry": "M.Sc Chemistry",
+            "M.Sc Computer Science": "M.Sc Computer Science",
+            "M.Sc Information Technology": "M.Sc Information Technology",
+            "M.Sc Biotechnology": "M.Sc Biotechnology",
+            "MCA": "MCA",
+            "MBA": "MBA",
+            "M.Com": "M.Com",
+            "M.Pharm": "M.Pharm",
+            "M.Sc Nursing": "M.Sc Nursing",
+            "LLM": "LLM",
+            "M.Ed": "M.Ed",
+            "M.Sc Agriculture": "M.Sc Agriculture",
+            "Ph.D Computer Science": "Ph.D Computer Science",
+            "Ph.D Mathematics": "Ph.D Mathematics",
+            "Ph.D Commerce": "Ph.D Commerce",
+            "Ph.D Engineering": "Ph.D Engineering",
+            "Ph.D Biotechnology": "Ph.D Biotechnology",
+            "Ph.D Physics": "Ph.D Physics",
+            "Ph.D Chemistry": "Ph.D Chemistry",
+            "Ph.D Tamil": "Ph.D Tamil",
+            "Ph.D English": "Ph.D English",
+            "Others": "Others"
         };
+
 
         function renderEducationTagsMember() {
             const container = document.getElementById("education_tags-member");
@@ -1099,20 +1349,83 @@
         }
 
         function filterEducationOptionsMember(input) {
-            var filter = input.value.toLowerCase();
+            var filter = input.value.toLowerCase().trim();
             var options = document.querySelectorAll('#education_dropdown-member .education-option');
             var count = 0;
             options.forEach(function(opt) {
                 var text = opt.textContent.toLowerCase();
-                if (text.includes(filter)) {
+                if (!filter || text.includes(filter)) {
                     opt.style.display = "block";
                     count++;
                 } else {
                     opt.style.display = "none";
                 }
             });
-            document.getElementById("education_dropdown-member").style.display = (filter && count > 0) ? "block" : "none";
+            document.getElementById("education_dropdown-member").style.display = (count > 0) ? "block" : "none";
         }
+
+        // Profession searchable dropdown logic
+        function filterProfessionOptionsMember(input) {
+            const query = input.value.toLowerCase().trim();
+            const dropdown = document.getElementById("profession_dropdown-member");
+            const options = dropdown.querySelectorAll(".profession-option");
+            let hasVisible = false;
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    opt.style.display = "";
+                    hasVisible = true;
+                } else {
+                    opt.style.display = "none";
+                }
+            });
+            dropdown.style.display = hasVisible ? "block" : "none";
+        }
+
+        $(document).on("click", "#profession_dropdown-member .profession-option", function() {
+            const value = this.getAttribute("data-value");
+            const input = document.getElementById("profession_input-member");
+            const hidden = document.getElementById("profession-member");
+            
+            input.value = this.textContent;
+            hidden.value = value;
+            document.getElementById("profession_dropdown-member").style.display = "none";
+            
+            // Trigger profession change logic
+            handleProfessionChangeMember({value: value});
+            validateMemberInput(hidden);
+        });
+
+        // Toggle readonly to allow typing when focused
+        $("#profession_input-member").on("focus", function() {
+            $(this).prop("readonly", false);
+        }).on("blur", function() {
+            $(this).prop("readonly", true);
+        });
+
+        // Handle wrapper click
+        $(document).on("click", "#profession_wrapper-member", function() {
+            $("#profession_input-member").focus();
+            filterProfessionOptionsMember(document.getElementById("profession_input-member"));
+        });
+
+        // Close when clicking outside
+        $(document).on("click", function(e) {
+            if (!$(e.target).closest("#profession_wrapper-member").length && !$(e.target).closest("#profession_dropdown-member").length) {
+                $("#profession_dropdown-member").hide();
+            }
+            if (!$(e.target).closest("#education_wrapper").length && !$(e.target).closest("#education_dropdown-member").length) {
+                $("#education_dropdown-member").hide();
+            }
+        });
+
+        // Existing Education Open logic
+        document.getElementById("education_wrapper").addEventListener("click", function() {
+            document.getElementById("education_input-member").focus();
+            filterEducationOptionsMember(document.getElementById("education_input-member"));
+        });
+
+
 
         $(document).off('click', '.education-option').on('click', '.education-option', function() {
             var val = $(this).data('value');
@@ -1177,10 +1490,7 @@
             }
         }
 
-        function syncNRICountryCodeMember(countryName) {
-            let country = Object.values(countriesDataMember).find(c => c.name === countryName);
-            // logic for phone code if needed
-        }
+
 
         function copyPhoneToWhatsappMember() {
             document.getElementById('whatsappno-member').value = document.getElementById('phoneno-member').value;
@@ -1357,6 +1667,14 @@
                     if (c.name === selectCity) opt.selected = true;
                     select.appendChild(opt);
                 });
+            }
+        }
+        function handleProfessionChangeMember(select) {
+            let wrapper = document.getElementById('business-extra-wrapper-member');
+            if (select && select.value === 'Others') {
+                wrapper.style.display = 'block';
+            } else {
+                wrapper.style.display = 'none';
             }
         }
     </script>

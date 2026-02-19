@@ -7,6 +7,7 @@
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
       .ps-logo{
         display:flex;
@@ -485,105 +486,7 @@
 <body>
         
 <div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
-<!---------------------view-coordinator-status-notifications---------------------->
-<style>
-    .custom-toast {
-        position: fixed;
-        top: 20px;
-        right: -400px;
-        min-width: 320px;
-        padding: 16px 24px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 9999;
-        border-left: 6px solid #43a047;
-    }
-    .custom-toast.error { border-left-color: #e53935; }
-    .toast-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        flex-shrink: 0;
-    }
-    .toast-icon.success { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); }
-    .toast-icon.error { background: linear-gradient(135deg, #e53935 0%, #c62828 100%); }
-    .toast-content { flex-grow: 1; }
-    .toast-title { font-weight: 700; margin-bottom: 2px; }
-    .toast-msg { font-size: 0.9rem; color: #666; font-weight: 500; }
-    .toast-close { cursor: pointer; color: #ccc; transition: color 0.2s; }
-    .toast-close:hover { color: #333; }
-</style>
-
-<div id="coordnotify" class="custom-toast">
-    <div id="notify-icon-bg" class="toast-icon success">
-        <i id="notify-icon" class="bi bi-check-lg" style="font-size: 1.2rem;"></i>
-    </div>
-    <div class="toast-content">
-        <div id="notify-title" class="toast-title text-success">Success</div>
-        <div id="notify-msg" class="toast-msg"></div>
-    </div>
-    <i class="bi bi-x-lg toast-close" onclick="hideNotification()"></i>
-</div>
-
-<script>
-    function showNotification(type, message) {
-        const toast = document.getElementById('coordnotify');
-        const iconBg = document.getElementById('notify-icon-bg');
-        const icon = document.getElementById('notify-icon');
-        const title = document.getElementById('notify-title');
-        const msg = document.getElementById('notify-msg');
-
-        if (type === 'success') {
-            toast.classList.remove('error');
-            iconBg.className = 'toast-icon success';
-            icon.className = 'bi bi-check-lg';
-            title.innerText = 'Success';
-            title.className = 'toast-title text-success';
-            toast.style.borderLeftColor = '#43a047';
-        } else {
-            toast.classList.add('error');
-            iconBg.className = 'toast-icon error';
-            icon.className = 'bi bi-exclamation-circle';
-            title.innerText = 'Error';
-            title.className = 'toast-title text-danger';
-            toast.style.borderLeftColor = '#e53935';
-        }
-
-        msg.innerHTML = message;
-        toast.style.right = '20px';
-
-        setTimeout(hideNotification, 5000);
-    }
-
-    function hideNotification() {
-        if(document.getElementById('coordnotify')) {
-            document.getElementById('coordnotify').style.right = '-400px';
-        }
-    }
-
-    $(document).ready(function() {
-        <?php if(isset($_SESSION["coordsuccessstatus"])): ?>
-            showNotification('success', '<?= $_SESSION["coordsuccessstatus"] ?>');
-            <?php unset($_SESSION["coordsuccessstatus"]); ?>
-        <?php endif; ?>
-
-        <?php if(isset($_SESSION["coorderrorstatus"])): ?>
-            showNotification('error', '<?= $_SESSION["coorderrorstatus"] ?>');
-            <?php unset($_SESSION["coorderrorstatus"]); ?>
-        <?php endif; ?>
-    });
-</script>
-<!---------------------view-coordinator-status-end---------------------->
+<?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
 
@@ -1362,11 +1265,7 @@ $.ajax({
     	      
           },
           error:(error)=>{
-            document.getElementById('coordinatorstatus').innerHTML = "Something went wrong";
-            document.getElementById('coordtoast').style.right = '5%';
-            setTimeout(()=>{
-            document.getElementById('coordtoast').style.right = '-380px';
-            },3000)
+            psShowToast('error', 'Something went wrong. Please try again.');
           }
           });  
           } 
@@ -1486,7 +1385,7 @@ function setDropdownpanchayat(taluk){
         membermodal.show();
         },
         error:function(error){
-            document.getElementById('deletetoast').innerHTML = error;
+            psShowToast('error', 'An error occurred. Please try again.');
         }
       })
     }
@@ -1577,7 +1476,7 @@ function setDropdownpanchayat(taluk){
       
    }
 
-   if(field_name == "existfamilyid-update" || field_name == "panno-update"){
+   if(field_name == "existfamilyid-update"){
       if(field_value !== "" && !field_value.match(alphanumericregex)){
          field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
       }
@@ -1610,7 +1509,6 @@ function validateCoordinatorform() {
       let pincode = coordinatorregistrationform["pincode-update"].value.trim();
       let existfamilyid = coordinatorregistrationform["existfamilyid-update"].value.trim();
       let phoneno = coordinatorregistrationform["phoneno-update"].value.trim();
-      let panno = coordinatorregistrationform["panno-update"].value.trim();
       let aadharno = coordinatorregistrationform["aadharno-update"].value.trim();
       let selfimage = coordinatorregistrationform["Memberimage"].value.trim();
       let aadharfrontimage = coordinatorregistrationform["Aadharfrontimage"].value.trim();
@@ -1704,7 +1602,6 @@ function validateCoordinatorform() {
       if(existfamilyid !== ""){
          if(!existfamilyid.match(normalregex)){
             document.getElementById("familyiderror-update").innerHTML = "Only letters and numbers are allowed.";
-            d
             return false;
          }
       }
@@ -1715,22 +1612,13 @@ function validateCoordinatorform() {
          return false;
       }
 
-      if(panno !== ""){
-         if(!panno.match(normalregex)){
-            document.getElementById("pannoerror-update").innerHTML = "Only letters and numbers are allowed.";
-        
-            return false;
-         }
-      }
 
       if(aadharno == ""){
          document.getElementById("aadharnoerror-update").innerHTML = "Please fill aadharno field.";
-         d
          return false;
       }
       else if(aadharno.length < 12){
          document.getElementById("aadharnoerror-update").innerHTML = "Aadhar number should contain 12 digits.";
-         d
          return false;
       }
 

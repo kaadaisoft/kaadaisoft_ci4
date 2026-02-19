@@ -445,91 +445,7 @@
 <body>
         
 <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
-<!---------------------add-toast---------------------->
- 
-  <div id='applicationsuccesstoast' style='z-index: 100;border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);' class=' toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="applicationsuccessstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php  if(isset($_SESSION["approvedsuccess"])){
-     $status = $_SESSION['approvedsuccess'];
-echo "<script>
-       document.getElementById('applicationsuccessstatus').innerHTML = '$status';
-       const appSuccToast = document.getElementById('applicationsuccesstoast');
-       appSuccToast.classList.remove('hide');
-       appSuccToast.classList.add('show');
-       appSuccToast.style.right = '50px';
-       setTimeout(()=>{
-       appSuccToast.style.right = '-380px';
-       },3000);
-       
-      </script>"; 
-
-unset($_SESSION["approvedsuccess"]);
-} 
-
-if(isset($_SESSION["rejectedsuccess"])){
-  $status = $_SESSION['rejectedsuccess'];
-echo "<script>
-    document.getElementById('applicationsuccessstatus').innerHTML = '$status';
-    const rejSuccToast = document.getElementById('applicationsuccesstoast');
-    rejSuccToast.classList.remove('hide');
-    rejSuccToast.classList.add('show');
-    rejSuccToast.style.right = '50px';
-    rejSuccToast.style.backgroundColor = 'red';
-    setTimeout(()=>{
-    rejSuccToast.style.right = '-380px';
-    },3000);
-    
-   </script>"; 
-
-unset($_SESSION["rejectedsuccess"]);
-
-} 
-
-?>
-<!---------------------add-toast-end------------------>
-
-<!---------------------coord-error-toast---------------------->
-
-<div id='applicationerrortoast' style='z-index: 100;border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="applicationerrorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php 
-
-if(isset($_SESSION["applicationerrorstatus"])){
-  $status = $_SESSION['applicationerrorstatus'];
-echo "<script>
-       document.getElementById('applicationerrorstatus').innerHTML = '$status';
-       const appErrToast = document.getElementById('applicationerrortoast');
-       appErrToast.classList.remove('hide');
-       appErrToast.classList.add('show');
-       appErrToast.style.right = '50px';
-       setTimeout(()=>{
-       appErrToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["applicationerrorstatus"]);
-
-}
-
-?>
-<!---------------------coord-error-toast-end------------------>
+<?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
 
@@ -664,7 +580,6 @@ unset($_SESSION["applicationerrorstatus"]);
             <tr><th>Name:</th><td style="font-weight:500;" id="name"></td></tr>
             <tr><th>Mobile No:</th><td style="font-weight:500;" id="mobile"></td></tr>
             <tr><th>Aadhar No:</th><td style="font-weight:500;" id="aadharno"></td></tr>
-            <tr><th>PAN No:</th><td style="font-weight:500;" id="panno"></td></tr>
             <tr><th style="vertical-align:middle;">Address:</th><td id="address"></td></tr>
             <tr><th>Family Membership Id:</th><td style="font-weight:500;" id="familyid"></td></tr>
             <tr><th style="vertical-align:middle;">Photo:</th><td id="photo"></td></tr>
@@ -1078,7 +993,6 @@ renderApplications(applicationsData.slice(0 ,10), 0);
       document.getElementById("name").innerHTML = application.Name;
       document.getElementById("mobile").innerHTML = application.Phonenumber;
       document.getElementById("aadharno").innerHTML = application.Aadharnumber;
-      document.getElementById("panno").innerHTML = application.Pannumber;
       document.getElementById("address").innerHTML = `<table class='table table-borderless'>
                                                       <tr><th>D/No</th><td>-</td><td class='fw-bold'>${application.Doornumber}</td></tr>
                                                       <tr><th>Street</th><td>-</td><td class='fw-bold'>${application.Street}</td></tr>
@@ -1168,11 +1082,7 @@ renderApplications(applicationsData.slice(0 ,10), 0);
     	      
           },
           error:(error)=>{
-            document.getElementById('applicationsuccessstatus').innerHTML = "Something went wrong";
-            document.getElementById('applicationsuccesstoast').style.right = '5%';
-            setTimeout(()=>{
-            document.getElementById('applicationsuccesstoast').style.right = '-380px';
-            },3000)
+            psShowToast('error', 'Something went wrong. Please try again.');
           }
           });  
           } 
@@ -1399,13 +1309,10 @@ let searchmemberdata = document.getElementById("searchmemberdata")
         data:{"id":id},
         success:function(result){
         document.getElementById('ps-coords').innerHTML = result;
-        document.getElementById('deletetoast').style.right = '50px';
-        setTimeout(()=>{
-        document.getElementById('deletetoast').style.right = '-350px';
-        },3000)
+        psShowToast('success', 'Moved to trash successfully!');
         },
         error:function(error){
-            document.getElementById('deletetoast').innerHTML = error;
+            psShowToast('error', 'An error occurred. Please try again.');
         }
       })
   }

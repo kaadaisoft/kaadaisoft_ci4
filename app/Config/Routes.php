@@ -19,6 +19,14 @@ $routes->get('logout', 'AdminDashboard::logout');
 $routes->get('terms-and-conditions', 'Loginpage::terms_and_conditions');
 $routes->get('privacy-policy', 'Loginpage::privacy_policy');
 
+// Forgot Password Routes
+$routes->get('forgot-password', 'Loginpage::forgot_password');
+$routes->post('send-otp', 'Loginpage::send_otp');
+$routes->get('verify-otp', 'Loginpage::verify_otp_view');
+$routes->post('verify-otp', 'Loginpage::verify_otp');
+$routes->get('reset-password', 'Loginpage::reset_password_view');
+$routes->post('update-password', 'Loginpage::update_password');
+
 // Dashboard Menus (Explicit to prevent 404/Object issues)
 $routes->get('dashboard/sidemenu', 'Dashboard::sidemenu');
 $routes->get('dashboard/topmenu', 'Dashboard::topmenu');
@@ -186,6 +194,7 @@ $routes->post('payments-filter/display-filter-members', 'PaymentsFilter::display
 // Export & Reporting Routes
 $routes->get('excel', 'PaidUnpaidController::excel');
 $routes->get('download_members_data', 'ReportingController::download_members_data');
+$routes->get('download_members_excel', 'ReportingController::download_members_excel');
 $routes->get('download_excel', 'ReportingController::download_excel');
 
 // Reports Routes

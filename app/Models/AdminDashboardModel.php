@@ -16,13 +16,14 @@ class AdminDashboardModel extends Model {
     public function getPendingapplications(){
        $session = session();
        if($session->get('role') == 2){
-          $CoordinatorId = trim($session->get('Kaadaisoft_userId'));
-          // Case-insensitive and trimmed comparison
-          $query = $this->db->query("SELECT * FROM kaadaimembers 
-                                     WHERE (TRIM(Coordinator_id) = " . $this->db->escape($CoordinatorId) . " 
-                                     OR TRIM(Coordinator_Two_id) = " . $this->db->escape($CoordinatorId) . ") 
-                                     AND Approvedstatus = 'Pending'");    
-         return $query->getResult();
+           $CoordinatorId = trim($session->get('Kaadaisoft_userId'));
+           // Case-insensitive and trimmed comparison
+           $query = $this->db->query("SELECT * FROM kaadaimembers 
+                                      WHERE (LOWER(TRIM(Coordinator_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
+                                      OR LOWER(TRIM(Coordinator_Two_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
+                                      OR LOWER(TRIM(Id_who_assign_coord)) = LOWER(" . $this->db->escape($CoordinatorId) . ")) 
+                                      AND Approvedstatus = 'Pending'");    
+          return $query->getResult();
        }
          $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Pending'");    
          return $query->getResult();
@@ -112,7 +113,6 @@ class AdminDashboardModel extends Model {
             state_id           = " . (int)$state_id . "
         WHERE Id = " . (int)$applicationid
     );
-
 
     return $query ? $membershipid : false;
 }
@@ -391,7 +391,7 @@ public function rejectMember($applicationid, $rejectreason){
       return $this->db->query($sql);
   }
 
-  public function processRegisteration($name,$state_id,$district,$taluk,$panchayat,$village,  $street,$doorno,$pincode,$existfamilyid,$phoneno,$panno,$aadharno,$hashed_password,$documents){
+  public function processRegisteration($name,$state_id,$district,$taluk,$panchayat,$village,  $street,$doorno,$pincode,$existfamilyid,$phoneno,$aadharno,$hashed_password,$documents){
 
    $getdistrictcode = $this->db->query("SELECT DISTINCT(district_code) AS district_code FROM panchayat_table WHERE district_name = '$district'");
    $getcode = $getdistrictcode->getRow();
@@ -437,8 +437,11 @@ public function rejectMember($applicationid, $rejectreason){
    $newid = str_pad($totalmembersverified,5,"0",STR_PAD_LEFT);
    $membershipid = $districtcode.$newid;
 
-   $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Pannumber, Aadharnumber, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id) 
-                               VALUES (" . $this->db->escape($membershipid) . ", " . $this->db->escape($name) . ", " . $this->db->escape($state) . ", " . $this->db->escape($district) . ", " . $this->db->escape($taluk) . ", " . $this->db->escape($panchayat) . ", " . $this->db->escape($village) . ", " . $this->db->escape($street) . ", " . $this->db->escape($doorno) . ", " . $this->db->escape($pincode) . ", " . $this->db->escape($existfamilyid) . ", " . $this->db->escape($phoneno) . ", " . $this->db->escape($panno) . ", " . $this->db->escape($aadharno) . ", " . $this->db->escape($hashed_password) . ", " . $this->db->escape($documents[0]) . ", " . $this->db->escape($documents[1]) . ", " . $this->db->escape($documents[2]) . ", " . $this->db->escape($documents[3]) . ", 'Verified', " . $this->db->escape($coordid) . ", " . $this->db->escape($coordid_two) . ", $state_id)");
+    $approved_status = (session()->get('role') == 1) ? 'Verified' : 'Pending';
+    $current_user_id = session()->get('Kaadaisoft_userId');
+
+    $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Aadharnumber, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id, Id_who_assign_coord) 
+                                VALUES (" . $this->db->escape($membershipid) . ", " . $this->db->escape($name) . ", " . $this->db->escape($state) . ", " . $this->db->escape($district) . ", " . $this->db->escape($taluk) . ", " . $this->db->escape($panchayat) . ", " . $this->db->escape($village) . ", " . $this->db->escape($street) . ", " . $this->db->escape($doorno) . ", " . $this->db->escape($pincode) . ", " . $this->db->escape($existfamilyid) . ", " . $this->db->escape($phoneno) . ", " . $this->db->escape($aadharno) . ", " . $this->db->escape($hashed_password) . ", " . $this->db->escape($documents[0]) . ", " . $this->db->escape($documents[1]) . ", " . $this->db->escape($documents[2]) . ", " . $this->db->escape($documents[3]) . ", '$approved_status', " . $this->db->escape($coordid) . ", " . $this->db->escape($coordid_two) . ", $state_id, " . $this->db->escape($current_user_id) . ")");
 
    if($query){
        return true;
@@ -475,7 +478,7 @@ public function update_password($id, $hashedPassword) {
         }
 
         if ($role == 2) {
-            $query = $this->db->query("SELECT r.*, m.Name as MemberName $select_old FROM member_edit_requests r JOIN kaadaimembers m ON r.Familymembershipid = m.Familymembershipid WHERE (m.Coordinator_id = '$userId' OR m.Coordinator_Two_id = '$userId') AND r.status = 'Pending'");
+            $query = $this->db->query("SELECT r.*, m.Name as MemberName $select_old FROM member_edit_requests r JOIN kaadaimembers m ON r.Familymembershipid = m.Familymembershipid WHERE (LOWER(TRIM(m.Coordinator_id)) = LOWER('$userId') OR LOWER(TRIM(m.Coordinator_Two_id)) = LOWER('$userId') OR LOWER(TRIM(m.Id_who_assign_coord)) = LOWER('$userId')) AND r.status = 'Pending'");
         } else {
             $query = $this->db->query("SELECT r.*, m.Name as MemberName $select_old FROM member_edit_requests r JOIN kaadaimembers m ON r.Familymembershipid = m.Familymembershipid WHERE r.status = 'Pending'");
         }
@@ -562,6 +565,7 @@ public function update_password($id, $hashedPassword) {
             
             $this->db->table('member_edit_requests')->where('id', $request_id)
             ->update(['status' => 'Approved', 'updated_at' => date('Y-m-d H:i:s')]);
+            
             return true;
         }
         return false;

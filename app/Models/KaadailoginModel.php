@@ -22,5 +22,36 @@ class KaadailoginModel extends Model
         $query = $builder->get();
         return $query->getRow();
     }
+
+    public function updateOTP($identifier, $value, $otp, $expiry)
+    {
+        return $this->db->table('kaadaimembers')
+            ->where($identifier, $value)
+            ->update([
+                'otp' => $otp,
+                'otp_expiry' => $expiry
+            ]);
+    }
+
+    public function verifyOTP($identifier, $value, $otp)
+    {
+        $query = $this->db->table('kaadaimembers')
+            ->where($identifier, $value)
+            ->where('otp', $otp)
+            ->where('otp_expiry >=', date('Y-m-d H:i:s'))
+            ->get();
+        return $query->getRow();
+    }
+
+    public function updatePassword($identifier, $value, $newPassword)
+    {
+        return $this->db->table('kaadaimembers')
+            ->where($identifier, $value)
+            ->update([
+                'Password' => password_hash($newPassword, PASSWORD_BCRYPT),
+                'otp' => null,
+                'otp_expiry' => null
+            ]);
+    }
 }
 ?>

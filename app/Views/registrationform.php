@@ -172,6 +172,54 @@
             .animate-up { animation: fadeInUp 0.5s ease-out forwards; }
         </style>
 
+        <style>
+            /* Flowbite-style file input */
+            .ps-file-upload-wrapper {
+                position: relative;
+            }
+            .ps-file-upload-wrapper input[type="file"] {
+                display: none;
+            }
+            .ps-file-upload-btn {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                width: 100%;
+                padding: 7px 12px;
+                font-size: 13px;
+                border: 1.5px solid #ced4da;
+                border-radius: 6px;
+                background-color: #f8f9fa;
+                cursor: pointer;
+                color: #6c757d;
+                transition: border-color 0.2s, background-color 0.2s;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .ps-file-upload-btn:hover {
+                background-color: #e9ecef;
+                border-color: #86b7fe;
+            }
+            .ps-file-upload-btn .ps-file-icon {
+                flex-shrink: 0;
+                font-size: 15px;
+                color: #495057;
+            }
+            .ps-file-upload-btn .ps-file-label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                flex: 1;
+            }
+            .ps-file-upload-btn.file-selected {
+                border-color: #0d6efd;
+                background-color: #e7f1ff;
+                color: #0a3d91;
+                font-weight: 500;
+            }
+        </style>
+
         <div id="registerstatusmodal" class="modal fade" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content status-modal-content">
@@ -296,12 +344,6 @@
                                         <small id="phonenoerror" class="text-danger"></small>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <label for="pannofield">PAN Number</label>
-                                        <input id="pannofield" onkeyup="validateInputfield(this)"
-                                            class="form-control form-control-sm" type="text" name="panno">
-                                        <small id="pannoerror" class="text-danger"></small>
-                                    </div>
 
                                     <div class="col-md-4">
                                         <label for="aadharnofield">Aadhar Number <span
@@ -342,6 +384,11 @@
                                             <input type="radio" id="gender_female" name="gender" value="Female"
                                                 onchange="validateInputfield(this)">
                                             <label class="form-check-label" for="gender_female">Female</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" id="gender_other" name="gender" value="Other"
+                                                onchange="validateInputfield(this)">
+                                            <label class="form-check-label" for="gender_other">Other</label>
                                         </div>
                                         <div>
                                             <small id="gendererror" class="text-danger"></small>
@@ -457,7 +504,9 @@
                                             <input type="text" id="education_input"
                                                 class="form-control form-control-sm border-0 p-0"
                                                 placeholder="Type and select education (e.g., B.Sc, MBA)"
-                                                onkeyup="filterEducationOptions(this)">
+                                                onfocus="filterEducationOptions(this)"
+                                                oninput="filterEducationOptions(this)">
+
                                         </div>
                                         <small id="educationerror" class="text-danger"></small>
 
@@ -468,160 +517,180 @@
                                         <div class="border rounded mt-1 bg-white" id="education_dropdown"
                                             style="max-height:250px; overflow:auto; display:none;">
 
-                                            <!-- <div class="education-option" data-value="SCHOOL - SSLC">SSLC (10th)</div>
-    <div class="education-option" data-value="SCHOOL - HSC">HSC (12th)</div> -->
-
-                                            <div class="education-option" data-value="UG - BA">Bachelor of Arts (B.A.)
-                                            </div>
-                                            <div class="education-option" data-value="UG - BSc">Bachelor of Science
-                                                (B.Sc.)</div>
-                                            <div class="education-option" data-value="UG - BCom">Bachelor of Commerce
-                                                (B.Com.)</div>
-                                            <div class="education-option" data-value="UG - BBA">BBA</div>
-                                            <div class="education-option" data-value="UG - BCA">BCA</div>
-                                            <div class="education-option" data-value="UG - BE/BTech">BE / B.Tech</div>
-                                            <div class="education-option" data-value="UG - BArch">B.Arch (Architecture)
-                                            </div>
-                                            <div class="education-option" data-value="UG - MBBS">MBBS</div>
-                                            <div class="education-option" data-value="UG - BDS">BDS (Dental)</div>
-                                            <div class="education-option" data-value="UG - BPharm">B.Pharm</div>
-                                            <div class="education-option" data-value="UG - BPT">B.P.T (Physiotherapy)
-                                            </div>
-                                            <div class="education-option" data-value="UG - BSc Agri">B.Sc. Agriculture
-                                            </div>
-                                            <div class="education-option" data-value="UG - BALLB">B.A. LL.B.</div>
-                                            <div class="education-option" data-value="UG - B.Ed">B.Ed (Education)</div>
-
-                                            <div class="education-option" data-value="PG - MA">M.A.</div>
-                                            <div class="education-option" data-value="PG - MSc">M.Sc.</div>
-                                            <div class="education-option" data-value="PG - MCom">M.Com.</div>
-                                            <div class="education-option" data-value="PG - MBA">MBA</div>
-                                            <div class="education-option" data-value="PG - MCA">MCA</div>
-                                            <div class="education-option" data-value="PG - ME/MTech">M.E. / M.Tech.
-                                            </div>
-                                            <div class="education-option" data-value="PG - MD/MS">MD / MS</div>
-                                            <div class="education-option" data-value="PG - LLM">LL.M.</div>
-                                            <div class="education-option" data-value="PG - MSW">MSW (Social Work)</div>
-                                            <div class="education-option" data-value="PG - M.Ed">M.Ed (Education)</div>
-
-                                            <div class="education-option" data-value="DIP - Polytechnic">Diploma in
-                                                Engineering</div>
-                                            <div class="education-option" data-value="DIP - Nursing">Diploma in Nursing
-                                            </div>
-                                            <div class="education-option" data-value="DIP - ITI">ITI / Vocational</div>
-                                            <div class="education-option" data-value="DIP - D.Pharm">D.Pharm</div>
-
-                                            <div class="education-option" data-value="PROF - CA">Chartered Accountant
-                                                (CA)</div>
-                                            <div class="education-option" data-value="PROF - CMA">CMA (Cost Accounting)
-                                            </div>
-                                            <div class="education-option" data-value="PROF - CS">Company Secretary (CS)
-                                            </div>
-
-                                            <div class="education-option" data-value="MPhil">M.Phil.</div>
-                                            <div class="education-option" data-value="PhD">Ph.D.</div>
-                                            <div class="education-option" data-value="PostDoc">Post-Doctoral Fellowship
-                                            </div>
-
+                                            <div class="education-option" data-value="10th (SSLC)">10th (SSLC)</div>
+                                            <div class="education-option" data-value="12th (HSC – Science)">12th (HSC – Science)</div>
+                                            <div class="education-option" data-value="12th (HSC – Commerce)">12th (HSC – Commerce)</div>
+                                            <div class="education-option" data-value="12th (HSC – Arts)">12th (HSC – Arts)</div>
+                                            <div class="education-option" data-value="Diploma in Mechanical Engineering">Diploma in Mechanical Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Civil Engineering">Diploma in Civil Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Electrical Engineering">Diploma in Electrical Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Electronics and Communication Engineering">Diploma in Electronics and Communication Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Computer Engineering">Diploma in Computer Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Information Technology">Diploma in Information Technology</div>
+                                            <div class="education-option" data-value="Diploma in Automobile Engineering">Diploma in Automobile Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Mechatronics">Diploma in Mechatronics</div>
+                                            <div class="education-option" data-value="Diploma in Marine Engineering">Diploma in Marine Engineering</div>
+                                            <div class="education-option" data-value="Diploma in Agriculture">Diploma in Agriculture</div>
+                                            <div class="education-option" data-value="Diploma in Nursing">Diploma in Nursing</div>
+                                            <div class="education-option" data-value="Diploma in Pharmacy">Diploma in Pharmacy</div>
+                                            <div class="education-option" data-value="Diploma in Hotel Management">Diploma in Hotel Management</div>
+                                            <div class="education-option" data-value="Diploma in Fashion Designing">Diploma in Fashion Designing</div>
+                                            <div class="education-option" data-value="Diploma in Interior Designing">Diploma in Interior Designing</div>
+                                            <div class="education-option" data-value="Diploma in Multimedia">Diploma in Multimedia</div>
+                                            <div class="education-option" data-value="ITI Fitter">ITI Fitter</div>
+                                            <div class="education-option" data-value="ITI Electrician">ITI Electrician</div>
+                                            <div class="education-option" data-value="ITI Turner">ITI Turner</div>
+                                            <div class="education-option" data-value="ITI Mechanic">ITI Mechanic</div>
+                                            <div class="education-option" data-value="ITI Welder">ITI Welder</div>
+                                            <div class="education-option" data-value="ITI Plumber">ITI Plumber</div>
+                                            <div class="education-option" data-value="ITI Draughtsman Civil">ITI Draughtsman Civil</div>
+                                            <div class="education-option" data-value="ITI Draughtsman Mechanical">ITI Draughtsman Mechanical</div>
+                                            <div class="education-option" data-value="ITI COPA">ITI COPA</div>
+                                            <div class="education-option" data-value="ITI Refrigeration and Air Conditioning">ITI Refrigeration and Air Conditioning</div>
+                                            <div class="education-option" data-value="B.E Computer Science and Engineering">B.E Computer Science and Engineering</div>
+                                            <div class="education-option" data-value="B.E Mechanical Engineering">B.E Mechanical Engineering</div>
+                                            <div class="education-option" data-value="B.E Civil Engineering">B.E Civil Engineering</div>
+                                            <div class="education-option" data-value="B.E Electrical and Electronics Engineering">B.E Electrical and Electronics Engineering</div>
+                                            <div class="education-option" data-value="B.E Electronics and Communication Engineering">B.E Electronics and Communication Engineering</div>
+                                            <div class="education-option" data-value="B.E Automobile Engineering">B.E Automobile Engineering</div>
+                                            <div class="education-option" data-value="B.E Mechatronics Engineering">B.E Mechatronics Engineering</div>
+                                            <div class="education-option" data-value="B.Tech Information Technology">B.Tech Information Technology</div>
+                                            <div class="education-option" data-value="B.Tech Artificial Intelligence">B.Tech Artificial Intelligence</div>
+                                            <div class="education-option" data-value="B.Tech Data Science">B.Tech Data Science</div>
+                                            <div class="education-option" data-value="B.Tech Biotechnology">B.Tech Biotechnology</div>
+                                            <div class="education-option" data-value="B.Tech Chemical Engineering">B.Tech Chemical Engineering</div>
+                                            <div class="education-option" data-value="B.Tech Aeronautical Engineering">B.Tech Aeronautical Engineering</div>
+                                            <div class="education-option" data-value="B.Tech Aerospace Engineering">B.Tech Aerospace Engineering</div>
+                                            <div class="education-option" data-value="B.Tech Marine Engineering">B.Tech Marine Engineering</div>
+                                            <div class="education-option" data-value="B.A Tamil">B.A Tamil</div>
+                                            <div class="education-option" data-value="B.A English">B.A English</div>
+                                            <div class="education-option" data-value="B.A History">B.A History</div>
+                                            <div class="education-option" data-value="B.A Economics">B.A Economics</div>
+                                            <div class="education-option" data-value="B.A Political Science">B.A Political Science</div>
+                                            <div class="education-option" data-value="B.Sc Mathematics">B.Sc Mathematics</div>
+                                            <div class="education-option" data-value="B.Sc Physics">B.Sc Physics</div>
+                                            <div class="education-option" data-value="B.Sc Chemistry">B.Sc Chemistry</div>
+                                            <div class="education-option" data-value="B.Sc Computer Science">B.Sc Computer Science</div>
+                                            <div class="education-option" data-value="B.Sc Information Technology">B.Sc Information Technology</div>
+                                            <div class="education-option" data-value="B.Sc Biotechnology">B.Sc Biotechnology</div>
+                                            <div class="education-option" data-value="B.Sc Microbiology">B.Sc Microbiology</div>
+                                            <div class="education-option" data-value="B.Sc Zoology">B.Sc Zoology</div>
+                                            <div class="education-option" data-value="B.Sc Botany">B.Sc Botany</div>
+                                            <div class="education-option" data-value="B.Sc Visual Communication">B.Sc Visual Communication</div>
+                                            <div class="education-option" data-value="BCA">BCA</div>
+                                            <div class="education-option" data-value="BBA">BBA</div>
+                                            <div class="education-option" data-value="B.Com General">B.Com General</div>
+                                            <div class="education-option" data-value="B.Com Computer Applications">B.Com Computer Applications</div>
+                                            <div class="education-option" data-value="B.Com Accounting and Finance">B.Com Accounting and Finance</div>
+                                            <div class="education-option" data-value="MBBS">MBBS</div>
+                                            <div class="education-option" data-value="BDS">BDS</div>
+                                            <div class="education-option" data-value="BAMS">BAMS</div>
+                                            <div class="education-option" data-value="BHMS">BHMS</div>
+                                            <div class="education-option" data-value="BUMS">BUMS</div>
+                                            <div class="education-option" data-value="B.Pharm">B.Pharm</div>
+                                            <div class="education-option" data-value="B.Sc Nursing">B.Sc Nursing</div>
+                                            <div class="education-option" data-value="LLB">LLB</div>
+                                            <div class="education-option" data-value="B.Ed">B.Ed</div>
+                                            <div class="education-option" data-value="B.Sc Agriculture">B.Sc Agriculture</div>
+                                            <div class="education-option" data-value="B.Arch">B.Arch</div>
+                                            <div class="education-option" data-value="BPT (Physiotherapy)">BPT (Physiotherapy)</div>
+                                            <div class="education-option" data-value="BHM (Hotel Management)">BHM (Hotel Management)</div>
+                                            <div class="education-option" data-value="M.E Computer Science and Engineering">M.E Computer Science and Engineering</div>
+                                            <div class="education-option" data-value="M.E Structural Engineering">M.E Structural Engineering</div>
+                                            <div class="education-option" data-value="M.Tech Information Technology">M.Tech Information Technology</div>
+                                            <div class="education-option" data-value="M.Tech Artificial Intelligence">M.Tech Artificial Intelligence</div>
+                                            <div class="education-option" data-value="M.Tech Data Science">M.Tech Data Science</div>
+                                            <div class="education-option" data-value="M.Tech Biotechnology">M.Tech Biotechnology</div>
+                                            <div class="education-option" data-value="M.A Tamil">M.A Tamil</div>
+                                            <div class="education-option" data-value="M.A English">M.A English</div>
+                                            <div class="education-option" data-value="M.A Economics">M.A Economics</div>
+                                            <div class="education-option" data-value="M.Sc Mathematics">M.Sc Mathematics</div>
+                                            <div class="education-option" data-value="M.Sc Physics">M.Sc Physics</div>
+                                            <div class="education-option" data-value="M.Sc Chemistry">M.Sc Chemistry</div>
+                                            <div class="education-option" data-value="M.Sc Computer Science">M.Sc Computer Science</div>
+                                            <div class="education-option" data-value="M.Sc Information Technology">M.Sc Information Technology</div>
+                                            <div class="education-option" data-value="M.Sc Biotechnology">M.Sc Biotechnology</div>
+                                            <div class="education-option" data-value="MCA">MCA</div>
+                                            <div class="education-option" data-value="MBA">MBA</div>
+                                            <div class="education-option" data-value="M.Com">M.Com</div>
+                                            <div class="education-option" data-value="M.Pharm">M.Pharm</div>
+                                            <div class="education-option" data-value="M.Sc Nursing">M.Sc Nursing</div>
+                                            <div class="education-option" data-value="LLM">LLM</div>
+                                            <div class="education-option" data-value="M.Ed">M.Ed</div>
+                                            <div class="education-option" data-value="M.Sc Agriculture">M.Sc Agriculture</div>
+                                            <div class="education-option" data-value="Ph.D Computer Science">Ph.D Computer Science</div>
+                                            <div class="education-option" data-value="Ph.D Mathematics">Ph.D Mathematics</div>
+                                            <div class="education-option" data-value="Ph.D Commerce">Ph.D Commerce</div>
+                                            <div class="education-option" data-value="Ph.D Engineering">Ph.D Engineering</div>
+                                            <div class="education-option" data-value="Ph.D Biotechnology">Ph.D Biotechnology</div>
+                                            <div class="education-option" data-value="Ph.D Physics">Ph.D Physics</div>
+                                            <div class="education-option" data-value="Ph.D Chemistry">Ph.D Chemistry</div>
+                                            <div class="education-option" data-value="Ph.D Tamil">Ph.D Tamil</div>
+                                            <div class="education-option" data-value="Ph.D English">Ph.D English</div>
                                             <div class="education-option" data-value="Others">Others</div>
+
                                         </div>
 
 
                                         <!-- Profession (mandatory) -->
                                         <div class="col-md-4">
-                                            <label for="professionfield">Profession <span
-                                                    class="text-danger">*</span></label>
-                                            <select id="professionfield" name="profession"
-                                                class="form-select form-select-sm"
-                                                onchange="handleProfessionChange(this); validateInputfield(this)">
-                                                <option value="">Select Profession</option>
+                                            <label for="profession_input">Profession <span class="text-danger">*</span></label>
+                                            <div class="border rounded p-1 bg-white" id="profession_wrapper" style="cursor: pointer;">
+                                                <input type="text" id="profession_input" 
+                                                    class="form-control form-control-sm border-0 bg-transparent" 
+                                                    placeholder="Type or click to select profession"
+                                                    onfocus="filterProfessionOptions(this)"
+                                                    oninput="filterProfessionOptions(this)"
+                                                    readonly 
+                                                    style="cursor: pointer;">
+                                                <input type="hidden" id="professionfield" name="profession">
+                                            </div>
+                                            <div class="border rounded mt-1 bg-white" id="profession_dropdown" 
+                                                style="max-height:250px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
+                                                <?php 
+                                                    $profession_map = [
+                                                        "Doctor" => "Doctor", "Lawyer" => "Lawyer", "Police" => "Police", 
+                                                        "Teacher / Lecturer" => "Teacher / Lecturer", "Engineer" => "Engineer", 
+                                                        "Government Employee" => "Government Employee", "Private Employee" => "Private Employee", 
+                                                        "Student" => "Student", "Farmer" => "Farmer – Agriculture", 
+                                                        "Textile Mill Worker" => "Textile Mill Worker (Spinning / Weaving)", 
+                                                        "Garment Factory Worker" => "Garment Factory Worker", 
+                                                        "Tailor" => "Tailor / Apparel Stitching", 
+                                                        "Pattern Master" => "Garment Pattern Master / Designer", 
+                                                        "Textile Machinery Technician" => "Textile Machinery Technician / Mechanic", 
+                                                        "Textile Machinery Service" => "Textile Machinery Sales & Service", 
+                                                        "Loom Operator" => "Powerloom / Auto‑Loom Operator", 
+                                                        "Knitting Machine Operator" => "Knitting Machine Operator", 
+                                                        "Truck Driver" => "Truck / Lorry Driver", 
+                                                        "Truck Owner Driver" => "Truck / Lorry Owner‑cum‑Driver", 
+                                                        "Logistics Staff" => "Logistics / Transport Staff", "Fleet Manager" => "Fleet Manager", 
+                                                        "Dairy Farmer" => "Dairy Farmer", "Poultry Farmer" => "Poultry Farmer", 
+                                                        "Animal Husbandry" => "Goat / Sheep Rearing", "Pump Technician" => "Pump / Motor Technician", 
+                                                        "Pump Factory Worker" => "Pump / Motor Manufacturing Worker", 
+                                                        "Motor Rewinding Technician" => "Motor Rewinding Technician", 
+                                                        "Machinist / Turner" => "Machinist / Turner", "Welder / Fabricator" => "Welder / Fabricator", 
+                                                        "Foundry Worker" => "Steel / Aluminium Foundry Worker", 
+                                                        "Mixer Grinder Technician" => "Mixer‑Grinder Assembly / Service Technician", 
+                                                        "Plastic / Net Unit Worker" => "Plastic / Net / Packaging Unit Worker", 
+                                                        "Windmill Technician" => "Windmill Maintenance Technician", 
+                                                        "Electrical Technician" => "Electrical Line / Maintenance Technician", 
+                                                        "Grocery Shop Staff" => "Grocery Shop Staff", "Medical Shop Staff" => "Medical Shop / Pharmacy Staff", 
+                                                        "Retail Shop / Sales Staff" => "Retail Shop / Sales Staff", 
+                                                        "Office Admin / Computer Operator" => "Office Admin / Computer Operator", 
+                                                        "Accountant / Finance Staff" => "Accountant / Finance Staff", "Bank / NBFC Staff" => "Bank / NBFC Staff", 
+                                                        "Hospital Staff" => "Hospital Nurse / Lab Tech / Pharmacist", 
+                                                        "Medical Representative" => "Medical Representative", "IT / Software Employee" => "IT / Software Employee", 
+                                                        "Home Maker" => "Home Maker", "Retired" => "Retired", "Others" => "Others"
+                                                    ];
+                                                    foreach($profession_map as $val => $text) {
+                                                        echo "<div class='profession-option p-2 border-bottom' data-value='$val'>$text</div>";
+                                                    }
+                                                ?>
+                                            </div>
 
-                                                <!-- Existing core professions -->
-                                                <option value="Doctor">Doctor</option>
-                                                <option value="Lawyer">Lawyer</option>
-                                                <option value="Police">Police</option>
-                                                <option value="Teacher / Lecturer">Teacher / Lecturer</option>
-                                                <option value="Engineer">Engineer</option>
-                                                <option value="Government Employee">Government Employee</option>
-                                                <option value="Private Employee">Private Employee</option>
-                                                <option value="Student">Student</option>
-                                                <option value="Farmer">Farmer – Agriculture</option>
-
-                                                <!-- Textiles & Apparel -->
-                                                <option value="Textile Mill Worker">Textile Mill Worker (Spinning /
-                                                    Weaving)
-                                                </option>
-                                                <option value="Garment Factory Worker">Garment Factory Worker</option>
-                                                <option value="Tailor">Tailor / Apparel Stitching</option>
-                                                <option value="Pattern Master">Garment Pattern Master / Designer
-                                                </option>
-                                                <option value="Textile Machinery Technician">Textile Machinery
-                                                    Technician /
-                                                    Mechanic</option>
-                                                <option value="Textile Machinery Service">Textile Machinery Sales &
-                                                    Service
-                                                </option>
-                                                <option value="Loom Operator">Powerloom / Auto‑Loom Operator</option>
-                                                <option value="Knitting Machine Operator">Knitting Machine Operator
-                                                </option>
-
-                                                <!-- Transport -->
-                                                <option value="Truck Driver">Truck / Lorry Driver</option>
-                                                <option value="Truck Owner Driver">Truck / Lorry Owner‑cum‑Driver
-                                                </option>
-                                                <option value="Logistics Staff">Logistics / Transport Staff</option>
-                                                <option value="Fleet Manager">Fleet Manager</option>
-
-                                                <!-- Dairy / Poultry / Allied -->
-                                                <option value="Dairy Farmer">Dairy Farmer</option>
-                                                <option value="Poultry Farmer">Poultry Farmer</option>
-                                                <option value="Animal Husbandry">Goat / Sheep Rearing</option>
-
-                                                <!-- Engineering / Manufacturing -->
-                                                <option value="Pump Technician">Pump / Motor Technician</option>
-                                                <option value="Pump Factory Worker">Pump / Motor Manufacturing Worker
-                                                </option>
-                                                <option value="Motor Rewinding Technician">Motor Rewinding Technician
-                                                </option>
-                                                <option value="Machinist / Turner">Machinist / Turner</option>
-                                                <option value="Welder / Fabricator">Welder / Fabricator</option>
-                                                <option value="Foundry Worker">Steel / Aluminium Foundry Worker</option>
-                                                <option value="Mixer Grinder Technician">Mixer‑Grinder Assembly /
-                                                    Service
-                                                    Technician</option>
-                                                <option value="Plastic / Net Unit Worker">Plastic / Net / Packaging Unit
-                                                    Worker</option>
-
-                                                <!-- Energy -->
-                                                <option value="Windmill Technician">Windmill Maintenance Technician
-                                                </option>
-                                                <option value="Electrical Technician">Electrical Line / Maintenance
-                                                    Technician</option>
-
-                                                <!-- Retail & Services -->
-                                                <option value="Grocery Shop Staff">Grocery Shop Staff</option>
-                                                <option value="Medical Shop Staff">Medical Shop / Pharmacy Staff
-                                                </option>
-                                                <option value="Retail / Sales Staff">Retail Shop / Sales Staff</option>
-                                                <option value="Office Admin / Computer Operator">Office Admin / Computer
-                                                    Operator</option>
-
-                                                <!-- Finance / Health / IT -->
-                                                <option value="Accountant / Finance Staff">Accountant / Finance Staff
-                                                </option>
-                                                <option value="Bank / NBFC Staff">Bank / NBFC Staff</option>
-                                                <option value="Hospital Staff">Hospital Nurse / Lab Tech / Pharmacist
-                                                </option>
-                                                <option value="Medical Representative">Medical Representative</option>
-                                                <option value="IT / Software Employee">IT / Software Employee</option>
-
-                                                <!-- Others -->
-                                                <option value="Home Maker">Home Maker</option>
-                                                <option value="Retired">Retired</option>
-                                                <option value="Others">Others</option>
-                                            </select>
                                             <small id="professionerror" class="text-danger"></small>
                                         </div>
+
 
                                         <!-- Business details (initially hidden) -->
                                         <div class="col-md-4" id="business-extra-wrapper" style="display:none;">
@@ -818,7 +887,7 @@
 
                                         <button type="button" id="btn_same_as_native"
                                             class="btn btn-success btn-sm disabled" disabled
-                                            onclick="copyNativeAddress()">
+                                            onclick="copyNativeAddress()" style="display: none;">
                                             Same as Native Address
                                         </button>
                                     </div>
@@ -940,34 +1009,18 @@
                                     <!-- NRI CURRENT ADDRESS BLOCK -->
                                     <div id="cur_nri_block" style="display:none;">
                                         <div class="row g-3">
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="cur_nri_country">Country <span
                                                         class="text-danger">*</span></label>
                                                 <select id="cur_nri_country" name="cur_nri_country"
                                                     class="form-select form-select-sm"
-                                                    onchange="loadNRIStates(this.value); syncNRICountryCode(this.value); validateInputfield(this)">
+                                                    onchange="loadNRIStates(this.value); validateInputfield(this)">
                                                     <option value="">Select Country</option>
                                                 </select>
                                                 <small id="cur_nri_countryerror" class="text-danger"></small>
                                             </div>
-                                            <div class="col-md-2">
-                                                <label for="cur_nri_countrycode">ISO Country Code <span
-                                                        class="text-danger">*</span></label>
-                                                <select id="cur_nri_countrycode" name="cur_nri_countrycode"
-                                                    class="form-select form-select-sm"
-                                                    onchange="validateInputfield(this)">
-                                                    <option value="">Select Code</option>
-                                                </select>
-                                                <small id="cur_nri_countrycodeerror" class="text-danger"></small>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label for="cur_nri_phonecode">Country(Phone) Code <span
-                                                        class="text-danger">*</span></label>
-                                                <input id="cur_nri_phonecode" name="cur_nri_phonecode"
-                                                    class="form-control form-control-sm" type="text" readonly>
-                                                <small id="cur_nri_phonecodeerror" class="text-danger"></small>
-                                            </div>
-                                            <div class="col-md-2">
+
+                                            <div class="col-md-3">
                                                 <label for="cur_nri_state">State / Province / Region <span
                                                         class="text-danger">*</span></label>
                                                 <select id="cur_nri_state" name="cur_nri_state"
@@ -977,7 +1030,7 @@
                                                 </select>
                                                 <small id="cur_nri_stateerror" class="text-danger"></small>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="cur_nri_city">City / Town <span
                                                         class="text-danger">*</span></label>
                                                 <select id="cur_nri_city" name="cur_nri_city"
@@ -987,7 +1040,7 @@
                                                 </select>
                                                 <small id="cur_nri_cityerror" class="text-danger"></small>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <label for="cur_nri_zip">Zip / Postal Code <span
                                                         class="text-danger">*</span></label>
                                                 <input id="cur_nri_zip" name="cur_nri_zip"
@@ -1007,83 +1060,80 @@
                                     </div>
 
 
-                                    <div class="mb-2">
-                                        <span style="color:#295CF5;">Note: Image size should below 2MB.</span>
-                                    </div>
+
 
                                     <!-- Documents -->
-                                    <div class="card mb-3 border-0">
-                                        <div class="card-body">
-                                            <h5 class="mb-3 section-title">
-                                                <i class="bi bi-images text-primary me-2"></i>Documents
-                                            </h5>
-                                            <div class="row g-3">
-                                                <div class="col-md-3">
-                                                    <label for="passportphoto" class="form-label">
-                                                        Upload Your Passport size photo <span
-                                                            class="text-danger">*</span>
+                                    <div class="mt-3">
+                                        <h5 class="mb-3 section-title">
+                                            <i class="bi bi-images text-primary me-2"></i>Documents
+                                        </h5>
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-3 d-flex flex-column">
+                                                <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
+                                                    Upload Your Passport size photo <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                </label>
+                                                <div class="ps-file-upload-wrapper">
+                                                    <label for="passportphoto" class="ps-file-upload-btn" id="passportphoto_btn">
+                                                        <i class="bi bi-upload ps-file-icon"></i>
+                                                        <span class="ps-file-label">Choose file...</span>
                                                     </label>
-                                                    <input onchange="uploadFile(this)" id="passportphoto"
-                                                        class="form-control form-control-sm" type="file"
-                                                        name="selfimage" accept="image/jpg,image/jpeg,image/png">
-                                                    <small class="text-danger selfimage"></small>
-                                                    <div class="mt-2">
-                                                        <img id="selfimage"
-                                                            style="width:150px;height:200px;display:none;" src=""
-                                                            alt="">
-                                                        <div></div>
-                                                    </div>
+                                                    <input onchange="uploadFileStyled(this, 'passportphoto_btn')" id="passportphoto"
+                                                        type="file" name="selfimage" accept="image/jpg,image/jpeg,image/png">
                                                 </div>
+                                                <small class="text-danger selfimage"></small>
+                                            </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="aadharfrontimage" class="form-label">
-                                                        Upload Aadhar Front image <span class="text-danger">*</span>
+                                            <div class="col-md-3 d-flex flex-column">
+                                                <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
+                                                    Upload Aadhar Front image <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                </label>
+                                                <div class="ps-file-upload-wrapper">
+                                                    <label for="aadharfrontimage" class="ps-file-upload-btn" id="aadharfrontimage_btn">
+                                                        <i class="bi bi-upload ps-file-icon"></i>
+                                                        <span class="ps-file-label">Choose file...</span>
                                                     </label>
-                                                    <input onchange="uploadFile(this)"
-                                                        class="form-control form-control-sm" type="file"
+                                                    <input onchange="uploadFileStyled(this, 'aadharfrontimage_btn')"
+                                                        id="aadharfrontimage" type="file"
                                                         name="aadharfrontimage" accept="image/jpg,image/jpeg,image/png">
-                                                    <small class="text-danger aadharfrontimage"></small>
-                                                    <div class="mt-2">
-                                                        <img id="aadharfrontimage"
-                                                            style="width:300px;height:200px;display:none;" src=""
-                                                            alt="">
-                                                        <div></div>
-                                                    </div>
                                                 </div>
+                                                <small class="text-danger aadharfrontimage"></small>
+                                            </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="aadharbackimage" class="form-label">
-                                                        Upload Aadhar Back image <span class="text-danger">*</span>
+                                            <div class="col-md-3 d-flex flex-column">
+                                                <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
+                                                    Upload Aadhar Back image <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                </label>
+                                                <div class="ps-file-upload-wrapper">
+                                                    <label for="aadharbackimage" class="ps-file-upload-btn" id="aadharbackimage_btn">
+                                                        <i class="bi bi-upload ps-file-icon"></i>
+                                                        <span class="ps-file-label">Choose file...</span>
                                                     </label>
-                                                    <input onchange="uploadFile(this)"
-                                                        class="form-control form-control-sm" type="file"
+                                                    <input onchange="uploadFileStyled(this, 'aadharbackimage_btn')"
+                                                        id="aadharbackimage" type="file"
                                                         name="aadharbackimage" accept="image/jpg,image/jpeg,image/png">
-                                                    <small class="text-danger aadharbackimage"></small>
-                                                    <div class="mt-2">
-                                                        <img id="aadharbackimage"
-                                                            style="width:300px;height:200px;display:none;" src=""
-                                                            alt="">
-                                                        <div></div>
-                                                    </div>
                                                 </div>
+                                                <small class="text-danger aadharbackimage"></small>
+                                            </div>
 
-                                                <div class="col-md-3">
-                                                    <label for="communitycertificate" class="form-label">
-                                                        Upload Community Certificate <span class="text-danger">*</span>
+                                            <div class="col-md-3 d-flex flex-column">
+                                                <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
+                                                    Upload Community Certificate <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                </label>
+                                                <div class="ps-file-upload-wrapper">
+                                                    <label for="communitycertificate" class="ps-file-upload-btn" id="communitycertificate_btn">
+                                                        <i class="bi bi-upload ps-file-icon"></i>
+                                                        <span class="ps-file-label">Choose file...</span>
                                                     </label>
-                                                    <input onchange="uploadFile(this)"
-                                                        class="form-control form-control-sm" type="file"
+                                                    <input onchange="uploadFileStyled(this, 'communitycertificate_btn')"
+                                                        id="communitycertificate" type="file"
                                                         name="communitycertificate"
                                                         accept="image/jpg,image/jpeg,image/png">
-                                                    <small class="text-danger communitycertificate"></small>
-                                                    <div class="mt-2">
-                                                        <img id="communitycertificate"
-                                                            style="width:200px;height:300px;display:none;" src=""
-                                                            alt="">
-                                                        <div></div>
-                                                    </div>
                                                 </div>
+                                                <small class="text-danger communitycertificate"></small>
                                             </div>
+                                        </div>
+                                        <div class="mt-2 text-center">
+                                            <span style="color:#295CF5; font-size: 13px;">Note: File Size should be below 2MB. (JPG, JPEG, PNG only)</span>
                                         </div>
                                     </div>
 
@@ -1210,7 +1260,6 @@
             let textregex = /^[A-Za-z\s]+$/;
             let alphanumericregex = /^[a-zA-Z0-9/()\s]+$/;
             let normalregex = /^[A-Za-z0-9]+$/;
-            let panvalidate = /^[a-zA-Z]{5}[0-9]{4}[a-zA-Z]+$/;
 
             if (field_name == "name") {
                 if (field_value.length < 3) {
@@ -1287,14 +1336,6 @@
                 }
             }
 
-            if (field_name == "panno") {
-                if (field_value !== "" && !field_value.match(panvalidate)) {
-                    field.nextElementSibling.innerHTML = "PAN number not valid";
-                }
-                else {
-                    field.nextElementSibling.innerHTML = "";
-                }
-            }
 
             if (field_name == "aadharno") {
                 if (field_value.length == 12 || field_value.length == 0) {
@@ -1789,27 +1830,43 @@
 
 
         function uploadFile(file) {
-            let imageid = file.name;
-            let imageclass = file.name;
-            let errorbox = document.querySelector(`.${imageclass}`);
+            let errorbox = document.querySelector(`.${file.name}`);
             let imagesize = 2000000;
-            let uploadedimagesize = file.files[0].size;
+            let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
 
             if (uploadedimagesize > imagesize) {
-                errorbox.textContent = "Image size should below 2MB";
+                errorbox.textContent = "File Size should be below 2MB";
                 file.value = "";
                 return false;
             }
             else {
                 errorbox.textContent = "";
             }
+        }
 
-            let imgurl = URL.createObjectURL(file.files[0]);
-            let image = document.getElementById(imageid);
-            image.style.display = "block";
-            image.src = imgurl;
-            image.nextElementSibling.innerHTML =
-                `<button class='ps-img-btn mt-2 rounded' type='button' onclick='removeImage(this,${file.name})'>Remove</button>`;
+        function uploadFileStyled(file, btnId) {
+            let errorbox = document.querySelector(`.${file.name}`);
+            let imagesize = 2000000;
+            let uploadedimagesize = file.files[0] ? file.files[0].size : 0;
+            let btn = document.getElementById(btnId);
+
+            if (uploadedimagesize > imagesize) {
+                if (errorbox) errorbox.textContent = "File Size should be below 2MB";
+                file.value = "";
+                if (btn) {
+                    btn.classList.remove('file-selected');
+                    btn.querySelector('.ps-file-label').textContent = "Choose file...";
+                    btn.querySelector('.ps-file-icon').className = "bi bi-upload ps-file-icon";
+                }
+                return false;
+            } else {
+                if (errorbox) errorbox.textContent = "";
+                if (btn && file.files[0]) {
+                    btn.classList.add('file-selected');
+                    btn.querySelector('.ps-file-label').textContent = file.files[0].name;
+                    btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                }
+            }
         }
 
         function removeImage(button, file) {
@@ -1853,6 +1910,13 @@
             const n_street = document.getElementById("streetfield");
             const n_doorno = document.getElementById("doornofield");
             const n_pincode = document.getElementById("pincodefield");
+
+            // Validate: native address must be filled before copying
+            if (!n_state.value || !n_district.value || !n_taluk.value || !n_panchayat.value ||
+                !n_village.value || !n_street.value || !n_doorno.value || !n_pincode.value) {
+                alert("Please fill in all Native Address fields before copying.");
+                return;
+            }
 
             // Current fields
             const c_state = document.getElementById("cur_states_dropdown");
@@ -1933,6 +1997,16 @@
             validateInputfield(c_street);
             validateInputfield(c_doorno);
             validateInputfield(c_pincode);
+
+            // Change button color to indicate activation
+            const sameBtn = document.getElementById("btn_same_as_native");
+            if (sameBtn) {
+                sameBtn.classList.remove('btn-success');
+                sameBtn.style.backgroundColor = '#1a237e'; // Dark indigo/blue
+                sameBtn.style.borderColor = '#1a237e';
+                sameBtn.style.color = 'white';
+                sameBtn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Copied';
+            }
         }
 
         let selectedEducations = [];
@@ -1956,27 +2030,89 @@
             dropdown.style.display = hasVisible ? "block" : "none";
         }
 
-        // click handlers for suggestion options
-        document.querySelectorAll(".education-option").forEach(opt => {
-            opt.addEventListener("click", function () {
-                const value = this.getAttribute("data-value");
-
-                // avoid duplicate
-                if (!selectedEducations.includes(value)) {
-                    selectedEducations.push(value);
-                    renderEducationTags();
-                    renderEducationHiddenInputs();
-
-                    // education valid aana error clear
-                    document.getElementById("educationerror").innerHTML = "";
+        // Profession searchable dropdown logic
+        function filterProfessionOptions(input) {
+            const query = input.value.toLowerCase().trim();
+            const dropdown = document.getElementById("profession_dropdown");
+            const options = dropdown.querySelectorAll(".profession-option");
+            let hasVisible = false;
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    opt.style.display = "";
+                    hasVisible = true;
+                } else {
+                    opt.style.display = "none";
                 }
-
-                // clear input & hide dropdown
-                const input = document.getElementById("education_input");
-                input.value = "";
-                document.getElementById("education_dropdown").style.display = "none";
             });
+            dropdown.style.display = hasVisible ? "block" : "none";
+        }
+
+        $(document).on("click", ".profession-option", function() {
+            const value = this.getAttribute("data-value");
+            const input = document.getElementById("profession_input");
+            const hidden = document.getElementById("professionfield");
+            
+            input.value = this.textContent;
+            hidden.value = value;
+            document.getElementById("profession_dropdown").style.display = "none";
+            
+            // Trigger profession change logic
+            handleProfessionChange({value: value});
+            validateInputfield(hidden);
         });
+
+        // Toggle readonly to allow typing when focused
+        $("#profession_input").on("focus", function() {
+            $(this).prop("readonly", false);
+        }).on("blur", function() {
+            $(this).prop("readonly", true);
+        });
+
+        // Handle wrapper click
+        $(document).on("click", "#profession_wrapper", function() {
+            $("#profession_input").focus();
+            filterProfessionOptions(document.getElementById("profession_input"));
+        });
+
+        // Close when clicking outside
+        $(document).on("click", function(e) {
+            if (!$(e.target).closest("#profession_wrapper").length && !$(e.target).closest("#profession_dropdown").length) {
+                $("#profession_dropdown").hide();
+            }
+            if (!$(e.target).closest("#education_wrapper").length && !$(e.target).closest("#education_dropdown").length) {
+                $("#education_dropdown").hide();
+            }
+        });
+
+        // Existing Education Open logic
+        document.getElementById("education_wrapper").addEventListener("click", function() {
+            document.getElementById("education_input").focus();
+            filterEducationOptions(document.getElementById("education_input"));
+        });
+
+
+
+        // click handlers for suggestion options
+        $(document).on("click", ".education-option", function () {
+            const value = this.getAttribute("data-value");
+
+            // avoid duplicate
+            if (!selectedEducations.includes(value)) {
+                selectedEducations.push(value);
+                renderEducationTags();
+                renderEducationHiddenInputs();
+
+                // education valid aana error clear
+                document.getElementById("educationerror").innerHTML = "";
+            }
+
+            // clear input & hide dropdown
+            const input = document.getElementById("education_input");
+            input.value = "";
+            document.getElementById("education_dropdown").style.display = "none";
+        });
+
 
         function renderEducationTags() {
             const container = document.getElementById("education_tags");
@@ -2053,7 +2189,7 @@
                 if (nriBlock) nriBlock.style.display = 'none';
                 if (sameBtn) {
                     sameBtn.disabled = true;
-                    sameBtn.classList.add('disabled');
+                    sameBtn.style.display = 'none';
                 }
                 return;
             }
@@ -2065,6 +2201,7 @@
                 if (sameBtn) {
                     sameBtn.disabled = false;
                     sameBtn.classList.remove('disabled');
+                    sameBtn.style.display = 'inline-block';
                 }
 
                 // NRI la type panninadhellam clear
@@ -2076,7 +2213,7 @@
 
                 if (sameBtn) {
                     sameBtn.disabled = true;
-                    sameBtn.classList.add('disabled');
+                    sameBtn.style.display = 'none';
                 }
 
                 // India la type panninadhellam clear
@@ -2099,6 +2236,29 @@
                 document.getElementById('business_website_error').innerHTML = '';
             }
         }
+        
+        function filterProfessionOptions(input) {
+            const query = input.value.toLowerCase().trim();
+            const dropdown = document.getElementById("profession_dropdown");
+            const options = dropdown.querySelectorAll(".profession-option");
+            let hasVisible = false;
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    opt.style.display = "";
+                    hasVisible = true;
+                } else {
+                    opt.style.display = "none";
+                }
+            });
+            dropdown.style.display = hasVisible ? "block" : "none";
+        }
+
+        $(document).on("click", "#profession_wrapper", function() {
+            $("#profession_input").focus();
+            filterProfessionOptions(document.getElementById("profession_input"));
+        });
+
         let countriesData = null;
 
 
@@ -2265,25 +2425,16 @@
 
         function populateNRICountries() {
             const countrySelect = document.getElementById('cur_nri_country');
-            const countryCodeSelect = document.getElementById('cur_nri_countrycode');
 
-            if (!countriesData || !countrySelect || !countryCodeSelect) return;
+            if (!countriesData || !countrySelect) return;
 
             countrySelect.innerHTML = '<option value="">Select Country</option>';
-            countryCodeSelect.innerHTML = '<option value="">Select Code</option>';
 
             Object.values(countriesData).forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.name;
                 option.textContent = country.name;
                 countrySelect.appendChild(option);
-
-                if (country.iso2) {
-                    const codeOption = document.createElement('option');
-                    codeOption.value = country.iso2;
-                    codeOption.textContent = `${country.iso2} - ${country.name}`;
-                    countryCodeSelect.appendChild(codeOption);
-                }
             });
         }
 
@@ -2333,15 +2484,7 @@
             }
         }
 
-        function syncNRICountryCode(countryName) {
-            if (!countryName || !countriesData) return;
 
-            const countryData = Object.values(countriesData).find(c => c.name === countryName);
-            if (countryData) {
-                document.getElementById('cur_nri_phonecode').value = countryData.phonecode ? `+${countryData.phonecode}` : '';
-                document.getElementById('cur_nri_countrycode').value = countryData.iso2 || '';
-            }
-        }
 
 
         // Add this NRI validation block

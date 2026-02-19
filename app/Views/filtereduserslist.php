@@ -11,8 +11,8 @@ if (isset($filteredusers) && isset($sno)) {
         <td style='font-weight:500;'>$value[MemberTaluk]</td>
         <td>
           <div class='d-flex justify-content-evenly'>
-            <a href='filteredUserpaymentform?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-            <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
+            " . ((isset($paymentstatus) && $paymentstatus != 'Paid') ? "<a href='filteredUserpaymentform?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;" : "") . "
+            <a target='_blank' href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
           </div>
         </td>
       </tr>";

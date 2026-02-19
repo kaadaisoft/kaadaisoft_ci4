@@ -13,16 +13,7 @@
       body {
         overflow-x: hidden;
       }
-      .toast {
-          z-index: 9999 !important;
-          opacity: 1 !important;
-          visibility: hidden; /* Prevent tab focus when hidden */
-          pointer-events: none;
-      }
-      .toast.show {
-          visibility: visible;
-          pointer-events: auto;
-      }
+
       .ps-logo{
         display:flex;
         align-items:center;
@@ -510,114 +501,7 @@
 <body>
         
 <div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative; overflow-x: hidden;">
-<!---------------------add-toast---------------------->
- 
-  <div id='coordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18); z-index: 9999;' class=' toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' onclick="hideCustomToast('coordtoast')"></button>
-  </div>
-  <div id="coordinatorstatus" class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-<?php 
-// Standardized toast handling below
-?>
-<!---------------------add-toast-end------------------>
-
-<!---------------------coord-error-toast---------------------->
-
-<div id='coorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51); z-index: 9999;' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' onclick="hideCustomToast('coorderrortoast')"></button>
-  </div>
-  <div class='toast-body text-white fs-6 py-2'>
-    
-  </div>
-  </div>
-
-<?php 
-
-if(isset($_SESSION["coorderrorstatus"])){
-  $status = $_SESSION['coorderrorstatus'];
-echo "<script>
-       document.getElementById('coorderrortoast').querySelector('.toast-body').innerHTML = '$status';
-       const ceToast = document.getElementById('coorderrortoast');
-       ceToast.classList.remove('hide');
-       ceToast.classList.add('show');
-       ceToast.style.right = '50px';
-       setTimeout(()=>{
-       ceToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["coorderrorstatus"]);
-
-}
-
-?>
-<!---------------------coord-error-toast-end------------------>
-
-<!---------------------member-update-toasts---------------------->
-<div id='updatetoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);z-index: 1050;' class='toast hide'>
-  <div style="border-radius:10px;background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Success</strong>
-    <button type='button' class='btn-close float-end' onclick="hideCustomToast('updatetoast')"></button>
-  </div>
-  <div id="updatestatus" class='toast-body text-white fs-6 py-2'></div>
-</div>
-
-<div id='updateerrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);z-index: 1050;' class='toast hide'>
-  <div style="background-color:rgb(250,51,51);" class='toast-header'>
-    <strong class='me-auto text-white fs-6'>Error</strong>
-    <button type='button' class='btn-close float-end' onclick="hideCustomToast('updateerrortoast')"></button>
-  </div>
-  <div id="updateerrorstatus" class='toast-body text-white fs-6 py-2'></div>
-</div>
-
-<script>
-function hideCustomToast(id) {
-    const tEl = document.getElementById(id);
-    if(tEl) {
-        tEl.style.right = '-380px';
-        setTimeout(() => {
-            if(tEl.style.right === '-380px') {
-                tEl.classList.remove('show');
-                tEl.classList.add('hide');
-            }
-        }, 500);
-    }
-}
-</script>
-
-<?php 
-$toast_msgs = array(
-    'updateerror' => 'updateerrortoast',
-    'approvederror' => 'updateerrortoast',
-    'membersuccessstatus' => 'coordtoast',
-    'coordsuccessstatus' => 'coordtoast'
-);
-
-foreach($toast_msgs as $key => $toast_id) {
-    if(isset($_SESSION[$key])) {
-        $msg = $_SESSION[$key];
-        $status_id = ($toast_id == 'updatetoast') ? 'updatestatus' : (($toast_id == 'coordtoast') ? 'coordinatorstatus' : 'updateerrorstatus');
-        echo "<script>
-            document.getElementById('$status_id').innerHTML = '$msg';
-            const tEl = document.getElementById('$toast_id');
-            tEl.classList.remove('hide');
-            tEl.classList.add('show');
-            tEl.style.right = '50px';
-            setTimeout(()=>{ hideCustomToast('$toast_id'); }, 4000);
-        </script>";
-        unset($_SESSION[$key]);
-    }
-}
-?>
-<!---------------------member-update-toasts-end------------------>
+<?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
 
@@ -1315,11 +1199,7 @@ $.ajax({
     	      
           },
           error:(error)=>{
-            document.getElementById('coordinatorstatus').innerHTML = "Something went wrong";
-            document.getElementById('coordtoast').style.right = '5%';
-            setTimeout(()=>{
-            document.getElementById('coordtoast').style.right = '-380px';
-            },3000)
+            psShowToast('error', 'Something went wrong. Please try again.');
           }
           });  
           } 
@@ -1522,7 +1402,7 @@ function validateUpdateInputfield(field){
       }
    }
 
-   if(field_name == "existfamilyid-update" || field_name == "panno-update"){
+   if(field_name == "existfamilyid-update"){
       if(field_value !== "" && !field_value.match(alphanumericregex)){
          field.nextElementSibling.innerHTML = "Only letters,numbers are allowed.";
       }
@@ -1554,7 +1434,6 @@ function validateMemberform() {
       let pincode = memberregistrationform["pincode-update"].value.trim();
       let existfamilyid = memberregistrationform["existfamilyid-update"].value.trim();
       let phoneno = memberregistrationform["phoneno-update"].value.trim();
-      let panno = memberregistrationform["panno-update"].value.trim();
       let aadharno = memberregistrationform["aadharno-update"].value.trim();
       let selfimage = memberregistrationform["Memberimage"].value.trim();
       let aadharfrontimage = memberregistrationform["Aadharfrontimage"].value.trim();
@@ -1563,7 +1442,6 @@ function validateMemberform() {
       let textregex = /^([A-Za-z\s]{3,})+$/;
       let alphanumericregex = /^[a-zA-Z0-9/()\s]+$/;
       let normalregex = /^[A-Za-z0-9]+$/;
-      let panvalidate = /^[a-zA-Z]{5}[0-9]{4}[a-zA-Z]+$/;
       // let phonenoregex = /^[6-9]\d{9}+$/;
 
       if(name == ""){
@@ -1658,13 +1536,6 @@ function validateMemberform() {
          return false;
       }
 
-      if(panno !== ""){
-         if(!panno.match(panvalidate)){
-            document.getElementById("pannoerror-update").innerHTML = "PAN number not valid";
-      
-            return false;
-         }
-      }
 
       if(aadharno == ""){
          document.getElementById("aadharnoerror-update").innerHTML = "Please fill aadharno field.";

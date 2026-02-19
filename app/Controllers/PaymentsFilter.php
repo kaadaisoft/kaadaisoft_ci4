@@ -41,11 +41,11 @@ class PaymentsFilter extends BaseController {
         $count = 0;
 
         $totalfilteredusers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus
+            $eventid, $paymentstatus, $stateid, $districtname, $talukname, $panchayatname, $villagename
         );
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus, $count
+            $eventid, $paymentstatus, $stateid, $districtname, $talukname, $panchayatname, $villagename, $count
         );
 
         $counts = count($totalfilteredusers);
@@ -91,11 +91,11 @@ class PaymentsFilter extends BaseController {
         $count = 0;
 
         $totalfilteredusers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus
+            $eventid, $paymentstatus, $stateid, $districtname, $talukname, $panchayatname, $villagename
         );
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $paymentstatus, $count
+            $eventid, $paymentstatus, $stateid, $districtname, $talukname, $panchayatname, $villagename, $count
         );
 
         $eventyears = $this->paymentsModel->getEventsyear();
@@ -203,7 +203,7 @@ class PaymentsFilter extends BaseController {
         $this->session->set('filteruserscounts', $counts);
 
         $totalmembers = $this->paymentsModel->getPaidorunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status
+            $eventid, $status, $stateid, $districtname, $talukname, $panchayatname, $villagename
         );
 
         $totalcount = count($totalmembers);
@@ -214,7 +214,7 @@ class PaymentsFilter extends BaseController {
         }
 
         $filteredusers = $this->paymentsModel->getPaidunpaidusers(
-            $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status, $counts
+            $eventid, $status, $stateid, $districtname, $talukname, $panchayatname, $villagename, $counts
         );
         
         $title = $status == 'Paid' ? "Paid users: $totalcount" : "Unpaid users: $totalcount";
@@ -259,13 +259,14 @@ class PaymentsFilter extends BaseController {
         
         if($this->request->isAJAX()) { 
             $members = $this->paymentsModel->getPaidunpaidusers(
-                $stateid, $districtname, $talukname, $panchayatname, $villagename, $eventid, $status, $counts
+                $eventid, $status, $stateid, $districtname, $talukname, $panchayatname, $villagename, $counts
             );
             
             return view('filtereduserslist', [
                 "filteredusers" => $members,
                 "sno" => (int)$counts,
-                "eventid" => $eventid
+                "eventid" => $eventid,
+                "paymentstatus" => $status
             ]);
         } else {
             // Handle non-ajax if somehow reached
@@ -332,7 +333,8 @@ class PaymentsFilter extends BaseController {
              echo view('filtereduserslist', [
                  "filteredusers" => $mapped,
                  "sno" => 0,
-                 "eventid" => $eventid
+                 "eventid" => $eventid,
+                 "paymentstatus" => $status
              ]);
          }
     }

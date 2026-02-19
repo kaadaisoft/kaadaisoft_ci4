@@ -158,65 +158,7 @@
 <body>
 
     <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
-        <!---------------------status-toasts---------------------->
-        <div id='success_toast'
-            style='z-index: 1000; border:4px solid #84fa84; border-radius:10px; position:absolute; top:10%; right:-380px; transition:0.5s; background-color:#129b12;'
-            class='toast hide'>
-            <div style="border-radius:10px; background-color:#129b12;" class='toast-header'>
-                <strong class='me-auto text-white fs-6'>Success</strong>
-                <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-            </div>
-            <div id="success_msg" class='toast-body text-white fs-6 py-2'></div>
-        </div>
-
-        <div id='error_toast'
-            style='z-index: 1000; border:4px solid #fe5b5b; border-radius:10px; position:absolute; top:10%; right:-380px; transition:0.5s; background-color:#fa3333;'
-            class='toast hide'>
-            <div style="background-color:#fa3333;" class='toast-header'>
-                <strong class='me-auto text-white fs-6'>Error</strong>
-                <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-            </div>
-            <div id="error_msg" class='toast-body text-white fs-6 py-2'></div>
-        </div>
-
-        <?php
-        if (session()->get("approvedsuccess")) {
-            $msg = session()->get("approvedsuccess");
-            echo "<script>
-        $(document).ready(function() {
-            $('#success_msg').text('$msg');
-            $('#success_toast').removeClass('hide').addClass('show');
-            $('#success_toast').css('right', '50px');
-            setTimeout(() => { $('#success_toast').css('right', '-380px'); }, 3000);
-        });
-    </script>";
-            session()->remove("approvedsuccess");
-        }
-        if (session()->get("approvederror")) {
-            $msg = session()->get("approvederror");
-            echo "<script>
-        $(document).ready(function() {
-            $('#error_msg').text('$msg');
-            $('#error_toast').removeClass('hide').addClass('show');
-            $('#error_toast').css('right', '50px');
-            setTimeout(() => { $('#error_toast').css('right', '-380px'); }, 3000);
-        });
-    </script>";
-            session()->remove("approvederror");
-        }
-        if (session()->get("rejectedsuccess")) {
-            $msg = session()->get("rejectedsuccess");
-            echo "<script>
-        $(document).ready(function() {
-            $('#success_msg').text('$msg');
-            $('#success_toast').removeClass('hide').addClass('show');
-            $('#success_toast').css('right', '50px');
-            setTimeout(() => { $('#success_toast').css('right', '-380px'); }, 3000);
-        });
-    </script>";
-            session()->remove("rejectedsuccess");
-        }
-        ?>
+        <?= view('notification_toast') ?>
 
         <script>
             // Global Mobile Menu Functions (defined early to avoid ReferenceError)

@@ -360,71 +360,7 @@
 <body>
         
 <div id="assigncoordpage" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
-  <!---------------------assign-success-toast---------------------->
-
-<div id='assigncoordtoast' style='border:4px solid rgb(132, 250, 132);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(18, 155, 18);z-index:1;' class='toast hide'>
-  <div style="background-color:rgb(18, 155, 18);" class='toast-header'>
-    <strong class='me-auto text-white fs-5'>Message</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="assignsuccessstatus" class='toast-body text-white fs-5 py-2'>
-  </div>
-  </div>
-
-<?php 
-if(isset($_SESSION["assigncoordsuccessstatus"])){
-      $status = $_SESSION["assigncoordsuccessstatus"];
-echo "<script>
-       document.getElementById('assignsuccessstatus').innerHTML = '$status';
-       const succToast = document.getElementById('assigncoordtoast');
-       succToast.classList.remove('hide');
-       succToast.classList.add('show');
-       succToast.style.right = '5%';
-       setTimeout(()=>{
-       succToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["assigncoordsuccessstatus"]);
-
-}
-
-?>
-<!---------------------assign-success-toast-end------------------>
-
- <!---------------------assign-error-toast---------------------->
-
- <div id='assigncoorderrortoast' style='border:4px solid rgb(254, 91, 91);border-radius:10px;position:absolute;top:10%;right:-380px;transition:0.5s;background-color:rgb(250,51,51);' class='bg-white toast hide'>
-  <div class='toast-header'>
-    <strong class='me-auto fs-5'>Message</strong>
-    <button type='button' class='btn-close float-end' data-bs-dismiss='toast'></button>
-  </div>
-  <div id="assignerrorstatus" class='toast-body text-success fs-5 py-2'>
-  </div>
-  </div>
-
-<?php 
-if(isset($_SESSION["assigncoorderrorstatus"])){
-      $status = $_SESSION["assigncoorderrorstatus"];
-echo "<script>
-       document.getElementById('assignerrorstatus').innerHTML = '$status';
-       const errToast = document.getElementById('assigncoorderrortoast');
-       errToast.classList.remove('hide');
-       errToast.classList.add('show');
-       errToast.style.right = '5%';
-       setTimeout(()=>{
-       errToast.style.right = '-380px';
-       },3000)
-       
-      </script>"; 
-
-unset($_SESSION["assigncoorderrorstatus"]);
-
-}
-
-?>
-<!---------------------assign-error-toast-end------------------>
+  <?= view('notification_toast') ?>
 
 
       <div class="row"><!-----top-bar--------------->
