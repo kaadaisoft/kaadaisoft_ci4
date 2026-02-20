@@ -1,0 +1,120 @@
+CRITICAL - 2026-02-20 04:41:08 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:41:25 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:46:02 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:46:06 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:47:42 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:48:52 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:51:21 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:51:36 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:51:39 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2026-02-20 04:51:41 --> CodeIgniter\Database\Exceptions\DatabaseException: You must set the database table to be used with your query.
+[Method: POST, Route: members/send-registration-otp]
+in SYSTEMPATH\Database\BaseConnection.php on line 984.
+ 1 SYSTEMPATH\Model.php(598): CodeIgniter\Database\BaseConnection->table(null)
+ 2 SYSTEMPATH\Model.php(748): CodeIgniter\Model->builder()
+ 3 APPPATH\Controllers\Members.php(909): CodeIgniter\Model->__call('where', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(951): App\Controllers\Members->send_registration_otp()
+ 5 SYSTEMPATH\CodeIgniter.php(497): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Members))
+ 6 SYSTEMPATH\CodeIgniter.php(340): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

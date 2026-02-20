@@ -740,16 +740,17 @@ html, body {
       }
     });
 
-    $.ajax({
-    type: "post",
-    url: "coordinators/getpendingamount",
-    data: { "id": "<?= session()->get('Kaadaisoft_userId'); ?>" },
-    success: function(result) {
-        let eventparticipation = JSON.parse(result);
+    let globalEventParticipation = [];
+
+    function renderPendingTable(data) {
         let rows_html = '';
         let total_pending = 0;
 
-        eventparticipation.forEach(function(participation, index) {
+        // Filter out entries where calculated pending is 0 if needed, or keep all as per original logic? 
+        // Original logic kept 0 pending rows but showed "0". 
+        // Let's stick to original behavior: show all rows.
+
+        data.forEach(function(participation, index) {
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
             let pending_display = (pending === 0) ? "0" : pending;
@@ -762,7 +763,7 @@ html, body {
             if (pending > 0) total_pending += pending;
         });
 
-        if (eventparticipation.length === 0) {
+        if (data.length === 0) {
             document.getElementById("nomemberresult").innerHTML = `<tr><td class="text-center" colspan="4">No records found</td></tr>`;
             document.getElementById("showparticipation").innerHTML = '';
             document.getElementById("total_pending").innerText = "0.00";
@@ -771,9 +772,32 @@ html, body {
             document.getElementById("showparticipation").innerHTML = rows_html;
             document.getElementById("total_pending").innerText = total_pending.toFixed(2);
         }
+    }
+
+    function commonSearch(input) {
+        let searchTerm = input.value.toLowerCase().trim();
+        if (searchTerm === "") {
+            renderPendingTable(globalEventParticipation);
+            return;
+        }
+
+        let filteredData = globalEventParticipation.filter(item => {
+            return item.eventname.toLowerCase().includes(searchTerm);
+        });
+        renderPendingTable(filteredData);
+    }
+
+    $.ajax({
+    type: "post",
+    url: "coordinators/getpendingamount",
+    data: { "id": "<?= session()->get('Kaadaisoft_userId'); ?>" },
+    success: function(result) {
+        globalEventParticipation = JSON.parse(result);
+        renderPendingTable(globalEventParticipation);
     },
     error: function(error) {
         // handle error here
+        console.error("Error fetching pending amount:", error);
     }
 });
 

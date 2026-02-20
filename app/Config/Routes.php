@@ -134,6 +134,10 @@ $routes->get('members/pslogo', 'Members::pslogo');
 $routes->get('members/topsubmenu', 'Members::topsubmenu');
 $routes->get('members/searchmembers', 'Members::searchmembers');
 
+$routes->get('members/searchmembers', 'Members::searchmembers');
+$routes->post('members/send-registration-otp', 'Members::send_registration_otp');
+$routes->post('members/verify-registration-otp', 'Members::verify_registration_otp');
+
 // Events Routes
 $routes->get('events', 'Events::index');
 $routes->get('changeEventspagesetup', 'Events::changeEventspagesetup');

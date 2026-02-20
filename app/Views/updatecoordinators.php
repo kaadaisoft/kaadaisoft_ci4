@@ -50,7 +50,7 @@
             box-shadow: none;
         }
 
-        #education_wrapper {
+        #education_wrapper-update, #education_wrapper-coord {
             min-height: 38px;
             background-color: #ffffff;
             border: 1px solid #ced4da;
@@ -58,7 +58,7 @@
             padding: 5px;
         }
 
-        #education_tags-coord .badge {
+        #education_tags-update .badge, #education_tags-coord .badge {
             margin-right: 4px;
             margin-bottom: 4px;
             background-color: #3E2723 !important;
@@ -316,139 +316,71 @@
                     </h5>
                     <div class="row g-3">
                         <!-- Education -->
-                        <div class="col-md-12">
-                            <label for="education_input-coord">Education</label>
-                            <div class="border rounded p-2" id="education_wrapper">
-                                <div id="education_tags-coord" class="mb-1"></div>
+                        <div class="col-md-4" style="position: relative;">
+                            <label for="education_input-coord">Education <span class="text-danger">*</span></label>
+                            <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-coord" style="cursor: text; min-height: 38px;">
+                                <div id="education_tags-coord" class="d-flex flex-wrap gap-1"></div>
                                 <input type="text" id="education_input-coord"
-                                    class="form-control border-0 p-0"
+                                    class="form-control form-control-sm border-0 bg-transparent shadow-none"
                                     placeholder="Type and select education"
                                     onfocus="filterEducationOptionsCoord(this)"
-                                    oninput="filterEducationOptionsCoord(this)">
-
+                                    oninput="filterEducationOptionsCoord(this)"
+                                    onclick="filterEducationOptionsCoord(this)"
+                                    autocomplete="off"
+                                    style="flex: 1; min-width: 120px;">
                             </div>
                             <small id="educationerror-coord" class="text-danger"></small>
                             <div id="education_hidden_container-coord"></div>
-                            <div class="border rounded mt-1 bg-white" id="education_dropdown-coord" style="max-height:200px; overflow:auto; display:none; position:absolute; width: calc(100% - 3rem); z-index: 1000;">
-                                <?php 
-                                    $edu_map = [
-                                        "10th (SSLC)" => "10th (SSLC)",
-                                        "12th (HSC – Science)" => "12th (HSC – Science)",
-                                        "12th (HSC – Commerce)" => "12th (HSC – Commerce)",
-                                        "12th (HSC – Arts)" => "12th (HSC – Arts)",
-                                        "Diploma in Mechanical Engineering" => "Diploma in Mechanical Engineering",
-                                        "Diploma in Civil Engineering" => "Diploma in Civil Engineering",
-                                        "Diploma in Electrical Engineering" => "Diploma in Electrical Engineering",
-                                        "Diploma in Electronics and Communication Engineering" => "Diploma in Electronics and Communication Engineering",
-                                        "Diploma in Computer Engineering" => "Diploma in Computer Engineering",
-                                        "Diploma in Information Technology" => "Diploma in Information Technology",
-                                        "Diploma in Automobile Engineering" => "Diploma in Automobile Engineering",
-                                        "Diploma in Mechatronics" => "Diploma in Mechatronics",
-                                        "Diploma in Marine Engineering" => "Diploma in Marine Engineering",
-                                        "Diploma in Agriculture" => "Diploma in Agriculture",
-                                        "Diploma in Nursing" => "Diploma in Nursing",
-                                        "Diploma in Pharmacy" => "Diploma in Pharmacy",
-                                        "Diploma in Hotel Management" => "Diploma in Hotel Management",
-                                        "Diploma in Fashion Designing" => "Diploma in Fashion Designing",
-                                        "Diploma in Interior Designing" => "Diploma in Interior Designing",
-                                        "Diploma in Multimedia" => "Diploma in Multimedia",
-                                        "ITI Fitter" => "ITI Fitter",
-                                        "ITI Electrician" => "ITI Electrician",
-                                        "ITI Turner" => "ITI Turner",
-                                        "ITI Mechanic" => "ITI Mechanic",
-                                        "ITI Welder" => "ITI Welder",
-                                        "ITI Plumber" => "ITI Plumber",
-                                        "ITI Draughtsman Civil" => "ITI Draughtsman Civil",
-                                        "ITI Draughtsman Mechanical" => "ITI Draughtsman Mechanical",
-                                        "ITI COPA" => "ITI COPA",
-                                        "ITI Refrigeration and Air Conditioning" => "ITI Refrigeration and Air Conditioning",
-                                        "B.E Computer Science and Engineering" => "B.E Computer Science and Engineering",
-                                        "B.E Mechanical Engineering" => "B.E Mechanical Engineering",
-                                        "B.E Civil Engineering" => "B.E Civil Engineering",
-                                        "B.E Electrical and Electronics Engineering" => "B.E Electrical and Electronics Engineering",
-                                        "B.E Electronics and Communication Engineering" => "B.E Electronics and Communication Engineering",
-                                        "B.E Automobile Engineering" => "B.E Automobile Engineering",
-                                        "B.E Mechatronics Engineering" => "B.E Mechatronics Engineering",
-                                        "B.Tech Information Technology" => "B.Tech Information Technology",
-                                        "B.Tech Artificial Intelligence" => "B.Tech Artificial Intelligence",
-                                        "B.Tech Data Science" => "B.Tech Data Science",
-                                        "B.Tech Biotechnology" => "B.Tech Biotechnology",
-                                        "B.Tech Chemical Engineering" => "B.Tech Chemical Engineering",
-                                        "B.Tech Aeronautical Engineering" => "B.Tech Aeronautical Engineering",
-                                        "B.Tech Aerospace Engineering" => "B.Tech Aerospace Engineering",
-                                        "B.Tech Marine Engineering" => "B.Tech Marine Engineering",
-                                        "B.A Tamil" => "B.A Tamil",
-                                        "B.A English" => "B.A English",
-                                        "B.A History" => "B.A History",
-                                        "B.A Economics" => "B.A Economics",
-                                        "B.A Political Science" => "B.A Political Science",
-                                        "B.Sc Mathematics" => "B.Sc Mathematics",
-                                        "B.Sc Physics" => "B.Sc Physics",
-                                        "B.Sc Chemistry" => "B.Sc Chemistry",
-                                        "B.Sc Computer Science" => "B.Sc Computer Science",
-                                        "B.Sc Information Technology" => "B.Sc Information Technology",
-                                        "B.Sc Biotechnology" => "B.Sc Biotechnology",
-                                        "B.Sc Microbiology" => "B.Sc Microbiology",
-                                        "B.Sc Zoology" => "B.Sc Zoology",
-                                        "B.Sc Botany" => "B.Sc Botany",
-                                        "B.Sc Visual Communication" => "B.Sc Visual Communication",
-                                        "BCA" => "BCA",
-                                        "BBA" => "BBA",
-                                        "B.Com General" => "B.Com General",
-                                        "B.Com Computer Applications" => "B.Com Computer Applications",
-                                        "B.Com Accounting and Finance" => "B.Com Accounting and Finance",
-                                        "MBBS" => "MBBS",
-                                        "BDS" => "BDS",
-                                        "BAMS" => "BAMS",
-                                        "BHMS" => "BHMS",
-                                        "BUMS" => "BUMS",
-                                        "B.Pharm" => "B.Pharm",
-                                        "B.Sc Nursing" => "B.Sc Nursing",
-                                        "LLB" => "LLB",
-                                        "B.Ed" => "B.Ed",
-                                        "B.Sc Agriculture" => "B.Sc Agriculture",
-                                        "B.Arch" => "B.Arch",
-                                        "BPT (Physiotherapy)" => "BPT (Physiotherapy)",
-                                        "BHM (Hotel Management)" => "BHM (Hotel Management)",
-                                        "M.E Computer Science and Engineering" => "M.E Computer Science and Engineering",
-                                        "M.E Structural Engineering" => "M.E Structural Engineering",
-                                        "M.Tech Information Technology" => "M.Tech Information Technology",
-                                        "M.Tech Artificial Intelligence" => "M.Tech Artificial Intelligence",
-                                        "M.Tech Data Science" => "M.Tech Data Science",
-                                        "M.Tech Biotechnology" => "M.Tech Biotechnology",
-                                        "M.A Tamil" => "M.A Tamil",
-                                        "M.A English" => "M.A English",
-                                        "M.A Economics" => "M.A Economics",
-                                        "M.Sc Mathematics" => "M.Sc Mathematics",
-                                        "M.Sc Physics" => "M.Sc Physics",
-                                        "M.Sc Chemistry" => "M.Sc Chemistry",
-                                        "M.Sc Computer Science" => "M.Sc Computer Science",
-                                        "M.Sc Information Technology" => "M.Sc Information Technology",
-                                        "M.Sc Biotechnology" => "M.Sc Biotechnology",
-                                        "MCA" => "MCA",
-                                        "MBA" => "MBA",
-                                        "M.Com" => "M.Com",
-                                        "M.Pharm" => "M.Pharm",
-                                        "M.Sc Nursing" => "M.Sc Nursing",
-                                        "LLM" => "LLM",
-                                        "M.Ed" => "M.Ed",
-                                        "M.Sc Agriculture" => "M.Sc Agriculture",
-                                        "Ph.D Computer Science" => "Ph.D Computer Science",
-                                        "Ph.D Mathematics" => "Ph.D Mathematics",
-                                        "Ph.D Commerce" => "Ph.D Commerce",
-                                        "Ph.D Engineering" => "Ph.D Engineering",
-                                        "Ph.D Biotechnology" => "Ph.D Biotechnology",
-                                        "Ph.D Physics" => "Ph.D Physics",
-                                        "Ph.D Chemistry" => "Ph.D Chemistry",
-                                        "Ph.D Tamil" => "Ph.D Tamil",
-                                        "Ph.D English" => "Ph.D English",
-                                        "Others" => "Others"
-                                    ];
+                            <input type="hidden" id="educationfield-coord" name="education-coord">
+                            <div class="border rounded mt-1 bg-white shadow-sm" id="education_dropdown-coord" style="max-height:250px; overflow:auto; display:none; position:absolute; width: calc(100% - 1.5rem); left: 0.75rem; z-index: 1001;">
+                                <div class="education-option p-2 border-bottom" data-value="SSLC">SSLC</div>
+                                <div class="education-option p-2 border-bottom" data-value="HSC">HSC</div>
+                                <div class="education-option p-2 border-bottom" data-value="Diploma">Diploma</div>
+                                <div class="education-option p-2 border-bottom" data-value="ITI">ITI</div>
+                                
+                                <div class="education-option p-2 border-bottom" data-value="B.A">B.A</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Sc">B.Sc</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Com">B.Com</div>
+                                <div class="education-option p-2 border-bottom" data-value="BBA">BBA</div>
+                                <div class="education-option p-2 border-bottom" data-value="BCA">BCA</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.E">B.E</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Tech">B.Tech</div>
+                                <div class="education-option p-2 border-bottom" data-value="MBBS">MBBS</div>
+                                <div class="education-option p-2 border-bottom" data-value="BDS">BDS</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Pharm">B.Pharm</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Ed">B.Ed</div>
+                                <div class="education-option p-2 border-bottom" data-value="LLB">LLB</div>
+                                <div class="education-option p-2 border-bottom" data-value="B.Arch">B.Arch</div>
 
-                                    foreach($edu_map as $val => $text) {
-                                        echo "<div class='education-option p-2 border-bottom' data-value='$val'>$text</div>";
-                                    }
-                                ?>
+                                <div class="education-option p-2 border-bottom" data-value="M.A">M.A</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.Sc">M.Sc</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.Com">M.Com</div>
+                                <div class="education-option p-2 border-bottom" data-value="MBA">MBA</div>
+                                <div class="education-option p-2 border-bottom" data-value="MCA">MCA</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.E">M.E</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.Tech">M.Tech</div>
+                                <div class="education-option p-2 border-bottom" data-value="MD">MD</div>
+                                <div class="education-option p-2 border-bottom" data-value="MS">MS</div>
+                                <div class="education-option p-2 border-bottom" data-value="MDS">MDS</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.Pharm">M.Pharm</div>
+                                <div class="education-option p-2 border-bottom" data-value="M.Ed">M.Ed</div>
+                                <div class="education-option p-2 border-bottom" data-value="LLM">LLM</div>
+                                
+                                <div class="education-option p-2 border-bottom" data-value="M.Phil">M.Phil</div>
+                                <div class="education-option p-2 border-bottom" data-value="Ph.D">Ph.D</div>
+                                <div class="education-option p-2 border-bottom" data-value="Others">Others</div>
+                            </div>
+                        </div>
+
+                        <!-- Manual Education Input (Hidden initially) -->
+                        <div id="education_others_wrapper-coord" style="display:none;" class="col-md-4">
+                            <label for="education_others_input-coord">Other Education</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="education_others_input-coord" 
+                                    class="form-control" 
+                                    placeholder="Enter education manually">
+                                <button class="btn btn-primary" type="button" onclick="addManualEducationCoord()">Add</button>
+                            </div>
                         </div>
 
                         <!-- Profession -->
@@ -1093,145 +1025,96 @@
             document.getElementById('whatsappno-coord').value = document.getElementById('phoneno-coord').value;
         }
 
-        var selectedEducationsCoord = '<?= (isset($coordinator->Education)) ? $coordinator->Education : "" ?>'.split(', ').filter(x => x);
-        var educationMapCoord = {
-            "10th (SSLC)": "10th (SSLC)",
-            "12th (HSC – Science)": "12th (HSC – Science)",
-            "12th (HSC – Commerce)": "12th (HSC – Commerce)",
-            "12th (HSC – Arts)": "12th (HSC – Arts)",
-            "Diploma in Mechanical Engineering": "Diploma in Mechanical Engineering",
-            "Diploma in Civil Engineering": "Diploma in Civil Engineering",
-            "Diploma in Electrical Engineering": "Diploma in Electrical Engineering",
-            "Diploma in Electronics and Communication Engineering": "Diploma in Electronics and Communication Engineering",
-            "Diploma in Computer Engineering": "Diploma in Computer Engineering",
-            "Diploma in Information Technology": "Diploma in Information Technology",
-            "Diploma in Automobile Engineering": "Diploma in Automobile Engineering",
-            "Diploma in Mechatronics": "Diploma in Mechatronics",
-            "Diploma in Marine Engineering": "Diploma in Marine Engineering",
-            "Diploma in Agriculture": "Diploma in Agriculture",
-            "Diploma in Nursing": "Diploma in Nursing",
-            "Diploma in Pharmacy": "Diploma in Pharmacy",
-            "Diploma in Hotel Management": "Diploma in Hotel Management",
-            "Diploma in Fashion Designing": "Diploma in Fashion Designing",
-            "Diploma in Interior Designing": "Diploma in Interior Designing",
-            "Diploma in Multimedia": "Diploma in Multimedia",
-            "ITI Fitter": "ITI Fitter",
-            "ITI Electrician": "ITI Electrician",
-            "ITI Turner": "ITI Turner",
-            "ITI Mechanic": "ITI Mechanic",
-            "ITI Welder": "ITI Welder",
-            "ITI Plumber": "ITI Plumber",
-            "ITI Draughtsman Civil": "ITI Draughtsman Civil",
-            "ITI Draughtsman Mechanical": "ITI Draughtsman Mechanical",
-            "ITI COPA": "ITI COPA",
-            "ITI Refrigeration and Air Conditioning": "ITI Refrigeration and Air Conditioning",
-            "B.E Computer Science and Engineering": "B.E Computer Science and Engineering",
-            "B.E Mechanical Engineering": "B.E Mechanical Engineering",
-            "B.E Civil Engineering": "B.E Civil Engineering",
-            "B.E Electrical and Electronics Engineering": "B.E Electrical and Electronics Engineering",
-            "B.E Electronics and Communication Engineering": "B.E Electronics and Communication Engineering",
-            "B.E Automobile Engineering": "B.E Automobile Engineering",
-            "B.E Mechatronics Engineering": "B.E Mechatronics Engineering",
-            "B.Tech Information Technology": "B.Tech Information Technology",
-            "B.Tech Artificial Intelligence": "B.Tech Artificial Intelligence",
-            "B.Tech Data Science": "B.Tech Data Science",
-            "B.Tech Biotechnology": "B.Tech Biotechnology",
-            "B.Tech Chemical Engineering": "B.Tech Chemical Engineering",
-            "B.Tech Aeronautical Engineering": "B.Tech Aeronautical Engineering",
-            "B.Tech Aerospace Engineering": "B.Tech Aerospace Engineering",
-            "B.Tech Marine Engineering": "B.Tech Marine Engineering",
-            "B.A Tamil": "B.A Tamil",
-            "B.A English": "B.A English",
-            "B.A History": "B.A History",
-            "B.A Economics": "B.A Economics",
-            "B.A Political Science": "B.A Political Science",
-            "B.Sc Mathematics": "B.Sc Mathematics",
-            "B.Sc Physics": "B.Sc Physics",
-            "B.Sc Chemistry": "B.Sc Chemistry",
-            "B.Sc Computer Science": "B.Sc Computer Science",
-            "B.Sc Information Technology": "B.Sc Information Technology",
-            "B.Sc Biotechnology": "B.Sc Biotechnology",
-            "B.Sc Microbiology": "B.Sc Microbiology",
-            "B.Sc Zoology": "B.Sc Zoology",
-            "B.Sc Botany": "B.Sc Botany",
-            "B.Sc Visual Communication": "B.Sc Visual Communication",
-            "BCA": "BCA",
-            "BBA": "BBA",
-            "B.Com General": "B.Com General",
-            "B.Com Computer Applications": "B.Com Computer Applications",
-            "B.Com Accounting and Finance": "B.Com Accounting and Finance",
-            "MBBS": "MBBS",
-            "BDS": "BDS",
-            "BAMS": "BAMS",
-            "BHMS": "BHMS",
-            "BUMS": "BUMS",
-            "B.Pharm": "B.Pharm",
-            "B.Sc Nursing": "B.Sc Nursing",
-            "LLB": "LLB",
-            "B.Ed": "B.Ed",
-            "B.Sc Agriculture": "B.Sc Agriculture",
-            "B.Arch": "B.Arch",
-            "BPT (Physiotherapy)": "BPT (Physiotherapy)",
-            "BHM (Hotel Management)": "BHM (Hotel Management)",
-            "M.E Computer Science and Engineering": "M.E Computer Science and Engineering",
-            "M.E Structural Engineering": "M.E Structural Engineering",
-            "M.Tech Information Technology": "M.Tech Information Technology",
-            "M.Tech Artificial Intelligence": "M.Tech Artificial Intelligence",
-            "M.Tech Data Science": "M.Tech Data Science",
-            "M.Tech Biotechnology": "M.Tech Biotechnology",
-            "M.A Tamil": "M.A Tamil",
-            "M.A English": "M.A English",
-            "M.A Economics": "M.A Economics",
-            "M.Sc Mathematics": "M.Sc Mathematics",
-            "M.Sc Physics": "M.Sc Physics",
-            "M.Sc Chemistry": "M.Sc Chemistry",
-            "M.Sc Computer Science": "M.Sc Computer Science",
-            "M.Sc Information Technology": "M.Sc Information Technology",
-            "M.Sc Biotechnology": "M.Sc Biotechnology",
-            "MCA": "MCA",
-            "MBA": "MBA",
-            "M.Com": "M.Com",
-            "M.Pharm": "M.Pharm",
-            "M.Sc Nursing": "M.Sc Nursing",
-            "LLM": "LLM",
-            "M.Ed": "M.Ed",
-            "M.Sc Agriculture": "M.Sc Agriculture",
-            "Ph.D Computer Science": "Ph.D Computer Science",
-            "Ph.D Mathematics": "Ph.D Mathematics",
-            "Ph.D Commerce": "Ph.D Commerce",
-            "Ph.D Engineering": "Ph.D Engineering",
-            "Ph.D Biotechnology": "Ph.D Biotechnology",
-            "Ph.D Physics": "Ph.D Physics",
-            "Ph.D Chemistry": "Ph.D Chemistry",
-            "Ph.D Tamil": "Ph.D Tamil",
-            "Ph.D English": "Ph.D English",
-            "Others": "Others"
-        };
-
+        let selectedEducationsCoord = [];
 
         function renderEducationTagsCoord() {
-            const container = document.getElementById("education_tags-coord");
-            const hiddenContainer = document.getElementById("education_hidden_container-coord");
-            if (!container || !hiddenContainer) return;
-            container.innerHTML = "";
-            hiddenContainer.innerHTML = "";
-            selectedEducationsCoord.forEach(val => {
-                const displayText = educationMapCoord[val] || val;
-                const badge = document.createElement("span");
-                badge.className = "badge bg-primary me-1 mb-1";
-                badge.innerHTML = displayText + ' <i class="fa-solid fa-circle-xmark ms-1 cursor-pointer" onclick="removeEducationCoord(\'' + val.replace(/'/g, "\\'") + '\')"></i>';
-                container.appendChild(badge);
-                const hidden = document.createElement("input");
-                hidden.type = "hidden";
-                hidden.name = "education-coord[]";
-                hidden.value = val;
-                hiddenContainer.appendChild(hidden);
+            const container = document.getElementById('education_tags-coord');
+            if(!container) return;
+            container.innerHTML = '';
+            selectedEducationsCoord.forEach(edu => {
+                const tag = document.createElement('span');
+                tag.className = 'badge bg-primary d-flex align-items-center ps-2 pe-2 py-1 gap-2';
+                tag.style.fontSize = '0.85rem';
+                tag.innerHTML = `<span>${edu}</span> <span style="cursor:pointer; font-weight:bold; font-size: 1rem; line-height: 1;" onclick="removeEducationCoord('${edu.replace(/'/g, "\\'")}', event)">&times;</span>`;
+                container.appendChild(tag);
             });
+            document.getElementById('educationfield-coord').value = selectedEducationsCoord.join(',');
+            
+            // Reset placeholder visibility
+            const input = document.getElementById("education_input-coord");
+            if (input) {
+                if (selectedEducationsCoord.length > 0) {
+                    input.placeholder = "";
+                } else {
+                    input.placeholder = "Type and select education";
+                }
+            }
+
+            // Error clear if valid
+            const errorField = document.getElementById("educationerror-coord");
+            if (errorField && selectedEducationsCoord.length > 0) {
+                errorField.innerHTML = "";
+            }
         }
 
-        function removeEducationCoord(val) {
-            selectedEducationsCoord = selectedEducationsCoord.filter(v => v !== val);
+        function removeEducationCoord(edu, event) {
+            if(event) event.stopPropagation();
+            selectedEducationsCoord = selectedEducationsCoord.filter(e => e !== edu);
             renderEducationTagsCoord();
+        }
+
+        // Initialize with existing data
+        $(document).ready(function() {
+            const existingEdu = "<?= esc($coordinator->Education ?? '') ?>";
+            if(existingEdu) {
+                const edus = existingEdu.split(',');
+                edus.forEach(e => {
+                    const trimmed = e.trim();
+                    if(trimmed && !selectedEducationsCoord.includes(trimmed)) {
+                        selectedEducationsCoord.push(trimmed);
+                    }
+                });
+                renderEducationTagsCoord();
+            }
+
+            // Handle wrapper click
+            $(document).on("click", "#education_wrapper-coord", function(e) {
+                if (e.target.id === 'education_wrapper-coord' || e.target.id === 'education_tags-coord') {
+                    $("#education_input-coord").focus();
+                }
+                filterEducationOptionsCoord(document.getElementById("education_input-coord"));
+            });
+
+            // Click listener for education options
+            $(document).off('click', '#education_dropdown-coord .education-option').on('click', '#education_dropdown-coord .education-option', function() {
+                const val = $(this).data('value');
+                if (val === 'Others') {
+                    document.getElementById('education_others_wrapper-coord').style.display = 'block';
+                    document.getElementById('education_dropdown-coord').style.display = 'none';
+                    document.getElementById('education_others_input-coord').focus();
+                } else {
+                    if (!selectedEducationsCoord.includes(val)) {
+                        selectedEducationsCoord.push(val);
+                        renderEducationTagsCoord();
+                    }
+                    document.getElementById('education_input-coord').value = '';
+                    document.getElementById('education_dropdown-coord').style.display = 'none';
+                }
+            });
+        });
+
+        function addManualEducationCoord() {
+            const val = document.getElementById('education_others_input-coord').value.trim();
+            if (val) {
+                if (!selectedEducationsCoord.includes(val)) {
+                    selectedEducationsCoord.push(val);
+                    renderEducationTagsCoord();
+                }
+                document.getElementById('education_others_input-coord').value = '';
+                document.getElementById('education_others_wrapper-coord').style.display = 'none';
+                document.getElementById('education_input-coord').value = '';
+                document.getElementById('education_input-coord').focus();
+            }
         }
 
         function filterEducationOptionsCoord(input) {
@@ -1268,60 +1151,6 @@
             dropdown.style.display = hasVisible ? "block" : "none";
         }
 
-        $(document).on("click", "#profession_dropdown-coord .profession-option", function() {
-            const value = this.getAttribute("data-value");
-            const input = document.getElementById("profession_input-coord");
-            const hidden = document.getElementById("profession-coord");
-            
-            input.value = this.textContent;
-            hidden.value = value;
-            document.getElementById("profession_dropdown-coord").style.display = "none";
-            
-            // Trigger profession change logic
-            handleProfessionChangeCoord({value: value});
-            validateCoordInput(hidden);
-        });
-
-        // Toggle readonly to allow typing when focused
-        $("#profession_input-coord").on("focus", function() {
-            $(this).prop("readonly", false);
-        }).on("blur", function() {
-            $(this).prop("readonly", true);
-        });
-
-        // Handle wrapper click
-        $(document).on("click", "#profession_wrapper-coord", function() {
-            $("#profession_input-coord").focus();
-            filterProfessionOptionsCoord(document.getElementById("profession_input-coord"));
-        });
-
-        // Close when clicking outside
-        $(document).on("click", function(e) {
-            if (!$(e.target).closest("#profession_wrapper-coord").length && !$(e.target).closest("#profession_dropdown-coord").length) {
-                $("#profession_dropdown-coord").hide();
-            }
-            if (!$(e.target).closest("#education_wrapper").length && !$(e.target).closest("#education_dropdown-coord").length) {
-                $("#education_dropdown-coord").hide();
-            }
-        });
-
-        // Existing Education Open logic
-        document.getElementById("education_wrapper").addEventListener("click", function() {
-            document.getElementById("education_input-coord").focus();
-            filterEducationOptionsCoord(document.getElementById("education_input-coord"));
-        });
-
-
-
-        $(document).off('click', '.education-option').on('click', '.education-option', function() {
-            var val = $(this).data('value');
-            if (!selectedEducationsCoord.includes(val)) {
-                selectedEducationsCoord.push(val);
-                renderEducationTagsCoord();
-            }
-            $('#education_input-coord').val('');
-            $('#education_dropdown-coord').hide();
-        });
 
         var countriesDataCoord = null;
         function loadCountriesDataCoord() {
@@ -1557,6 +1386,43 @@
                 wrapper.style.display = 'none';
             }
         }
+
+        $(document).on("click", "#profession_dropdown-coord .profession-option", function() {
+            const value = this.getAttribute("data-value");
+            const input = document.getElementById("profession_input-coord");
+            const hidden = document.getElementById("profession-coord");
+            
+            input.value = this.textContent;
+            hidden.value = value;
+            document.getElementById("profession_dropdown-coord").style.display = "none";
+            
+            // Trigger profession change logic
+            handleProfessionChangeCoord({value: value});
+            // validateCoordInput(hidden); 
+        });
+
+        // Toggle readonly to allow typing when focused
+        $("#profession_input-coord").on("focus", function() {
+            $(this).prop("readonly", false);
+        }).on("blur", function() {
+            $(this).prop("readonly", true);
+        });
+
+        // Handle wrapper click
+        $(document).on("click", "#profession_wrapper-coord", function() {
+            $("#profession_input-coord").focus();
+            filterProfessionOptionsCoord(document.getElementById("profession_input-coord"));
+        });
+
+        // Close when clicking outside
+        $(document).on("click", function(e) {
+            if (!$(e.target).closest("#profession_wrapper-coord").length && !$(e.target).closest("#profession_dropdown-coord").length) {
+                $("#profession_dropdown-coord").hide();
+            }
+            if (!$(e.target).closest("#education_wrapper-coord").length && !$(e.target).closest("#education_dropdown-coord").length) {
+                $("#education_dropdown-coord").hide();
+            }
+        });
     </script>
 
 

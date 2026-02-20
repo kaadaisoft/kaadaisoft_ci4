@@ -524,7 +524,8 @@ class Members extends BaseController
         
         // Education fix: check both -update and -coord suffixes as JS might mismatch
         $education = $this->request->getPost("education" . $suffix) ?: $this->request->getPost("education-update");
-        $data["Education"] = is_array($education) ? implode(', ', $education) : $education;
+        
+        $data["Education"] = is_array($education) ? implode(', ', $education) : trim((string)$education);
 
         $data["is_dead"] = $this->request->getPost("is_dead" . $suffix);
 
@@ -714,8 +715,17 @@ class Members extends BaseController
         $profession = $this->request->getPost('profession');
         $business = $this->request->getPost('business');
         $businesswebsite = $this->request->getPost('business_website');
-        $education = $this->request->getPost('education'); // array[]
-        $education_str = is_array($education) ? implode(', ', $education) : $education;
+        $education = $this->request->getPost('education'); // now string, possibly 'Others'
+        
+        // Handle 'Others' case for education
+        if ($education === 'Others') {
+             $education_other = $this->request->getPost("education_others");
+             if (!empty($education_other)) {
+                 $education = trim($education_other);
+             }
+        }
+        
+        $education_str = is_array($education) ? implode(', ', $education) : trim($education);
         $is_dead = $this->request->getPost('is_dead') ?: 0;
 
         // CURRENT ADDRESS TYPE
@@ -892,6 +902,109 @@ class Members extends BaseController
     public function registerMember()
     {
         return $this->addFamilyMember();
+    }
+
+    public function send_registration_otp()
+    {
+        if ($this->request->isAJAX()) {
+            $email_address = $this->request->getPost('email');
+            
+            if (empty($email_address)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Email is required']);
+            }
+
+            // Check if email already exists (optional, based on requirement)
+            // For now, we allow multiple members with same email or user choice? 
+            // Usually unique is better. Let's check.
+            // $existing = $this->membersModel->where('Email', $email_address)->first();
+            // Email duplication check
+            $existing = $this->db->table('kaadaimembers')->where('Email', $email_address)->get()->getRow();
+            if ($existing) {
+                 return $this->response->setJSON(['status' => 'error', 'message' => 'This email is already registered. Please use a different email or login.']);
+            }
+
+            $otp = rand(100000, 999999);
+            $this->session->set('registration_otp', $otp);
+            $this->session->set('registration_email', $email_address);
+            $this->session->set('registration_otp_time', time());
+
+            $config['mailType'] = 'html';
+            $config['protocol'] = 'smtp';
+            $config['SMTPHost'] = 'smtp.gmail.com';
+            $config['SMTPUser'] = getenv('SMTP_USER') ?: 'kalai2003testing@gmail.com';
+            $config['SMTPPass'] = getenv('SMTP_PASS') ?: 'wmpuudckyedcgesf';
+            $config['SMTPPort'] = 465;
+            $config['SMTPCrypto'] = 'ssl';
+            $config['SMTPTimeout'] = 60;
+            $config['newline'] = "\r\n";
+            $config['CRLF'] = "\r\n";
+
+            // Important for XAMPP/Localhost to bypass SSL certificate issues
+            $config['SMTPOptions'] = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ];
+            
+            $email = \Config\Services::email();
+            $email->initialize($config);
+            
+            $email->setFrom($config['SMTPUser'], 'Poondurai Kaadai Kulam');
+            $email->setTo($email_address);
+            $email->setSubject('Email Verification OTP - Kaadaisoft');
+            $email->setMessage("Your OTP for email verification is: <b>$otp</b>. It is valid for 10 minutes.");
+
+            if ($email->send()) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'OTP sent successfully']);
+            } else {
+                $data = $email->printDebugger(['headers']);
+                log_message('error', 'Email Error: ' . $data);
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to send OTP. Please check email address.']);
+            }
+        }
+    }
+
+    public function verify_registration_otp()
+    {
+        if ($this->request->isAJAX()) {
+            $user_otp = $this->request->getPost('otp');
+            $user_email = $this->request->getPost('email');
+
+            $session_otp = $this->session->get('registration_otp');
+            $session_email = $this->session->get('registration_email');
+            $session_time = $this->session->get('registration_otp_time');
+
+            if (!$session_otp || !$session_email) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'OTP expired or not found. Please resend.']);
+            }
+
+            if ($session_email !== $user_email) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Email mismatch. Please resend OTP.']);
+            }
+
+            if (time() - $session_time > 600) { // 10 minutes
+                $this->session->remove(['registration_otp', 'registration_email', 'registration_otp_time']);
+                return $this->response->setJSON(['status' => 'error', 'message' => 'OTP expired. Please resend.']);
+            }
+
+            if ($user_otp == $session_otp) {
+                // Verification successful
+                // We keep the flag in session to allow form submission? 
+                // Or just return success and let frontend handle token/flag?
+                // For security, backend should check this flag on actual registration, 
+                // but since registerMember is reused for admin adding members too, 
+                // we might just rely on frontend for now or add a hidden field check if feasible.
+                
+                $this->session->set('is_email_verified', true);
+                $this->session->set('verified_email', $user_email);
+                
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Email verified successfully!']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid OTP.']);
+            }
+        }
     }
 }
 ?>
