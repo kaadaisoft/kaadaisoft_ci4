@@ -6,7 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'kalai2003testing@gmail.com';
+    public string $fromEmail  = 'soft@kaadaikulam.org';
     public string $fromName   = 'Poondurai Kaadai Kulam';
     public string $recipients = '';
 
@@ -28,7 +28,7 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = 'smtp.gmail.com';
+    public string $SMTPHost = 'mail.kaadaikulam.org';
 
     /**
      * Which SMTP authentication method to use: login, plain
@@ -43,8 +43,8 @@ class Email extends BaseConfig
 
     public function __construct()
     {
-        $this->SMTPUser = getenv('SMTP_USER') ?: 'kalai2003testing@gmail.com';
-        $this->SMTPPass = getenv('SMTP_PASS') ?: 'wmpuudckyedcgesf';
+        $this->SMTPUser = getenv('email.SMTPUser') ?: 'soft@kaadaikulam.org';
+        $this->SMTPPass = getenv('email.SMTPPass') ?: '1W-L=0$E%Dr6';
         $this->fromEmail = $this->SMTPUser;
     }
 
