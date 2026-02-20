@@ -928,30 +928,9 @@ class Members extends BaseController
             $this->session->set('registration_email', $email_address);
             $this->session->set('registration_otp_time', time());
 
-            $config['mailType'] = 'html';
-            $config['protocol'] = 'smtp';
-            $config['SMTPHost'] = 'smtp.gmail.com';
-            $config['SMTPUser'] = getenv('SMTP_USER') ?: 'kalai2003testing@gmail.com';
-            $config['SMTPPass'] = getenv('SMTP_PASS') ?: 'wmpuudckyedcgesf';
-            $config['SMTPPort'] = 465;
-            $config['SMTPCrypto'] = 'ssl';
-            $config['SMTPTimeout'] = 60;
-            $config['newline'] = "\r\n";
-            $config['CRLF'] = "\r\n";
-
-            // Important for XAMPP/Localhost to bypass SSL certificate issues
-            $config['SMTPOptions'] = [
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true
-                ]
-            ];
-            
             $email = \Config\Services::email();
-            $email->initialize($config);
             
-            $email->setFrom($config['SMTPUser'], 'Poondurai Kaadai Kulam');
+            // Use defaults from Config\Email.php
             $email->setTo($email_address);
             $email->setSubject('Email Verification OTP - Kaadaisoft');
             $email->setMessage("Your OTP for email verification is: <b>$otp</b>. It is valid for 10 minutes.");
