@@ -581,7 +581,12 @@ class Payments extends BaseController {
         $dues = $this->request->getGet("dues") ?? $this->session->get("userdue");
         $eventid = $this->request->getGet("eventid") ?? $this->session->get("usereventid");
         $receipt = $this->paymentsModel->getReceiptdetail($userid,$dues,$eventid);
-        return view("paymentreceiptpdf",array("receipt"=>$receipt));       
+        
+        if ($this->request->getGet('ajax') == 1) {
+            return view("receipt_fragment", array("receipt" => $receipt));
+        }
+        
+        return view("paymentreceiptpdf", array("receipt" => $receipt));       
     }  
 
     public function paymentReceiptlist(){

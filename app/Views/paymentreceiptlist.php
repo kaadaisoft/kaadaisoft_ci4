@@ -469,6 +469,28 @@
 <!---------------------Custom Mobile Menu End-------------------------------->
 
 <!---------------------offcanvas-end-------------------------------->
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title heading-kaadaisoft" id="receiptModalLabel">Payment Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="receiptModalBody">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+</div>
 
   
   <script>
@@ -534,7 +556,44 @@
      }); */
 
      function viewReceipt(url){
-      window.open(url, '_blank');
+      // Open in modal instead of new tab
+      $('#receiptModal').modal('show');
+      $('#receiptModalBody').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+      
+      $.ajax({
+        type: "get",
+        url: url + "&ajax=1", // Add ajax flag
+        success: (result) => {
+          $('#receiptModalBody').html(result);
+        },
+        error: (error) => {
+          $('#receiptModalBody').html('<div class="alert alert-danger m-3">Error loading receipt. Please try again.</div>');
+        }
+      });
+     }
+
+     function printReceiptFromModal() {
+        const modalBody = document.getElementById('receiptModalBody');
+        const printContent = modalBody.innerHTML;
+        const printWindow = window.open('', '', 'height=600,width=800');
+        
+        printWindow.document.write('<html><head><title>Print Receipt</title>');
+        // Copy relevant styles for printing
+        printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
+        printWindow.document.write('<style>');
+        printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
+        printWindow.document.write('table td, th { padding: 10px; }');
+        printWindow.document.write('.print-only { font-size: 14px; }');
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('<div class="p-4">' + printContent + '</div>');
+        printWindow.document.write('</body></html>');
+        
+        printWindow.document.close();
+        setTimeout(function() {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 500);
      }
 
      function downloadReceipt(url){
