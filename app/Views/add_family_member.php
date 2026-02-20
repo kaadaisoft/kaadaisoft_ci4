@@ -591,157 +591,210 @@
                                 </h5>
                                 <div class="row g-3">
 
-                                    <!-- Education (tag style like skills) -->
-                                    <div class="col-md-12">
-                                        <label for="education_input">Education</label>
-                                        <div class="border rounded p-2" id="education_wrapper">
-                                            <!-- selected tags will appear here -->
-                                            <div id="education_tags" class="mb-1"></div>
+                                    <!-- Education -->
+                                    <div class="col-md-4">
+                                        <label for="education_input">Education <span class="text-danger">*</span></label>
+                                        
+                                        <div class="border rounded p-1 bg-white d-flex flex-wrap align-items-center gap-1" id="education_wrapper" style="cursor: text; min-height: 38px;">
+                                            <!-- Tags Container -->
+                                            <div id="education_tags" class="d-flex flex-wrap gap-1"></div>
 
-                                            <!-- input for typing -->
-                                            <input type="text" id="education_input"
-                                                class="form-control form-control-sm border-0 p-0"
-                                                placeholder="Type and select education (e.g., B.Sc, MBA)"
+                                            <input type="text" id="education_input" 
+                                                class="form-control form-control-sm border-0 bg-transparent shadow-none" 
+                                                placeholder="Type or select education"
                                                 onfocus="filterEducationOptions(this)"
-                                                oninput="filterEducationOptions(this)">
-
+                                                oninput="filterEducationOptions(this)"
+                                                name="education_display"
+                                                autocomplete="off"
+                                                style="flex: 1; min-width: 120px;">
+                                            <input type="hidden" id="educationfield" name="education">
                                         </div>
-                                        <small id="educationerror" class="text-danger"></small>
 
-                                        <!-- hidden field array for submit -->
-                                        <div id="education_hidden_container"></div>
-
-                                        <!-- dropdown suggestions -->
                                         <div class="border rounded mt-1 bg-white" id="education_dropdown"
-                                            style="max-height:200px; overflow:auto; display:none;">
-                                            <!-- options -->
-                                            <div class="education-option" data-value="10th (SSLC)">10th (SSLC)</div>
-                                            <div class="education-option" data-value="12th (HSC – Science)">12th (HSC – Science)</div>
-                                            <div class="education-option" data-value="12th (HSC – Commerce)">12th (HSC – Commerce)</div>
-                                            <div class="education-option" data-value="12th (HSC – Arts)">12th (HSC – Arts)</div>
-                                            <div class="education-option" data-value="Diploma in Mechanical Engineering">Diploma in Mechanical Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Civil Engineering">Diploma in Civil Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Electrical Engineering">Diploma in Electrical Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Electronics and Communication Engineering">Diploma in Electronics and Communication Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Computer Engineering">Diploma in Computer Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Information Technology">Diploma in Information Technology</div>
-                                            <div class="education-option" data-value="Diploma in Automobile Engineering">Diploma in Automobile Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Mechatronics">Diploma in Mechatronics</div>
-                                            <div class="education-option" data-value="Diploma in Marine Engineering">Diploma in Marine Engineering</div>
-                                            <div class="education-option" data-value="Diploma in Agriculture">Diploma in Agriculture</div>
-                                            <div class="education-option" data-value="Diploma in Nursing">Diploma in Nursing</div>
-                                            <div class="education-option" data-value="Diploma in Pharmacy">Diploma in Pharmacy</div>
-                                            <div class="education-option" data-value="Diploma in Hotel Management">Diploma in Hotel Management</div>
-                                            <div class="education-option" data-value="Diploma in Fashion Designing">Diploma in Fashion Designing</div>
-                                            <div class="education-option" data-value="Diploma in Interior Designing">Diploma in Interior Designing</div>
-                                            <div class="education-option" data-value="Diploma in Multimedia">Diploma in Multimedia</div>
-                                            <div class="education-option" data-value="ITI Fitter">ITI Fitter</div>
-                                            <div class="education-option" data-value="ITI Electrician">ITI Electrician</div>
-                                            <div class="education-option" data-value="ITI Turner">ITI Turner</div>
-                                            <div class="education-option" data-value="ITI Mechanic">ITI Mechanic</div>
-                                            <div class="education-option" data-value="ITI Welder">ITI Welder</div>
-                                            <div class="education-option" data-value="ITI Plumber">ITI Plumber</div>
-                                            <div class="education-option" data-value="ITI Draughtsman Civil">ITI Draughtsman Civil</div>
-                                            <div class="education-option" data-value="ITI Draughtsman Mechanical">ITI Draughtsman Mechanical</div>
-                                            <div class="education-option" data-value="ITI COPA">ITI COPA</div>
-                                            <div class="education-option" data-value="ITI Refrigeration and Air Conditioning">ITI Refrigeration and Air Conditioning</div>
-                                            <div class="education-option" data-value="B.E Computer Science and Engineering">B.E Computer Science and Engineering</div>
-                                            <div class="education-option" data-value="B.E Mechanical Engineering">B.E Mechanical Engineering</div>
-                                            <div class="education-option" data-value="B.E Civil Engineering">B.E Civil Engineering</div>
-                                            <div class="education-option" data-value="B.E Electrical and Electronics Engineering">B.E Electrical and Electronics Engineering</div>
-                                            <div class="education-option" data-value="B.E Electronics and Communication Engineering">B.E Electronics and Communication Engineering</div>
-                                            <div class="education-option" data-value="B.E Automobile Engineering">B.E Automobile Engineering</div>
-                                            <div class="education-option" data-value="B.E Mechatronics Engineering">B.E Mechatronics Engineering</div>
-                                            <div class="education-option" data-value="B.Tech Information Technology">B.Tech Information Technology</div>
-                                            <div class="education-option" data-value="B.Tech Artificial Intelligence">B.Tech Artificial Intelligence</div>
-                                            <div class="education-option" data-value="B.Tech Data Science">B.Tech Data Science</div>
-                                            <div class="education-option" data-value="B.Tech Biotechnology">B.Tech Biotechnology</div>
-                                            <div class="education-option" data-value="B.Tech Chemical Engineering">B.Tech Chemical Engineering</div>
-                                            <div class="education-option" data-value="B.Tech Aeronautical Engineering">B.Tech Aeronautical Engineering</div>
-                                            <div class="education-option" data-value="B.Tech Aerospace Engineering">B.Tech Aerospace Engineering</div>
-                                            <div class="education-option" data-value="B.Tech Marine Engineering">B.Tech Marine Engineering</div>
-                                            <div class="education-option" data-value="B.A Tamil">B.A Tamil</div>
-                                            <div class="education-option" data-value="B.A English">B.A English</div>
-                                            <div class="education-option" data-value="B.A History">B.A History</div>
-                                            <div class="education-option" data-value="B.A Economics">B.A Economics</div>
-                                            <div class="education-option" data-value="B.A Political Science">B.A Political Science</div>
-                                            <div class="education-option" data-value="B.Sc Mathematics">B.Sc Mathematics</div>
-                                            <div class="education-option" data-value="B.Sc Physics">B.Sc Physics</div>
-                                            <div class="education-option" data-value="B.Sc Chemistry">B.Sc Chemistry</div>
-                                            <div class="education-option" data-value="B.Sc Computer Science">B.Sc Computer Science</div>
-                                            <div class="education-option" data-value="B.Sc Information Technology">B.Sc Information Technology</div>
-                                            <div class="education-option" data-value="B.Sc Biotechnology">B.Sc Biotechnology</div>
-                                            <div class="education-option" data-value="B.Sc Microbiology">B.Sc Microbiology</div>
-                                            <div class="education-option" data-value="B.Sc Zoology">B.Sc Zoology</div>
-                                            <div class="education-option" data-value="B.Sc Botany">B.Sc Botany</div>
-                                            <div class="education-option" data-value="B.Sc Visual Communication">B.Sc Visual Communication</div>
-                                            <div class="education-option" data-value="BCA">BCA</div>
+                                            style="max-height:250px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
+                                            
+                                            <div class="education-option" data-value="SSLC">SSLC</div>
+                                            <div class="education-option" data-value="HSC">HSC</div>
+                                            <div class="education-option" data-value="Diploma">Diploma</div>
+                                            <div class="education-option" data-value="ITI">ITI</div>
+                                            
+                                            <!-- Bachelors -->
+                                            <div class="education-option" data-value="B.A">B.A</div>
+                                            <div class="education-option" data-value="B.Sc">B.Sc</div>
+                                            <div class="education-option" data-value="B.Com">B.Com</div>
                                             <div class="education-option" data-value="BBA">BBA</div>
-                                            <div class="education-option" data-value="B.Com General">B.Com General</div>
-                                            <div class="education-option" data-value="B.Com Computer Applications">B.Com Computer Applications</div>
-                                            <div class="education-option" data-value="B.Com Accounting and Finance">B.Com Accounting and Finance</div>
+                                            <div class="education-option" data-value="BCA">BCA</div>
+                                            <div class="education-option" data-value="B.E">B.E</div>
+                                            <div class="education-option" data-value="B.Tech">B.Tech</div>
                                             <div class="education-option" data-value="MBBS">MBBS</div>
                                             <div class="education-option" data-value="BDS">BDS</div>
-                                            <div class="education-option" data-value="BAMS">BAMS</div>
-                                            <div class="education-option" data-value="BHMS">BHMS</div>
-                                            <div class="education-option" data-value="BUMS">BUMS</div>
                                             <div class="education-option" data-value="B.Pharm">B.Pharm</div>
-                                            <div class="education-option" data-value="B.Sc Nursing">B.Sc Nursing</div>
-                                            <div class="education-option" data-value="LLB">LLB</div>
                                             <div class="education-option" data-value="B.Ed">B.Ed</div>
-                                            <div class="education-option" data-value="B.Sc Agriculture">B.Sc Agriculture</div>
+                                            <div class="education-option" data-value="LLB">LLB</div>
                                             <div class="education-option" data-value="B.Arch">B.Arch</div>
-                                            <div class="education-option" data-value="BPT (Physiotherapy)">BPT (Physiotherapy)</div>
-                                            <div class="education-option" data-value="BHM (Hotel Management)">BHM (Hotel Management)</div>
-                                            <div class="education-option" data-value="M.E Computer Science and Engineering">M.E Computer Science and Engineering</div>
-                                            <div class="education-option" data-value="M.E Structural Engineering">M.E Structural Engineering</div>
-                                            <div class="education-option" data-value="M.Tech Information Technology">M.Tech Information Technology</div>
-                                            <div class="education-option" data-value="M.Tech Artificial Intelligence">M.Tech Artificial Intelligence</div>
-                                            <div class="education-option" data-value="M.Tech Data Science">M.Tech Data Science</div>
-                                            <div class="education-option" data-value="M.Tech Biotechnology">M.Tech Biotechnology</div>
-                                            <div class="education-option" data-value="M.A Tamil">M.A Tamil</div>
-                                            <div class="education-option" data-value="M.A English">M.A English</div>
-                                            <div class="education-option" data-value="M.A Economics">M.A Economics</div>
-                                            <div class="education-option" data-value="M.Sc Mathematics">M.Sc Mathematics</div>
-                                            <div class="education-option" data-value="M.Sc Physics">M.Sc Physics</div>
-                                            <div class="education-option" data-value="M.Sc Chemistry">M.Sc Chemistry</div>
-                                            <div class="education-option" data-value="M.Sc Computer Science">M.Sc Computer Science</div>
-                                            <div class="education-option" data-value="M.Sc Information Technology">M.Sc Information Technology</div>
-                                            <div class="education-option" data-value="M.Sc Biotechnology">M.Sc Biotechnology</div>
-                                            <div class="education-option" data-value="MCA">MCA</div>
-                                            <div class="education-option" data-value="MBA">MBA</div>
+
+                                            <!-- Masters / Higher -->
+                                            <div class="education-option" data-value="M.A">M.A</div>
+                                            <div class="education-option" data-value="M.Sc">M.Sc</div>
                                             <div class="education-option" data-value="M.Com">M.Com</div>
+                                            <div class="education-option" data-value="MBA">MBA</div>
+                                            <div class="education-option" data-value="MCA">MCA</div>
+                                            <div class="education-option" data-value="M.E">M.E</div>
+                                            <div class="education-option" data-value="M.Tech">M.Tech</div>
+                                            <div class="education-option" data-value="MD">MD</div>
+                                            <div class="education-option" data-value="MS">MS</div>
+                                            <div class="education-option" data-value="MDS">MDS</div>
                                             <div class="education-option" data-value="M.Pharm">M.Pharm</div>
-                                            <div class="education-option" data-value="M.Sc Nursing">M.Sc Nursing</div>
-                                            <div class="education-option" data-value="LLM">LLM</div>
                                             <div class="education-option" data-value="M.Ed">M.Ed</div>
-                                            <div class="education-option" data-value="M.Sc Agriculture">M.Sc Agriculture</div>
-                                            <div class="education-option" data-value="Ph.D Computer Science">Ph.D Computer Science</div>
-                                            <div class="education-option" data-value="Ph.D Mathematics">Ph.D Mathematics</div>
-                                            <div class="education-option" data-value="Ph.D Commerce">Ph.D Commerce</div>
-                                            <div class="education-option" data-value="Ph.D Engineering">Ph.D Engineering</div>
-                                            <div class="education-option" data-value="Ph.D Biotechnology">Ph.D Biotechnology</div>
-                                            <div class="education-option" data-value="Ph.D Physics">Ph.D Physics</div>
-                                            <div class="education-option" data-value="Ph.D Chemistry">Ph.D Chemistry</div>
-                                            <div class="education-option" data-value="Ph.D Tamil">Ph.D Tamil</div>
-                                            <div class="education-option" data-value="Ph.D English">Ph.D English</div>
+                                            <div class="education-option" data-value="LLM">LLM</div>
+                                            
+                                            <div class="education-option" data-value="M.Phil">M.Phil</div>
+                                            <div class="education-option" data-value="Ph.D">Ph.D</div>
                                             <div class="education-option" data-value="Others">Others</div>
 
                                         </div>
+                                        
+                                        <!-- Manual Education Input (Hidden initially) -->
+                                        <div id="education_others_wrapper" style="display:none;" class="mt-2">
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" id="education_others_input" 
+                                                    class="form-control" 
+                                                    placeholder="Enter education manually">
+                                                <button class="btn btn-primary" type="button" onclick="addManualEducation()">Add</button>
+                                            </div>
+                                        </div>
+
+                                        <small id="educationerror" class="text-danger"></small>
+                                    </div>
+                                    <!-- End Education -->
+
+                                    <script>
+                                        let selectedEducations = [];
+
+                                        function renderEducationTags() {
+                                            const container = document.getElementById('education_tags');
+                                            container.innerHTML = '';
+                                            selectedEducations.forEach(edu => {
+                                                const tag = document.createElement('span');
+                                                tag.className = 'badge bg-primary d-flex align-items-center ps-2 pe-2 py-1 gap-2';
+                                                tag.style.fontSize = '0.85rem';
+                                                tag.innerHTML = `<span>${edu}</span> <span style="cursor:pointer; font-weight:bold; font-size: 1rem; line-height: 1;" onclick="removeEducation('${edu}', event)">&times;</span>`;
+                                                container.appendChild(tag);
+                                             });
+                                             document.getElementById('educationfield').value = selectedEducations.join(',');
+
+                                             // Reset placeholder visibility
+                                             const input = document.getElementById("education_input");
+                                             if (selectedEducations.length > 0) {
+                                                 input.placeholder = "";
+                                             } else {
+                                                 input.placeholder = "Type or select education";
+                                             }
+                                             
+                                             // Validate
+                                             const errorField = document.getElementById("educationerror");
+                                            if (selectedEducations.length > 0) {
+                                                errorField.innerHTML = "";
+                                            }
+                                        }
+
+                                        function addEducation(edu) {
+                                            if (!edu) return;
+                                            if (!selectedEducations.includes(edu)) {
+                                                selectedEducations.push(edu);
+                                                renderEducationTags();
+                                            }
+                                            // Reset inputs
+                                            document.getElementById('education_input').value = '';
+                                            document.getElementById('education_dropdown').style.display = 'none';
+                                            document.getElementById('education_others_wrapper').style.display = 'none';
+                                            document.getElementById('education_others_input').value = '';
+                                            document.getElementById('education_input').focus();
+                                        }
+
+                                        function removeEducation(edu, event) {
+                                            if(event) event.stopPropagation();
+                                            selectedEducations = selectedEducations.filter(e => e !== edu);
+                                            renderEducationTags();
+                                        }
+
+                                        function addManualEducation() {
+                                            const val = document.getElementById('education_others_input').value.trim();
+                                            if (val) {
+                                                addEducation(val);
+                                            } else {
+                                                alert("Please enter a value");
+                                            }
+                                        }
+
+                                        // Education Dropdown Logic
+                                        function filterEducationOptions(input) {
+                                            const query = input.value.toLowerCase().trim();
+                                            const dropdown = document.getElementById("education_dropdown");
+                                            const options = dropdown.querySelectorAll(".education-option");
+                                            let hasVisible = false;
+
+                                            options.forEach(opt => {
+                                                const text = opt.textContent.toLowerCase();
+                                                if (!query || text.includes(query)) {
+                                                    opt.style.display = "";
+                                                    hasVisible = true;
+                                                } else {
+                                                    opt.style.display = "none";
+                                                }
+                                            });
+                                            dropdown.style.display = hasVisible ? "block" : "none";
+                                        }
+
+                                        // Click handler for Education Options
+                                        $(document).on("click", ".education-option", function() {
+                                            const value = this.getAttribute("data-value");
+                                            const text = this.textContent;
+                                            
+                                            if(value === 'Others') {
+                                                document.getElementById('education_others_wrapper').style.display = 'block';
+                                                document.getElementById('education_others_input').focus();
+                                                document.getElementById("education_dropdown").style.display = "none";
+                                                document.getElementById('education_input').value = ''; 
+                                            } else {
+                                                addEducation(text);
+                                            }
+                                        });
+
+                                        // Show dropdown on focus
+                                        $("#education_input").on("focus", function() {
+                                            filterEducationOptions(this);
+                                        });
+
+                                        // Wrapper click focuses input
+                                        document.getElementById("education_wrapper").addEventListener("click", function(e) {
+                                            // Don't focus if clicking a tag (handled by stopPropagation in remove, but safety here)
+                                           if(e.target.id === 'education_wrapper' || e.target.id === 'education_input' || e.target.id === 'education_tags') {
+                                                document.getElementById("education_input").focus();
+                                           }
+                                        });
+
+                                        // Close dropdowns when clicking outside
+                                        $(document).on("click", function(e) {
+                                            if (!$(e.target).closest("#education_wrapper").length && !$(e.target).closest("#education_dropdown").length) {
+                                                $("#education_dropdown").hide();
+                                            }
+                                        });
+                                    </script>
                                     </div>
 
 
                                     <!-- Profession (mandatory) -->
                                     <div class="col-md-4">
                                         <label for="profession_input">Profession <span class="text-danger">*</span></label>
-                                        <div class="border rounded p-1 bg-white" id="profession_wrapper" style="cursor: pointer;">
+                                        <div class="border rounded p-1 bg-white d-flex align-items-center" id="profession_wrapper" style="cursor: pointer; min-height: 38px;">
                                             <input type="text" id="profession_input" 
-                                                class="form-control form-control-sm border-0 bg-transparent" 
+                                                class="form-control form-control-sm border-0 bg-transparent shadow-none" 
                                                 placeholder="Type or click to select profession"
                                                 onfocus="filterProfessionOptions(this)"
                                                 oninput="filterProfessionOptions(this)"
                                                 readonly 
-                                                style="cursor: pointer;">
+                                                style="cursor: pointer; flex: 1;">
                                             <input type="hidden" id="professionfield" name="profession">
                                         </div>
                                             <div class="border rounded mt-1 bg-white" id="profession_dropdown" 
@@ -2053,14 +2106,10 @@
                 if (!firstInvalid) firstInvalid = document.querySelector('input[name="communitycertificate"]');
             }
 
-            // Education (tag style) - mandatory
-            const educationCount = selectedEducations.length;
-            if (educationCount === 0) {
-                setErr(
-                    'educationerror',
-                    'Please add at least one education.',
-                    document.getElementById('education_input')
-                );
+            // Education * (mandatory)
+            const education = f.educationfield ? f.educationfield.value.trim() : "";
+            if (!education) {
+                 setErr('educationerror', 'Please select education.', document.getElementById('education_input'));
             }
 
             // Profession * (mandatory)

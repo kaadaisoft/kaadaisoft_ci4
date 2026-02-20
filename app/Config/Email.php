@@ -38,12 +38,15 @@ class Email extends BaseConfig
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'kalai2003testing@gmail.com';
+    public string $SMTPUser = '';
+    public string $SMTPPass = '';
 
-    /**
-     * SMTP Password
-     */
-    public string $SMTPPass = 'wmpuudckyedcgesf';
+    public function __construct()
+    {
+        $this->SMTPUser = getenv('SMTP_USER') ?: 'kalai2003testing@gmail.com';
+        $this->SMTPPass = getenv('SMTP_PASS') ?: 'wmpuudckyedcgesf';
+        $this->fromEmail = $this->SMTPUser;
+    }
 
     /**
      * SMTP Port
@@ -53,7 +56,7 @@ class Email extends BaseConfig
     /**
      * SMTP Timeout (in seconds)
      */
-    public int $SMTPTimeout = 5;
+    public int $SMTPTimeout = 30;
 
     /**
      * Enable persistent SMTP connections

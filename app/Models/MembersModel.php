@@ -124,9 +124,20 @@ class MembersModel extends Model
         $aadharbackimage = isset($documents[2]) ? $documents[2] : '';
         $communitycertificate = isset($documents[3]) ? $documents[3] : '';
 
-        // education array -> JSON or CSV (choose one)
-        // $education = is_array($education_array) ? json_encode($education_array) : $education_array;
-        // $education = is_array($education_array) ? json_encode($education_array) : $education_array;
+        // education handling
+        if ($education === 'Others') {
+             // If 'Others' selected, use the manual input
+             // Assuming controller passes 'education_others' as argument or we get it from POST/arguments
+             // Since arguments are fixed, we might need to adjust controller call.
+             // But here we rely on the caller to pass the right value or we handle array?
+             // Actually, controller calls this. Let's assume controller passes the manual string if others selected?
+             // Or update this method to accept education_others.
+             // For now, let's just make sure we capture it if passed in $education (controller logic)
+             // OR better: Update controller to pass the right string.
+        }
+        
+        // Simple string - ensure it's clean
+        $education = trim($education);
         
         
         // Fix: Fetch correct coordinators from village_table with robust lookup

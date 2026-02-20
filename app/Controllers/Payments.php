@@ -4,6 +4,8 @@ namespace App\Controllers;
 use App\Models\PaymentsModel;
 use App\Models\AdminDashboardModel;
 use Dompdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Exception;
 
 class Payments extends BaseController {
 
@@ -57,8 +59,14 @@ class Payments extends BaseController {
         $file = $this->request->getFile('csvfile');
 
         if (!$file->isValid()) {
-            $this->session->setFlashdata('error', 'Please upload a valid CSV file.');
+            $this->session->setFlashdata('error', 'Please upload a valid file.');
             return redirect()->to('payments');
+        }
+
+        $ext = $file->getExtension();
+        if (!in_array($ext, ['xlsx', 'xls', 'csv'])) {
+             $this->session->setFlashdata('error', 'Invalid file type. Allowed: xlsx, xls, csv');
+             return redirect()->to('payments');
         }
 
         if (!is_dir(FCPATH.'uploads/temp/')) {
@@ -69,44 +77,51 @@ class Payments extends BaseController {
         $file->move(FCPATH.'uploads/temp/', $newName);
         $filepath = FCPATH.'uploads/temp/' . $newName;
 
-        $handle = fopen($filepath, 'r');
-        if (!$handle) {
-            $this->session->setFlashdata('error', 'Cannot read CSV file.');
-            @unlink($filepath);
-            return redirect()->to('payments');
-        }
-
-        // Skip header row
-        fgetcsv($handle);
-
         // 1) Get event from modal (single event for all rows)
         $eventid = (int)$this->request->getPost('eventid');
         if (!$eventid) {
             $this->session->setFlashdata('error', 'Please select event.');
-            fclose($handle);
             @unlink($filepath);
             return redirect()->to('payments');
         }
 
-        // 2) Load event details from eventlist (ONLY source of event data)
+        // 2) Load event details from eventlist
         $geteventdata = $this->paymentsModel->getEventdata($eventid);
         if (!$geteventdata) {
             $this->session->setFlashdata('error', 'Selected event not found.');
-            fclose($handle);
             @unlink($filepath);
             return redirect()->to('payments');
         }
 
-        $eventname = $geteventdata->EventName;          // e.g. pongal_2026
-        $taxamount = (int)$geteventdata->TaxAmount;     // e.g. 2000
-        $fromdate  = $geteventdata->From_date;          // e.g. 2026-01-12
-        $todate    = $geteventdata->To_date;            // e.g. 2026-01-19
-        $year      = $geteventdata->Year;               // e.g. 2026
+        $eventname = $geteventdata->EventName;
+        $taxamount = (int)$geteventdata->TaxAmount;
+        $fromdate  = $geteventdata->From_date;
+        $todate    = $geteventdata->To_date;
+        $year      = $geteventdata->Year;
 
         $success = 0;
         $error   = 0;
 
-        while (($data = fgetcsv($handle)) !== FALSE && count($data) >= 5) {
+        try {
+            $spreadsheet = IOFactory::load($filepath);
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+        } catch (Exception $e) {
+            $this->session->setFlashdata('error', 'Error reading file: ' . $e->getMessage());
+            @unlink($filepath);
+            return redirect()->to('payments');
+        }
+
+        // Loop from index 1 (skip header at 0)
+        for ($i = 1; $i < count($rows); $i++) {
+            $data = $rows[$i];
+            
+            // Skip empty rows
+            if (empty(array_filter($data))) continue;
+
+            // Ensure we have enough columns (>= 5 based on original logic checking for amount which is at index 4)
+             if (count($data) < 5) continue;
+
             $familymembershipid = trim($data[0] ?? '');
             $paymentdate        = trim($data[3] ?? date('Y-m-d'));
             $paidamount         = (int)($data[4] ?? 0);
@@ -127,7 +142,7 @@ class Payments extends BaseController {
             $collectedamount   = $already_collected + $paidamount;
             $balanceamount     = max(0, $taxamount - $collectedamount);
 
-            // 5) Use your existing dues/status logic in saveTaxreport()
+            // 5) Save receipt
             $savereceipt = $this->paymentsModel->saveTaxreport(
                 $eventid,
                 $eventname,
@@ -156,7 +171,6 @@ class Payments extends BaseController {
             }
         }
 
-        fclose($handle);
         @unlink($filepath);
 
         $this->session->setFlashdata(

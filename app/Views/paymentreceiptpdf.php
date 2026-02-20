@@ -11,7 +11,7 @@
     integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="<?= base_url("../js/dss.js"); ?>"></script>
+
 
   <style>
     .ps-logo {
@@ -512,7 +512,7 @@
 
     $.ajax({
       type: "get",
-      url: "dashboard/sidemenu",
+      url: "<?= base_url('dashboard/sidemenu') ?>",
       success: (result) => {
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
@@ -526,7 +526,7 @@
 
     $.ajax({
       type: "get",
-      url: "dashboard/topmenu",
+      url: "<?= base_url('dashboard/topmenu') ?>",
       success: (result) => {
         document.getElementById("search-bar").innerHTML = result;
         //  document.getElementById("dashboardsearch").style.display = "flex";
@@ -539,7 +539,7 @@
 
     $.ajax({
       type: "get",
-      url: "dashboard/pslogo",
+      url: "<?= base_url('dashboard/pslogo') ?>",
       success: (result) => {
         document.getElementById("ps-logo").innerHTML = result;
       },
@@ -579,63 +579,39 @@
       let currentDate = '<?php echo date("Y/m/d"); ?>';
       let printWindow = window.open('', '', 'height=auto, width=auto');
       printWindow.document.open();
-      printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Print Receipt</title>
-                    <style>
-                            .ps-logo{
-                               display:flex;
-                               align-items:center;
-                               justify-content:center;
-                                }
-                             table td,th{
-                                 padding-top:20px;
-                              }
-                            .heading-kaadaisoft{
-                             color: rgb(120, 50, 186);
-                             font-weight:800;
-                             font-family:sans-serif;
-                             font-size:50px;
-                                }     
-                             .printuse{
-                           text-align:center;
-                             }
-                    </style>
-                </head>
-                <body>
-                   <div>
-                   <table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>
-                        <tr>
-                            <td colspan="3" style="text-align:center;">
-                                <span class="heading-kaadaisoft">KAADAISOFT</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:bold;">உறுப்பினர் விவரம்</td>
-                            <td style="font-weight:bold;"></td>
-                            <td style="font-weight:bold;">சீட்டு எண் : </td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight:bold;">
-                             தேதி : ${currentDate}
-                            </td>                          
-                            </tr>                        
-                    ${divContents}
-                     </table>   
-                   </div> 
-                </body>
-                </html>
-            `);
+      
+      let htmlContent = "<html><head><title>Print Receipt</title>";
+      htmlContent += "<style>";
+      htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
+      htmlContent += "table td,th{ padding-top:20px; }";
+      htmlContent += ".heading-kaadaisoft{ color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; font-size:50px; }";
+      htmlContent += ".printuse{ text-align:center; }";
+      htmlContent += "</style></head><body>";
+      htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
+      htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
+      htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>சீட்டு எண் : </td></tr>";
+      htmlContent += "<tr><td style='font-weight:bold;'>தேதி : " + currentDate + "</td></tr>";
+      htmlContent += divContents;
+      htmlContent += "</table></div></body></html>";
+
+      printWindow.document.write(htmlContent);
       printWindow.document.close();
       printWindow.print();
     }
 
-    document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
+    // Initial setup
+    function adjustHeight() {
+      let searchBar = document.getElementById("search-bar");
+      if (searchBar) {
+         let height = searchBar.getBoundingClientRect().height;
+         document.getElementById("menu-bar").style.height = (window.innerHeight - height) + "px";
+      }
+    }
+    
+    // Call initially and on resize
+    adjustHeight();
+    window.addEventListener("resize", adjustHeight);
 
-    window.addEventListener("resize", () => {
-      document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

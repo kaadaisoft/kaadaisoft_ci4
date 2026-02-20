@@ -179,7 +179,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="family_members_body">
                             <?php 
                                 $role_counts = [];
                                 foreach($family_members as $fm) {
@@ -308,6 +308,23 @@
               updateHeights();
           }
       });
+      function commonSearch(input) {
+          let filter = input.value.toLowerCase();
+          let tableBody = document.getElementById("family_members_body");
+          let tr = tableBody.getElementsByTagName("tr");
+
+          for (let i = 0; i < tr.length; i++) {
+              let tdName = tr[i].getElementsByTagName("td")[0];
+              if (tdName) {
+                  let txtValue = tdName.textContent || tdName.innerText;
+                  if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                      tr[i].style.display = "";
+                  } else {
+                      tr[i].style.display = "none";
+                  }
+              }
+          }
+      }
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
