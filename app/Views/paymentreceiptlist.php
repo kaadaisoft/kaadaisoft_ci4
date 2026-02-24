@@ -585,9 +585,9 @@
         printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
         printWindow.document.write('table td, th { padding: 10px; }');
         printWindow.document.write('.print-only { font-size: 14px; }');
-        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('</style></head><' + 'body>');
         printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</body></html>');
+        printWindow.document.write('</' + 'body></' + 'html>');
         
         printWindow.document.close();
         setTimeout(function() {
