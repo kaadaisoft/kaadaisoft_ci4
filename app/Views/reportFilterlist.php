@@ -17,6 +17,10 @@
       font-weight: 600;
     }
 
+    .ps-user {
+      background-color: rgb(254, 213, 163);
+    }
+
     .heading-kaadaisoft{
         color: rgb(120, 50, 186);
         font-weight:800;
@@ -85,18 +89,6 @@
       justify-content: space-between;
     }
 
-    .sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background-color: #ffffff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .main-navbar {
-      margin-top: 0;
-      padding-top: 10px;
-    }
 
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
@@ -141,20 +133,19 @@
 
 <body>
 
-  <div class="container-fluid sticky-top">
+  <div class="container-fluid" style="position:absolute;overflow:hidden;">
+
     <div class="row"><!-----top-bar--------------->
 
       <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
 
       </div>
 
-      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom ps-gray" style="background-color: rgb(248, 245, 245);">
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom">
 
       </div>
     </div><!-----------top-bar-end----------------------->
-  </div>
 
-  <div class="container-fluid main-navbar">
 
     <div class="row "><!----------main-navbar----------->
 
@@ -472,7 +463,7 @@
   // Load menu components
   $.ajax({
     type: "get",
-    url: "<?= base_url('reports/sidemenu'); ?>",
+    url: "<?= base_url('dashboard/sidemenu'); ?>",
     success: (result) => {
       document.getElementById("menu-bar").innerHTML = result;
       document.getElementById("mobile-menu-content").innerHTML = result;
@@ -485,7 +476,7 @@
 
   $.ajax({
     type: "get",
-    url: "<?= base_url('reports/topmenu'); ?>",
+    url: "<?= base_url('dashboard/topmenu'); ?>",
     success: (result) => {
       document.getElementById("search-bar").innerHTML = result;
     },
@@ -497,7 +488,7 @@
 
   $.ajax({
     type: "get",
-    url: "<?= base_url('reports/pslogo'); ?>",
+    url: "<?= base_url('dashboard/pslogo'); ?>",
     success: (result) => {
       document.getElementById("ps-logo").innerHTML = result;
     },

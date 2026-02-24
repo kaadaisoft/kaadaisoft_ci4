@@ -40,6 +40,23 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         // Preload any models, libraries, etc, here.
-        // $this->session = service('session');
+        $this->session = \Config\Services::session();
+
+        // Anti-Session Hijacking verification
+        $agent = $request->getUserAgent()->getAgentString();
+        $stored_agent = $this->session->get('Kaadaisoft_userAgent');
+
+        // Note: CI4 native User-Agent matching is removed, implementing manual fail-safe
+        if ($this->session->has('Kaadaisoft_userId')) {
+            if ($stored_agent && $stored_agent !== $agent) {
+                // Suspicious activity detected: User-Agent mismatch!
+                $this->session->destroy();
+                // We use header redirection and exit directly inside BaseController to prevent execution continuation.
+                header("Location: " . base_url('/'));
+                exit();
+            } else if (!$stored_agent) {
+                $this->session->set('Kaadaisoft_userAgent', $agent);
+            }
+        }
     }
 }

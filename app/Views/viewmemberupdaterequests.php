@@ -208,7 +208,6 @@
                 <?= view('pslogo'); ?>
             </div>
             <div id="search-bar" class="col-md-10 border-bottom d-flex align-items-center justify-content-between px-4">
-                <span class="h4 mb-0">Member Update Requests</span>
                 <?= view('topmenu'); ?>
             </div>
         </div>
@@ -223,7 +222,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="<?= base_url('admindashboard') ?>">Dashboard</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Update Requests</li>
+                            <li class="breadcrumb-item active" aria-current="page">Member Update Requests</li>
                         </ol>
                     </nav>
                 </div>

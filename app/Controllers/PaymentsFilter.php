@@ -19,6 +19,9 @@ class PaymentsFilter extends BaseController {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
+        }
 
         $filterlist = $this->session->get('filterdata');
 
@@ -73,6 +76,9 @@ class PaymentsFilter extends BaseController {
     public function getFilteredusers() {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
         }
         
         // Use request->getPost()
@@ -180,6 +186,9 @@ class PaymentsFilter extends BaseController {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
+        }
 
         $initialindex = $this->request->getGet('initialindex');
         $filterlist = $this->session->get('filterdata'); 
@@ -277,6 +286,9 @@ class PaymentsFilter extends BaseController {
     public function filteredUserpaymentform() {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
         }
         
         $memberid = $this->request->getGet('memberid');

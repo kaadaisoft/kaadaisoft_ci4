@@ -318,6 +318,7 @@
             <!-- Occupation Details -->
             <div class="card mb-4 border-0 shadow-sm rounded-3">
                 <div class="card-body">
+                    <h5 class="mb-4 section-title">
                         <i class="fa-solid fa-briefcase text-primary me-2"></i>Education & Career Details
                     </h5>
                     <div class="row g-3">
@@ -398,7 +399,7 @@
                         <!-- End Education -->
 
                         <script>
-                            let selectedEducationsMember = [];
+                            var selectedEducationsMember = [];
 
                             function renderEducationTagsMember() {
                                 const container = document.getElementById('education_tags-member');

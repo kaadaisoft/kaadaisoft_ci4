@@ -44,6 +44,9 @@ class AdminDashboard extends BaseController {
         if(!$this->session->get('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') != 1){
+            return redirect()->to('admindashboard');
+        }
         $manager_id = $this->session->get('Kaadaisoft_userId');
         $manager_data = $this->membersModel->getMemberdata($manager_id);
         $family_members = $this->membersModel->getFamilyMembers($manager_id);
@@ -58,9 +61,12 @@ class AdminDashboard extends BaseController {
     }
 
     public function viewReceivedapplications(){
-        if($this->session->get("role") !== "1" && $this->session->get("role") !== 1 && !$this->session->get("Kaadaisoft_userId")){
+        if(!$this->session->get("Kaadaisoft_userId")){
             return redirect()->to("/");
-        };
+        }
+        if($this->session->get("role") == 3){
+            return redirect()->to("admindashboard");
+        }
         $pendingapplications = $this->adminDashboardModel->getPendingapplications();
         $pendingcounts = count($pendingapplications);
         return view("viewreceivedapplications",array("applications" => $pendingapplications,"pendingcounts" => $pendingcounts, "sno" => 0));
@@ -69,7 +75,10 @@ class AdminDashboard extends BaseController {
     public function approveMember(){
         if(!$this->session->get("Kaadaisoft_userId")){
             return redirect()->to("/");
-        };
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $applicationid = $this->request->getPost("applicationid");
         $userid = $this->request->getPost("userid");
         $username = $this->request->getPost("username");
@@ -90,7 +99,10 @@ class AdminDashboard extends BaseController {
     public function rejectMember(){
         if(!$this->session->get("Kaadaisoft_userId")){
             return redirect()->to("/");
-        };
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $applicationid = $this->request->getPost("applicationid");
         $rejectreason = $this->request->getPost("rejectreason");
         
@@ -128,6 +140,9 @@ class AdminDashboard extends BaseController {
         if(!$this->session->get('Kaadaisoft_userId')){
             return redirect()->to('/');
         } 
+        if($this->session->get('role') != 1){
+            return redirect()->to('admindashboard');
+        }
             $states = $this->adminDashboardModel->getStates();
             return view('assigncoordinator',array("states"=>$states)); 
      }
@@ -170,6 +185,9 @@ class AdminDashboard extends BaseController {
     public function assignCoordinatorsfortaluk(){
         if(!$this->session->get('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
         $villagesarray = $this->request->getPost("taluks"); // Keeping the name 'taluks' in POST for now to avoid breaking view too early, but it contains villages.
@@ -296,6 +314,9 @@ class AdminDashboard extends BaseController {
         if(!$this->session->get('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         
         $state_id = $this->request->getPost("state");
         $district = $this->request->getPost("district");
@@ -330,6 +351,9 @@ class AdminDashboard extends BaseController {
     public function removeVillage() {
         if(!$this->session->get('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
         $state_id = $this->request->getPost("state");
@@ -578,6 +602,9 @@ public function change_password() {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') != 1){
+            return redirect()->to('admindashboard');
+        }
         $id = $this->request->getGet('id');
         // Fetch user data using model 
         // Assuming get_user_by_id works or we query directly.
@@ -622,6 +649,9 @@ public function change_password() {
     public function updateManager() {
         if(!$this->session->has('Kaadaisoft_userId')){
              return redirect()->to('/');
+        }
+        if($this->session->get('role') != 1){
+             return redirect()->to('admindashboard');
         }
         
         date_default_timezone_set('Asia/Kolkata');

@@ -591,28 +591,30 @@
                                 </h5>
                                 <div class="row g-3">
 
-                                    <!-- Education -->
+                                    <!-- Education (tag style like skills) -->
                                     <div class="col-md-4">
-                                        <label for="education_input">Education <span class="text-danger">*</span></label>
-                                        
-                                        <div class="border rounded p-1 bg-white d-flex flex-wrap align-items-center gap-1" id="education_wrapper" style="cursor: text; min-height: 38px;">
-                                            <!-- Tags Container -->
-                                            <div id="education_tags" class="d-flex flex-wrap gap-1"></div>
+                                        <label for="education_input">Education</label>
+                                        <div class="border rounded p-2" id="education_wrapper">
+                                            <!-- selected tags will appear here -->
+                                            <div id="education_tags" class="mb-1"></div>
 
-                                            <input type="text" id="education_input" 
-                                                class="form-control form-control-sm border-0 bg-transparent shadow-none" 
-                                                placeholder="Type or select education"
+                                            <!-- input for typing -->
+                                            <input type="text" id="education_input"
+                                                class="form-control form-control-sm border-0 p-0"
+                                                placeholder="Type and select education (e.g., B.Sc, MBA)"
                                                 onfocus="filterEducationOptions(this)"
-                                                oninput="filterEducationOptions(this)"
-                                                name="education_display"
-                                                autocomplete="off"
-                                                style="flex: 1; min-width: 120px;">
-                                            <input type="hidden" id="educationfield" name="education">
-                                        </div>
+                                                oninput="filterEducationOptions(this)">
 
+                                        </div>
+                                        <small id="educationerror" class="text-danger"></small>
+
+                                        <!-- hidden field array for submit -->
+                                        <div id="education_hidden_container"></div>
+
+                                        <!-- dropdown suggestions -->
                                         <div class="border rounded mt-1 bg-white" id="education_dropdown"
-                                            style="max-height:250px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
-                                            
+                                            style="max-height:200px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
+                                            <!-- options -->
                                             <div class="education-option" data-value="SSLC">SSLC</div>
                                             <div class="education-option" data-value="HSC">HSC</div>
                                             <div class="education-option" data-value="Diploma">Diploma</div>
@@ -653,148 +655,20 @@
                                             <div class="education-option" data-value="Others">Others</div>
 
                                         </div>
-                                        
-                                        <!-- Manual Education Input (Hidden initially) -->
-                                        <div id="education_others_wrapper" style="display:none;" class="mt-2">
-                                            <div class="input-group input-group-sm">
-                                                <input type="text" id="education_others_input" 
-                                                    class="form-control" 
-                                                    placeholder="Enter education manually">
-                                                <button class="btn btn-primary" type="button" onclick="addManualEducation()">Add</button>
-                                            </div>
-                                        </div>
-
-                                        <small id="educationerror" class="text-danger"></small>
-                                    </div>
-                                    <!-- End Education -->
-
-                                    <script>
-                                        let selectedEducations = [];
-
-                                        function renderEducationTags() {
-                                            const container = document.getElementById('education_tags');
-                                            container.innerHTML = '';
-                                            selectedEducations.forEach(edu => {
-                                                const tag = document.createElement('span');
-                                                tag.className = 'badge bg-primary d-flex align-items-center ps-2 pe-2 py-1 gap-2';
-                                                tag.style.fontSize = '0.85rem';
-                                                tag.innerHTML = `<span>${edu}</span> <span style="cursor:pointer; font-weight:bold; font-size: 1rem; line-height: 1;" onclick="removeEducation('${edu}', event)">&times;</span>`;
-                                                container.appendChild(tag);
-                                             });
-                                             document.getElementById('educationfield').value = selectedEducations.join(',');
-
-                                             // Reset placeholder visibility
-                                             const input = document.getElementById("education_input");
-                                             if (selectedEducations.length > 0) {
-                                                 input.placeholder = "";
-                                             } else {
-                                                 input.placeholder = "Type or select education";
-                                             }
-                                             
-                                             // Validate
-                                             const errorField = document.getElementById("educationerror");
-                                            if (selectedEducations.length > 0) {
-                                                errorField.innerHTML = "";
-                                            }
-                                        }
-
-                                        function addEducation(edu) {
-                                            if (!edu) return;
-                                            if (!selectedEducations.includes(edu)) {
-                                                selectedEducations.push(edu);
-                                                renderEducationTags();
-                                            }
-                                            // Reset inputs
-                                            document.getElementById('education_input').value = '';
-                                            document.getElementById('education_dropdown').style.display = 'none';
-                                            document.getElementById('education_others_wrapper').style.display = 'none';
-                                            document.getElementById('education_others_input').value = '';
-                                            document.getElementById('education_input').focus();
-                                        }
-
-                                        function removeEducation(edu, event) {
-                                            if(event) event.stopPropagation();
-                                            selectedEducations = selectedEducations.filter(e => e !== edu);
-                                            renderEducationTags();
-                                        }
-
-                                        function addManualEducation() {
-                                            const val = document.getElementById('education_others_input').value.trim();
-                                            if (val) {
-                                                addEducation(val);
-                                            } else {
-                                                alert("Please enter a value");
-                                            }
-                                        }
-
-                                        // Education Dropdown Logic
-                                        function filterEducationOptions(input) {
-                                            const query = input.value.toLowerCase().trim();
-                                            const dropdown = document.getElementById("education_dropdown");
-                                            const options = dropdown.querySelectorAll(".education-option");
-                                            let hasVisible = false;
-
-                                            options.forEach(opt => {
-                                                const text = opt.textContent.toLowerCase();
-                                                if (!query || text.includes(query)) {
-                                                    opt.style.display = "";
-                                                    hasVisible = true;
-                                                } else {
-                                                    opt.style.display = "none";
-                                                }
-                                            });
-                                            dropdown.style.display = hasVisible ? "block" : "none";
-                                        }
-
-                                        // Click handler for Education Options
-                                        $(document).on("click", ".education-option", function() {
-                                            const value = this.getAttribute("data-value");
-                                            const text = this.textContent;
-                                            
-                                            if(value === 'Others') {
-                                                document.getElementById('education_others_wrapper').style.display = 'block';
-                                                document.getElementById('education_others_input').focus();
-                                                document.getElementById("education_dropdown").style.display = "none";
-                                                document.getElementById('education_input').value = ''; 
-                                            } else {
-                                                addEducation(text);
-                                            }
-                                        });
-
-                                        // Show dropdown on focus
-                                        $("#education_input").on("focus", function() {
-                                            filterEducationOptions(this);
-                                        });
-
-                                        // Wrapper click focuses input
-                                        document.getElementById("education_wrapper").addEventListener("click", function(e) {
-                                            // Don't focus if clicking a tag (handled by stopPropagation in remove, but safety here)
-                                           if(e.target.id === 'education_wrapper' || e.target.id === 'education_input' || e.target.id === 'education_tags') {
-                                                document.getElementById("education_input").focus();
-                                           }
-                                        });
-
-                                        // Close dropdowns when clicking outside
-                                        $(document).on("click", function(e) {
-                                            if (!$(e.target).closest("#education_wrapper").length && !$(e.target).closest("#education_dropdown").length) {
-                                                $("#education_dropdown").hide();
-                                            }
-                                        });
-                                    </script>
                                     </div>
 
 
                                     <!-- Profession (mandatory) -->
                                     <div class="col-md-4">
                                         <label for="profession_input">Profession <span class="text-danger">*</span></label>
-                                        <div class="border rounded p-1 bg-white d-flex align-items-center" id="profession_wrapper" style="cursor: pointer; min-height: 38px;">
+                                        <div class="border rounded p-1 bg-white" id="profession_wrapper" style="cursor: pointer;">
                                             <input type="text" id="profession_input" 
-                                                class="form-control form-control-sm border-0 bg-transparent shadow-none" 
+                                                class="form-control form-control-sm border-0 bg-transparent" 
                                                 placeholder="Type or click to select profession"
                                                 onfocus="filterProfessionOptions(this)"
                                                 oninput="filterProfessionOptions(this)"
                                                 readonly 
-                                                style="cursor: pointer; flex: 1;">
+                                                style="cursor: pointer;">
                                             <input type="hidden" id="professionfield" name="profession">
                                         </div>
                                             <div class="border rounded mt-1 bg-white" id="profession_dropdown" 
@@ -2106,10 +1980,14 @@
                 if (!firstInvalid) firstInvalid = document.querySelector('input[name="communitycertificate"]');
             }
 
-            // Education * (mandatory)
-            const education = f.educationfield ? f.educationfield.value.trim() : "";
-            if (!education) {
-                 setErr('educationerror', 'Please select education.', document.getElementById('education_input'));
+            // Education (tag style) - mandatory
+            const educationCount = selectedEducations.length;
+            if (educationCount === 0) {
+                setErr(
+                    'educationerror',
+                    'Please add at least one education.',
+                    document.getElementById('education_input')
+                );
             }
 
             // Profession * (mandatory)
@@ -2303,7 +2181,7 @@
             validateInputfield(c_pincode);
         }
 
-        let selectedEducations = [];
+        var selectedEducations = [];
 
         function filterEducationOptions(input) {
             const query = input.value.toLowerCase().trim();

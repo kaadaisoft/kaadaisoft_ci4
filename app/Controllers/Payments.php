@@ -26,6 +26,9 @@ class Payments extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
+        }
         $name = $this->session->get('name');
         $counts = 0;
         $this->session->set('paymentpagecounts', $counts);
@@ -40,7 +43,7 @@ class Payments extends BaseController {
         $states = $this->paymentsModel->getStates();
         $member_id = $this->session->get('Kaadaisoft_userId');
         
-        if($this->session->get('role') == 2 || $this->session->get('role') == 3){
+        if($this->session->get('role') == 2){
             $member_data = $this->paymentsModel->getCoordinatordata($member_id);
             $taluks =  $this->paymentsModel->getCoordinatorTaluks($member_id);
             return view('paymentpage', array("name"=>$name,"members"=>$memberslist,"counts"=>$totalpayers,"sno"=>$counts,"eventyears"=>$eventyears,"memberdata"=>$member_data, "taluks"=>$taluks));                                                
@@ -54,6 +57,9 @@ class Payments extends BaseController {
     {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
         }
 
         $file = $this->request->getFile('csvfile');
@@ -185,6 +191,7 @@ class Payments extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        
         $memberid = $this->request->getGet('memberid');
         $memberdetails = $this->paymentsModel->getMemberforPayment($memberid);
         $eventyears = $this->paymentsModel->getEventsyear();
@@ -200,6 +207,9 @@ class Payments extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
+        }
         $counts = $this->request->getGet('count');
         $this->session->set('paymentpagecounts',$counts);
         if($this->request->isAJAX()){
@@ -212,6 +222,9 @@ class Payments extends BaseController {
     public function changepaymentpagepagesetup(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('payment-receipt-list');
         }
         $initialindex = $this->request->getGet('initialindex');
         if($initialindex < 0){

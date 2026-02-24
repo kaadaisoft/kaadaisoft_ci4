@@ -36,7 +36,7 @@
 <li class="nav-item py-2">
   <a href="<?php if(session()->get('role') == 3) {echo base_url('payment-receipt-list');} else{echo base_url('paymentpage');}?>" style="color:black;" class="active-payments p-2 text-decoration-none d-flex align-items-center"><span class="icon"><i class="fa-regular fa-credit-card"></i></span>&nbsp;&nbsp;Payments</a></li>
 
-<li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item py-2"><a href="<?=base_url("reports")?>" style="color:black;" class="active-reports p-2 text-decoration-none d-flex align-items-center"><span class="icon"><i class="fa-solid fa-list"></i></span>&nbsp;&nbsp;Reports</a></li>
+<li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item py-2"><a href="<?=base_url("reports")?>" style="color:black;" class="active-reports p-2 text-decoration-none d-flex align-items-center"><span class="icon"><i class="fa-solid fa-list"></i></span>&nbsp;&nbsp;Reports</a></li>
 
 <li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item py-2"><a href="<?=base_url("view-member-update-requests")?>" style="color:black;" class="active-updaterequests p-2 text-decoration-none d-flex align-items-center"><span class="icon"><i class="fa-solid fa-user-pen"></i></span>&nbsp;&nbsp;Update Requests</a></li>
 
