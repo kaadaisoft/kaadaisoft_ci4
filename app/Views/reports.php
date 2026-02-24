@@ -19,6 +19,10 @@
       font-weight: 600;
     }
 
+    .ps-user {
+      background-color: rgb(254, 213, 163);
+    }
+
     .ps-logo {
       display: flex;
       align-items: center;
@@ -141,7 +145,7 @@
 
       </div>
 
-      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom ps-gray" style="background-color: rgb(248, 245, 245);">
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom">
 
       </div>
     </div><!-----------top-bar-end----------------------->
@@ -455,7 +459,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url('reports/sidemenu'); ?>",
+      url: "<?= base_url('dashboard/sidemenu'); ?>",
       success: (result) => {
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
@@ -469,7 +473,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url('reports/topmenu'); ?>",
+      url: "<?= base_url('dashboard/topmenu'); ?>",
       success: (result) => {
         document.getElementById("search-bar").innerHTML = result;
         //  document.getElementById("searchReports").style.display = "flex";
@@ -481,7 +485,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url('reports/pslogo'); ?>",
+      url: "<?= base_url('dashboard/pslogo'); ?>",
       success: (result) => {
         document.getElementById("ps-logo").innerHTML = result;
       },

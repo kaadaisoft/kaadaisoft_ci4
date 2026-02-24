@@ -30,6 +30,12 @@ class ReportingController extends BaseController
 
     public function excel()
     {
+        if (!$this->session->has('Kaadaisoft_userId')) {
+            return redirect()->to('/');
+        }
+        if($this->session->get('role') != 1){
+            return redirect()->to('admindashboard');
+        }
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -82,6 +88,12 @@ class ReportingController extends BaseController
 
     public function download_members_data()
     {
+        if (!$this->session->has('Kaadaisoft_userId')) {
+            return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $filteredusers = $this->bulkUploadModel->getMembersdetails();
 
         if (empty($filteredusers)) {
@@ -133,6 +145,9 @@ class ReportingController extends BaseController
     {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
 
         // Get filter parameters from URL
@@ -212,6 +227,9 @@ class ReportingController extends BaseController
     {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
 
         $search = $this->request->getGet('search');

@@ -25,6 +25,9 @@ class Reports extends BaseController{
        if(!$this->session->has('Kaadaisoft_userId')){
         return redirect()->to('/');
        } 
+       if($this->session->get('role') != 1){
+           return redirect()->to('admindashboard');
+       }
        else{
          $counts = 0;
          $name = $this->session->get('name');
@@ -148,6 +151,9 @@ class Reports extends BaseController{
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $initialindex = $this->request->getGet('initialindex');
         if($initialindex < 0){
            $initialindex = 0;
@@ -174,6 +180,9 @@ class Reports extends BaseController{
     public function changeFilteredreportspagesetup(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         $initialindex = $this->request->getGet('initialindex');
         if($initialindex < 0){
@@ -331,6 +340,9 @@ class Reports extends BaseController{
     public function reportFilterlist(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         $year = $this->request->getGet('eventyear');    
         $eventid = $this->request->getGet('eventid');

@@ -26,6 +26,7 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
+        
         else{
             $counts = $this->session->get('altereventscounts') ?? 0;
             // $name = $this->session->get('name'); // Unused in view call? Original passed 'events' and 'counts' and 'sno'
@@ -96,6 +97,9 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('Kaadaisoft'); // Or '/'? Original said Kaadaisoft (which usually redirects to login)
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $initialindex = $this->request->getGet('initialindex');
         if($initialindex < 0){
            $initialindex = 0;
@@ -128,6 +132,9 @@ class Events extends BaseController {
     public function addevent(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
         $eventimage = $this->request->getFile('eventimage');
@@ -194,6 +201,9 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
 
         if($this->request->isAJAX()){
            $id = $this->request->getGet("id");
@@ -205,6 +215,9 @@ class Events extends BaseController {
     public function updateevent(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
         if($this->request->getPost('eventupdatesubmit')){
@@ -233,6 +246,9 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('Kaadaisoft');
         }  
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         if($this->request->isAJAX()){
             $id = $this->request->getGet("id");
             $eventname = $this->request->getGet("eventname");
@@ -244,6 +260,9 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('Kaadaisoft');
         }  
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         if($this->request->getPost("eventupdatebannersubmit")){
             
             $eventimage = $this->request->getFile('eventupdatebanner');
@@ -281,6 +300,9 @@ class Events extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }  
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         if ($id === null) {
             // show_error('Invalid request: missing event ID', 400);
             return redirect()->to('events')->with('eventserrorstatus', 'Invalid request');

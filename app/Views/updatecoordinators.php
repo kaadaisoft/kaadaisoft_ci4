@@ -1025,7 +1025,7 @@
             document.getElementById('whatsappno-coord').value = document.getElementById('phoneno-coord').value;
         }
 
-        let selectedEducationsCoord = [];
+        var selectedEducationsCoord = [];
 
         function renderEducationTagsCoord() {
             const container = document.getElementById('education_tags-coord');

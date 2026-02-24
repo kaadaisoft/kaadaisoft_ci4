@@ -66,7 +66,7 @@ class Loginpage extends BaseController {
             $stored_hash = "";
             if (!$userdetails) {
                 return view('loginPage', [
-                    'usererror' => "No user found with the given $identifier.",
+                    'usererror' => "Invalid Mobile/Aadhar Number or Password.",
                     'username' => $username,
                     'password' => $password
                 ]);
@@ -110,6 +110,9 @@ class Loginpage extends BaseController {
                         ]);
                     }
 
+                    // Regenerate session ID to prevent Session Fixation
+                    $this->session->regenerate();
+
                     // Set session based on role
                     $this->session->set('Kaadaisoft_userId', $userdetails->Familymembershipid);
                     $this->session->set('Kaadaisoft_userName', $userdetails->Name);
@@ -119,7 +122,7 @@ class Loginpage extends BaseController {
                     return redirect()->to('admindashboard');
                 } else {
                     return view('loginPage', [
-                        'passworderror' => 'Your password is wrong.',
+                        'usererror' => 'Invalid Mobile/Aadhar Number or Password.',
                         'username' => $username,
                         'password' => $password
                     ]);

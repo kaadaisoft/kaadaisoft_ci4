@@ -28,6 +28,9 @@ class Coordinators extends BaseController{
         if(!$this->session->has('Kaadaisoft_userId')){
            return redirect()->to('/');
         }          
+        if($this->session->get('role') != 1){
+            return redirect()->to('admindashboard');
+        }
         else{
            $counts = $this->session->get('altercoordscounts') ?? 0;
            $name = $this->session->get('name');
@@ -51,6 +54,9 @@ class Coordinators extends BaseController{
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         } 
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
             $memberslist = $this->membersModel->getMemberslist();
             $coordinatorslist = $this->coordinatorsModel->getCoordinators(); // getCoordinatorslist was not in the file I read in model, but getCoordinators exists. Or maybe getCoordinatorslist in MembersModel? Check later. Usually converted to getCoordinators if not found.
             // Wait, MembersModel doesn't have getCoordinatorslist. CoordinatorsModel has getCoordinators.
@@ -188,6 +194,9 @@ class Coordinators extends BaseController{
        if(!$this->session->has('Kaadaisoft_userId')){
            return redirect()->to('/');
        }
+       if($this->session->get('role') == 3){
+           return redirect()->to('admindashboard');
+       }
        $initialindex = $this->request->getGet('initialindex');
        if($initialindex < 0){
           $initialindex = 0;
@@ -206,6 +215,9 @@ class Coordinators extends BaseController{
     public function changeViewcoordinatorspagesetup() {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         $initialindex = $this->request->getGet('initialindex');
         $coordid = $this->request->getGet('coordid');
@@ -241,6 +253,9 @@ class Coordinators extends BaseController{
     public function addcoordinator(){
         if(!$this->session->has('Kaadaisoft_userId')){
              return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
     if($this->request->getPost("coordsubmit")){
@@ -280,6 +295,9 @@ class Coordinators extends BaseController{
     public function getcoordinator(){
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
     
         if($this->request->isAJAX()){
@@ -327,6 +345,9 @@ class Coordinators extends BaseController{
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }  
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         if ($id === null) {
             // show_error('Invalid request: missing member ID', 400);
             return redirect()->back();
@@ -352,6 +373,9 @@ class Coordinators extends BaseController{
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $coord_id = "";
         if($this->session->get('role') == 2){
             $coord_id =  $this->session->get('Kaadaisoft_userId');
@@ -375,6 +399,9 @@ class Coordinators extends BaseController{
         
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         
             $data = [];
@@ -447,6 +474,9 @@ class Coordinators extends BaseController{
     function viewunderMembers() {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
             $familyid = $this->request->getGet("id");
             $members = $this->coordinatorsModel->viewMemberundercoord($familyid);

@@ -25,6 +25,9 @@ class Members extends BaseController
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         } else {
+            if ($this->session->get('role') == 3) {
+                return redirect()->to('admindashboard');
+            }
             $counts = $this->session->get('altermemberscounts') ?? 0;
             $name = $this->session->get('name');
             $this->session->set('memberscounts', $counts);
@@ -202,6 +205,9 @@ class Members extends BaseController
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         $initialindex = $this->request->getGet('initialindex');
         if ($initialindex < 0) {
             $initialindex = 0;
@@ -222,6 +228,9 @@ class Members extends BaseController
 
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
 
         if ($this->request->getPost("membersubmit")) {
@@ -264,6 +273,25 @@ class Members extends BaseController
 
         if ($this->request->isAJAX()) {
             $member_id = $this->request->getGet("id");
+            
+            if($this->session->get('role') == 3){
+                $loggedInId = $this->session->get('Kaadaisoft_userId');
+                if($member_id != $loggedInId) {
+                    $familyMembers = $this->membersModel->getFamilyMembers($loggedInId);
+                    $isFamily = false;
+                    foreach ($familyMembers as $fm) {
+                        if ($fm->Familymembershipid == $member_id) {
+                            $isFamily = true;
+                            break;
+                        }
+                    }
+                    if (!$isFamily) {
+                        echo "<div class='alert alert-danger'>Unauthorized access to this member data.</div>";
+                        return;
+                    }
+                }
+            }
+
             $member = $this->membersModel->getMemberdata($member_id);
 
             if (!$member) {
@@ -335,6 +363,9 @@ class Members extends BaseController
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
+        }
         if ($id === null) {
              return redirect()->back(); // or error
         }
@@ -348,6 +379,9 @@ class Members extends BaseController
     {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         if ($this->request->isAJAX()) {
             $coordid = $this->request->getPost("coordid");
@@ -367,6 +401,9 @@ class Members extends BaseController
     {
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
+        }
+        if($this->session->get('role') == 3){
+            return redirect()->to('admindashboard');
         }
         if ($this->request->isAJAX()) {
             $membersaadhar = $this->request->getPost("membersaadhar");

@@ -1076,7 +1076,7 @@
             document.getElementById('whatsappno-update').value = document.getElementById('phoneno-update').value;
         }
 
-        let selectedEducationsUpdate = [];
+        var selectedEducationsUpdate = [];
 
         function renderEducationTagsUpdate() {
             const container = document.getElementById('education_tags-update');
