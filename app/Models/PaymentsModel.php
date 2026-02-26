@@ -17,10 +17,10 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' LIMIT 5 OFFSET $counts");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
             return $query->getResultArray();
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified' LIMIT 5 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
         return $query->getResultArray();
     }
 
@@ -36,16 +36,24 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified'");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head'");
             return count($query->getResultArray());
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head'");
         return count($query->getResultArray());
     }
 
     public function getMembersSearchfields($searchfields)
     {
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Name LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Taluk LIKE '%$searchfields%' OR Aadharnumber LIKE '%$searchfields%'");
+        $session = session();
+        $role_filter = "(Role = 3 OR Role = 2) AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
+        
+        if ($session->get('role') == 2) {
+            $coord_id = $session->get("Kaadaisoft_userId");
+            $role_filter = "Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
+        }
+
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE ($role_filter) AND (Name LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Taluk LIKE '%$searchfields%' OR Aadharnumber LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%')");
         return $query->getResultArray();
     }
 
@@ -191,6 +199,18 @@ class PaymentsModel extends Model
             $builder->where('km.Village', $villagename);
         }
     
+        $session = session();
+        if ($session->get('role') == 2) {
+            $coord_id = $session->get("Kaadaisoft_userId");
+            $builder->groupStart()
+                    ->where('km.Coordinator_id', $coord_id)
+                    ->orWhere('km.Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+            $builder->where('km.Role', 3);
+        } else {
+            $builder->whereIn('km.Role', [2, 3]);
+        }
+        $builder->where('km.MemberRole', 'Head');
         $builder->where('km.Approvedstatus', 'Verified');
     
         if ($status == "Pending") {
@@ -233,6 +253,18 @@ class PaymentsModel extends Model
             $builder->where('km.Village', $villagename);
         }
     
+        $session = session();
+        if ($session->get('role') == 2) {
+            $coord_id = $session->get("Kaadaisoft_userId");
+            $builder->groupStart()
+                    ->where('km.Coordinator_id', $coord_id)
+                    ->orWhere('km.Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+            $builder->where('km.Role', 3);
+        } else {
+            $builder->whereIn('km.Role', [2, 3]);
+        }
+        $builder->where('km.MemberRole', 'Head');
         $builder->where('km.Approvedstatus', 'Verified');
     
         if ($status == "Pending") {
@@ -338,7 +370,7 @@ class PaymentsModel extends Model
 
     public function getReceiptlist($memberid)
     {
-        $query = $this->db->query("SELECT * FROM paymentreceipts WHERE Familymembershipid = '$memberid' ORDER BY eventid");
+        $query = $this->db->query("SELECT * FROM paymentreceipts WHERE Familymembershipid = '$memberid' AND status IS NOT NULL ORDER BY eventid, dues ASC");
         return $query->getResultArray();
     }
 

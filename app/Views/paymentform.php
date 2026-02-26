@@ -323,8 +323,8 @@
             <option value="">Search Event</option>
             <?php if(isset($eventyears))
             foreach ($eventyears as $key => $value) {
-            echo 
-            "<option value='$value[Year]'>$value[Year]</option>";
+                $selected = (isset($preselected_year) && $preselected_year == $value['Year']) ? 'selected' : '';
+                echo "<option value='$value[Year]' $selected>$value[Year]</option>";
             }
             ?>
             </select>
@@ -969,6 +969,34 @@ const BankList = [
       }})
     }
    */
+
+    $(document).ready(function() {
+        <?php if(isset($preselected_eventid) && isset($preselected_year)): ?>
+            let yearSelect = document.getElementById('eventnames');
+            let memberid = "<?= $memberdetail->Familymembershipid ?>";
+            let preselectedEventId = "<?= $preselected_eventid ?>";
+            
+            // Trigger getEvents manually
+            if(yearSelect.value != "") {
+                $.ajax({
+                    type:"get",
+                    url:"payments/get-events-list",
+                    data:{"year":yearSelect.value, "memberid":memberid},
+                    success:(result)=>{
+                        document.getElementById("showevents").innerHTML = result;
+                        
+                        // Now select the event in the newly loaded dropdown
+                        let eventSelect = document.querySelector('select[name="eventid"]');
+                        if(eventSelect) {
+                            eventSelect.value = preselectedEventId;
+                            // Trigger getTaxamount
+                            getTaxamount(eventSelect, memberid);
+                        }
+                    }
+                });
+            }
+        <?php endif; ?>
+    });
 
   </script>
 

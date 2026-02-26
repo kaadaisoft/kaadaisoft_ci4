@@ -7,7 +7,7 @@ if (isset($members) && isset($sno)) {
         <td style='font-weight:500;'>$i</td>
         <td class='fw-bold text-primary'>$value[Familymembershipid]</td>
         <td style='font-weight:500;'>$value[Name]</td>
-        <td style='font-weight:500;'>$value[Role]</td>
+        <td style='font-weight:500;'>" . (($value['MemberRole'] == 'Head') ? 'Head' : (($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : 'Member'))) . "</td>
         <td style='font-weight:500;'>$value[Aadharnumber]</td>
         <td style='font-weight:500;'>$value[Phonenumber]</td>
         <td style='font-weight:500;'>$value[Taluk]</td>

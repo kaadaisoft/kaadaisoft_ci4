@@ -471,6 +471,15 @@
           #menu-bar {
               display: none;
           }
+          #pageheight {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow: visible !important;
+          }
+          #pagecontrol {
+            max-height: none !important;
+            overflow: visible !important;
+          }
       }
       .dead-member-row, .dead-member-row td, .dead-member-row th {
         background-color: #f5f5f5 !important;

@@ -438,10 +438,8 @@
       let c = window.innerHeight;
       let topBarElement = document.getElementById("search-bar");
       let d = topBarElement ? topBarElement.getBoundingClientRect().height : 0;
-      let setFilteredheight = document.getElementById("reportsFilteredpageHeight");
       let menuBarElement = document.getElementById("menu-bar");
       
-      if (setFilteredheight) setFilteredheight.style.height = (c - d) + "px";
       if (menuBarElement) menuBarElement.style.height = (c - d) + "px";
   }
 

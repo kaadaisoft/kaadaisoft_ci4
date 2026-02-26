@@ -131,6 +131,15 @@
         #menu-bar {
             display: none;
         }
+        #reportspage {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        .container-fluid[style*="position:absolute"] {
+            position: relative !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
     }
   </style>
 </head>

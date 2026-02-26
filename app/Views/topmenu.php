@@ -48,9 +48,9 @@
                 <a href="<?= base_url('view-member-update-requests') ?>" class="text-decoration-none d-flex fa-bell-icon position-relative" title="Update Requests">
                     <span><i class="fa-solid fa-user-pen fs-5 top-icon-color"></i></span>
                     <?php
-                    $updaterequestscount = session()->get("updaterequestscount");
-                    if ($updaterequestscount > 0) {
-                        echo "<sup style='background-color:orange;color:white;width:18px;height:18px;font-size:10px;top: -5px;right: -10px;' class='rounded-circle position-absolute d-flex align-items-center justify-content-center fw-bold'>$updaterequestscount</sup>";
+                    $updaterequestcounts = session()->get("updaterequestcounts");
+                    if ($updaterequestcounts > 0) {
+                        echo "<sup style='background-color:orange;color:white;width:18px;height:18px;font-size:10px;top: -5px;right: -10px;' class='rounded-circle position-absolute d-flex align-items-center justify-content-center fw-bold'>$updaterequestcounts</sup>";
                     }
                     ?>
                 </a>

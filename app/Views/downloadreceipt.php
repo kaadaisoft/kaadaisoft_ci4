@@ -310,7 +310,7 @@
                               
                             }
                             ?></td></tr>
-                            <tr><td>Paid Amount</td><td>:</td><td class="fw-bold"><?=$receipt->paidamount?></td></tr>
+                            <tr><td>Paid Amount (Total)</td><td>:</td><td class="fw-bold"><?=$receipt->Collectedamount?> Rs</td></tr>
                             <tr><td colspan="3" class="py-5" style="text-align:right;">Manager Signature</td></tr>
                             <!-- <tr><td colspan="3"></td></tr> -->
                         </tbody>

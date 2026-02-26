@@ -107,6 +107,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 text-dark font-weight-bold">
                     <i class="fa-solid fa-user-gear me-2"></i>Update Member Details: <small class="text-primary"><?= $member->Familymembershipid ?></small>
+                    <?php if(isset($pending_update) && !empty($pending_update)): ?>
+                        <span class="badge bg-warning text-dark fs-6 ms-2 px-3 py-1" style="border-radius:50px; font-weight:500;">
+                            <i class="fa-solid fa-clock-rotate-left"></i> In Review
+                        </span>
+                    <?php endif; ?>
                 </h4>
                 <button onclick="hideupdatememberform()" class="btn btn-close"></button>
             </div>

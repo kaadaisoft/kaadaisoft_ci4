@@ -510,6 +510,20 @@
           #menu-bar {
               display: none;
           }
+          #pageheight {
+            position: relative !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          #pagecontrol {
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          div[style*="height: 75vh"] {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
       }
     </style>
 </head>
@@ -1155,12 +1169,8 @@
                     <td style='font-weight:500;'>${value.Taluk}</td>
                     <td style='font-weight:500;'>${value.Panchayat}</td>
                     <td class='d-flex justify-content-evenly'>
-                    <button <?php if (session()->get('role') == 2) {
-                       echo "hidden";
-                    } ?> onclick="showupdatemembermodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button <?php if (session()->get('role') == 2) {
-                       echo "hidden";
-                    } ?> data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
+                    <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
+                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
                     <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
                     </td>
             </tr>

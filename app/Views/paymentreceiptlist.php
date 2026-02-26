@@ -398,18 +398,22 @@
           echo "<div class='px-4'>";       
           echo "<table class='mt-2 table table-bordered'>
           <tbody>";
-               if(count($receipts) > 0){        
-                 $i = 0;
-                 foreach ($receipts as $key => $value) {
-                   $status = $value["status"];
+                if(count($receipts) > 0){        
+                  $i = 0;
+                  $last_event = "";
+                  foreach ($receipts as $key => $value) {
+                    $status = $value["status"];
 
-                   if($value['dues'] == 1){
-                    $i = $i+1;
-                    echo "<tr class='table-transparent'><td style='font-size:20px;' class='fw-bold text-center' colspan='10'>$value[eventname]</td></tr>
-                    <tr>
-                    <tr style='font-size:18px;' class='ps-gray fw-bold'>
-                    <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class='text-center'>Actions</th>
-                    </tr>
+                    if($value['eventname'] != $last_event){
+                     $last_event = $value['eventname'];
+                     echo "<tr class='table-transparent'><td style='font-size:20px;' class='fw-bold text-center' colspan='10'>$value[eventname]</td></tr>
+                     <tr style='font-size:18px;' class='ps-gray fw-bold'>
+                     <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class='text-center'>Actions</th>
+                     </tr>";
+                    }
+                    
+                    $i++;
+                    echo "<tr>
                     <td>$i</td>
                     <td style='font-size:18px;' class='fw-bold text-primary'>$value[eventname]</td>
                     <td style='font-weight:500;'>$value[Taxamount] Rs</td>
@@ -423,31 +427,14 @@
                     <div class='d-flex justify-content-evenly'><button onclick='viewReceipt(\"paymentreceiptpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-sharp fa-solid fa-eye'></i><span class='viewtooltip'>View</span></button>
                     <button onclick='downloadReceipt(\"downloadpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-solid fa-download'></i><span class='downloadreceipt'>Download</span></button></div></td>
                     </tr>";
-                   }
-                   else{
-                   echo "<tr>
-                    <td>".($i+1)."</td>
-                    <td style='font-size:18px;' class='fw-bold text-primary'>$value[eventname]</td>
-                    <td style='font-weight:500;'>$value[Taxamount] Rs</td>
-                    <td style='font-weight:500;'>".($value['Collectedamount'] ? $value['Collectedamount']." ".'Rs' : '-')."</td>
-                    <td style='font-weight:500;'>".($value['balanceamount'] ? $value['balanceamount']." ".'Rs' : '-')."</td>
-                    <td style='font-weight:500;'>$value[paymentdate]</td>
-                    <td style='font-weight:500;'>$value[year]</td>
-                    <td style='font-weight:500;'>$value[dues]</td>
-                    <td><span class ='rounded-pill ".($status == NULL || $status == 'Pending'  ? 'bg-danger text-white py-2 px-3 btn rounded-3' : 'bg-success text-white py-2 px-3 btn rounded-3')."'>".($status == NULL || $status == 'Pending' ? 'Pending' : $value['status'])."</span></td>
-                    <td>
-                    <div class='d-flex justify-content-evenly'><button onclick='viewReceipt(\"paymentreceiptpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-sharp fa-solid fa-eye'></i><span class='viewtooltip'>View</span></button><button onclick='downloadReceipt(\"downloadpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-solid fa-download'></i><span class='downloadreceipt'>Download</span></button></div></td>
-                    </tr>";
-                    $i++;  
-                   }
-                 } 
-                }
-                else{
-                  echo "<tr><td class='text-center text-secondary fw-bold' colspan='7'>No Receipts found.</td></tr>";
-                }
-                }
-                echo "</tbody>
-                </table>";
+                  } 
+                 }
+                 else{
+                   echo "<tr><td class='text-center text-secondary fw-bold' colspan='10'>No Receipts found.</td></tr>";
+                 }
+                 }
+                 echo "</tbody>
+                 </table>";
 
             ?>
           </div>
@@ -585,9 +572,9 @@
         printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
         printWindow.document.write('table td, th { padding: 10px; }');
         printWindow.document.write('.print-only { font-size: 14px; }');
-        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('</style></head><' + 'body>');
         printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</body></html>');
+        printWindow.document.write('</' + 'body></' + 'html>');
         
         printWindow.document.close();
         setTimeout(function() {

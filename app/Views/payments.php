@@ -220,6 +220,11 @@
            .ps-logo{
             justify-content:space-between;
           }
+          #changepage {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
       }
 
     @media screen and (min-width:768px) {

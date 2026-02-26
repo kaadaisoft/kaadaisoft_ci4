@@ -545,6 +545,19 @@ html, body {
         font-weight: 800;
       }
 
+      /* ✅ Added to enable full page scroll on mobile */
+      @media screen and (max-width: 768px) {
+        #pageheight {
+          position: relative !important;
+          height: auto !important;
+          overflow: visible !important;
+        }
+        #changepage {
+          max-height: none !important;
+          overflow: visible !important;
+        }
+      }
+
     </style>
 </head>
 <body>
@@ -654,6 +667,28 @@ html, body {
 
       <!-------------------------------total-pendings-end------------------------------->
 
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title heading-kaadaisoft" id="receiptModalLabel">Payment Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="receiptModalBody">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
          </div>
 
          </div><!-----------main-dashboard-end------------------------>
@@ -754,7 +789,7 @@ html, body {
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
             let pending_display = (pending === 0) ? "0" : pending;
-            rows_html += `<tr>
+            rows_html += `<tr onclick="handleRowClick(${index})" style="cursor: pointer;">
                 <td>${index + 1}</td>
                 <td>${participation.eventname}</td>
                 <td>${participation.Taxamount}</td>
@@ -785,6 +820,61 @@ html, body {
             return item.eventname.toLowerCase().includes(searchTerm);
         });
         renderPendingTable(filteredData);
+    }
+
+    function handleRowClick(index) {
+        let participation = globalEventParticipation[index];
+        let pending = parseFloat(participation.balanceamount);
+        if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
+
+        if (pending === 0) {
+            // Show receipt
+            let memberid = "<?= session()->get('Kaadaisoft_userId'); ?>";
+            let eventid = participation.Id;
+            let dues = participation.dues;
+            viewReceipt(`paymentreceiptpdf?memberid=${memberid}&dues=${dues}&eventid=${eventid}`);
+        } else {
+            // Redirect to gopayment page
+            window.location.href = `gopaymentpage?memberid=<?= session()->get('Kaadaisoft_userId'); ?>&eventid=${participation.Id}`;
+        }
+    }
+
+    function viewReceipt(url) {
+        $('#receiptModal').modal('show');
+        $('#receiptModalBody').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+        
+        $.ajax({
+            type: "get",
+            url: url + "&ajax=1",
+            success: (result) => {
+                $('#receiptModalBody').html(result);
+            },
+            error: (error) => {
+                $('#receiptModalBody').html('<div class="alert alert-danger m-3">Error loading receipt. Please try again.</div>');
+            }
+        });
+    }
+
+    function printReceiptFromModal() {
+        const modalBody = document.getElementById('receiptModalBody');
+        const printContent = modalBody.innerHTML;
+        const printWindow = window.open('', '', 'height=600,width=800');
+        
+        printWindow.document.write('<html><head><title>Print Receipt</title>');
+        printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
+        printWindow.document.write('<style>');
+        printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
+        printWindow.document.write('table td, th { padding: 10px; }');
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('<div class="p-4">' + printContent + '</div>');
+        printWindow.document.write('</body></html>');
+        
+        printWindow.document.close();
+        setTimeout(function() {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     }
 
     $.ajax({

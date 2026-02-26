@@ -482,6 +482,11 @@
           #menu-bar {
               display: none;
           }
+          .container-fluid[style*="position:absolute;overflow:hidden;"] {
+            position: relative !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
       }
     </style>
 </head>
