@@ -565,7 +565,7 @@
         const printContent = modalBody.innerHTML;
         const printWindow = window.open('', '', 'height=600,width=800');
         
-        printWindow.document.write('<html><head><title>Print Receipt</title>');
+        printWindow.document.write("<html><head><title>Print Receipt</title>");
         // Copy relevant styles for printing
         printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
         printWindow.document.write('<style>');

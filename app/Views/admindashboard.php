@@ -860,14 +860,14 @@ html, body {
         const printContent = modalBody.innerHTML;
         const printWindow = window.open('', '', 'height=600,width=800');
         
-        printWindow.document.write('<html><head><title>Print Receipt</title>');
+        printWindow.document.write("<html><head><title>Print Receipt</title>");
         printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
         printWindow.document.write('<style>');
         printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
         printWindow.document.write('table td, th { padding: 10px; }');
-        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('</style></head><' + 'body>');
         printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</body></html>');
+        printWindow.document.write('</' + 'body></' + 'html>');
         
         printWindow.document.close();
         setTimeout(function() {
