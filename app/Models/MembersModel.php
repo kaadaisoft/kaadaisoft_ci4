@@ -455,8 +455,7 @@ class MembersModel extends Model
 
     public function checkExistphoneno($phoneno)
     {
-        $checkexistphoneno = $this->db->query("SELECT * FROM kaadaimembers WHERE Phonenumber LIKE '%$phoneno%'");
-        return $checkexistphoneno;
+        return $this->db->table('kaadaimembers')->where('Phonenumber', $phoneno)->get();
     }
 
     public function checkExistaadharno($aadharno)
@@ -642,7 +641,7 @@ class MembersModel extends Model
             $familyId = $member->Familymembershipid;
         }
 
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId') AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY Dob ASC");
+        $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId') AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY Dob ASC");
         return $query->getResult();
     }
 

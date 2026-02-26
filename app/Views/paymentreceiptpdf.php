@@ -458,9 +458,9 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>நன்கொடையாக பெறப்பட்ட தொகை</td>
+                      <td>நன்கொடையாக பெறப்பட்ட தொகை (மொத்தம்)</td>
                       <td>:</td>
-                      <td class="fw-bold"><?= $receipt->paidamount ?></td>
+                      <td class="fw-bold"><?= $receipt->Collectedamount ?> Rs</td>
                     </tr>
                     <tr>
                       <td colspan="3" class="py-5" style="text-align:right;">மேலாளர் கையொப்பம்/Manager Signature</td>
@@ -586,13 +586,13 @@
       htmlContent += "table td,th{ padding-top:20px; }";
       htmlContent += ".heading-kaadaisoft{ color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; font-size:50px; }";
       htmlContent += ".printuse{ text-align:center; }";
-      htmlContent += "</style></head><body>";
+      htmlContent += "</style></head><" + "body>";
       htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
       htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
       htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>சீட்டு எண் : </td></tr>";
       htmlContent += "<tr><td style='font-weight:bold;'>தேதி : " + currentDate + "</td></tr>";
       htmlContent += divContents;
-      htmlContent += "</table></div></body></html>";
+      htmlContent += "</table></div></" + "body></" + "html>";
 
       printWindow.document.write(htmlContent);
       printWindow.document.close();

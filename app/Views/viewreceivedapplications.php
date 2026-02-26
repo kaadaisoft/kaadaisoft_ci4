@@ -439,6 +439,15 @@
         #menu-bar {
             display: none;
         }
+        #pageheight {
+          position: relative !important;
+          height: auto !important;
+          overflow: visible !important;
+        }
+        #pagecontrol {
+          max-height: none !important;
+          overflow: visible !important;
+        }
     }
     </style>
 </head>

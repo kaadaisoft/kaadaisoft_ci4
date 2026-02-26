@@ -322,6 +322,15 @@
             width:100% !important;
             margin: 0 !important;
            }
+           #pageheight {
+            position: relative !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          #pagecontrol {
+            max-height: none !important;
+            overflow: visible !important;
+          }
            .memberpadd{
             padding:5% 0 0 0 !important;
            }

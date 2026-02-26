@@ -2,7 +2,7 @@
 if (isset($members) && isset($sno)) {
   $i = $sno + 1;
   foreach ($members as $key => $value) {
-    $roleText = ($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : (($value['Role'] == 3) ? 'Member' : ''));
+    $roleText = ($value['MemberRole'] == 'Head') ? 'Head' : (($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : 'Member'));
     echo
       "<tr>
         <td style='font-weight:500;'>$i</td>

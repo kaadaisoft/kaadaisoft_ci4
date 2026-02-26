@@ -61,6 +61,20 @@
            #menu-bar {
             display: none;
            }
+           #pageheight {
+             position: relative !important;
+             height: auto !important;
+             overflow: visible !important;
+           }
+           #pagecontrol {
+             max-height: none !important;
+             overflow: visible !important;
+           }
+           #changepage {
+             height: auto !important;
+             max-height: none !important;
+             overflow: visible !important;
+           }
      }
 
       /* Custom Mobile Menu Styles */
@@ -137,8 +151,10 @@
               <div class="col-md-4">
                   <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
                   
-                  <div style="gap:10px;" class="row mt-4 pb-3">
-                     <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update Details</button>
+                  <div style="gap:10px;" class="row mt-4 pb-3 ps-3">
+                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-primary fw-bold" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')">View Documents</button>
+                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$manager->Familymembershipid?>')">Event Participation</button>
+                      <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update Details</button>
                       <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
                   </div>
               </div>  
@@ -231,7 +247,6 @@
     <div id="mobile-menu-content"></div>
 </div>
 
-<!------------------------Update-Manager-modal-------------------------------------------->
 <div id="updatemanager-modal-hide" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
     <div id="update-manager-section" style="width: 90%; margin: 2% auto; background: #fff; border-radius: 20px; padding: 20px; position: relative;">
         <div id="update-manager-form"></div>
@@ -239,7 +254,107 @@
     </div>
 </div>
 
+<!------------------documents-modal--------------------->
+<div data-bs-backdrop="static" data-bs-keyboard="false" id="member_documents" class="modal fade">
+    <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Documents:</h4>
+        <button data-bs-dismiss="modal" class="btn btn-close"></button>
+        </div>
+        <div id="showdocuments" class="modal-body row justify-content-evenly">
+           
+        </div>
+    </div>
+    </div>
+</div>
+
+<!--------------------view-community-certificate------------>
+<div id="show_commun_cert" class="modal fade">
+   <div class='modal-dialog modal-dialog-scrollable modal-lg'>
+       <div class="modal-content">
+        <div class="modal-header">
+          <h4>Community certificate</h4>
+          <button class="btn btn-close" data-bs-dismiss='modal'></button>
+        </div>
+         <div style="height:700px;" id="dis_commun_cert" class="modal-body">
+             
+         </div>
+       </div>
+   </div>
+</div>
+
+<!------------------------show-event-participation------------------------->
+<div id="eventparticipation" class="modal fade">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+   <div class="modal-content">
+     <div class="modal-header">
+     <h4>Event Participation:</h4>
+     <button class="btn btn-close" data-bs-dismiss="modal"></button>
+     </div>
+     <div class="modal-body d-flex justify-content-evenly">
+          <table class="table table-bordered">
+            <thead>
+              <tr><th>SNo</th><th>Event Name</th><th>Tax Amount</th><th>Paid Amount</th><th>Balance Amount</th><th>Payment Date</th></tr>
+            </thead>
+            <tbody id="showparticipation">
+            </tbody>
+          </table>
+     </div>
+   </div>
+  </div>
+</div>
+
 <script>
+      function viewMemberdocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
+          document.getElementById("showdocuments").innerHTML = `
+          <div class="col-md-4 text-center">
+              <p class="fw-bold">Aadhar Front Image:</p>
+              <img class="img-fluid border rounded" style="max-height:300px;" src="<?= base_url('assets/membersdocuments/') ?>${aadharfrontimage}">
+          </div>
+          <div class="col-md-4 text-center">
+              <p class="fw-bold">Aadhar Back Image:</p>
+              <img class="img-fluid border rounded" style="max-height:300px;" src="<?= base_url('assets/membersdocuments/') ?>${aadharbackimage}">
+          </div>
+          <div class="col-md-4 text-center">
+              <p class="fw-bold">Community Certificate:</p>
+              <img class="img-fluid border rounded" style="max-height:300px;cursor:pointer;" 
+                   onclick="viewCommunitycertificate('${communitycertificate}')" 
+                   src="<?= base_url('assets/membersdocuments/') ?>${communitycertificate}">
+          </div>`;
+      }
+
+      function viewCommunitycertificate(communitycertificate) {
+        let viewcert_modal = new bootstrap.Modal(document.getElementById("show_commun_cert"),{
+          backdrop:"static",
+          keyboard:false
+        });
+        viewcert_modal.show();
+        document.getElementById("dis_commun_cert").innerHTML = `<img style="width:100%;height:auto;" class="img-fluid" src='<?= base_url('assets/membersdocuments/') ?>${communitycertificate}'>`;
+      }
+
+      function viewMembereventparticipation(id) {
+          $.ajax({
+              type:"post",
+              url:"<?= base_url('event-participation') ?>",
+              data:{"id":id},
+              success:function(result){
+                  let eventparticipation = JSON.parse(result);
+                  if(eventparticipation.length < 1){
+                      document.getElementById("showparticipation").innerHTML = `<tr><td class="text-center" colspan="6">No records found</td></tr>`;
+                  }
+                  else{
+                      document.getElementById("showparticipation").innerHTML = eventparticipation.map((participation,index)=> {
+                          return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.Collectedamount}</td><td>${participation.balanceamount}</td><td>${participation.paymentdate}</td></tr>`;
+                      }).join("");
+                  }
+              },
+              error:function(error){
+                  console.error("Error fetching event participation:", error);
+              }
+          });
+      }
+
       let pageheight = window.innerHeight;
       document.getElementById("pageheight").style.height = pageheight+"px";
       

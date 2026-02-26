@@ -46,38 +46,38 @@
                             <td>:</td>
                             <td class="fw-bold"><?= $receipt->paymentdate ?></td>
                         </tr>
-                        <?php if ($receipt->bankname || $receipt->banknameforcheckque): ?>
                         <tr>
-                            <td>வங்கியின் பெயர்</td>
+                            <td>பணம் செலுத்திய வங்கியின் பெயர்</td>
                             <td>:</td>
-                            <td class="fw-bold"><?= $receipt->bankname ?: $receipt->banknameforcheckque ?></td>
+                            <td class="fw-bold">
+                                <?php
+                                if (!$receipt->bankname && !$receipt->banknameforcheckque) {
+                                    echo "-";
+                                } else {
+                                    echo $receipt->bankname ?: $receipt->banknameforcheckque;
+                                }
+                                ?>
+                            </td>
                         </tr>
-                        <?php endif; ?>
-                        <?php if ($receipt->transactionid): ?>
                         <tr>
-                            <td>பரிவர்த்தனை எண்</td>
+                            <td>வங்கி பரிவர்த்தனை எண்</td>
                             <td>:</td>
-                            <td class="fw-bold"><?= $receipt->transactionid ?></td>
+                            <td class="fw-bold"><?= $receipt->transactionid ?: '-' ?></td>
                         </tr>
-                        <?php endif; ?>
-                        <?php if ($receipt->checkqueno): ?>
                         <tr>
-                            <td>காசோலை எண்</td>
+                            <td>காசோலை எண்:</td>
                             <td>:</td>
-                            <td class="fw-bold"><?= $receipt->checkqueno ?></td>
+                            <td class="fw-bold"><?= $receipt->checkqueno ?: '-' ?></td>
                         </tr>
-                        <?php endif; ?>
-                        <?php if ($receipt->upitransactionid): ?>
                         <tr>
                             <td>UPI பரிவர்த்தனை எண்</td>
                             <td>:</td>
-                            <td class="fw-bold"><?= $receipt->upitransactionid ?></td>
+                            <td class="fw-bold"><?= $receipt->upitransactionid ?: '-' ?></td>
                         </tr>
-                        <?php endif; ?>
                         <tr class="border-top mt-3">
-                            <td class="pt-3 fw-bold">நன்கொடையாக பெறப்பட்ட தொகை</td>
+                            <td class="pt-3 fw-bold">நன்கொடையாக பெறப்பட்ட தொகை (மொத்தம்)</td>
                             <td class="pt-3">:</td>
-                            <td class="pt-3 fw-bold text-primary fs-5">₹ <?= number_format($receipt->paidamount, 2) ?></td>
+                            <td class="pt-3 fw-bold text-primary fs-5">₹ <?= number_format($receipt->Collectedamount, 2) ?></td>
                         </tr>
                         <tr>
                             <td colspan="3" class="py-5 text-end text-muted italic">

@@ -246,10 +246,11 @@ class CoordinatorsModel extends Model
     public function getPendingamount($member_id) {
     $pending_amount = $this->db->query("
         SELECT el.Id, el.EventName as eventname, el.TaxAmount as Taxamount,
-        IFNULL(pr.balanceamount, el.TaxAmount) AS balanceamount
+        IFNULL(pr.balanceamount, el.TaxAmount) AS balanceamount,
+        pr.max_dues as dues
         FROM eventlist el
         LEFT JOIN (
-            SELECT pr.Eventid, pr.eventname, pr.Taxamount, pr.balanceamount
+            SELECT pr.Eventid, pr.eventname, pr.Taxamount, pr.balanceamount, max_dues_subquery.max_dues
             FROM paymentreceipts pr
             JOIN (
                 SELECT Eventid, MAX(dues) AS max_dues

@@ -353,7 +353,6 @@
                                             class="form-control form-control-sm" type="number" name="aadharno">
                                         <small id="aadharnoerror" class="text-danger"></small>
                                     </div>
-                                    <!-- 
                                     <div class="col-md-4"> 
                                         <label for="familyidfield">
                                             Existing Family Id
@@ -362,7 +361,7 @@
                                         <input id="familyidfield" onkeyup="validateInputfield(this)"
                                             class="form-control form-control-sm" type="text" name="existfamilyid">
                                         <small id="familyiderror" class="text-danger"></small>
-                                    </div> -->
+                                    </div>
 
                                     <!-- Date of Birth -->
                                     <div class="col-md-4">
@@ -1156,7 +1155,7 @@
 
                                             <div class="col-md-3 d-flex flex-column">
                                                 <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
-                                                    Upload Aadhar Front image <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                    Upload Aadhar Front image
                                                 </label>
                                                 <div class="ps-file-upload-wrapper">
                                                     <label for="aadharfrontimage" class="ps-file-upload-btn" id="aadharfrontimage_btn">
@@ -1172,7 +1171,7 @@
 
                                             <div class="col-md-3 d-flex flex-column">
                                                 <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
-                                                    Upload Aadhar Back image <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                    Upload Aadhar Back image
                                                 </label>
                                                 <div class="ps-file-upload-wrapper">
                                                     <label for="aadharbackimage" class="ps-file-upload-btn" id="aadharbackimage_btn">
@@ -1188,7 +1187,7 @@
 
                                             <div class="col-md-3 d-flex flex-column">
                                                 <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">
-                                                    Upload Community Certificate <span style="color: #ff0000 !important; font-weight: bold;">*</span>
+                                                    Upload Community Certificate
                                                 </label>
                                                 <div class="ps-file-upload-wrapper">
                                                     <label for="communitycertificate" class="ps-file-upload-btn" id="communitycertificate_btn">
@@ -1378,7 +1377,10 @@
                     $.ajax({
                         type: "post",
                         url: "<?= base_url('coordinators/checkExistphoneno') ?>",
-                        data: { "phoneno": field_value },
+                        data: { 
+                            "phoneno": field_value,
+                            "existfamilyid": document.getElementsByName("existfamilyid")[0] ? document.getElementsByName("existfamilyid")[0].value : ""
+                        },
                         success: (result) => {
                             console.log(result)
                             if (result.trim() == "true") {
@@ -1848,23 +1850,8 @@
                 if (!firstInvalid) firstInvalid = document.getElementById('passportphoto');
             }
 
-            const aadharfrontimage = f.aadharfrontimage.value.trim();
-            if (!aadharfrontimage) {
-                document.querySelector('.aadharfrontimage').textContent = 'Please upload front aadhar card photo.';
-                if (!firstInvalid) firstInvalid = document.querySelector('input[name="aadharfrontimage"]');
-            }
+            // Optional: Aadhar front, Aadhar back, Community certificate (Removed mandatory check)
 
-            const aadharbackimage = f.aadharbackimage.value.trim();
-            if (!aadharbackimage) {
-                document.querySelector('.aadharbackimage').textContent = 'Please upload back aadhar card photo.';
-                if (!firstInvalid) firstInvalid = document.querySelector('input[name="aadharbackimage"]');
-            }
-
-            const communitycertificate = f.communitycertificate.value.trim();
-            if (!communitycertificate) {
-                document.querySelector('.communitycertificate').textContent = 'Please upload community certificate.';
-                if (!firstInvalid) firstInvalid = document.querySelector('input[name="communitycertificate"]');
-            }
 
             // Education * (mandatory)
             const education = f.educationfield ? f.educationfield.value.trim() : "";

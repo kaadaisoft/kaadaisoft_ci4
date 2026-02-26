@@ -331,11 +331,13 @@ class Members extends BaseController
                 $panchayats = $this->membersModel->getPanchayats($taluk_name);
             }
 
-            $family_members = $this->membersModel->getFamilyMembers($member->Familymembershipid);
+            $family_members = $this->membersModel->getFamilyMembers($member->Existfamilyid ?: $member->Familymembershipid);
+            $pending_update = $this->membersModel->getPendingUpdateRequest($member->Familymembershipid);
 
             $updatememberpage = view("updatemember", array(
                 "member" => $member, 
                 "family_members" => $family_members,
+                "pending_update" => $pending_update,
                 "states" => $states, 
                 "districts" => $districts, 
                 "taluks" => $taluks, 
@@ -423,11 +425,23 @@ class Members extends BaseController
         if (!$this->session->has('Kaadaisoft_userId')) {
             return redirect()->to('/');
         }
-        $member_id = "";
+        $member_id = $this->request->getGet("member_id") ?: $this->session->get('Kaadaisoft_userId');
+        
         if ($this->session->get('role') == 3) {
-            $member_id = $this->session->get('Kaadaisoft_userId');
-        } else {
-            $member_id = $this->request->getGet("member_id");
+            $loggedInId = $this->session->get('Kaadaisoft_userId');
+            if ($member_id != $loggedInId) {
+                $familyMembers = $this->membersModel->getFamilyMembers($loggedInId);
+                $isFamily = false;
+                foreach ($familyMembers as $fm) {
+                    if ($fm->Familymembershipid == $member_id) {
+                        $isFamily = true;
+                        break;
+                    }
+                }
+                if (!$isFamily) {
+                    return redirect()->to('viewMemberdata'); // Default to own data if unauthorized
+                }
+            }
         }
         $member_data = $this->membersModel->getMemberdata($member_id);
         if (!$member_data) {
@@ -643,13 +657,16 @@ class Members extends BaseController
             $this->session->set("coordsuccessstatus", "No changes were made to the details.");
             $this->session->set("membersuccessstatus", "No changes were made to the details.");
             $this->session->set("managersuccessstatus", "No changes were made to the details.");
+            if ($this->session->get('role') == 3) {
+                return redirect()->to("view-member-data?member_id=" . $this->session->get('Kaadaisoft_userId'));
+            }
             return redirect()->back();
         }
 
         if ($updateMember) {
             if ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Your update request has been sent to your coordinator for approval.");
-                return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
+                return redirect()->to("view-member-data?member_id=" . $this->session->get('Kaadaisoft_userId'));
             } else if ($this->session->get('role') == 2) {
                 if ($reason == "updatemember") {
                     $this->session->set("membersuccessstatus", "The Member $Familymembershipid details updated successfully.");
@@ -686,24 +703,39 @@ class Members extends BaseController
     {
         if ($this->request->isAJAX()) {
             $phoneno = $this->request->getPost("phoneno");
+            $existfamilyid = $this->request->getPost("existfamilyid");
+            $current_editing_id = $this->request->getPost("member_id"); // Optional for updates
+            
             $checkexistphoneno = $this->membersModel->checkExistphoneno($phoneno);
             if ($checkexistphoneno->getNumRows() > 0) {
-                 // Check if the phone number belongs to the current logged-in user
-                 $current_user_id = $this->session->get('Kaadaisoft_userId');
-                 if ($current_user_id) {
-                     // Get current user details directly to verify phone
-                     $currentUser = $this->membersModel->getMemberdata($current_user_id);
-                     if ($currentUser && $currentUser->Phonenumber == $phoneno) {
-                         echo "false"; // Allow same number as logged-in user
-                         return;
+                 $rows = $checkexistphoneno->getResult();
+                 $isConflict = true; 
+
+                 foreach ($rows as $row) {
+                     $ownerMemberId = trim($row->Familymembershipid);
+                     $ownerFamilyId = trim($row->Existfamilyid ?: $row->Familymembershipid);
+
+                     // 1. If we are updating a member and the phone belongs to the person being updated, it's not a conflict
+                     if (!empty($current_editing_id) && $ownerMemberId == trim($current_editing_id)) {
+                         $isConflict = false;
+                         break;
+                     }
+                     
+                     // 2. If we have an existfamilyid, and this phone owner belongs to that same family, it's not a conflict
+                     if (!empty($existfamilyid)) {
+                         $targetFamilyId = trim($existfamilyid);
+                         if ($ownerMemberId == $targetFamilyId || $ownerFamilyId == $targetFamilyId) {
+                             $isConflict = false;
+                             break;
+                         }
                      }
                  }
-                echo "true"; // Number exists and does not belong to current user
+                 
+                 echo $isConflict ? "true" : "false";
             } else {
                 echo "false";
             }
         }
-
     }
 
     public function checkExistaadharno()

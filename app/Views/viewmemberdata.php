@@ -384,7 +384,16 @@
            #menu-bar{
             display:none;
            }
-           #commonsearch{
+           #pageheight {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow: visible !important;
+          }
+          #pagecontrol {
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          #commonsearch{
             width:100% !important;
             margin: 0 !important;
             /* padding:5px; */
@@ -529,8 +538,20 @@
          <?php if(isset($member)):?>
             <div class="container-fluid px-4 py-2 bg-white">   
             <h3 style="font-weight:500;" class="d-flex align-items-center">Member Details 
-                <?php if(isset($pending_update) && !empty($pending_update)): 
-                    $updated_data = json_decode($pending_update->updated_data, true);
+                <?php 
+                    $any_family_pending = false;
+                    if(isset($family_members)) {
+                        foreach($family_members as $fm) {
+                            if(isset($fm->pending_status) && $fm->pending_status == 'Pending') {
+                                $any_family_pending = true;
+                                break;
+                            }
+                        }
+                    }
+                    if((isset($pending_update) && !empty($pending_update)) || $any_family_pending): 
+                        if(isset($pending_update) && !empty($pending_update)) {
+                            $updated_data = json_decode($pending_update->updated_data, true);
+                        }
                 ?>
                 <span class="badge bg-warning text-dark fs-6 ms-2 px-3 py-2" style="border-radius:50px; font-weight:500; font-size: 0.7em !important;">
                     <i class="fa-solid fa-clock-rotate-left"></i> In Review
@@ -634,12 +655,17 @@
                                     }
                             ?>
                                 <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row' : '' ?>">
-                                    <td><?= $fm->Name ?></td>
+                                    <td>
+                                        <?= $fm->Name ?>
+                                        <?php if(isset($fm->pending_status) && $fm->pending_status == 'Pending'): ?>
+                                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65em;">In Review</span>
+                                        <?php endif; ?>
+                                    </td>
                                 <td><?= $display_role ?></td>
                                 <td><?= $fm->Gender ?></td>
                                 <td><?= $age ?></td>
                                  <?php if($member->MemberRole == 'Head'): ?>
-                                    <td>
+                                    <td class="d-flex align-items-center" style="gap: 5px;">
                                         <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
                                             <button style="width:fit-content;" onclick="showupdatemembermodal('<?=trim($fm->Familymembershipid)?>')" class='updatecoord btn btn-sm btn-primary fw-bold'>Edit</button>
                                         <?php else: ?>

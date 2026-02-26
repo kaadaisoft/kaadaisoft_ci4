@@ -94,6 +94,11 @@
             #menu-bar {
                 display: none;
             }
+            #pageheight {
+                position: relative !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
         }
 
         /* Custom Mobile Menu Styles */
@@ -151,6 +156,10 @@
             color: #6c757d;
             text-decoration: line-through;
             font-size: 0.9em;
+        }
+        .active-updaterequests {
+            background-color: rgb(230, 230, 230);
+            font-weight: 600;
         }
     </style>
 </head>
@@ -252,7 +261,7 @@
                                                 <i class="fa-solid fa-eye text-primary"></i>
                                             </button>
                                             <form action="<?= base_url('approve-member-update') ?>" method="POST"
-                                                class="d-inline">
+                                                class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
                                                 <button type="submit"
                                                     class="btn btn-sm btn-outline-success border-0 rounded-circle ms-2"
@@ -261,7 +270,7 @@
                                                 </button>
                                             </form>
                                             <form action="<?= base_url('reject-member-update') ?>" method="POST"
-                                                class="d-inline">
+                                                class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
                                                 <button type="submit"
                                                     class="btn btn-sm btn-outline-danger border-0 rounded-circle ms-2"
@@ -320,11 +329,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <form action="<?= base_url('reject-member-update') ?>" method="POST">
+                    <form action="<?= base_url('reject-member-update') ?>" method="POST" onsubmit="return confirm('Are you sure you want to reject this member update?')">
                         <input type="hidden" name="request_id" id="reject_request_id">
                         <button type="submit" class="btn btn-danger">Reject</button>
                     </form>
-                    <form action="<?= base_url('approve-member-update') ?>" method="POST">
+                    <form action="<?= base_url('approve-member-update') ?>" method="POST" onsubmit="return confirm('Are you sure you want to approve this member update?')">
                         <input type="hidden" name="request_id" id="approve_request_id">
                         <button type="submit" class="btn btn-success">Approve Update</button>
                     </form>

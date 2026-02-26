@@ -193,10 +193,22 @@ class Payments extends BaseController {
         }
         
         $memberid = $this->request->getGet('memberid');
+        $eventid = $this->request->getGet('eventid');
         $memberdetails = $this->paymentsModel->getMemberforPayment($memberid);
         $eventyears = $this->paymentsModel->getEventsyear();
+
+        $data = array("memberdetail"=>$memberdetails,"eventyears"=>$eventyears);
+        
+        if ($eventid) {
+            $event_data = $this->paymentsModel->getEventdata($eventid);
+            if ($event_data) {
+                $data['preselected_eventid'] = $eventid;
+                $data['preselected_year'] = $event_data->Year;
+            }
+        }
+
         if($memberdetails){
-            return view("paymentform",array("memberdetail"=>$memberdetails,"eventyears"=>$eventyears));
+            return view("paymentform", $data);
         }
         else{
             return false;
