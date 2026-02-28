@@ -509,7 +509,7 @@
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative; overflow-x: hidden;">
+<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
 <?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
@@ -532,151 +532,190 @@
               
         </div><!-----------side-bar-end-------------->
             
-        <div id="main-dashboard" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="changepage" style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
 
          <!------------------------------coordinator-data--------------------------->
          <?php if(isset($member)):?>
-            <div class="container-fluid px-4 py-2 bg-white">   
-            <h3 style="font-weight:500;" class="d-flex align-items-center">Member Details 
-                <?php 
-                    $any_family_pending = false;
-                    if(isset($family_members)) {
-                        foreach($family_members as $fm) {
-                            if(isset($fm->pending_status) && $fm->pending_status == 'Pending') {
-                                $any_family_pending = true;
-                                break;
+            <div class="container-fluid px-4 py-4 bg-white">   
+            
+            <div class="card shadow-sm rounded border-0 mb-5">
+                <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex align-items-center">
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user text-primary me-2"></i>Member Details</h4> 
+                    <?php 
+                        $any_family_pending = false;
+                        if(isset($family_members)) {
+                            foreach($family_members as $fm) {
+                                if(isset($fm->pending_status) && $fm->pending_status == 'Pending') {
+                                    $any_family_pending = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if((isset($pending_update) && !empty($pending_update)) || $any_family_pending): 
-                        if(isset($pending_update) && !empty($pending_update)) {
-                            $updated_data = json_decode($pending_update->updated_data, true);
-                        }
-                ?>
-                <span class="badge bg-warning text-dark fs-6 ms-2 px-3 py-2" style="border-radius:50px; font-weight:500; font-size: 0.7em !important;">
-                    <i class="fa-solid fa-clock-rotate-left"></i> In Review
-                </span>
-                <?php endif; ?>
-            </h3> 
-            <div class="row">
-              <div class="col-md-4 bg-white">
-                  <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $member->Memberimage) ?>" alt="Member Image">
-                  <div style="gap:10px;" class="row mt-4">
-                    <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-primary fw-bold" onclick="viewMemberdocuments('<?=$member->Aadharfrontimage?>','<?=$member->Aadharbackimage?>','<?=$member->Communitycertificate?>')">View Documents</button>
+                        if((isset($pending_update) && !empty($pending_update)) || $any_family_pending): 
+                            if(isset($pending_update) && !empty($pending_update)) {
+                                $updated_data = json_decode($pending_update->updated_data, true);
+                            }
+                    ?>
+                    <span class="badge bg-warning text-dark fs-6 ms-3 px-3 py-2" style="border-radius:50px; font-weight:500; font-size: 0.8em !important;">
+                        <i class="fa-solid fa-clock-rotate-left"></i> In Review
+                    </span>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body px-4 py-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $member->Memberimage) ?>" alt="Member Image">
+                            
+                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$member->Aadharfrontimage?>','<?=$member->Aadharbackimage?>','<?=$member->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
 
-                    <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$member->Familymembershipid?>')">Event Partcipation</button>
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$member->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
 
-                    <?php if($member->MemberRole == 'Head'): ?>
-                        <?php if(!(isset($member->is_dead) && $member->is_dead == 1)): ?>
-                            <button style="width:fit-content;" onclick="showupdatemembermodal('<?=trim($member->Familymembershipid)?>')" class='updatecoord btn btn-primary fw-bold'>Update Details</button>
-                        <?php else: ?>
-                            <button style="width:fit-content;" class='btn btn-secondary fw-bold' disabled>Update Details</button>
-                        <?php endif; ?>
-                        
-                        <?php if(session()->get('role') == 3): ?>
-                            <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                  </div>
-              </div>  
-              <div class="col-md-8 bg-white">
-            <?php
-                function getDisplayVal($field, $member, $updated_data) {
-                    $original = $member->$field;
-                    if (isset($updated_data[$field]) && $updated_data[$field] != $original) {
-                        return htmlspecialchars($updated_data[$field]);
-                    }
-                    return htmlspecialchars($original);
-                }
-            ?>
-            <table id="coord_data" class="table table-bordered border-dark bg-white">
-                <tbody>
-                    <tr class="<?= (isset($member->is_dead) && $member->is_dead == 1) ? 'dead-member-row' : 'bg-white' ?>"><th>Name:</th><td><?= (isset($updated_data) ? getDisplayVal('Name', $member, $updated_data) : $member->Name) ?></td></tr>
-                    <tr><th>Familymembershipid:</th><td class="text-primary fw-bold"><?=$member->Familymembershipid?></td></tr>
-                    <tr><th style="vertical-align:middle;">Address:</th><td>
-                        <ul class="list-unstyled">
-                        <li><?= isset($updated_data) ? getDisplayVal('Doornumber', $member, $updated_data) : $member->Doornumber ?></li>
-                        <li><?= isset($updated_data) ? getDisplayVal('Street', $member, $updated_data) : $member->Street ?></li>
-                        <li><?= isset($updated_data) ? getDisplayVal('Village', $member, $updated_data) : $member->Village ?></li>
-                        <li><?= isset($updated_data) ? getDisplayVal('Taluk', $member, $updated_data) : $member->Taluk ?></li>
-                        <li>
-                            <?= isset($updated_data) ? getDisplayVal('District', $member, $updated_data) : $member->District ?> - 
-                            <?= isset($updated_data) ? getDisplayVal('Pincode', $member, $updated_data) : $member->Pincode ?>
-                        </li>
-                        <li><?= isset($updated_data) ? getDisplayVal('State', $member, $updated_data) : $member->State ?></li>
-                        </ul>
-                    </td></tr>
-                    <?php if(isset($member->Phonenumber)): ?>
-                    <tr><th>Phone:</th><td><?= isset($updated_data) ? getDisplayVal('Phonenumber', $member, $updated_data) : $member->Phonenumber ?></td></tr>
-                    <?php endif; ?>
-                    <?php if(isset($member->Aadharnumber)): ?>
-                    <tr><th>Aadhar:</th><td><?= isset($updated_data) ? getDisplayVal('Aadharnumber', $member, $updated_data) : $member->Aadharnumber ?></td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-            </div>  
+                                <?php if($member->MemberRole == 'Head'): ?>
+                                    <?php if(!(isset($member->is_dead) && $member->is_dead == 1)): ?>
+                                        <button style="width: 100%; border-radius: 8px;" onclick="showupdatemembermodal('<?=trim($member->Familymembershipid)?>')" class='updatecoord btn btn-outline-warning fw-bold text-dark py-2'><i class="fa-solid fa-user-pen me-2"></i>Update Details</button>
+                                    <?php else: ?>
+                                        <button style="width: 100%; border-radius: 8px;" class='btn btn-secondary fw-bold py-2' disabled><i class="fa-solid fa-user-pen me-2"></i>Update Details</button>
+                                    <?php endif; ?>
+                                    
+                                    <?php if(session()->get('role') == 3): ?>
+                                        <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>  
+                        <div class="col-md-8 mt-4 mt-md-0">
+                            <?php
+                                function getDisplayVal($field, $member, $updated_data) {
+                                    $original = $member->$field ?? '';
+                                    if (isset($updated_data[$field]) && $updated_data[$field] != $original) {
+                                        return htmlspecialchars($updated_data[$field] ?? '');
+                                    }
+                                    return htmlspecialchars($original ?? '');
+                                }
+                            ?>
+                            <div class="table-responsive h-100 p-4 bg-light rounded shadow-sm <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'dead-member-row' : '' ?>">
+                                <table id="coord_data" class="table table-borderless align-middle mb-0">
+                                    <tbody>
+                                        <tr class="border-bottom border-light <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'dead-member-row' : '' ?>">
+                                            <th width="35%" class="text-secondary py-3 fs-6">Name:</th>
+                                            <td class="text-primary fw-bold fs-5 py-3"><?= (isset($updated_data) ? getDisplayVal('Name', $member, $updated_data) : ($member->Name ?? '')) ?></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
+                                            <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$member->Familymembershipid?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
+                                            <td class="py-3 fw-medium text-dark">
+                                                <ul class="list-unstyled mb-0" style="line-height: 1.8;">
+                                                    <li><i class="fa-solid fa-house fa-fw text-primary me-2"></i> <?= isset($updated_data) ? getDisplayVal('Doornumber', $member, $updated_data) : ($member->Doornumber ?? '') ?>, <?= isset($updated_data) ? getDisplayVal('Street', $member, $updated_data) : ($member->Street ?? '') ?></li>
+                                                    <li><i class="fa-solid fa-location-dot fa-fw text-primary me-2"></i> <?= isset($updated_data) ? getDisplayVal('Village', $member, $updated_data) : ($member->Village ?? '') ?>, <?= isset($updated_data) ? getDisplayVal('Taluk', $member, $updated_data) : ($member->Taluk ?? '') ?></li>
+                                                    <li><i class="fa-solid fa-map-pin fa-fw text-primary me-2"></i> <?= isset($updated_data) ? getDisplayVal('District', $member, $updated_data) : ($member->District ?? '') ?> - <?= isset($updated_data) ? getDisplayVal('Pincode', $member, $updated_data) : ($member->Pincode ?? '') ?></li>
+                                                    <li><i class="fa-solid fa-map fa-fw text-primary me-2"></i> <?= isset($updated_data) ? getDisplayVal('State', $member, $updated_data) : ($member->State ?? '') ?></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <?php if(isset($member->Phonenumber)): ?>
+                                        <tr class="border-top border-light">
+                                            <th class="text-secondary py-3 fs-6">Phone:</th>
+                                            <td class="py-3 fw-medium text-dark"><?= isset($updated_data) ? getDisplayVal('Phonenumber', $member, $updated_data) : $member->Phonenumber ?></td>
+                                        </tr>
+                                        <?php endif; ?>
+                                        <?php if(isset($member->Aadharnumber)): ?>
+                                        <tr class="border-top border-light">
+                                            <th class="text-secondary py-3 fs-6">Aadhar:</th>
+                                            <td class="py-3 fw-medium text-dark"><?= isset($updated_data) ? getDisplayVal('Aadharnumber', $member, $updated_data) : $member->Aadharnumber ?></td>
+                                        </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
             </div>
 
             <?php if(isset($family_members) && !empty($family_members) && count($family_members) > 0): ?>
             <div class="row mt-4">
                 <div class="col-12">
-                    <h4 style="font-weight:500;">Family Members</h4>
-                    <table class="table table-bordered border-dark">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <?php if($member->MemberRole == 'Head'): ?>
-                                    <th>Action</th>
-                                <?php endif; ?>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                $role_counts = [];
-                                foreach($family_members as $fm) {
-                                    $role = $fm->MemberRole;
-                                    $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                }
-                                $role_counters = [];
-                                
-                                foreach($family_members as $fm): 
-                                    $dob = new DateTime($fm->Dob);
-                                    $now = new DateTime();
-                                    $age = $now->diff($dob)->y;
-                                    
-                                    $role = $fm->MemberRole;
-                                    $display_role = $role;
-                                    if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                        $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                        $display_role .= '_' . $role_counters[$role];
-                                    }
-                            ?>
-                                <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row' : '' ?>">
-                                    <td>
-                                        <?= $fm->Name ?>
-                                        <?php if(isset($fm->pending_status) && $fm->pending_status == 'Pending'): ?>
-                                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65em;">In Review</span>
-                                        <?php endif; ?>
-                                    </td>
-                                <td><?= $display_role ?></td>
-                                <td><?= $fm->Gender ?></td>
-                                <td><?= $age ?></td>
-                                 <?php if($member->MemberRole == 'Head'): ?>
-                                    <td class="d-flex align-items-center" style="gap: 5px;">
-                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                            <button style="width:fit-content;" onclick="showupdatemembermodal('<?=trim($fm->Familymembershipid)?>')" class='updatecoord btn btn-sm btn-primary fw-bold'>Edit</button>
-                                        <?php else: ?>
-                                            <button style="width:fit-content;" class='btn btn-sm btn-secondary fw-bold' disabled>Edit</button>
-                                        <?php endif; ?>
-                                    </td>
-                                <?php endif; ?>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="card shadow-sm border-0 rounded mb-4">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            <th class="ps-4 py-3 border-bottom-0 text-white">S.No</th>
+                                            <th class="py-3 border-bottom-0 text-white">Name</th>
+                                            <th class="py-3 border-bottom-0 text-white">Relationship</th>
+                                            <th class="py-3 border-bottom-0 text-white">Gender</th>
+                                            <th class="py-3 border-bottom-0 text-center text-white">Age</th>
+                                            <?php if($member->MemberRole == 'Head'): ?>
+                                                <th class="pe-4 py-3 border-bottom-0 text-center text-white">Action</th>
+                                            <?php endif; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="family_members_body" class="border-top-0">
+                                        <?php 
+                                            $sno = 1;
+                                            $role_counts = [];
+                                            foreach($family_members as $fm) {
+                                                $role = $fm->MemberRole;
+                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+                                            }
+                                            $role_counters = [];
+                                            
+                                            foreach($family_members as $fm): 
+                                                $dob = new DateTime($fm->Dob);
+                                                $now = new DateTime();
+                                                $age = $now->diff($dob)->y;
+                                                
+                                                $role = $fm->MemberRole;
+                                                $display_role = $role;
+                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                                                    $display_role .= '_' . $role_counters[$role];
+                                                }
+                                        ?>
+                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= (!(isset($fm->is_dead) && $fm->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
+                                                <td class="ps-4 py-3 text-dark"><?= $sno++ ?></td>
+                                                <td class="py-3 fw-bold text-dark">
+                                                    <?= $fm->Name ?>
+                                                    <?php if(isset($fm->pending_status) && $fm->pending_status == 'Pending'): ?>
+                                                        <span class="badge bg-warning text-dark ms-2 px-2 py-1" style="font-size: 0.75em; border-radius: 4px;">In Review</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="py-3"><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
+                                                <td class="py-3">
+                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
+                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
+                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
+                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= $fm->Gender ?>
+                                                </td>
+                                                <td class="py-3 text-center"><?= $age ?></td>
+                                                <?php if($member->MemberRole == 'Head'): ?>
+                                                    <td class="pe-4 py-3 text-center">
+                                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                                            <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
+                                                                <button style="border-radius: 6px;" onclick="showupdatemembermodal('<?=trim($fm->Familymembershipid)?>')" class='updatecoord btn btn-sm btn-outline-primary fw-bold px-3 py-1'><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                            <?php else: ?>
+                                                                <button style="border-radius: 6px;" class='btn btn-sm btn-secondary fw-bold px-3 py-1' disabled><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
+                                                <?php endif; ?>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>
@@ -977,6 +1016,22 @@ function closeMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'none';
 }
 
+let pageheight = window.innerHeight;
+document.getElementById("pageheight").style.height = pageheight+"px";
+
+function updateHeights() {
+    let currentHeight = window.innerHeight;
+    let topBarHeight = document.getElementById("side-bar").getBoundingClientRect().height;
+    let viewHeight = currentHeight - topBarHeight;
+    let menuBar = document.getElementById("menu-bar");
+    let changePage = document.getElementById("changepage");
+    
+    if (menuBar) menuBar.style.height = viewHeight + "px";
+    if (changePage) changePage.style.height = viewHeight + "px";
+}
+
+window.addEventListener('resize', updateHeights);
+
 $.ajax({
       type:"get",
       url:"<?= base_url('members/sidemenu') ?>",
@@ -984,6 +1039,7 @@ $.ajax({
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           updateHeights();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
@@ -1007,6 +1063,7 @@ $.ajax({
       url:"<?= base_url('members/topmenu') ?>",
       success:(result)=>{
            document.getElementById("search-bar").innerHTML = result;
+           updateHeights();
            //  document.getElementById("searchcoords").style.display = "flex";
            //  document.getElementById("dashboardsubmenu").style.display = "flex";
            },
@@ -1020,6 +1077,7 @@ $.ajax({
       url:"<?= base_url('members/pslogo') ?>",
       success:(result)=>{
            document.getElementById("ps-logo").innerHTML = result;
+           updateHeights();
       },
       error:(error)=>{
            document.getElementById("ps-logo").innerHTML = error;
@@ -1030,21 +1088,19 @@ $.ajax({
      let windowheight = window.innerHeight;
      let form_height = windowheight*(95/100);
      let form_section = document.getElementById("update-member-section");
-     form_section.style.height = `${form_height}px`;
-     /* let setheight = document.getElementById("pagecontrol");
-     let pageheight = window.innerHeight;
-     let b = document.getElementById("search-bar").getBoundingClientRect().height;
-     setheight.style.height = pageheight - b+"px"; */
+     if(form_section) form_section.style.height = `${form_height}px`;
 
      window.addEventListener("resize",()=>{
-               document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
+               if(document.getElementById("menu-bar") && document.getElementById("search-bar")) document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
        let formmodal = document.getElementById("update-member-section");
        let b = window.innerWidth;
-       if( b > 768) {
-        formmodal.style.left = "2.5%";
-       }
-       else {
-        formmodal.style.left = "2.5%";
+       if(formmodal){
+         if( b > 768) {
+          formmodal.style.left = "2.5%";
+         }
+         else {
+          formmodal.style.left = "2.5%";
+         }
        }
     });
 

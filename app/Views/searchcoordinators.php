@@ -7,31 +7,38 @@
 </head>
 <body>
 
-<tr>
 <?php 
-
-            if(isset($coordinators)){
-                $i=$sno;
-                foreach ($coordinators as $key => $value) {
-                    $j = $i+1;
-                    echo "
-                    <tr >
-                    <td>$j</td>
-                    <td>$value[Name]</td>
-                    <td>$value[Email]</td>
-                    <td>$value[Mobile]</td>
-                    <td>$value[Assigned_area]</td>
-                    <td>Active</td>
-                    <td class='px-3'>
-                    <a href='updatecoordinator?id=$value[id]' style='cursor:pointer;' class='text-decoration-none text-dark'><i class='fa-regular fa-pen-to-square'></i></a>
-                    <a style='cursor:pointer;' class='text-decoration-none text-dark'><span style='color:red;'><i class='fa-solid fa-trash-can'></i></span></a>
-                    </td>
-                    </tr>";
-                    ++$i;
-                }
-            }
-            ?>
-</tr>
+if(isset($coordinators)){
+    $i = isset($sno) ? $sno : 0;
+    foreach ($coordinators as $key => $coordinator) {
+        $j = $i+1;
+        
+        $villageBadge = !empty($coordinator['VillageNames']) ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' . $coordinator['VillageNames'] . '</span>' : '-';
+        $textCenter = empty($coordinator['VillageNames']) ? "text-center" : "";
+        
+        echo "
+        <tr>
+            <td class='ps-4'>{$j}</td>
+            <td class='text-primary fw-bold'>".trim($coordinator['Familymembershipid'])."</td>
+            <td class='fw-bold text-dark'>{$coordinator['Name']}</td>
+            <td>{$coordinator['Phonenumber']}</td>
+            <td>{$coordinator['District']}</td>
+            <td>{$coordinator['Taluk']}</td>
+            <td>{$coordinator['Panchayat']}</td>
+            <td class='{$textCenter}'>{$villageBadge}</td>
+            <td>
+                <div class='d-flex justify-content-center align-items-center gap-2'>
+                    <button onclick=\"showupdatecoordsmodal('".trim($coordinator['Familymembershipid'])."')\" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                    <button onclick=\"viewCoordinatordata('view-coordinator-data?coord_id=".trim($coordinator['Familymembershipid'])."')\" class='btn btn-sm btn-outline-secondary rounded-circle' style='width:32px;height:32px;padding:0;' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                </div>
+            </td>
+        </tr>";
+        ++$i;
+    }
+}else{
+     echo "<tr><td colspan='9' class='text-center'>No results found</td></tr>";
+}
+?>
 
 
 </body>

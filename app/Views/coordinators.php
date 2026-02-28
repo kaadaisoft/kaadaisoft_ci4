@@ -495,11 +495,61 @@
             overflow: visible !important;
           }
       }
+
+      /* ✅ Premium Table Design */
+      .custom-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none !important;
+        margin-top: 20px;
+        background: white;
+      }
+      
+      .custom-table thead th {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 18px !important;
+        border: none !important;
+        text-align: center;
+        vertical-align: middle;
+      }
+      
+      .custom-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .custom-table tbody tr:hover {
+        background-color: rgba(37, 117, 252, 0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      
+      .custom-table td {
+        padding: 15px !important;
+        vertical-align: middle;
+        border: none !important;
+        color: #555;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .custom-table tbody tr:last-child td {
+        border-bottom: none !important;
+      }
     </style>
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
 <?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
@@ -517,12 +567,12 @@
 
         <div id="pagecontrol" class="row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
        
               
         </div><!-----------side-bar-end-------------->
             
-        <div style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10"><!-----------main-dashboard------------------------->
          
         <div class="container-fluid px-4 pt-4 d-flex justify-content-between coordpadd">
          <span class="h5">Coordinators</span>
@@ -533,10 +583,10 @@
         </div>
          
         <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
-        <table class="table table-bordered">
+        <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;">Total Coordinators: <span class="badge bg-primary rounded-pill"><?php echo count($coordinators)?></span></div>
+        <table class="table custom-table">
             <thead>
-               <caption class="fw-bold" style="caption-side: top">Total Coordinators: <?php echo count($coordinators)?></caption>
-            <tr style="font-size:18px;" class="ps-gray">
+            <tr>
             <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th class="text-center">Actions</th>
             </tr>
             </thead>
@@ -687,18 +737,22 @@ function renderCoordinators(data, sNo) {
 
     data.forEach(value => {
         html += `
-            <tr>
-               <td style='font-weight:500;'>${i}</td>
+            <tr style="cursor: pointer;" onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')">
+               <td class='ps-4'>${i}</td>
                     <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td style='font-weight:500;'>${value.Name}</td>
-                    <td style='font-weight:500;'>${value.Phonenumber}</td>
-                    <td style='font-weight:500;'>${value.District}</td>
-                    <td style='font-weight:500;'>${value.Taluk}</td>
-                    <td style='font-weight:500;'>${value.Panchayat}</td>
-                    <td style='font-weight:500;' class='${value.VillageNames ? '' : 'text-center'}'>${value.VillageNames ? value.VillageNames : '-'}</td>
-                    <td class='d-flex justify-content-evenly'>
-                    <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button onclick ="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <td class='fw-bold text-dark'>${value.Name}</td>
+                    <td>${value.Phonenumber}</td>
+                    <td>${value.District}</td>
+                    <td>${value.Taluk}</td>
+                    <td>${value.Panchayat}</td>
+                    <td class='${value.VillageNames ? '' : 'text-center'}'>
+                        ${value.VillageNames ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' + value.VillageNames + '</span>' : '-'}
+                    </td>
+                    <td onclick="event.stopPropagation();">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                            <button onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary rounded-circle' style='width:32px;height:32px;padding:0;' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                        </div>
                     </td>
             </tr>`
          i++;
@@ -917,8 +971,8 @@ function setDropdownpanchayat(taluk){
       });
     }
   
-       document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-
+   
+   
         function commonSearch(coords){
              
             let searchfields = coords.value;

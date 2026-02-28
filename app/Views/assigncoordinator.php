@@ -188,9 +188,32 @@
       }    
       
       .assigncoordfilter{
-        border:5px solid rgb(23, 23, 184);
         row-gap:20px;
-        border-radius:15px;
+      }
+      .assign-card {
+        border-radius: 12px;
+        border: 1px solid #e3e6f0;
+        border-top: 4px solid rgb(0, 123, 255);
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .assign-card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        padding: 15px 20px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        align-items: center;
+      }
+      .assign-card-header h4 {
+        margin: 0;
+        font-weight: 600;
+        color: #007bff;
+        font-size: 1.2rem;
+      }
+      .assign-card-body {
+        padding: 20px;
       }
 
       .assigncoordfilter input,select{
@@ -397,10 +420,13 @@
          </div>
 
          <div><!-------------assign-coord-start------------->      
+         <div class="assign-card mb-4">
+         <div class="assign-card-header">
+            <h4><i class="fa-solid fa-user-plus me-2"></i>Assign Coordinator</h4>
+         </div>
+         <div class="assign-card-body">
+         <form class="row assigncoordfilter" Autocomplete="off" onsubmit="return validateAssigncoordinator()" method="POST" action="<?=base_url("assignCoordinatorsfortaluk")?>">
          
-         <form class="row assigncoordfilter py-3" Autocomplete="off" onsubmit="return validateAssigncoordinator()" method="POST" action="<?=base_url("assignCoordinatorsfortaluk")?>">
-         <span class="h3 ms-4">Assign Coordinator:</span>
-
          <div id="searchmember" class="col-md-3 position-relative"><!----------member-search-start------->
             <label class="container-fluid pb-1" for="membername">Search Member
             <input onkeyup="getMemberdata(this)" type="text" name="membername" class="border w-100" id="membername" required>
@@ -465,14 +491,20 @@
             </label>
             </div><!------------select-villages-end----------->
 
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Assign</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn ps-btn text-white w-100">Assign</button></div>
            </form>
+         </div>
+         </div>
          </div><!-------------------assign-coord-filter-end----------------->
 
          <div class="mt-4"><!-------------status-filter-start------------->      
+         <div class="assign-card mb-4" style="border-top-color: #28a745;">
+         <div class="assign-card-header">
+            <h4 style="color: #28a745;"><i class="fa-solid fa-arrows-rotate me-2"></i>Reassign Coordinator</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="statusfilter" class="row assigncoordfilter" Autocomplete="off">
          
-         <form id="statusfilter" class="row assigncoordfilter py-3" Autocomplete="off">
-         <span class="h3 ms-4">Reassign Coordinator:</span>
          <div class="col-md-3"><!------------state-choose------------>
            <label class="container-fluid" for="stateidremove">State:<br>
            <select onchange = "getDistrictsforremove(this)" class="container-fluid border rounded" name="stateid" id="stateidremove" required>
@@ -523,14 +555,20 @@
             </div>
             </label>
             </div>     <!------------select-villages-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Status</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-success text-white w-100">Status</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------status-filter-end----------------->
 
          <div class="mt-4"><!-------------add-village-filter-start------------->      
+         <div class="assign-card mb-4" style="border-top-color: #17a2b8;">
+         <div class="assign-card-header">
+            <h4 style="color: #17a2b8;"><i class="fa-solid fa-plus-square me-2"></i>Add Village</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="addvillageform" action="<?=base_url("AdminDashboard/addVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off">
          
-         <form id="addvillageform" action="<?=base_url("AdminDashboard/addVillage")?>" method="post" class="row assigncoordfilter py-3" Autocomplete="off">
-         <span class="h3 ms-4">Add Village:</span>
          <div class="col-md-3"><!------------state-choose------------>
            <label class="container-fluid" for="stateidadd">State:<br>
            <select onchange="getDistrictsforadd(this)" class="container-fluid border rounded" name="state" id="stateidadd" required>
@@ -576,13 +614,20 @@
            <input type="text" name="village" class="container-fluid border rounded" id="villagenameadd" required placeholder="Enter new village">
             </label>
             </div>     <!------------village-input-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Add Village</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-info text-white w-100">Add Village</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------add-village-filter-end----------------->
 
          <div class="mt-4"><!-------------remove-village-filter-start------------->
-         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter py-3" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
-         <span class="h3 ms-4">Remove Village:</span>
+         <div class="assign-card mb-4" style="border-top-color: #dc3545;">
+         <div class="assign-card-header">
+            <h4 style="color: #dc3545;"><i class="fa-solid fa-trash-alt me-2"></i>Remove Village</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
+         
          <div class="col-md-3"><!------------state-choose------------>
            <label class="container-fluid" for="stateiddelete">State:<br>
            <select onchange="getDistrictsfordelete(this)" class="container-fluid border rounded" name="state" id="stateiddelete" required>
@@ -628,8 +673,10 @@
            </select>
             </label>
             </div>     <!------------village-choose-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn btn-danger text-white">Remove Village</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-danger text-white w-100">Remove Village</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------remove-village-filter-end----------------->
          
          <div style="height: 100px;"></div><!-----------spacer----------->

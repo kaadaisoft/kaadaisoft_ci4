@@ -562,7 +562,7 @@ html, body {
 </head>
 <body>
        
-    <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
+    <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;height:100vh;width:100%;">
         <!---------------------admindashboard-status-notifications---------------------->
 <?= view('notification_toast') ?>
       <div class="row"><!-----top-bar--------------->
@@ -581,12 +581,12 @@ html, body {
 
         <div class="row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
          
               
          </div><!-----------side-bar-end-------------->
             
-         <div id="changepage" style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
+         <div id="changepage" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10"><!-----------main-dashboard------------------------->
          
          <div class="container-fluid px-4 pt-4">
           <div class="d-flex justify-content-between">

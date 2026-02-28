@@ -257,9 +257,57 @@
          overflow: hidden;
       }
 
-      .active-members {
+      /* .active-members {
          background-color: rgb(230, 230, 230);
          font-weight: 600;
+      } */
+      .custom-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none !important;
+        margin-top: 20px;
+        background: white;
+      }
+      
+      .custom-table thead th {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 18px !important;
+        border: none !important;
+        text-align: center;
+        vertical-align: middle;
+      }
+      
+      .custom-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .custom-table tbody tr:hover {
+        background-color: rgba(37, 117, 252, 0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      
+      .custom-table td {
+        padding: 15px !important;
+        vertical-align: middle;
+        border: none !important;
+        color: #555;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .custom-table tbody tr:last-child td {
+        border-bottom: none !important;
       }
 
       .table-btn {
@@ -530,7 +578,7 @@
 
 <body>
 
-   <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+   <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
 
       <?= view('notification_toast') ?>
 
@@ -549,14 +597,14 @@
       </div><!-----------top-bar-end----------------------->
 
 
-      <div class="row min-vh-100"><!----------main-navbar----------->
+      <div class="row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray min-vh-100"><!----------side-bar-------------------->
+         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
 
 
          </div><!-----------side-bar-end-------------->
 
-         <div id="pagecontrol" class="col-md-10">
+         <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10">
             <!-----------main-dashboard------------------------->
 
             <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-md-end justify-content-center memberpadd">
@@ -585,12 +633,24 @@
 
             <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
              <div id="bulk-upload-segment" class="container-fluid px-4 pt-3" style="display: none;">
-                <div class="ps-gray p-3 border rounded shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-                   <h6 class="mb-0 fw-bold">Upload Members Bulk Data</h6>
-                   <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex flex-column flex-sm-row align-items-center gap-2 w-100 w-md-auto">
-                       <input type="file" class="form-control" name="file" id="file" required style="max-width: 100%;">
-                       <button class="btn btn-primary px-4" type="submit">Upload</button>
-                   </form>
+                <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                   <div class="card-header bg-info text-white border-0 py-3">
+                      <h5 class="mb-0 fw-bold"><i class="fas fa-file-upload me-2 border p-1 rounded bg-white text-info" style="font-size: 0.8rem;"></i>Upload Members Bulk Data</h5>
+                   </div>
+                   <div class="card-body bg-white p-4">
+                      <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+                          <div class="col-md-9">
+                              <label class="form-label fw-bold text-muted small">Select Excel File (.xlsx, .xls)</label>
+                              <input type="file" class="form-control" name="file" id="file" required accept=".xlsx, .xls">
+                          </div>
+                          <div class="col-md-3">
+                              <button class="btn btn-primary w-100 fw-bold shadow-sm" type="submit"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Data</button>
+                          </div>
+                      </form>
+                      <div class="mt-3 small text-muted">
+                        <i class="fas fa-info-circle me-1 text-info"></i> Please ensure your Excel file matches the required template format before uploading.
+                      </div>
+                   </div>
                 </div>
              </div>
              <?php endif; ?>
@@ -775,14 +835,13 @@
              <?php endif; ?>
 
 
-            <div style="overflow-x:auto; height: 75vh;" class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
-               <table class="table table-responsive table-bordered">
+            <div class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
+               <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;" id="memberTotalCountHolder">Total Members: <span class="badge bg-primary rounded-pill"><?php echo count($members) ?></span></div>
+               <table class="table custom-table">
                   <thead <?php if (count($members) == 0) {
                      echo "hidden";
                   } ?>>
-                     <caption id="memberTotalCount" class="fw-bold" style="caption-side: top">Total Members: <?php echo count($members) ?>
-                     </caption>
-                     <tr style="font-size:18px;" class="ps-gray">
+                     <tr>
                         <th>S.No</th>
                         <th>User ID</th>
                         <th>Name</th>
@@ -1160,18 +1219,20 @@
 
          data.forEach(value => {
             html += `
-            <tr>
-                    <td style='font-weight:500;'>${i}</td>
+            <tr style="cursor: pointer;" onclick="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')">
+                    <td class='ps-4'>${i}</td>
                     <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td style='font-weight:500;'>${value.Name}</td>
-                    <td style='font-weight:500;'>${value.Phonenumber}</td>
-                    <td style='font-weight:500;'>${value.District}</td>
-                    <td style='font-weight:500;'>${value.Taluk}</td>
-                    <td style='font-weight:500;'>${value.Panchayat}</td>
-                    <td class='d-flex justify-content-evenly'>
-                    <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
-                    <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <td class='fw-bold text-dark'>${value.Name}</td>
+                    <td>${value.Phonenumber}</td>
+                    <td>${value.District}</td>
+                    <td>${value.Taluk}</td>
+                    <td>${value.Panchayat}</td>
+                    <td onclick="event.stopPropagation();">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
+                            <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" class='btn btn-sm btn-outline-danger shadow-sm rounded-circle trashcoord' style='width:32px;height:32px;padding:0;'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
+                            <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary shadow-sm rounded-circle' style='width:32px;height:32px;padding:0;' data-bs-toggle='tooltip' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                        </div>
                     </td>
             </tr>
         `;
@@ -1220,7 +1281,7 @@
           }
           setUpPagination(paginationHtml);
           renderMembers(membersData.slice(0, 10), 0);
-          document.getElementById('memberTotalCount').innerText = "Total Members: " + membersCount;
+          document.getElementById('memberTotalCountHolder').innerHTML = `Total Members: <span class="badge bg-primary rounded-pill">${membersCount}</span>`;
       }
 
       function setUpPagination(html) {

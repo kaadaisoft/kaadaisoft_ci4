@@ -494,7 +494,7 @@
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="min-height: 100vh; position: relative;">
+<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
 <?= view('notification_toast') ?>
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
@@ -515,101 +515,141 @@
        
         </div><!-----------side-bar-end-------------->
             
-        <div class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="changepage" style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
 
          <!------------------------------coordinator-data--------------------------->
          <?php if(isset($coordinator)):?>
-            <div class="container-fluid px-4 py-2">   
-            <h3 style="font-weight:500;"><?=$coordinator->Role == 2 ? "Coordinator Details:" : "Member Details"?></h3> 
-            <div class="row">
-              <div class="col-md-4">
-                  <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $coordinator->Memberimage) ?>" alt="Member Image">
-                 
-                  <div style="gap:10px;" class="row mt-4 pb-3">
-                    <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#coord_documents" class="btn btn-primary fw-bold" onclick="viewCoorddocuments('<?=$coordinator->Aadharfrontimage?>','<?=$coordinator->Aadharbackimage?>','<?=$coordinator->Communitycertificate?>')">View Documents</button>
-
-                    <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$coordinator->Familymembershipid?>')">Event Partcipation</button>
-
-                     <button <?php if(session()->get('role') == 3){echo 'hidden';} ?> style="width:fit-content;" onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" class='updatecoord btn btn-primary fw-bold'>Update Details</button>
-                     <?php if(session()->get('role') == 2 || session()->get('role') == 3): ?>
-                        <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
-                     <?php endif; ?>
-                  </div>
-              </div>  
-              <div class="col-md-8">
-            <table id="coord_data" class="table table-bordered border-dark">
-                <thead>
-                    <tr><th>Name:</th><td class="text-primary fw-bold"><?=$coordinator->Name?></td></tr>
-                    <tr><th>Familymembershipid:</th><td class="text-primary fw-bold"><?=$coordinator->Familymembershipid?></td></tr>
-                    <tr><th style="vertical-align:middle;">Address:</th>
-                        <td>
-                        <ul class="list-unstyled">
-                        <li><?=$coordinator->Doornumber?></li></li>
-                        <li><?=$coordinator->Street?></li>
-                        <li><?=$coordinator->Village?></li>
-                        <li><?=$coordinator->Taluk?></li>
-                        <li><?=$coordinator->District?> - <?=$coordinator->Pincode?></li>
-                        <li><?=$coordinator->State?></li>
-                        </ul>
-                        </td>
-                    </tr>
-                    <tr><th>Assigned Villages</th><td><?=$coordinator->VillageNames?></td></tr>
-                </thead>
-            </table>
-            </div>  
-            </div> 
+            <div class="container-fluid px-4 py-4 bg-white">   
             
+            <div class="card shadow-sm rounded border-0 mb-5">
+                <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex align-items-center">
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i><?=$coordinator->Role == 2 ? "Coordinator Details:" : "Member Details"?></h4> 
+                </div>
+                <div class="card-body px-4 py-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $coordinator->Memberimage) ?>" alt="Member Image">
+                            
+                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#coord_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewCoorddocuments('<?=$coordinator->Aadharfrontimage?>','<?=$coordinator->Aadharbackimage?>','<?=$coordinator->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
+
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$coordinator->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
+
+                                <?php if(session()->get('role') != 3): ?>
+                                    <button style="width: 100%; border-radius: 8px;" onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" class='updatecoord btn btn-outline-warning fw-bold text-dark py-2'><i class="fa-solid fa-user-pen me-2"></i>Update Details</button>
+                                <?php endif; ?>
+                                
+                                <?php if(session()->get('role') == 2 || session()->get('role') == 3): ?>
+                                    <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                                <?php endif; ?>
+                            </div>
+                        </div>  
+                        <div class="col-md-8 mt-4 mt-md-0">
+                            <div class="table-responsive h-100 p-4 bg-light rounded shadow-sm">
+                                <table id="coord_data" class="table table-borderless align-middle mb-0">
+                                    <tbody>
+                                        <tr class="border-bottom border-light">
+                                            <th width="35%" class="text-secondary py-3 fs-6">Name:</th>
+                                            <td class="text-primary fw-bold fs-5 py-3"><?=$coordinator->Name?></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
+                                            <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$coordinator->Familymembershipid?></span></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
+                                            <td class="py-3 fw-medium text-dark">
+                                                <ul class="list-unstyled mb-0" style="line-height: 1.8;">
+                                                    <li><i class="fa-solid fa-house fa-fw text-primary me-2"></i> <?=$coordinator->Doornumber?>, <?=$coordinator->Street?></li>
+                                                    <li><i class="fa-solid fa-location-dot fa-fw text-primary me-2"></i> <?=$coordinator->Village?>, <?=$coordinator->Taluk?></li>
+                                                    <li><i class="fa-solid fa-map-pin fa-fw text-primary me-2"></i> <?=$coordinator->District?> - <?=$coordinator->Pincode?></li>
+                                                    <li><i class="fa-solid fa-map fa-fw text-primary me-2"></i> <?=$coordinator->State?></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fs-6">Assigned Villages:</th>
+                                            <td class="py-3 fw-medium text-dark"><?=$coordinator->VillageNames?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+
             <?php if(isset($family_members) && !empty($family_members) && count($family_members) > 0): ?>
             <div class="row mt-4">
                 <div class="col-12">
-                    <h4 style="font-weight:500;">Family Members</h4>
-                    <table class="table table-bordered border-dark">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                $role_counts = [];
-                                foreach($family_members as $fm) {
-                                    $role = $fm->MemberRole;
-                                    $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                }
-                                $role_counters = [];
-                                
-                                foreach($family_members as $fm): 
-                                    $dob = new DateTime($fm->Dob);
-                                    $now = new DateTime();
-                                    $age = $now->diff($dob)->y;
-                                    
-                                    $role = $fm->MemberRole;
-                                    $display_role = $role;
-                                    if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                        $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                        $display_role .= '_' . $role_counters[$role];
-                                    }
-                            ?>
-                                <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row' : '' ?>">
-                                    <td><?= $fm->Name ?></td>
-                                <td><?= $display_role ?></td>
-                                <td><?= $fm->Gender ?></td>
-                                <td><?= $age ?></td>
-                                    <td>
-                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                            <button style="width:fit-content;" onclick="showupdatecoordsmodal('<?=trim($fm->Familymembershipid)?>')" class='updatecoord btn btn-sm btn-primary fw-bold'>Edit</button>
-                                        <?php else: ?>
-                                            <button style="width:fit-content;" class='btn btn-sm btn-secondary fw-bold' disabled>Edit</button>
-                                        <?php endif; ?>
-                                    </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="card shadow-sm border-0 rounded mb-4">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            <th class="ps-4 py-3 border-bottom-0 text-white">S.No</th>
+                                            <th class="py-3 border-bottom-0 text-white">Name</th>
+                                            <th class="py-3 border-bottom-0 text-white">Relationship</th>
+                                            <th class="py-3 border-bottom-0 text-white">Gender</th>
+                                            <th class="py-3 border-bottom-0 text-center text-white">Age</th>
+                                            <th class="pe-4 py-3 border-bottom-0 text-center text-white">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="family_members_body" class="border-top-0">
+                                        <?php 
+                                            $sno = 1;
+                                            $role_counts = [];
+                                            foreach($family_members as $fm) {
+                                                $role = $fm->MemberRole;
+                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+                                            }
+                                            $role_counters = [];
+                                            
+                                            foreach($family_members as $fm): 
+                                                $dob = new DateTime($fm->Dob);
+                                                $now = new DateTime();
+                                                $age = $now->diff($dob)->y;
+                                                
+                                                $role = $fm->MemberRole;
+                                                $display_role = $role;
+                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                                                    $display_role .= '_' . $role_counters[$role];
+                                                }
+                                        ?>
+                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= !(isset($fm->is_dead) && $fm->is_dead == 1) ? "onclick=\"showupdatecoordsmodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
+                                                <td class="ps-4 py-3 text-dark"><?= $sno++ ?></td>
+                                                <td class="py-3 fw-bold text-dark"><?= $fm->Name ?></td>
+                                                <td class="py-3"><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
+                                                <td class="py-3">
+                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
+                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
+                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
+                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= $fm->Gender ?>
+                                                </td>
+                                                <td class="py-3 text-center"><?= $age ?></td>
+                                                <td class="pe-4 py-3 text-center">
+                                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
+                                                            <button style="border-radius: 6px;" onclick="showupdatecoordsmodal('<?=trim($fm->Familymembershipid)?>')" class='updatecoord btn btn-sm btn-outline-primary fw-bold px-3 py-1'><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                        <?php else: ?>
+                                                            <button style="border-radius: 6px;" class='btn btn-sm btn-secondary fw-bold px-3 py-1' disabled><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>
@@ -999,6 +1039,22 @@ function closeMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'none';
 }
 
+let pageheight = window.innerHeight;
+document.getElementById("pageheight").style.height = pageheight+"px";
+
+function updateHeights() {
+    let currentHeight = window.innerHeight;
+    let topBarHeight = document.getElementById("side-bar").getBoundingClientRect().height;
+    let viewHeight = currentHeight - topBarHeight;
+    let menuBar = document.getElementById("menu-bar");
+    let changePage = document.getElementById("changepage");
+    
+    if (menuBar) menuBar.style.height = viewHeight + "px";
+    if (changePage) changePage.style.height = viewHeight + "px";
+}
+
+window.addEventListener('resize', updateHeights);
+
 $.ajax({
       type:"get",
       url:"coordinators/sidemenu",
@@ -1006,6 +1062,7 @@ $.ajax({
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           updateHeights();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
@@ -1028,6 +1085,7 @@ $.ajax({
       url:"coordinators/topmenu",
       success:(result)=>{
            document.getElementById("search-bar").innerHTML = result;
+           updateHeights();
           //  document.getElementById("searchcoords").style.display = "flex";
           //  document.getElementById("dashboardsubmenu").style.display = "flex";
            },
@@ -1041,6 +1099,7 @@ $.ajax({
       url:"coordinators/pslogo",
       success:(result)=>{
            document.getElementById("ps-logo").innerHTML = result;
+           updateHeights();
       },
       error:(error)=>{
            document.getElementById("ps-logo").innerHTML = error;

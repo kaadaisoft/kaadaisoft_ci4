@@ -146,92 +146,123 @@
 
           <?php if(isset($manager)):?>
             <div class="container-fluid px-4 py-4">   
-            <h3 style="font-weight:500;">Manager Details:</h3> 
-            <div class="row mt-4">
-              <div class="col-md-4">
-                  <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
-                  
-                  <div style="gap:10px;" class="row mt-4 pb-3 ps-3">
-                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-primary fw-bold" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')">View Documents</button>
-                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$manager->Familymembershipid?>')">Event Participation</button>
-                      <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update Details</button>
-                      <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
-                  </div>
-              </div>  
-              <div class="col-md-8">
-            <table id="manager_data" class="table table-bordered border-dark">
-                <thead>
-                    <tr><th width="30%">Name:</th><td class="text-primary fw-bold"><?=$manager->Name?></td></tr>
-                    <tr><th>Familymembershipid:</th><td class="text-primary fw-bold"><?=$manager->Familymembershipid?></td></tr>
-                    <tr><th style="vertical-align:middle;">Address:</th>
-                        <td>
-                        <ul class="list-unstyled mb-0">
-                        <li><?=$manager->Doornumber?></li>
-                        <li><?=$manager->Street?></li>
-                        <li><?=$manager->Village?></li>
-                        <li><?=$manager->Taluk?></li>
-                        <li><?=$manager->District?> - <?=$manager->Pincode?></li>
-                        <li><?=$manager->State?></li>
-                        </ul>
-                        </td>
-                    </tr>
-                </thead>
-            </table>
-            </div>  
-            </div> 
             
+            <div class="card shadow-sm rounded border-0 mb-5">
+                <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i>Manager Details</h4> 
+                </div>
+                <div class="card-body px-4 py-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
+                            
+                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$manager->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
+                                <button style="width: 100%; border-radius: 8px;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-outline-warning fw-bold text-dark py-2'><i class="fa-solid fa-user-pen me-2"></i>Update Details</button>
+                                <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                            </div>
+                        </div>  
+                        <div class="col-md-8 mt-4 mt-md-0">
+                            <div class="table-responsive h-100 p-4 bg-light rounded shadow-sm">
+                                <table id="manager_data" class="table table-borderless align-middle mb-0">
+                                    <tbody>
+                                        <tr class="border-bottom border-light">
+                                            <th width="35%" class="text-secondary py-3 fs-6">Name:</th>
+                                            <td class="text-primary fw-bold fs-5 py-3"><?=$manager->Name?></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
+                                            <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$manager->Familymembershipid?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
+                                            <td class="py-3 fw-medium text-dark">
+                                                <ul class="list-unstyled mb-0" style="line-height: 1.8;">
+                                                    <li><i class="fa-solid fa-house fa-fw text-primary me-2"></i> <?=$manager->Doornumber?>, <?=$manager->Street?></li>
+                                                    <li><i class="fa-solid fa-location-dot fa-fw text-primary me-2"></i> <?=$manager->Village?>, <?=$manager->Taluk?></li>
+                                                    <li><i class="fa-solid fa-map-pin fa-fw text-primary me-2"></i> <?=$manager->District?> - <?=$manager->Pincode?></li>
+                                                    <li><i class="fa-solid fa-map fa-fw text-primary me-2"></i> <?=$manager->State?></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
             
             <?php if(isset($family_members) && !empty($family_members)): ?>
-            <div class="row mt-5">
+            <div class="row mt-4">
                 <div class="col-12">
-                    <h4 style="font-weight:500;">Family Members</h4>
-                    <table class="table table-bordered border-dark mt-3">
-                        <thead class="ps-gray">
-                            <tr>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="family_members_body">
-                            <?php 
-                                $role_counts = [];
-                                foreach($family_members as $fm) {
-                                    $role = $fm->MemberRole;
-                                    $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                }
-                                $role_counters = [];
-                                
-                                foreach($family_members as $fm): 
-                                    $dob = new DateTime($fm->Dob);
-                                    $now = new DateTime();
-                                    $age = $now->diff($dob)->y;
-                                    
-                                    $role = $fm->MemberRole;
-                                    $display_role = $role;
-                                    if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                        $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                        $display_role .= '_' . $role_counters[$role];
-                                    }
-                            ?>
-                                <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row' : '' ?>">
-                                    <td><?= $fm->Name ?></td>
-                                    <td><?= $display_role ?></td>
-                                    <td><?= $fm->Gender ?></td>
-                                    <td><?= $age ?></td>
-                                    <td>
-                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                            <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($fm->Familymembershipid)?>')" class='btn btn-sm btn-primary fw-bold'>Edit</button>
-                                        <?php else: ?>
-                                            <button style="width:fit-content;" class='btn btn-sm btn-secondary fw-bold' disabled>Edit</button>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="card shadow-sm border-0 rounded mb-4">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            <th class="ps-4 py-3 border-bottom-0 text-white">S.No</th>
+                                            <th class="py-3 border-bottom-0 text-white">Name</th>
+                                            <th class="py-3 border-bottom-0 text-white">Relationship</th>
+                                            <th class="py-3 border-bottom-0 text-white">Gender</th>
+                                            <th class="py-3 border-bottom-0 text-center text-white">Age</th>
+                                            <th class="pe-4 py-3 border-bottom-0 text-center text-white">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="family_members_body" class="border-top-0">
+                                        <?php 
+                                            $sno = 1;
+                                            $role_counts = [];
+                                            foreach($family_members as $fm) {
+                                                $role = $fm->MemberRole;
+                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+                                            }
+                                            $role_counters = [];
+                                            
+                                            foreach($family_members as $fm): 
+                                                $dob = new DateTime($fm->Dob);
+                                                $now = new DateTime();
+                                                $age = $now->diff($dob)->y;
+                                                
+                                                $role = $fm->MemberRole;
+                                                $display_role = $role;
+                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                                                    $display_role .= '_' . $role_counters[$role];
+                                                }
+                                        ?>
+                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= !(isset($fm->is_dead) && $fm->is_dead == 1) ? "onclick=\"showupdatemanagermodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
+                                                <td class="ps-4 py-3 text-dark"><?= $sno++ ?></td>
+                                                <td class="py-3 fw-bold text-dark"><?= $fm->Name ?></td>
+                                                <td class="py-3"><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
+                                                <td class="py-3">
+                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
+                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
+                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
+                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= $fm->Gender ?>
+                                                </td>
+                                                <td class="py-3 text-center"><?= $age ?></td>
+                                                <td class="pe-4 py-3 text-center">
+                                                    <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
+                                                        <button style="border-radius: 6px;" onclick="showupdatemanagermodal('<?=trim($fm->Familymembershipid)?>')" class='btn btn-sm btn-outline-primary fw-bold px-3 py-1'><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                    <?php else: ?>
+                                                        <button style="border-radius: 6px;" class='btn btn-sm btn-secondary fw-bold px-3 py-1' disabled><i class="fa-solid fa-pen-to-square me-1"></i>Edit</button>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>

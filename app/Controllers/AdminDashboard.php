@@ -778,7 +778,7 @@ public function change_password() {
              }
         }
         
-        return redirect()->to('admindashboard');
+        return redirect()->back();
     }
 
 
