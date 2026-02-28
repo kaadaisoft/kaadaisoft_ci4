@@ -56,49 +56,67 @@ html, body {
     gap:20px;
     }
 
-    .card-round{
-      width: 220px;
-      border-radius:15px;
-      padding: 15px !important;
+    .letter-spacing-1 {
+      letter-spacing: 1px;
+    }
+    .z-1 {
+      z-index: 1;
     }
 
-    ul > li{
-      cursor:pointer;
+    .card-round{
+      width: 250px;
+      border-radius:20px;
+      padding: 25px !important;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card-icon-bg {
+      position: absolute;
+      right: -15px;
+      bottom: -15px;
+      font-size: 5.5rem;
+      opacity: 0.2;
+      transform: rotate(-15deg);
+      transition: all 0.4s ease;
+    }
+
+    .card-round:hover .card-icon-bg {
+      transform: rotate(0deg) scale(1.1);
+      opacity: 0.3;
     }
 
      .card1{
-    background: linear-gradient(135deg, #1fa2ff, #12d8fa, #a6ffcb);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     border: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(31, 162, 255, 0.3);
-    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    text-decoration: none !important;
     }
+
     .card2{
-      background: linear-gradient(135deg, #f7971e, #ffd200);
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
       border: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3);
-      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+      text-decoration: none !important;
     }
+
     .card3{
-      background: linear-gradient(135deg, #007bff, #0056b3);
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
       border: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(244, 63, 94, 0.2);
+      text-decoration: none !important;
      }
 
      .card1:hover, .card2:hover, .card3:hover {
-        transform: translateY(-8px) scale(1.02);
-        filter: brightness(1.15);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
      }
 
      .card-round:active {
-        transform: scale(0.98);
+        transform: scale(0.95);
      }
 
      .card4{
@@ -600,36 +618,39 @@ html, body {
             echo "hidden";
           } ?>  class="dashboard-cards mt-4 border-bottom pb-5">
 
-            <a href="<?= base_url('coordinators') ?>" class="card-round card1 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
+            <a href="<?= base_url('coordinators') ?>" class="card-round card1 text-white shadow-sm <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
               echo "d-none";
             } else {
               echo "d-flex";
-            } ?> align-items-center justify-content-center">
-
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Coordinators</li>
-              <li class="fs-4 text-center fw-bold"><?= $coordscount ?></li>
-            </ul>
-            </a>
-            <a href="<?= base_url('members') ?>" class="card-round card2 text-white d-flex align-items-center justify-content-center">
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Total Members</li>
-              <li class="fs-4 text-center fw-bold"><?= $memberscount ?></li>
-            </ul>
+            } ?> align-items-center">
+              <i class="fa-solid fa-cart-shopping card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Coordinators</div>
+                <div class="fs-1 fw-bold mt-1"><?= $coordscount ?></div>
+              </div>
             </a>
 
-            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 text-white d-flex align-items-center justify-content-center">
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Approvals</li>
-              <li class="fs-4 text-center fw-bold">
-                <?php if (!empty($pendingcounts)) {
-                  echo "$pendingcounts";
-                } else {
-                  echo "0";
-                }
+            <a href="<?= base_url('members') ?>" class="card-round card2 text-white shadow-sm d-flex align-items-center">
+              <i class="fa-solid fa-user-group card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Total Members</div>
+                <div class="fs-1 fw-bold mt-1"><?= $memberscount ?></div>
+              </div>
+            </a>
 
-                ?></li>
-            </ul>
+            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 text-white shadow-sm d-flex align-items-center">
+              <i class="fa-solid fa-bell card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Approvals</div>
+                <div class="fs-1 fw-bold mt-1">
+                  <?php if (!empty($pendingcounts)) {
+                    echo "$pendingcounts";
+                  } else {
+                    echo "0";
+                  }
+                  ?>
+                </div>
+              </div>
             </a>
 
           </div>

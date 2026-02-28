@@ -34,7 +34,7 @@ class EventsModel extends Model{
     }
 
     public function getEventsSearchfields($searchfields){
-        $query = $this->db->query("SELECT * FROM eventlist WHERE EventName LIKE '%$searchfields%'");
+        $query = $this->db->query("SELECT * FROM eventlist WHERE EventName LIKE '%$searchfields%' AND isShow = 1");
         return $query->getResultArray();
     }
 

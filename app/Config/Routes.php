@@ -140,6 +140,7 @@ $routes->post('members/verify-registration-otp', 'Members::verify_registration_o
 
 // Events Routes
 $routes->get('events', 'Events::index');
+$routes->get('events/searchevents', 'Events::searchevents');
 $routes->get('changeEventspagesetup', 'Events::changeEventspagesetup');
 $routes->post('events/addevent', 'Events::addevent'); // Fix for 404 on Add Event
 $routes->get('events/getevent', 'Events::getevent'); // For AJAX modal content
