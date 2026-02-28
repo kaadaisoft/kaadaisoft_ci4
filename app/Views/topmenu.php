@@ -1,6 +1,6 @@
 <style>
     #search-bar { padding: 0 !important; background-color: rgb(248, 245, 245) !important; }
-    .top-icon-color { color: rgb(120, 50, 186) !important; }
+    .top-icon-color { color: rgb(0, 123, 255) !important; }
 
     @media (max-width: 768px) {
         .topmenu-wrapper {

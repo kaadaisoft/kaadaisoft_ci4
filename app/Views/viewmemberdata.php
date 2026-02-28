@@ -34,13 +34,13 @@
      }
 
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
 
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
 
      .ps-user{
@@ -367,7 +367,7 @@
         background-color: rgb(239, 236, 236);
      }
      .member-text{
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
      }
 
      .updatemember{

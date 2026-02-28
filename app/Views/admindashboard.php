@@ -33,12 +33,12 @@ html, body {
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -83,11 +83,11 @@ html, body {
       text-decoration: none;
     }
     .card3{
-      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      background: linear-gradient(135deg, #007bff, #0056b3);
       border: none;
       transition: all 0.3s ease;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
       text-decoration: none;
      }
 
@@ -303,7 +303,7 @@ html, body {
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -320,7 +320,7 @@ html, body {
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
 
      .updatecoord:hover .updatetooltip{
@@ -465,7 +465,7 @@ html, body {
   }
   
   .ham-menu:hover {
-    background-color: rgba(120, 50, 186, 0.1) !important;
+    background-color: rgba(0, 123, 255, 0.1) !important;
   }
 }
 
@@ -490,7 +490,7 @@ html, body {
       }
       
       .custom-table thead th {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
         color: white;
         font-weight: 600;
         text-transform: uppercase;
@@ -532,7 +532,7 @@ html, body {
       }
       
       .total-label {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 1.1rem;
@@ -863,7 +863,7 @@ html, body {
         printWindow.document.write("<html><head><title>Print Receipt</title>");
         printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
         printWindow.document.write('<style>');
-        printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
+        printWindow.document.write('.heading-kaadaisoft { color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; }');
         printWindow.document.write('table td, th { padding: 10px; }');
         printWindow.document.write('</style></head><' + 'body>');
         printWindow.document.write('<div class="p-4">' + printContent + '</div>');

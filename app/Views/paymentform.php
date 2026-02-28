@@ -21,12 +21,12 @@
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -110,7 +110,7 @@
       }
 
       form input:focus,select:focus{
-        outline:2px solid rgb(120, 50, 186);
+        outline:2px solid rgb(0, 123, 255);
       }
       input[type=checkbox]:focus,input[type=radio]:focus{
         outline:none;
@@ -119,11 +119,11 @@
         color:white; 
         font-weight:500;
         border:none;
-        background-color:rgb(120, 50, 186);
+        background-color:rgb(0, 123, 255);
       }
     
       .ps-logo-text{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
       }
 
       .member-color{

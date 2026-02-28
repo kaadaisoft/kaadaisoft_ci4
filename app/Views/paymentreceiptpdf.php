@@ -29,13 +29,13 @@
     }
 
     .heading-kaadaisoft {
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
       font-weight: 800;
       font-family: sans-serif;
     }
 
     .ps-letter {
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
     }
 
     .ps-user {
@@ -584,7 +584,7 @@
       htmlContent += "<style>";
       htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
       htmlContent += "table td,th{ padding-top:20px; }";
-      htmlContent += ".heading-kaadaisoft{ color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; font-size:50px; }";
+      htmlContent += ".heading-kaadaisoft{ color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; font-size:50px; }";
       htmlContent += ".printuse{ text-align:center; }";
       htmlContent += "</style></head><" + "body>";
       htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";

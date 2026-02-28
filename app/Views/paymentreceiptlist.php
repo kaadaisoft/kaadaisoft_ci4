@@ -23,12 +23,12 @@
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -189,7 +189,7 @@
         font-weight:600;
       }      
      /*  #paymentlistaddress  table,tr,th,td{
-        border:4px solid rgb(120, 50, 186);
+        border:4px solid rgb(0, 123, 255);
         border-collapse:collapse;
         border-radius:10px;
       }
@@ -208,7 +208,7 @@
      .viewtooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -223,7 +223,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
      .table-btn:hover .viewtooltip{
         visibility:visible;
@@ -231,7 +231,7 @@
      .downloadreceipt{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -246,7 +246,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186); transparent;
+          border-color:transparent transparent rgb(0, 123, 255); transparent;
      }
      .table-btn:hover .downloadreceipt{
         visibility:visible;
@@ -569,7 +569,7 @@
         // Copy relevant styles for printing
         printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
         printWindow.document.write('<style>');
-        printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
+        printWindow.document.write('.heading-kaadaisoft { color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; }');
         printWindow.document.write('table td, th { padding: 10px; }');
         printWindow.document.write('.print-only { font-size: 14px; }');
         printWindow.document.write('</style></head><' + 'body>');

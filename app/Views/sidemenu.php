@@ -1,6 +1,6 @@
 <style>
       .icon{
-        color:grey;
+        color:rgb(0, 123, 255);
       }
       #menu-bar {
         /* overflow-y: auto !important; */

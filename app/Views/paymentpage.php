@@ -27,13 +27,13 @@
     }
 
     .heading-kaadaisoft {
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
       font-weight: 800;
       font-family: sans-serif;
     }
 
     .ps-letter {
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
     }
 
     .ps-user {
@@ -213,7 +213,7 @@
         color: rgb(95, 73, 30);
       } */
     label {
-      /* color: rgb(120, 50, 186); */
+      /* color: rgb(0, 123, 255); */
       font-size: 18px;
       font-weight: 700;
     }

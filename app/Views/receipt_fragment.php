@@ -97,7 +97,7 @@
 
 <style>
     .heading-kaadaisoft {
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight: 800;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }

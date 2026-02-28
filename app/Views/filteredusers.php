@@ -21,12 +21,12 @@
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -210,12 +210,12 @@
         color:red;
       }
       label{
-        /* color: rgb(120, 50, 186); */
+        /* color: rgb(0, 123, 255); */
         font-size:18px;
         font-weight:700;
       }
       input:focus,select:focus{
-        outline:2px solid rgb(120, 50, 186);
+        outline:2px solid rgb(0, 123, 255);
       }
 
     @media screen and (max-width:768px) {

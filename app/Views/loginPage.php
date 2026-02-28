@@ -64,7 +64,7 @@
             font-weight: bold;
             text-align: center;
             margin-bottom: 25px;
-            color: #FFD700;
+            color: #007bff;
             font-size: 2.2rem;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
@@ -112,14 +112,14 @@
 
         .role:focus,
         .unique:focus {
-            border-color: #6c5ce7;
-            box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.3);
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.3);
             background: rgba(255, 255, 255, 1);
             transform: translateY(-1px);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6c5ce7 0%, #a55eea 100%);
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             border: none;
             border-radius: 25px;
             width: 120px;
@@ -127,14 +127,14 @@
             font-weight: 700;
             font-size: 15px;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
             margin-top: 8px;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #5a4dbf 0%, #933fdc 100%);
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(108, 92, 231, 0.6);
+            box-shadow: 0 12px 35px rgba(0, 123, 255, 0.6);
         }
 
         .text-center a {
@@ -446,7 +446,7 @@
                     showCancelButton: true,
                     confirmButtonText: 'Register Again',
                     cancelButtonText: 'Close',
-                    confirmButtonColor: '#6c5ce7',
+                    confirmButtonColor: '#007bff',
                     cancelButtonColor: '#aaa'
                 }).then((result) => {
                     if (result.isConfirmed) {

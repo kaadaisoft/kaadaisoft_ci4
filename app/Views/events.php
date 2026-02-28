@@ -26,12 +26,12 @@
       background-color:rgb(230, 230, 230);
      }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
      .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -309,7 +309,7 @@
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -325,7 +325,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
      .updateevent:hover .updatetooltip{
         visibility:visible;
@@ -333,7 +333,7 @@
      .trashtooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -349,7 +349,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186); transparent;
+          border-color:transparent transparent rgb(0, 123, 255); transparent;
      }
      .trashevent:hover .trashtooltip{
         visibility:visible;
