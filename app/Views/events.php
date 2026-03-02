@@ -118,11 +118,13 @@
         border-radius: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .custom-table-modern {
         margin-bottom: 0;
+        min-width: 600px;
       }
       .custom-table-modern thead th {
         background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -326,11 +328,13 @@
         overflow: hidden;
       }
       .top-navbar-row {
-        height: 70px;
+        height: auto;
+        min-height: 70px;
         flex-shrink: 0;
         z-index: 1050;
-        background: #fff;
+        background: #0f172a;
         display: flex;
+        align-items: stretch;
         margin: 0;
       }
       .main-body-row {
@@ -994,7 +998,6 @@ renderEvents(eventsData.slice(0 ,3), 0);
           }
 
 
-       document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px"; 
 // Mobile Menu Functions
 function openMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -1092,12 +1095,7 @@ $.ajax({
       renderEvents(eventsData.slice(start, end), start);
     }
 
-    document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-
     window.addEventListener("resize", () => {
-       let topbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
-       document.getElementById("menu-bar").style.height = (window.innerHeight - topbarHeight) + "px";
-       
        let addEventsForm = document.getElementById("add-events-form");
        let updateEventSection = document.getElementById("update-event-section");
        let b = window.innerWidth;
@@ -1346,6 +1344,15 @@ $.ajax({
       document.getElementById('custom-mobile-menu').style.display = 'none';
   }
    </script>
+    <!---------------------Custom Mobile Menu-------------------------->
+    <div id="custom-mobile-menu">
+        <div class="close-btn" onclick="closeMobileMenu()">&times;</div>
+        <div id="mobile-menu-content">
+            <!-- Content loaded via JS -->
+        </div>
+    </div>
+    <!---------------------Custom Mobile Menu End-------------------------------->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> 
     
 </body>

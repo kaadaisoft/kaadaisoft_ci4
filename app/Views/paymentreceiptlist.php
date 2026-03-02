@@ -251,61 +251,63 @@
      .table-btn:hover .downloadreceipt{
         visibility:visible;
      }
-    @media screen and (max-width:768px) {
-/*       #search-bar{
-            background-color:rgb(248, 245, 245);
-            flex:none;
-            background-color:white !important;
-            padding: 5px 0;
-           } */
-           #menu-bar{
-            display:none;
-           }
-           #commonsearch{
-            width:100% !important;
-            margin: 0 !important;
-            /* padding:5px; */
-           }
-           .dashboardpadd:nth-child(2){
-            padding:0% !important;
-           }
-           .dashboardpadd:nth-child(1){
-            padding:2% 0 !important;
-           }
-           #hidename{
-            display:none;
-           } 
-
-           .ps-logo{
-            justify-content:space-between;
-          }
-
-          .fa-bell-icon{
-            padding-right:10px;
-          }
-
-          #ps-name-line{
-            display:none;
-          }
-      }
-
-    @media screen and (min-width:768px) {
-          .ham-menu{
-            display:none;
-          }
-      }
-
-    @media screen and (max-width:768px) {
-        
-          #add-coords-form div > input{
-            padding: 5px;
-          }
-          #add-coords-form{
-            width:90%;
-            padding:8%;
-          }
+    /* Hide default menu bar on mobile */
+    @media screen and (max-width: 768px) {
+        #menu-bar {
+            display: none;
+        }
     }
 
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
+    }
+
+    .active-payments {
+        background: rgba(56, 189, 248, 0.1) !important;
+        font-weight: 700 !important;
+    }
 
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
@@ -315,65 +317,44 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-color: white;
+        background-color: #0f172a;
         z-index: 9999;
         overflow-y: auto;
-        animation: slideIn 0.3s ease-out;
     }
-
-    @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-    }
-
     .close-btn {
         position: absolute;
         top: 20px;
         right: 20px;
         font-size: 30px;
         cursor: pointer;
-        color: #333;
+        color: #cbd5e1;
     }
-
     #mobile-menu-content {
-        padding-top: 60px; /* Space for close button */
-    }
-    
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-        #menu-bar {
-            display: none;
-        }
+        padding-top: 60px;
     }
     </style>
 </head>
 <body>
         
-    <div class="container-fluid">
+    <div class="container-fluid layout-container p-0">
       
-      <div class="row"><!-----top-bar--------------->
+        <div class="top-navbar-row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        
+            <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
+            </div>
 
-        </div>
+            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-4" style="background: #0f172a;">
+            </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
-        </div>
         </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-              
-         </div><!-----------side-bar-end-------------->
+            <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
+            </div><!-----------side-bar-end-------------->
              
-         <div id="pagecontrol" class="col-md-10 "><!-----------main-dashboard------------------------->
+            <div id="pagecontrol" class="col-md-10 main-content-area"><!-----------main-dashboard------------------------->
          <div class="ps-4 mt-2">
          <?php 
          echo " <table class='table-bordered border-secondary col-md-4'>";
@@ -492,6 +473,7 @@
       document.getElementById('custom-mobile-menu').style.display = 'none';
     }
 
+    // Load components via AJAX to ensure consistency
     $.ajax({
       type: "get",
       url: "<?= base_url('dashboard/sidemenu') ?>",
@@ -501,7 +483,7 @@
         document.getElementById("mobile-menu-content").innerHTML = result;
       },
       error: (error) => {
-        document.getElementById("menu-bar").innerHTML = error;
+        document.getElementById("menu-bar").innerHTML = "Error loading menu";
       }
     }); 
 
@@ -511,11 +493,9 @@
       url:"<?= base_url('dashboard/topmenu') ?>",
       success:(result)=>{
            document.getElementById("search-bar").innerHTML = result;
-          //  document.getElementById("dashboardsearch").style.display = "flex";
-          //  document.getElementById("dashboardsubmenu").style.display = "flex";
       },
       error:(error)=>{
-           document.getElementById("search-bar").innerHTML = error;
+           document.getElementById("search-bar").innerHTML = "Error loading top menu";
       }
     }); 
 
@@ -526,7 +506,7 @@
            document.getElementById("ps-logo").innerHTML = result;
       },
       error:(error)=>{
-           document.getElementById("ps-logo").innerHTML = error;
+           document.getElementById("ps-logo").innerHTML = "Error loading logo";
       }
     });
 

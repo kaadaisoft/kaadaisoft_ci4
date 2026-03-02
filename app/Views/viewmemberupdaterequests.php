@@ -90,143 +90,126 @@
             border-radius: 25px;
         }
 
-        @media screen and (max-width:768px) {
-            #menu-bar {
-                display: none;
-            }
-            #pageheight {
-                position: relative !important;
-                height: auto !important;
-                overflow: visible !important;
-            }
-        }
-
-        /* Custom Mobile Menu Styles */
-        #custom-mobile-menu {
+    /* Hide default menu bar on mobile */
+    @media screen and (max-width: 768px) {
+        #menu-bar {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: white;
-            z-index: 9999;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease-out;
         }
+    }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-            }
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
 
-            to {
-                transform: translateX(0);
-            }
-        }
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
+    }
 
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #333;
-        }
+    .active-updaterequests {
+        background-color: rgba(56, 189, 248, 0.15);
+        font-weight: 600;
+    }
 
-        #mobile-menu-content {
-            padding-top: 60px;
-            /* Space for close button */
-        }
+    /* Custom Mobile Menu Styles */
+    #custom-mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0f172a;
+        z-index: 9999;
+        overflow-y: auto;
+    }
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+        color: #cbd5e1;
+    }
+    #mobile-menu-content {
+        padding-top: 60px;
+    }
 
-        .ham-menu {
-            background-color: transparent;
-        }
+    .green-underline {
+        border-bottom: 2px solid #28a745;
+        color: #28a745;
+        font-weight: 600;
+        display: inline-block;
+    }
 
-        .green-underline {
-            text-decoration: underline;
-            text-decoration-color: #198754;
-            /* Success green */
-            text-decoration-thickness: 3px;
-            color: #198754;
-            font-weight: bold;
-        }
-
-        .old-value {
-            color: #6c757d;
-            text-decoration: line-through;
-            font-size: 0.9em;
-        }
-        .active-updaterequests {
-            background-color: rgb(230, 230, 230);
-            font-weight: 600;
-        }
+    .old-value {
+        color: #dc3545;
+        text-decoration: line-through;
+        font-size: 0.85em;
+        opacity: 0.8;
+    }
     </style>
 </head>
 
 <body>
 
-    <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+    <div id="pageheight" class="container-fluid layout-container p-0">
         <?= view('notification_toast') ?>
 
-        <script>
-            // Global Mobile Menu Functions (defined early to avoid ReferenceError)
-            function openMobileMenu() {
-                var menu = document.getElementById('custom-mobile-menu');
-                if (menu) menu.style.display = 'block';
-            }
+        <div class="top-navbar-row"><!-----top-bar--------------->
 
-            function closeMobileMenu() {
-                var menu = document.getElementById('custom-mobile-menu');
-                if (menu) menu.style.display = 'none';
-            }
-
-            $(document).ready(function () {
-                // Initial height set
-                function updateMenuBarHeight() {
-                    var menuBar = document.getElementById("menu-bar");
-                    var searchBar = document.getElementById("search-bar");
-                    if (menuBar && searchBar) {
-                        menuBar.style.height = (window.innerHeight - searchBar.getBoundingClientRect().height) + "px";
-                    }
-                }
-
-                updateMenuBarHeight();
-
-                window.addEventListener("resize", () => {
-                    updateMenuBarHeight();
-                });
-
-                // Load Sidebar content into mobile menu
-                $.ajax({
-                    type: "get",
-                    url: "<?= base_url('dashboard/sidemenu') ?>",
-                    success: (result) => {
-                        var mobileContent = document.getElementById("mobile-menu-content");
-                        if (mobileContent) mobileContent.innerHTML = result;
-                    },
-                    error: (error) => {
-                        console.error("Error loading mobile menu:", error);
-                    }
-                });
-            });
-        </script>
-
-        <div class="row">
-            <div class="col-md-2 border-bottom ps-gray py-3 ps-logo">
-                <?= view('pslogo'); ?>
-            </div>
-            <div id="search-bar" class="col-md-10 border-bottom d-flex align-items-center justify-content-between px-4">
-                <?= view('topmenu'); ?>
-            </div>
-        </div>
-
-        <div class="row" style="height: calc(100vh - 72px);">
-            <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray border-end">
-                <?= view('sidemenu'); ?>
+            <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
             </div>
 
-            <div class="col-md-10 py-4 px-5">
+            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-4" style="background: #0f172a;">
+            </div>
+
+        </div><!-----------top-bar-end----------------------->
+
+
+        <div class="main-body-row"><!----------main-navbar----------->
+
+            <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
+            </div><!-----------side-bar-end-------------->
+
+            <div id="main-content-area" class="col-md-10 main-content-area py-4 px-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
@@ -292,6 +275,55 @@
                 </div>
             </div>
         </div>
+
+        <!-- Global Scripts added at appropriate place -->
+        <script>
+            // Global Mobile Menu Functions
+            function openMobileMenu() {
+                var menu = document.getElementById('custom-mobile-menu');
+                if (menu) menu.style.display = 'block';
+            }
+
+            function closeMobileMenu() {
+                var menu = document.getElementById('custom-mobile-menu');
+                if (menu) menu.style.display = 'none';
+            }
+
+            $(document).ready(function () {
+                // Load components via AJAX to ensure consistency
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/pslogo') ?>",
+                    success: (result) => {
+                        var logoArea = document.getElementById("ps-logo");
+                        if (logoArea) logoArea.innerHTML = result;
+                    }
+                });
+
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/topmenu') ?>",
+                    success: (result) => {
+                        var searchBar = document.getElementById("search-bar");
+                        if (searchBar) searchBar.innerHTML = result;
+                    }
+                });
+
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/sidemenu') ?>",
+                    success: (result) => {
+                        var menuBar = document.getElementById("menu-bar");
+                        var mobileContent = document.getElementById("mobile-menu-content");
+                        if (menuBar) menuBar.innerHTML = result;
+                        if (mobileContent) mobileContent.innerHTML = result;
+                    },
+                    error: (error) => {
+                        console.error("Error loading menus:", error);
+                    }
+                });
+            });
+        </script>
     </div>
 
     <!-- View Comparison Modal -->

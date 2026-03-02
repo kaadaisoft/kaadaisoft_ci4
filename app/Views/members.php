@@ -604,7 +604,7 @@
 
          </div><!-----------side-bar-end-------------->
 
-         <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10">
+         <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px;" class="col-md-10">
             <!-----------main-dashboard------------------------->
 
             <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-md-end justify-content-center memberpadd">
@@ -837,25 +837,27 @@
 
             <div class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
                <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;" id="memberTotalCountHolder">Total Members: <span class="badge bg-primary rounded-pill"><?php echo count($members) ?></span></div>
-               <table class="table custom-table">
-                  <thead <?php if (count($members) == 0) {
-                     echo "hidden";
-                  } ?>>
-                     <tr>
-                        <th>S.No</th>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>District</th>
-                        <th>Taluk</th>
-                        <th>Panchayat</th>
-                        <th class="text-center">Actions</th>
-                     </tr>
-                  </thead>
-                  <tbody id="ps-members">
+               <div class="table-responsive">
+                  <table class="table custom-table">
+                     <thead <?php if (count($members) == 0) {
+                        echo "hidden";
+                     } ?>>
+                        <tr>
+                           <th>S.No</th>
+                           <th>User ID</th>
+                           <th>Name</th>
+                           <th>Mobile</th>
+                           <th>District</th>
+                           <th>Taluk</th>
+                           <th>Panchayat</th>
+                           <th class="text-center">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody id="ps-members">
 
-                  </tbody>
-               </table>
+                     </tbody>
+                  </table>
+               </div>
 
             </div> <!----------------table-end------->
 

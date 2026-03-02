@@ -343,14 +343,13 @@ class Payments extends BaseController {
             $year = $this->request->getGet("year");
             $events = $this->paymentsModel->getEventslist();
             echo "
-            <label id='eventslist' class='container-fluid' for='events'>Choose Event: <br>
-                      <select class='container-fluid border rounded' name='eventid' id='eventid' required>
+            <label id='eventslist' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+                      <select class='form-select' name='eventid' id='eventid' required>
                       <option value=''>Choose Event</option>";
             foreach ($events as $key => $value) {
             echo "<option value='$value[Id]'>$value[EventName] - $value[Year]</option>";
             }                                          
-            echo "</select>
-              </label>";
+            echo "</select>";
     }
 
     public function getEventsbyyear(){
@@ -360,16 +359,14 @@ class Payments extends BaseController {
             $year = $this->request->getGet("year");
             $events = $this->paymentsModel->getEventswithyear($year);
             echo "
-            <label id='eventslist' class='container-fluid' for='events'>Choose Events: <br>
-                    
-                      <select class='container-fluid border rounded' name='eventid' id='eventid' required>
+            <label id='eventslist' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+                      <select class='form-select' name='eventid' id='eventid' required>
                       <option value=''>Choose Event</option>";
                       
             foreach ($events as $key => $value) {
             echo "<option value='$value[SNo]'>$value[EventName] - $value[year]</option>";
             }                                          
-            echo "</select>
-              </label>";
+            echo "</select>";
     }
 
     public function getCities(){
@@ -380,17 +377,15 @@ class Payments extends BaseController {
             $districtid = $this->request->getGet('districtid');
             $cities = $this->paymentsModel->getCitieslist($districtid);
             echo "
-            <label id='citieslist' class='container-fluid' for='cities'>Choose Cities: <br>
-                    
-                      <select class='container-fluid border rounded' name='cities' id='cities' required>
+            <label id='citieslist' class='form-label'><i class='fas fa-city me-2 text-primary'></i>Cities</label>
+                      <select class='form-select' name='cities' id='cities' required>
                       <option value=''>Choose Cities</option>";
                       
             foreach ($cities as $key => $value) {
             echo "<option value='$value[id]'>$value[name]</option>";
             }                  
                         
-            echo "</select>
-              </label>";
+            echo "</select>";
             }
     }
 
@@ -402,17 +397,15 @@ class Payments extends BaseController {
             $year = $this->request->getGet('year');
             $eventsdetail = $this->paymentsModel->getEventsdetails($year);
             echo "
-            <label id='eventnamelabel' class='container-fluid' for='events'>Choose events: <br>
-                    
-            <select onchange='getTaxamount(this)' class='container-fluid border rounded' name='eventid' id='eventnames' required>
+            <label id='eventnamelabel' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+            <select onchange='getTaxamount(this)' class='form-select' name='eventid' id='eventnames' required>
             <option value=''>Choose event</option>";
                       
             foreach ($eventsdetail as $key => $value) { 
             echo "<option value='$value[SNo]'>$value[EventName]</option>";
             }                  
                         
-            echo "</select>
-                   </label>";
+            echo "</select>";
         }
     }
 
@@ -426,17 +419,15 @@ class Payments extends BaseController {
         $eventsdetail = $this->paymentsModel->getEventsdetails($year);
         $memberdetail = $this->paymentsModel->getMemberforPayment($memberid);
         echo "
-         <label id='eventnamelabel' class='container-fluid' for='events'>Choose event: <br>
-                    
-                       <select onchange='getTaxamount(this,`$memberdetail->Familymembershipid`)' class='container-fluid border rounded' name='eventid' id='eventnames' required>
+         <label id='eventnamelabel' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+                       <select onchange='getTaxamount(this,`$memberdetail->Familymembershipid`)' class='form-select' name='eventid' id='eventnames' required>
                        <option value=''>Choose event</option>";
                       
          foreach ($eventsdetail as $key => $value) {
             echo "<option value='$value[Id]'>$value[EventName]</option>";
          }                  
                         
-        echo "</select>
-              </label>";
+        echo "</select>";
         }
     }
 
