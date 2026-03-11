@@ -19,11 +19,12 @@
         }
       }
       #menu-bar::-webkit-scrollbar {
-        width: 5px;
+        display: none;
+        width: 0px;
       }
-      #menu-bar::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 10px;
+      #menu-bar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
 
       /* Global Mobile Menu Overrides */

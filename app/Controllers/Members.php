@@ -91,6 +91,11 @@ class Members extends BaseController
 
     public function topmenu()
     {
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
+        $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         return view("topmenu");
     }
 
@@ -613,9 +618,12 @@ class Members extends BaseController
         // Handle Head Transfer Logic
         $upcoming_head_id = $this->request->getPost("upcoming_head" . $suffix);
         if (!empty($upcoming_head_id)) {
-            // Demote current head (this user) to 'Old Head' as requested
-            
-            $data['MemberRole'] = 'Old Head'; 
+            // Trigger automatic relationship mapping for other family members
+            $familyIdToFix = ($currentMember && $currentMember->Existfamilyid) ? $currentMember->Existfamilyid : $currentMember->Familymembershipid;
+            $old_head_new_role = $this->membersModel->autoUpdateFamilyRoles($familyIdToFix, $upcoming_head_id);
+
+            // Set current head's new role (e.g., Father)
+            $data['MemberRole'] = $old_head_new_role; 
             
             // If User is Admin/Coordinator (Direct Update)
             if ($this->session->get('role') != 3) {

@@ -12,7 +12,8 @@
     .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
     .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -388,10 +389,7 @@
 
       <div class="row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        
-
+        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
         </div>
 
         <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">

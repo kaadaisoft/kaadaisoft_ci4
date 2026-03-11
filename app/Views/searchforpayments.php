@@ -1,28 +1,27 @@
 <?php
 if (isset($members) && isset($sno)) {
-  $i = $sno + 1;
-  foreach ($members as $key => $value) {
-    $roleText = ($value['MemberRole'] == 'Head') ? 'Head' : (($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : 'Member'));
-    $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
-    echo
-      "<tr $rowBg>
-        <td class='fw-medium text-muted'>$i</td>
-        <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
-        <td class='fw-medium'>$value[Name]</td>
-        <td><span class='badge bg-light text-dark border'>$roleText</span></td>
-        <td class='text-muted'>$value[Aadharnumber]</td>
-        <td class='text-muted'>$value[Phonenumber]</td>
-        <td class='text-muted'>$value[Taluk]</td>
-        <td>
-            <div class='d-flex justify-content-center align-items-center gap-2'>
-                <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-pay-modern'>Pay Now</a>
-                <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-view-modern'>View Receipts</a>
-            </div>
-        </td>
-    </tr>";
-    $i++;
-  }
+    $i = $sno;
+    foreach ($members as $key => $value) {
+        $roleText = ($value['MemberRole'] == 'Head') ? 'Head' : (($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : 'Member'));
+        echo
+        "<tr>
+            <td class='fw-bold text-muted'>$i</td>
+            <td class='fw-bold text-primary'>$value[Familymembershipid]</td>
+            <td class='fw-bold text-dark'>$value[Name]</td>
+            <td><span class='badge bg-light text-dark border px-2 py-1 rounded'>$roleText</span></td>
+            <td>$value[Aadharnumber]</td>
+            <td>$value[Phonenumber]</td>
+            <td>$value[Taluk]</td>
+            <td>
+                <div class='d-flex justify-content-center align-items-center gap-2'>
+                    <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-action-premium btn-pay-premium'><i class='fa-solid fa-indian-rupee-sign'></i>Pay Now</a>
+                    <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-action-premium'><i class='fa-solid fa-receipt'></i>Receipts</a>
+                </div>
+            </td>
+        </tr>";
+        $i++;
+    }
 } else {
-  echo "<tr><td colspan='8' class='text-center py-4 bg-light text-muted'><i class='fas fa-search me-2'></i>No search results found.</td></tr>";
+    echo "<tr><td colspan='8' class='text-center py-5 bg-light text-muted fw-medium'><i class='fas fa-search fa-2x d-block mb-3 opacity-25'></i>No search results found.</td></tr>";
 }
 ?>

@@ -641,8 +641,58 @@ class MembersModel extends Model
             $familyId = $member->Familymembershipid;
         }
 
-        $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId') AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY Dob ASC");
+        $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId' OR Existfamilyid IN (SELECT Familymembershipid FROM kaadaimembers WHERE Existfamilyid = '$familyId')) AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY Dob ASC");
         return $query->getResult();
+    }
+
+    /**
+     * Automatically update other family members' roles based on the new head's previous role.
+     * Example: If a 'Son' becomes 'Head', his mother (formerly 'Wife') becomes 'Mother', 
+     * his brother (formerly 'Son') becomes 'Brother', etc.
+     */
+    public function autoUpdateFamilyRoles($familyId, $newHeadId) {
+        $newHead = $this->db->table('kaadaimembers')->where('TRIM(Familymembershipid)', trim($newHeadId))->get()->getRow();
+        if (!$newHead) return 'Old Head';
+        
+        $oldRole = $newHead->MemberRole;
+        if ($oldRole == 'Head') return 'Old Head';
+
+        $updates = [];
+        $oldHeadNewRole = 'Old Head';
+
+        if ($oldRole == 'Son' || $oldRole == 'Daughter') {
+            $updates = [
+                'Wife' => 'Mother',
+                'Son' => 'Brother',
+                'Daughter' => 'Sister',
+                'Grand Father' => 'Grand Father',
+                'Grand Mother' => 'Grand Mother'
+            ];
+            $oldHeadNewRole = 'Father';
+        } else if ($oldRole == 'Wife') {
+            $updates = [
+                'Son' => 'Son',
+                'Daughter' => 'Daughter'
+            ];
+            $oldHeadNewRole = 'Husband';
+        } else if ($oldRole == 'Brother' || $oldRole == 'Sister') {
+            $oldHeadNewRole = ($newHead->Gender == 'Male') ? 'Brother' : 'Sister'; // This is tricky, but usually sibling of head
+        }
+
+        if (!empty($updates)) {
+            foreach ($updates as $fromRole => $toRole) {
+                $this->db->table('kaadaimembers')
+                    ->groupStart()
+                        ->where('TRIM(Existfamilyid)', trim($familyId))
+                        ->orWhere('TRIM(Familymembershipid)', trim($familyId))
+                    ->groupEnd()
+                    ->where('TRIM(Familymembershipid) !=', trim($newHeadId))
+                    ->where('MemberRole', $fromRole)
+                    ->update(['MemberRole' => $toRole]);
+            }
+        }
+        
+        return $oldHeadNewRole;
     }
 
     public function getPendingUpdateRequest($Familymembershipid)

@@ -26,7 +26,8 @@
     .ps-logo {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-left: 20px;
     }
 
     .heading-kaadaisoft {
@@ -86,9 +87,7 @@
       display: block;
     }
 
-    .ps-logo {
-      justify-content: space-between;
-    }
+    /* .ps-logo CSS moved for consistency */
 
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
@@ -143,6 +142,7 @@
       z-index: 1050;
       background: #0f172a;
       display: flex;
+      flex-wrap: wrap;
       align-items: stretch;
       margin: 0;
     }
@@ -237,43 +237,44 @@
     .table-container {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       border: 1px solid #e2e8f0;
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
       margin-bottom: 2rem;
     }
     .custom-table-modern {
       margin-bottom: 0;
       width: 100%;
       min-width: 900px;
-    }
-    .custom-table-modern caption {
-      padding: 1rem;
-      font-weight: 600;
-      color: #1e293b;
+      border-collapse: separate;
+      border-spacing: 0;
     }
     .custom-table-modern thead th {
       background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #f8fafc;
+      color: #fff;
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.85rem;
-      letter-spacing: 0.05em;
-      padding: 1rem;
-      border-bottom: 2px solid #334155;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
     }
     .custom-table-modern tbody tr {
       transition: all 0.2s ease;
     }
     .custom-table-modern tbody tr:hover {
-      background-color: #f1f5f9;
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
     }
     .custom-table-modern td {
-      padding: 1rem;
+      padding: 16px;
       vertical-align: middle;
-      color: #1e293b;
+      color: #334155;
+      font-size: 0.95rem;
       border-bottom: 1px solid #f1f5f9;
+      text-align: center;
     }
   </style>
 </head>
@@ -282,12 +283,12 @@
 
   <div class="container-fluid layout-container p-0">
 
-    <div class="top-navbar-row"><!-----top-bar--------------->
+    <div class="top-navbar-row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
+      <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
       </div>
 
-      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-3" style="background: #0f172a;">
+      <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
       </div>
     </div><!-----------top-bar-end----------------------->
 
@@ -393,25 +394,22 @@
               </thead>
               <tbody id="ps-reports">
                 <?php
-
                 if (isset($reports) && isset($sno)) {
                   $i = $sno + 1;
                   foreach ($reports as $key => $value) {
-                    $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
                     echo "
-                    <tr $rowBg>
-                        <td class='fw-medium text-muted'>$i</td>
-                        <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
-                        <td class='fw-medium'>$value[Name]</td>
-                        <td>$value[Role]</td>
-                        <td class='text-muted'>$value[Phonenumber]</td>
-                        <td class='text-muted'>$value[Aadharnumber]</td>
-                        <td class='text-muted'>$value[Taluk]</td>             
+                    <tr>
+                        <td class='fw-bold text-muted'>$i</td>
+                        <td class='fw-bold text-primary'>$value[Familymembershipid]</td>
+                        <td class='fw-bold text-dark'>$value[Name]</td>
+                        <td><span class='badge bg-light text-dark border px-2 py-1 rounded'>$value[Role]</span></td>
+                        <td>$value[Phonenumber]</td>
+                        <td>$value[Aadharnumber]</td>
+                        <td>$value[Taluk]</td>             
                     </tr>";
                     ++$i;
                   }
                 }
-
                 ?>
               </tbody>
               <!-- <td>

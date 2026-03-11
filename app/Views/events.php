@@ -14,7 +14,8 @@
       .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
      .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -128,25 +129,30 @@
       }
       .custom-table-modern thead th {
         background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: #f8fafc;
+        color: #fff;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        padding: 1rem;
-        border-bottom: 2px solid #334155;
+        letter-spacing: 1px;
+        padding: 16px;
+        border: none;
+        text-align: center;
       }
       .custom-table-modern tbody tr {
         transition: all 0.2s ease;
       }
       .custom-table-modern tbody tr:hover {
-        background-color: #f1f5f9;
+        background-color: #f8fafc;
+        transform: scale(1.002);
+        box-shadow: inset 4px 0 0 #3b82f6;
       }
       .custom-table-modern td {
-        padding: 1rem;
+        padding: 16px;
         vertical-align: middle;
-        color: #1e293b;
+        color: #334155;
+        font-size: 0.95rem;
         border-bottom: 1px solid #f1f5f9;
+        text-align: center;
       }
 
       .event-banner-wrapper {
@@ -647,7 +653,7 @@
       
       <!-- Top Bar -->
       <div class="row top-navbar-row">
-          <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+          <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
               <!-- Content loaded via AJAX -->
           </div>
           <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">

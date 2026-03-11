@@ -220,6 +220,11 @@ class Reports extends BaseController{
     }
 
     public function topmenu(){
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
+        $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         return view("topmenu");
     }
 

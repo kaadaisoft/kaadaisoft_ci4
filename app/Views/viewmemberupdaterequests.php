@@ -111,6 +111,7 @@
       z-index: 1050;
       background: #0f172a;
       display: flex;
+      flex-wrap: wrap;
       align-items: stretch;
       margin: 0;
     }
@@ -185,6 +186,76 @@
         font-size: 0.85em;
         opacity: 0.8;
     }
+
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1100px;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      margin: 0 4px;
+    }
+    .btn-action-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #fff;
+    }
+    .btn-view-premium { background: #eff6ff; color: #2563eb; }
+    .btn-view-premium:hover { background: #2563eb; }
+    .btn-approve-premium { background: #f0fdf4; color: #16a34a; }
+    .btn-approve-premium:hover { background: #16a34a; }
+    .btn-reject-premium { background: #fef2f2; color: #dc2626; }
+    .btn-reject-premium:hover { background: #dc2626; }
     </style>
 </head>
 
@@ -193,12 +264,12 @@
     <div id="pageheight" class="container-fluid layout-container p-0">
         <?= view('notification_toast') ?>
 
-        <div class="top-navbar-row"><!-----top-bar--------------->
+        <div class="top-navbar-row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
-            <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
+            <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
             </div>
 
-            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-4" style="background: #0f172a;">
+            <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-4" style="background: #0f172a;">
             </div>
 
         </div><!-----------top-bar-end----------------------->
@@ -219,45 +290,41 @@
                     </nav>
                 </div>
 
-                <div style="overflow:auto; height: 75vh;" class="bg-white rounded shadow-sm">
-                    <table class="table table-hover mb-0">
-                        <thead class="ps-gray sticky-top">
+                <div class="table-container-premium">
+                    <table class="custom-table-premium">
+                        <thead>
                             <tr>
                                 <th>S.No</th>
                                 <th>Member Name</th>
                                 <th>Member ID</th>
                                 <th>Request Date</th>
-                                <th class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($requests)): ?>
                                 <?php foreach ($requests as $index => $req): ?>
-                                    <tr>
-                                        <td><?= $index + 1 ?></td>
-                                        <td class="fw-bold"><?= $req->MemberName ?></td>
-                                        <td><?= $req->Familymembershipid ?></td>
-                                        <td><?= date('d-M-Y H:i', strtotime($req->created_at)) ?></td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm table-btn rounded-circle"
+                                    <tr onclick='viewRequest(<?= json_encode($req) ?>)'>
+                                        <td class="fw-bold text-muted"><?= $index + 1 ?></td>
+                                        <td class="fw-semibold text-primary"><?= $req->MemberName ?></td>
+                                        <td><span class="badge bg-light text-dark border"><?= $req->Familymembershipid ?></span></td>
+                                        <td class="text-secondary"><?= date('d-M-Y H:i', strtotime($req->created_at)) ?></td>
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            <button class="btn-action-premium btn-view-premium"
                                                 onclick='viewRequest(<?= json_encode($req) ?>)' title="View Diff">
-                                                <i class="fa-solid fa-eye text-primary"></i>
+                                                <i class="fa-solid fa-eye"></i>
                                             </button>
                                             <form action="<?= base_url('approve-member-update') ?>" method="POST"
                                                 class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-success border-0 rounded-circle ms-2"
-                                                    title="Approve">
+                                                <button type="submit" class="btn-action-premium btn-approve-premium" title="Approve">
                                                     <i class="fa-solid fa-check"></i>
                                                 </button>
                                             </form>
                                             <form action="<?= base_url('reject-member-update') ?>" method="POST"
                                                 class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger border-0 rounded-circle ms-2"
-                                                    title="Reject">
+                                                <button type="submit" class="btn-action-premium btn-reject-premium" title="Reject">
                                                     <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </form>

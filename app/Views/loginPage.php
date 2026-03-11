@@ -4,21 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login-Kaadaisoft</title>
+    <title>Login - Poondurai Kaadai Kulam</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #f0f2f5;
-            min-height: 120vh;
+        :root {
+            --primary: #38bdf8;
+            --primary-hover: #7dd3fc;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+        }
+
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* Prevent scrolling */
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
         }
 
         .login-wrapper {
             position: relative;
-            min-height: 100vh;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
 
@@ -27,134 +41,242 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 150vh;
+            height: 100%;
             z-index: 1;
         }
 
         .login-image img {
             width: 100%;
-            height: 90%;
+            height: 100%;
             object-fit: cover;
-            object-position: center;
+            object-position: center 20%; /* Frame perfectly around the gopuram */
+            filter: brightness(1.1) contrast(1.05); /* Increased brightness */
+        }
+
+        .login-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.02) 0%, rgba(15, 23, 42, 0.2) 100%); /* Minimal overlay */
+            z-index: 2;
         }
 
         .login-main-container {
             position: relative;
-            z-index: 2;
-            min-height: 130vh;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            animation: containerAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes containerAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-container {
-            width: 100%;
-            max-width: 550px;
+            background: rgba(255, 255, 255, 0.01); /* Near total transparency */
+            backdrop-filter: blur(2px); /* Very minimal blur so image is clear */
+            -webkit-backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
             padding: 40px 30px;
-            /* background: rgba(255, 255, 255, 0.15);  ✅ More transparent */
-            /* backdrop-filter: blur(25px); */
-            /* -webkit-backdrop-filter: blur(25px); */
-            /* border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2); */
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-box img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
         }
 
         .login-title {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 25px;
-            color: #007bff;
-            font-size: 2.2rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            font-weight: 800; /* Extra Bold */
+            margin-bottom: 30px;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* Stronger shadow for readability */
         }
 
-        label {
-            font-weight: 600;
-            color: black;
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group-custom label {
+            font-weight: 700; /* Bold */
+            color: #ffffff;
+            margin-left: 5px;
             margin-bottom: 8px;
+            font-size: 0.9rem;
             display: block;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
-        .role {
-            border-radius: 30px;
-            padding: 18px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.9);
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
-            transition: all 0.3s ease;
-            width: 100%;
-            font-size: 15px;
-            margin-bottom: 8px;
-            color: #333;
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon-wrapper i:not(.password-toggle) {
+            position: absolute;
+            right: 20px; /* Moved to right like image */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+            font-size: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9); /* Added shadow for icon clarity */
+            z-index: 5;
         }
 
         .unique {
-            border-radius: 30px;
-            padding: 18px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.9);
+            border-radius: 40px; 
+            padding: 12px 50px 12px 25px; 
+            border: 2px solid rgba(255, 255, 255, 0.8); /* Brighter, more solid border */
+            background: rgba(0, 0, 0, 0.4); /* Darker tint to make white text pop */
             outline: none;
             transition: all 0.3s ease;
             width: 100%;
-            font-size: 15px;
-            margin-bottom: 8px;
-            color: #333;
+            font-size: 1.05rem;
+            color: #ffffff;
+            font-weight: 700; /* Extra bold text */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 1); /* Very sharp text shadow */
         }
 
-        .role:focus,
+        .unique::placeholder {
+            color: rgba(255, 255, 255, 0.9); /* Much brighter/clearer placeholder */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
         .unique:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.3);
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-1px);
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Prevent background color change on browser autofill */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.6) inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 45px; /* Shifted for lock icon on far right */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 0.9rem;
+            z-index: 10;
+            opacity: 0.7;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: #ffffff;
+            color: #000000;
             border: none;
-            border-radius: 25px;
-            width: 120px;
-            height: 48px;
+            border-radius: 40px; /* Pill shape */
+            width: 100%;
+            height: 50px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 1.1rem;
+            margin-top: 10px;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
-            margin-top: 8px;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(0, 123, 255, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.02);
+            color: #000000;
         }
 
-        .text-center a {
-            text-decoration: none;
-            color: #e8f4fd !important;
-            font-weight: 600;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
+        .login-options {
+            display: flex;
+            justify-content: flex-end; /* Align Forgot Password to the right */
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 0.85rem;
+            padding: 0 10px;
         }
 
-        .text-center a:hover {
+        .login-options label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            text-shadow: none;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            font-size: 0.9rem;
             color: #fff;
         }
 
-        .error {
-            padding: 6px 0;
-            color: #ff6b6b;
-            font-size: 13px;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        .footer-links a {
+            color: #fff !important;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .legal-links {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .legal-links a {
+            color: #ffffff !important;
+            font-size: 0.9rem;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: 600;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+            opacity: 1; /* Solid white for clarity */
+        }
+
+        .legal-links a:hover {
+            text-decoration: underline;
+            color: #ffffff !important;
+        }
+
+        .copyright-text {
+            margin-top: 10px;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+            opacity: 0.9; /* Higher visibility */
         }
 
         /* MUI Alert Styles */
@@ -165,7 +287,7 @@
             transform: translateX(-50%);
             z-index: 10000;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             padding: 0 20px;
             pointer-events: none;
             display: flex;
@@ -177,12 +299,12 @@
             display: flex;
             align-items: center;
             padding: 12px 16px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
             pointer-events: auto;
-            animation: muiSlideIn 0.4s ease-out;
-            transition: opacity 0.3s ease, transform 0.3s ease, margin 0.3s ease;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            animation: muiSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
 
         @keyframes muiSlideIn {
@@ -192,95 +314,110 @@
 
         .mui-alert-icon {
             margin-right: 12px;
-            font-size: 22px;
+            font-size: 20px;
             display: flex;
             align-items: center;
         }
 
         .mui-alert-message {
             flex-grow: 1;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 500;
         }
 
         .mui-alert-close {
             margin-left: 8px;
             cursor: pointer;
-            font-size: 20px;
-            padding: 2px 8px;
-            line-height: 1;
+            font-size: 18px;
             opacity: 0.6;
-            transition: opacity 0.2s;
             background: transparent;
             border: none;
             color: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .mui-alert-close:hover {
-            opacity: 1;
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 50%;
-        }
+        .mui-alert-success { background: #edf7ed; color: #1e4620; }
+        .mui-alert-error { background: #fdeded; color: #5f2120; }
+        .mui-alert-warning { background: #fff4e5; color: #663c00; }
+        .mui-alert-info { background: #e5f6fd; color: #014361; }
 
-        /* MUI Variants - Light Mode Like Website */
-        .mui-alert-success {
-            background-color: #edf7ed;
-            color: #1e4620;
-            border: 1px solid #c3e6cb;
-        }
-        .mui-alert-error {
-            background-color: #fdeded;
-            color: #5f2120;
-            border: 1px solid #f5c6cb;
-        }
-        .mui-alert-warning {
-            background-color: #fff4e5;
-            color: #663c00;
-            border: 1px solid #ffeeba;
-        }
-        .mui-alert-info {
-            background-color: #e5f6fd;
-            color: #014361;
-            border: 1px solid #bee5eb;
-        }
-
-        @media (max-width: 992px) {
-            .login-main-container {
-                padding: 20px !important;
-                justify-content: center !important;
-            }
-
+        @media (max-height: 700px) {
             .login-container {
-                max-width: 420px !important;
-                padding: 35px 25px !important;
-                margin: 0 auto !important;
+                padding: 25px 30px;
             }
-        }
-
-        @media (max-width: 768px) {
-            .login-main-container {
-                padding: 15px !important;
+            .logo-box {
+                margin-bottom: 15px;
             }
-
-            .login-container {
-                max-width: 95% !important;
-                padding: 30px 20px !important;
+            .logo-box img {
+                width: 70px;
+                height: 70px;
             }
-
-            .btn-primary {
-                width: 100% !important;
-            }
-
             .login-title {
-                font-size: 1.8rem !important;
+                font-size: 1.4rem;
+                margin-bottom: 15px;
+                line-height: 1.2;
             }
+            .input-group-custom {
+                margin-bottom: 15px;
+            }
+        }
 
-            .mui-alert-container {
-                top: 10px;
-                padding: 0 10px;
+        @media (max-width: 480px), (max-height: 600px) {
+            .login-main-container {
+                padding: 10px;
+            }
+            .login-container {
+                padding: 25px 15px;
+                border-radius: 20px;
+            }
+            .logo-box {
+                margin-bottom: 10px;
+            }
+            .logo-box img {
+                width: 55px;
+                height: 55px;
+            }
+            .login-title {
+                font-size: 1.15rem;
+                margin-bottom: 15px;
+                line-height: 1.2;
+            }
+            .input-group-custom {
+                margin-bottom: 12px;
+            }
+            .unique {
+                padding: 10px 40px 10px 20px;
+                font-size: 0.95rem;
+            }
+            .input-icon-wrapper i:not(.password-toggle) {
+                right: 15px;
+            }
+            .password-toggle {
+                right: 35px;
+            }
+            .btn-primary {
+                height: 45px;
+                font-size: 1rem;
+                margin-top: 5px;
+            }
+            .login-options {
+                margin-bottom: 12px;
+                font-size: 0.8rem;
+            }
+            .footer-links {
+                margin-top: 15px;
+                font-size: 0.85rem;
+            }
+            .legal-links {
+                bottom: 10px;
+            }
+            .legal-links a {
+                font-size: 0.75rem;
+                margin: 0 5px;
+                display: inline-block;
+            }
+            .copyright-text {
+                font-size: 0.7rem;
+                margin-top: 5px;
             }
         }
     </style>
@@ -291,59 +428,56 @@
     <div class="login-wrapper">
         <!-- Full Screen Background Image -->
         <div class="login-image">
-            <img src="<?= base_url('assets/img/god1.png') ?>" alt="Kaadaisoft Temple">
+            <img src="<?= base_url('assets/perumal kovil.png') ?>" alt="Kaadaisoft Temple">
         </div>
 
-        <!-- Smaller Right Aligned Transparent Login Container -->
+        <!-- Transparent Login Container -->
         <div class="login-main-container">
             <div class="login-container">
+                <div class="logo-box">
+                    <img src="<?= base_url('assets/poondurai kaadaikulam image.png') ?>" alt="Logo">
+                </div>
                 <h2 class="login-title">Poondurai Kaadai Kulam</h2>
 
                 <form method="post" action="<?= base_url('login') ?>">
-
-
-                    <div class="form-group mb-3">
-                        <label for="username">Mobile Number</label>
-                        <input type="text" class="unique" id="username" name="username"
-                            value="<?php if (isset($username)) {
-                                echo $username;
-                            } ?>"
-                            placeholder="Enter Mobile Number" onkeypress="return isNumberKey(event)"
-                            maxlength="12">
+                    <div class="input-group-custom">
+                        <div class="input-icon-wrapper">
+                            <input type="text" class="unique" id="username" name="username"
+                                value="<?= $username ?? '' ?>"
+                                placeholder="Username" onkeypress="return isNumberKey(event)"
+                                maxlength="12">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="password">Password</label>
-                        <input type="password" class="unique" value="<?php if (isset($password)) {
-                            echo $password;
-                        } ?>"
-                            id="password" name="password" placeholder="Enter your Password">
+                    <div class="input-group-custom">
+                        <div class="input-icon-wrapper">
+                            <input type="password" class="unique" value="<?= $password ?? '' ?>"
+                                id="password" name="password" placeholder="Password">
+                            <i class="fa-solid fa-lock"></i>
+                            <i class="fa-solid fa-eye password-toggle" id="togglePassword"></i>
+                        </div>
                     </div>
 
-                    <div class="text-right">
-                        <button type="submit" name="save" value="Submit"
-                            class="btn btn-primary mt-2">Login</button>
+                    <div class="login-options">
+                        <a href="<?= base_url('forgot-password') ?>" style="color: #fff; text-decoration: none;">Forgot password?</a>
                     </div>
+
+                    <button type="submit" name="save" value="Submit" class="btn btn-primary">Login</button>
                 </form>
 
-                <div class="text-center mt-2">
-                    <a href="<?= base_url('forgot-password') ?>" style="color: #000; font-weight: 600;">Forgot Password?</a>
+                <div class="footer-links">
+                    Don't have an account? <a href="<?= base_url('members/registrationform') ?>">Register</a>
                 </div>
+            </div>
+        </div>
 
-                
-                <p class="text-center mt-3 mb-0" style="color: #000000ff; font-weight: bold;">
-                    Don't have an account? <br>
-                    <a href="<?php echo base_url('members/registrationform'); ?>">Create New account</a>
-                </p>
-                <div class="text-center mt-3">
-                    <small style="font-size: 20px;">
-                        <a href="<?= base_url('terms-and-conditions') ?>" 
-                            style="color: #ffffff !important; text-decoration: underline;">Terms and Conditions</a> |
-                        <a href="<?= base_url('privacy-policy') ?>" 
-                            style="color: #ffffff !important; text-decoration: underline;">Privacy Policy</a>
-                    </small>
-                </div>
-
+        <!-- Move legal links outside the container -->
+        <div class="legal-links">
+            <a href="<?= base_url('terms-and-conditions') ?>">Terms & Conditions</a>
+            <a href="<?= base_url('privacy-policy') ?>">Privacy Policy</a>
+            <div class="copyright-text">
+                © <?= date('Y') ?> Poondurai Kaadai Kulam. All rights reserved.
             </div>
         </div>
     </div>
@@ -362,6 +496,17 @@
             }
             return true;
         }
+
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.querySelector('form');

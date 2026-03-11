@@ -237,7 +237,7 @@
       
       <div class="row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
                
         </div>
 

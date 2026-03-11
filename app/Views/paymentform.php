@@ -9,6 +9,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <style>
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 70px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
     .ps-logo{
         display:flex;
         align-items:center;
@@ -190,19 +198,14 @@
           }
       }
 
-    @media screen and (max-width:768px) {
-        
-          #add-coords-form div > input{
-            padding: 5px;
-          }
-          #add-coords-form{
-            width:90%;
-            padding:8%;
-          }
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-wrap: wrap; }
+      .main-body-row { flex-direction: column; overflow: auto; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
     }
-
-
-    /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
         display: none;
         position: fixed;
@@ -210,68 +213,36 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-color: white;
+        background-color: #0f172a;
         z-index: 9999;
-        overflow-y: auto;
-        animation: slideIn 0.3s ease-out;
+        overflow: auto;
     }
-
-    @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-    }
-
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 30px;
-        cursor: pointer;
-        color: #333;
-    }
-
-    #mobile-menu-content {
-        padding-top: 60px; /* Space for close button */
-    }
-    
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-        #menu-bar {
-            display: none;
-        }
-    }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #cbd5e1; }
+    #mobile-menu-content { padding-top: 60px; }
     </style>
 </head>
 <body>
         
-    <div class="container-fluid">
+    <div class="layout-container">
       
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        
-
+        <div id="ps-logo" class="col-md-2 py-3 d-flex align-items-center justify-content-start ps-2">
         </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
+        <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between px-3">
         </div>
-        </div><!-----------top-bar-end----------------------->
+      </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
+      <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-         
-              
+         <div id="menu-bar"><!----------side-bar-------------------->
          </div><!-----------side-bar-end-------------->
             
-         <div id="paymentdetail" style="overflow:auto;" class="ps-gray border-start col-md-10 d-flex justify-content-center"><!-----------main-dashboard------------------------->
+         <div id="paymentdetail" class="main-content-area ps-gray border-start pt-2 pb-5"><!-----------main-dashboard------------------------->
          
-         <div id="mobile-paymentform" class='col-md-12 mt-3 ps-4'> <!--------------payment-form-start------->
+         <div id="mobile-paymentform" class='container-fluid mt-3 px-4' style='max-width: 1200px; margin: 0 auto;'> <!--------------payment-form-start------->
             <?php if(isset($memberdetail)):?>
             <form method="POST" autocomplete="off" action="<?=base_url("payments/save-tax-receipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
 
@@ -416,9 +387,11 @@
       </div>
       </div><!------------payment-type------------>  
 
-      <div class="text-center mt-3">
+      <div class="text-center mt-3 pb-5">
       <button id="savereceipt" name="savereceipt" style="opacity:0.4;" type="submit" disabled class="rounded-3 px-3 py-1">Save Receipt</button>
       </div>
+      
+      <div style="height: 100px;"></div> <!-- Bottom Spacer -->
 
             </form>
             
@@ -616,6 +589,10 @@ const BankList = [
     "IDFC First Bank"
 ];
 
+     /* Single Scroll Logic - Using CSS Flex */
+     /* Removed JS minHeight settings to prevent clipping */
+     
+     /*
      let setheight = document.getElementById("paymentdetail");
      let menubarheight = document.getElementById("menu-bar");
      let a = window.innerHeight;
@@ -630,6 +607,7 @@ const BankList = [
          setheight.style.height = (currentHeight - currentTopbarHeight) + "px";
      });
      console.log(a);
+     */
 
      let eventsearchbarwidth = document.getElementById("eventnamelabel").getBoundingClientRect().width;
      let eventsearchresult = document.getElementById("eventsearchresult");

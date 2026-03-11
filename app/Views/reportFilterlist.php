@@ -278,7 +278,7 @@
 
     <div class="top-navbar-row"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
+      <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
       </div>
 
       <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-3" style="background: #0f172a;">

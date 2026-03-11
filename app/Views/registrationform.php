@@ -130,6 +130,40 @@
             color: #000000 !important;
             font-weight: 600;
         }
+        .btn-copy-address {
+            background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%);
+            color: white !important;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-copy-address:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3);
+            filter: brightness(1.1);
+        }
+        .btn-copy-address:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .btn-copy-address:disabled {
+            background: #cbd5e1;
+            color: #94a3b8 !important;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-copy-address i {
+            font-size: 1rem;
+        }
     </style>
 
 </head>
@@ -137,7 +171,7 @@
 <body>
 
     <div class="login-image">
-        <img src="<?= base_url('assets/img/temple-bg1.png') ?>" alt="Kaadaisoft Temple">
+        <img src="<?= base_url('assets/ewaran kovil 1.jpg') ?>" alt="Kaadaisoft Temple">
     </div>
 
     <div class="container py-4">
@@ -949,35 +983,39 @@
                             <!-- Current Address -->
                             <div class="card mb-3 border-0">
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="mb-3">
                                         <h5 class="mb-0 section-title">
                                             <i class="bi bi-geo-alt text-success me-2"></i>Current Address
                                             <span class="text-danger">*</span>
                                         </h5>
-
-                                        <button type="button" id="btn_same_as_native"
-                                            class="btn btn-success btn-sm disabled" disabled
-                                            onclick="copyNativeAddress()" style="display: none;">
-                                            Same as Native Address
-                                        </button>
                                     </div>
 
                                     <!-- India / NRI toggle -->
-                                    <div class="mb-3">
-                                        <label class="d-block">Current Address Type <span
-                                                class="text-danger">*</span></label>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="cur_address_type"
-                                                id="cur_address_india" value="India"
-                                                onchange="toggleCurrentAddressType()">
-                                            <label class="form-check-label" for="cur_address_india">India</label>
+                                    <div class="mb-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                        <div>
+                                            <label class="d-block mb-2">Current Address Type <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="cur_address_type"
+                                                    id="cur_address_india" value="India"
+                                                    onchange="toggleCurrentAddressType()">
+                                                <label class="form-check-label" for="cur_address_india">India</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="cur_address_type"
+                                                    id="cur_address_nri" value="NRI" onchange="toggleCurrentAddressType()">
+                                                <label class="form-check-label" for="cur_address_nri">NRI</label>
+                                            </div>
+                                            <small id="cur_address_type_error" class="text-danger d-block"></small>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="cur_address_type"
-                                                id="cur_address_nri" value="NRI" onchange="toggleCurrentAddressType()">
-                                            <label class="form-check-label" for="cur_address_nri">NRI</label>
+
+                                        <div id="same_as_native_container" style="display: none;">
+                                            <button type="button" id="btn_same_as_native"
+                                                class="btn-copy-address disabled" disabled
+                                                onclick="copyNativeAddress()">
+                                                <i class="bi bi-arrow-repeat"></i> Same as Native Address
+                                            </button>
                                         </div>
-                                        <small id="cur_address_type_error" class="text-danger"></small>
                                     </div>
 
                                     <!-- INDIA CURRENT ADDRESS BLOCK -->
@@ -1993,6 +2031,13 @@
 
             // Copy state, then load and choose district/taluk/panchayat through AJAX
 
+            // 1. Check if NRI
+            const curType = getCurrentAddressType();
+            if (curType === 'NRI') {
+                alert("Same as Native Address is primarily for India addresses. Please fill NRI address manually.");
+                return;
+            }
+
             // 1. State
             c_state.value = n_state.value;
             validateInputfield(c_state);  // clear state error
@@ -2056,15 +2101,6 @@
             validateInputfield(c_doorno);
             validateInputfield(c_pincode);
 
-            // Change button color to indicate activation
-            const sameBtn = document.getElementById("btn_same_as_native");
-            if (sameBtn) {
-                sameBtn.classList.remove('btn-success');
-                sameBtn.style.backgroundColor = '#1a237e'; // Dark indigo/blue
-                sameBtn.style.borderColor = '#1a237e';
-                sameBtn.style.color = 'white';
-                sameBtn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Copied';
-            }
         }
 
 
@@ -2167,42 +2203,37 @@
             const indiaBlock = document.getElementById('cur_india_block');
             const nriBlock = document.getElementById('cur_nri_block');
             const sameBtn = document.getElementById('btn_same_as_native');
+            const sameContainer = document.getElementById('same_as_native_container');
 
             const selected = document.querySelector('input[name="cur_address_type"]:checked');
 
             if (!selected) {
                 if (indiaBlock) indiaBlock.style.display = 'none';
                 if (nriBlock) nriBlock.style.display = 'none';
-                if (sameBtn) {
-                    sameBtn.disabled = true;
-                    sameBtn.style.display = 'none';
-                }
+                if (sameContainer) sameContainer.style.display = 'none';
                 return;
             }
 
             if (selected.value === 'India') {
                 if (indiaBlock) indiaBlock.style.display = 'block';
                 if (nriBlock) nriBlock.style.display = 'none';
+                if (sameContainer) sameContainer.style.display = 'block';
 
                 if (sameBtn) {
                     sameBtn.disabled = false;
                     sameBtn.classList.remove('disabled');
-                    sameBtn.style.display = 'inline-block';
                 }
-
-                // NRI la type panninadhellam clear
                 clearCurrentNriAddress();
 
             } else if (selected.value === 'NRI') {
                 if (indiaBlock) indiaBlock.style.display = 'none';
                 if (nriBlock) nriBlock.style.display = 'block';
+                if (sameContainer) sameContainer.style.display = 'none';
 
                 if (sameBtn) {
                     sameBtn.disabled = true;
-                    sameBtn.style.display = 'none';
+                    sameBtn.classList.add('disabled');
                 }
-
-                // India la type panninadhellam clear
                 clearCurrentIndiaAddress();
             }
         }

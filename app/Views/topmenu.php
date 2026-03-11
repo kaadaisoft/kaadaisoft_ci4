@@ -23,31 +23,37 @@
     @media (max-width: 768px) {
         .topmenu-wrapper {
             flex-wrap: wrap !important;
-            padding: 10px 15px !important;
-            justify-content: center !important;
+            padding: 5px 10px !important;
+            justify-content: space-between !important;
+            background-color: #0f172a !important; /* Ensure background consistency */
         }
         #commonsearch {
             width: 100% !important;
             order: 2 !important;
-            margin-top: 15px !important;
+            margin-top: 8px !important;
+            height: 40px;
         }
         .topmenu-right {
             width: 100% !important;
-            justify-content: center !important;
+            justify-content: flex-end !important;
             order: 1 !important;
-            margin-bottom: 5px !important;
+            margin-bottom: 2px !important;
         }
         #dashboardsubmenu {
-            gap: 25px !important;
-            width: auto !important;
-            justify-content: center !important;
+            gap: 15px !important; 
+            width: 100% !important;
+            justify-content: flex-end !important;
+            padding-right: 2px !important;
         }
         .top-menu-dropdown {
             border-left: none !important;
             padding-left: 0 !important;
-            margin-left: 0 !important;
+            margin-left: 5px !important;
         }
+        .profile-circle { width: 30px; height: 30px; }
         .mobile-ms-0 { margin-left: 0 !important; }
+        #ps-name-line { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+        .dropdown-arrow { font-size: 0.7rem !important; }
     }
 </style>
 <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;" class="topmenu-wrapper m-0 py-3 px-4 shadow-sm">

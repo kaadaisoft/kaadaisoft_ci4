@@ -265,43 +265,43 @@
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
-        border-radius: 15px;
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border: none !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0 !important;
         margin-top: 20px;
         background: white;
       }
       
       .custom-table thead th {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        background: linear-gradient(135deg, #0f172a, #1e293b);
         color: white;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 1px;
-        padding: 18px !important;
+        padding: 16px !important;
         border: none !important;
         text-align: center;
         vertical-align: middle;
       }
       
       .custom-table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #eee;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
       }
       
       .custom-table tbody tr:hover {
-        background-color: rgba(37, 117, 252, 0.04);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: inset 4px 0 0 #3b82f6;
       }
       
       .custom-table td {
-        padding: 15px !important;
+        padding: 16px !important;
         vertical-align: middle;
         border: none !important;
-        color: #555;
+        color: #334155;
         text-align: center;
         font-size: 0.95rem;
       }
@@ -586,7 +586,7 @@
 
       <div class="row"><!-----top-bar--------------->
 
-         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
 
          </div>
 

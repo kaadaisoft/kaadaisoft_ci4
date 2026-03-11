@@ -9,22 +9,42 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <style>
-    /* ✅ Added to enable page scroll */
-html, body {
-  height: 100%;
-  overflow-y: auto;
-}
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
 
-/* ✅ Added to make #changepage section scrollable if content is large */
-#changepage {
-  overflow-y: auto;
-  max-height: 80vh; /* adjust if needed */
-}
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { 
+        height: auto; 
+        flex-wrap: wrap; 
+        padding: 5px 0 !important;
+      }
+      #ps-logo {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        width: 100% !important;
+      }
+      #search-bar {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        width: 100% !important;
+      }
+      .main-body-row { flex-direction: column; overflow: auto; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+    }
 
     .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
     .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -409,7 +429,7 @@ html, body {
           }
       }
       
-     #registration-form label{
+      #registration-form label{
             width:100%;
             font-size:18px;
             font-weight:500;
@@ -466,6 +486,20 @@ html, body {
             padding:8%;
           }
     }
+      
+    #custom-mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0f172a;
+        z-index: 9999;
+        overflow: auto;
+    }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #cbd5e1; }
+    #mobile-menu-content { padding-top: 60px; }
 
     @media screen and (max-width:768px) {
   #ps-logo {
@@ -496,69 +530,67 @@ html, body {
 
 
       /* ✅ Premium Table Design */
-      .custom-table {
+      .table-container-premium {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 2rem;
+      }
+      .custom-table-premium {
+        width: 100%;
+        min-width: 900px; /* Force scroll on mobile */
+        margin-bottom: 0;
         border-collapse: separate;
         border-spacing: 0;
-        width: 100%;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border: none !important;
-        margin-top: 20px;
       }
-      
-      .custom-table thead th {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      .custom-table-premium thead th {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
         color: white;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 1px;
-        padding: 18px !important;
+        padding: 16px !important;
         border: none !important;
         text-align: center;
+        vertical-align: middle;
       }
-      
-      .custom-table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #eee;
+      .custom-table-premium tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
       }
-      
-      .custom-table tbody tr:hover {
-        background-color: rgba(37, 117, 252, 0.04);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      .custom-table-premium tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: inset 4px 0 0 #3b82f6;
       }
-      
-      .custom-table td {
-        padding: 15px !important;
+      .custom-table-premium td {
+        padding: 16px !important;
         vertical-align: middle;
         border: none !important;
-        color: #555;
+        color: #334155;
         text-align: center;
         font-size: 0.95rem;
       }
-
-      .custom-table tbody tr:last-child td {
-        border-bottom: none !important;
-      }
-      
-      .custom-table tfoot td {
+      .custom-table-premium tfoot td {
         background-color: #fcfcfc;
-        border-top: 2px solid #eee !important;
+        border-top: 2px solid #f1f5f9 !important;
         padding: 20px !important;
       }
       
       .total-label {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.1rem;
-        font-weight: 800;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
       
       .total-amount {
-        color: #2575fc;
+        color: #0f172a;
         font-size: 1.25rem;
         font-weight: 800;
       }
@@ -580,31 +612,19 @@ html, body {
 </head>
 <body>
        
-    <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;height:100vh;width:100%;">
+    <div class="layout-container">
         <!---------------------admindashboard-status-notifications---------------------->
-<?= view('notification_toast') ?>
-      <div class="row"><!-----top-bar--------------->
-
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        </div>
-
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
-        </div>
+        <?= view('notification_toast') ?>
+        
+        <div class="top-navbar-row"><!-----top-bar--------------->
+            <div id="ps-logo" class="col-md-3 py-3 d-flex align-items-center justify-content-start ps-2"></div>
+            <div id="search-bar" class="col-md-9 d-flex align-items-center justify-content-between px-3"></div>
         </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
-
-         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-         
-              
-         </div><!-----------side-bar-end-------------->
-            
-         <div id="changepage" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div class="main-body-row"><!----------main-navbar----------->
+            <div id="menu-bar"></div><!-----------side-bar-end-------------->
+            <div id="changepage" class="main-content-area"><!-----------main-dashboard------------------------->
          
          <div class="container-fluid px-4 pt-4">
           <div class="d-flex justify-content-between">
@@ -658,30 +678,32 @@ html, body {
         
 
       <!-------------------------------total-pendings-------------------------------->
-<h3 class="mt-5 mb-3 fw-bold text-center" style="color: #444;">Payment pending details</h3>
+<h3 class="mt-5 mb-4 fw-bold text-center" style="color: #1e293b;">Payment Pending Details</h3>
 <div class="row px-2">
     <div class="col-12">
-        <table class="table custom-table">
-            <thead id="nomemberresult">
-                <tr>
-                    <th>SNo</th>
-                    <th>Event Name</th>
-                    <th>Tax Amount</th>
-                    <th>Balance Amount</th>
-                </tr>
-            </thead>
-            <tbody id="showparticipation"></tbody>
-            <tfoot>
-                <tr>
-                    <td class="text-end" colspan="3">
-                        <span class="total-label text-uppercase">Total Pending Amount</span>
-                    </td>
-                    <td>
-                        <span id="total_pending" class="total-amount"></span>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="table-container-premium">
+            <table class="custom-table-premium">
+                <thead id="nomemberresult">
+                    <tr>
+                        <th>SNo</th>
+                        <th>Event Name</th>
+                        <th>Tax Amount</th>
+                        <th>Balance Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="showparticipation"></tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-end" colspan="3">
+                            <span class="total-label">Total Pending Amount</span>
+                        </td>
+                        <td>
+                            <span id="total_pending" class="total-amount"></span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -711,12 +733,12 @@ html, body {
 </div>
 
          </div>
-
+             <div style="height: 100px;"></div> <!-- Bottom Spacer -->
          </div><!-----------main-dashboard-end------------------------>
 
 
         </div><!--------------main-navbar-end------------------->
-
+        </div> <!-- layout-container -->
       </div>
 
       <!-----------------------Update-Coordinators-modal-------------------------------------------->
@@ -745,12 +767,8 @@ html, body {
  <!---------------------Custom Mobile Menu End-------------------------------->   
   <script>
 
-      let pageheight = window.innerHeight;
+      /* Fixed Layout logic handled by CSS */
       let showupdatemanager = document.getElementById("updatemanager-modal-hide");
-      document.getElementById("pageheight").style.height = pageheight+"px";
-      let topbar = document.getElementById("search-bar").getBoundingClientRect().height;
-      document.getElementById("menu-bar").style.height = `${pageheight - topbar}px` 
-      
       // Mobile Menu Functions
       function openMobileMenu() {
         document.getElementById('custom-mobile-menu').style.display = 'block';

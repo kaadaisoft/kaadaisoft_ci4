@@ -12,7 +12,8 @@
       .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
 
      .ps-gray{
@@ -125,12 +126,25 @@
         margin-top:5px;
       }
 
-      .ps-add-btn{
-        border:none;
-        outline:none;
-        background-color:rgb(23, 23, 184);
-        border-radius:25px;
-
+      .ps-add-btn {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .ps-add-btn:hover {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
       }
 
       .active-page{
@@ -154,6 +168,86 @@
         background-color:#6495ED;
       }
 
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1000px;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin: 0 2px;
+    }
+    .btn-action-premium:hover {
+      background: #0f172a;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn-view-premium { color: #2563eb; background: #eff6ff; }
+    .btn-edit-premium { color: #0891b2; background: #ecfeff; }
+    .btn-trash-premium { color: #dc2626; background: #fef2f2; }
+    
+    .btn-view-premium:hover { background: #2563eb; color: #fff; }
+    .btn-edit-premium:hover { background: #0891b2; color: #fff; }
+    .btn-trash-premium:hover { background: #dc2626; color: #fff; }
+
+    .table-container-premium::-webkit-scrollbar {
+      height: 8px;
+    }
+    .table-container-premium::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
       #coords-form div > input{
          border-radius:50px;
          border:1px solid rgb(208, 205, 205);
@@ -173,7 +267,7 @@
       }
 
       #coords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
@@ -206,7 +300,7 @@
       }
 
       #assigncoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
@@ -248,7 +342,7 @@
       }
 
       #updatecoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
@@ -552,13 +646,13 @@
 <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
 <?= view('notification_toast') ?>
 
-      <div id="side-bar" class="row"><!-----top-bar--------------->
+      <div id="side-bar" class="row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+      <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
                
                </div>
        
-               <div id="search-bar" class="col-md-10 border-bottom">
+               <div id="search-bar" class="col-12 col-md-10 border-bottom border-md-0" style="background: #0f172a;">
        
               
                </div>
@@ -567,12 +661,12 @@
 
         <div id="pagecontrol" class="row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" style="overflow-y:auto; overflow-x:hidden;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
        
               
         </div><!-----------side-bar-end-------------->
             
-        <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px; overflow-x:hidden;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="main-dashboard-content" style="overflow-y:auto; padding-bottom:50px; overflow-x:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
          
         <div class="container-fluid px-4 pt-4 d-flex justify-content-between coordpadd">
          <span class="h5">Coordinators</span>
@@ -584,17 +678,18 @@
          
         <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
         <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;">Total Coordinators: <span class="badge bg-primary rounded-pill"><?php echo count($coordinators)?></span></div>
-        <table class="table custom-table">
-            <thead>
-            <tr>
-            <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody id="ps-coords">
-
-            </tbody>
+        <div class="table-container-premium">
+            <table class="custom-table-premium">
+                <thead>
+                <tr>
+                <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="ps-coords">
+    
+                </tbody>
             </table>
-
+        </div>
         </div> <!----------------table-end------->
 
         <div class='d-flex justify-content-center container-fluid'> <!-----------------pagination---------------------->
@@ -1879,6 +1974,24 @@ let searchmemberdata = document.getElementById("searchmemberdata")
           document.getElementById("ps-logo").innerHTML = result;
       }
   });
+
+  // Perfect Sidebar Height Calculation
+  function adjustSidebarHeight() {
+      if(window.innerWidth > 768) {
+          let topBarHeight = document.getElementById("side-bar").offsetHeight || 80;
+          let availableHeight = window.innerHeight - topBarHeight;
+          document.getElementById("menu-bar").style.height = availableHeight + "px";
+          document.getElementById("main-dashboard-content").style.height = availableHeight + "px";
+      } else {
+          document.getElementById("menu-bar").style.height = "auto";
+          document.getElementById("main-dashboard-content").style.height = "auto";
+      }
+  }
+
+  window.addEventListener('load', adjustSidebarHeight);
+  window.addEventListener('resize', adjustSidebarHeight);
+  // Also call it now just in case
+  adjustSidebarHeight();
 
   // Mobile Menu Functions
   function openMobileMenu() {

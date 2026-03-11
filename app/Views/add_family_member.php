@@ -136,7 +136,7 @@
 <body>
 
     <div class="login-image">
-        <img src="<?= base_url('assets/img/temple-bg1.png') ?>" alt="Kaadaisoft Temple">
+        <img src="<?= base_url('assets/ewaran kovil 1.jpg') ?>" alt="Kaadaisoft Temple">
     </div>
 
     <div class="container py-4">
@@ -398,7 +398,7 @@
                                     <!-- Existing Family Id -->
                                     <!-- Existing Family Id (Hidden) -->
                                     <input type="hidden" name="existfamilyid"
-                                        value="<?= isset($member) ? $member->Familymembershipid : '' ?>">
+                                        value="<?= isset($member) ? ($member->Existfamilyid ?: $member->Familymembershipid) : '' ?>">
 
                                     <!-- Date of Birth -->
                                     <div class="col-md-4">

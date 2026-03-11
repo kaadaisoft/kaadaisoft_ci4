@@ -125,12 +125,25 @@
         margin-top:5px;
       }
 
-      .ps-add-btn{
-        border:none;
-        outline:none;
-        background-color:rgb(23, 23, 184);
-        border-radius:25px;
-
+      .ps-add-btn {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .ps-add-btn:hover {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
       }
 
       .active-page{
@@ -439,44 +452,159 @@
         #menu-bar {
             display: none;
         }
-        #pageheight {
-          position: relative !important;
-          height: auto !important;
-          overflow: visible !important;
-        }
-        #pagecontrol {
-          max-height: none !important;
-          overflow: visible !important;
-        }
+    }
+
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
+
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1000px; /* Force scroll for premium look */
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-view-premium {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #eff6ff;
+      color: #2563eb;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    .btn-view-premium:hover {
+      background: #2563eb;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    .table-container-premium::-webkit-scrollbar {
+      height: 8px;
+    }
+    .table-container-premium::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
     }
     </style>
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+<div class="container-fluid layout-container p-0">
 <?= view('notification_toast') ?>
 
-      <div id="side-bar" class="row"><!-----top-bar--------------->
+    <div class="top-navbar-row"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+      <div id="ps-logo" class="col-12 col-md-3 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
                
                </div>
        
-               <div id="search-bar" class="col-md-10 border-bottom">
+               <div id="search-bar" class="col-12 col-md-9 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
        
               
                </div>
         </div><!-----------top-bar-end----------------------->
 
 
-        <div id="pagecontrol" class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" class="col-md-3"><!----------side-bar-------------------->
        
               
         </div><!-----------side-bar-end-------------->
             
-        <div class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="changepage" class="col-md-9 main-content-area px-4 pt-3"><!-----------main-dashboard------------------------->
          
         <div class="container-fluid px-4 pt-4 d-flex justify-content-between coordpadd">
          <span class="h5">Dashboard / Received Applications</span>
@@ -488,14 +616,15 @@
          </div>
         </div>
          
-        <div style="overflow:auto;height: 70vh;" class="container-fluid mt-3 px-4 coordpadd"><!----------------table--------------->
-        <table class="table table-bordered">
-            <thead>
-            <tr style="font-size:18px;" class="ps-gray">
-            <th>S.No</th><th>Name</th><th>Phone</th><th>Aadhar</th><th>District</th><th>State</th><th class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody id="applications">
+        <div class="container-fluid mt-3 px-4 coordpadd"><!----------------table--------------->
+        <div class="table-container-premium">
+          <table class="custom-table-premium">
+              <thead>
+              <tr>
+              <th>S.No</th><th>Name</th><th>Phone</th><th>Aadhar</th><th>District</th><th>State</th><th>Actions</th>
+              </tr>
+              </thead>
+              <tbody id="applications">
 
             <!-- <?php if(isset($applications) && isset($sno)) : $i=$sno + 1;?>
                 
@@ -515,7 +644,7 @@
                     <?php endif;?> -->
             </tbody>
             </table>
-
+          </div>
         </div> <!----------------table-end------->
 
         <div class='d-flex justify-content-center container-fluid'> <!-----------------pagination---------------------->
@@ -702,24 +831,19 @@ function renderApplications(data, sNo) {
 
     data.forEach(value => {
         html += `
-            <tr>
-                <td style="font-weight:500;">${i}</td>
-                <td style="font-weight:500;">${value.Name}</td>
-                <td style="font-weight:500;">${value.Phonenumber}</td>
-                <td style="font-weight:500;">${value.Aadharnumber}</td>
-                <td style="font-weight:500;">${value.District}</td>
-                <td style="font-weight:500;">${value.State}</td>
-                <td class="d-flex justify-content-evenly">
-                    <button data-bs-toggle="modal" 
-                            data-bs-target="#viewapplication" 
-                            backdrop="false" static="true"
-                            onclick='viewApplications(${JSON.stringify(value)})' 
-                            data-bs-toggle="tooltip" 
-                            title="viewapplication" 
-                            style="width:30px;height:30px;outline:none;border:none;" 
-                            class="table-btn text-dark shadow-sm rounded-circle">
-                        <i class="fa-sharp fa-solid fa-eye"></i>
-                    </button>
+            <tr onclick='viewApplications(${JSON.stringify(value)})' data-bs-toggle="modal" data-bs-target="#viewapplication">
+                <td class="fw-bold text-muted">${i}</td>
+                <td class="fw-semibold text-primary">${value.Name}</td>
+                <td class="text-secondary">${value.Phonenumber}</td>
+                <td class="text-secondary">${value.Aadharnumber}</td>
+                <td><span class="badge bg-light text-dark border">${value.District}</span></td>
+                <td><span class="badge bg-info text-dark">${value.State}</span></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn-view-premium">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -826,24 +950,19 @@ renderApplications(applicationsData.slice(0 ,10), 0);
 
     data.forEach(value => {
         html += `
-            <tr>
-                <td style="font-weight:500;">${i}</td>
-                <td style="font-weight:500;">${value.Name}</td>
-                <td style="font-weight:500;">${value.Phonenumber}</td>
-                <td style="font-weight:500;">${value.Aadharnumber}</td>
-                <td style="font-weight:500;">${value.District}</td>
-                <td style="font-weight:500;">${value.State}</td>
-                <td class="d-flex justify-content-evenly">
-                    <button data-bs-toggle="modal" 
-                            data-bs-target="#viewapplication" 
-                            backdrop="false" static="true"
-                            onclick='viewApplications(${JSON.stringify(value)})' 
-                            data-bs-toggle="tooltip" 
-                            title="viewapplication" 
-                            style="width:30px;height:30px;outline:none;border:none;" 
-                            class="table-btn text-dark shadow-sm rounded-circle">
-                        <i class="fa-sharp fa-solid fa-eye"></i>
-                    </button>
+            <tr onclick='viewApplications(${JSON.stringify(value)})' data-bs-toggle="modal" data-bs-target="#viewapplication">
+                <td class="fw-bold text-muted">${i}</td>
+                <td class="fw-semibold text-primary">${value.Name}</td>
+                <td class="text-secondary">${value.Phonenumber}</td>
+                <td class="text-secondary">${value.Aadharnumber}</td>
+                <td><span class="badge bg-light text-dark border">${value.District}</span></td>
+                <td><span class="badge bg-info text-dark">${value.State}</span></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button class="btn-view-premium">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -914,10 +1033,6 @@ renderApplications(applicationsData.slice(0 ,10), 0);
       }
     });
 
-     let setheight = document.getElementById("pagecontrol");
-     let pageheight = window.innerHeight;
-     let b = document.getElementById("search-bar").getBoundingClientRect().height;
-     setheight.style.height = pageheight - b+"px";
     function getmemberdata(areas){
         let area = areas.value;
 
@@ -960,7 +1075,6 @@ renderApplications(applicationsData.slice(0 ,10), 0);
       });
     }
   
-    document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";                        
 
     function displayApplications(counts,index){
         const itemsPerPage = 10;
@@ -1113,8 +1227,6 @@ renderApplications(applicationsData.slice(0 ,10), 0);
     }
 
     window.addEventListener("resize",()=>{
-       let topbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
-       document.getElementById("menu-bar").style.height = (window.innerHeight - topbarHeight) + "px"; 
        
        let assignForm = document.getElementById("assign-coords-form");
        let updateSection = document.getElementById("update-coords-section");

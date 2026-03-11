@@ -283,6 +283,69 @@
             display: none;
         }
     }
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-action-premium:hover {
+      background: #0f172a;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn-pay-premium { color: #2563eb; background: #eff6ff; }
+    .btn-pay-premium:hover { background: #2563eb; color: #fff; }
   </style>
 </head>
 <body>
@@ -291,7 +354,7 @@
       
       <div class="row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
                
         
 
@@ -313,9 +376,9 @@
             
          <div id="changepage" style='height:inherit;overflow:auto;' class="col-md-10 ps-4 pt-3"><!-----------main-dashboard------------------------->
           
-         <div>
-             
-          <table class='table table-borderless'>
+         <div class="table-container-premium mt-4">
+              
+          <table class='custom-table-premium'>
             <thead>
             <tr>
                 <th>Sno</th>
@@ -333,7 +396,12 @@
                     foreach ($members as $key => $value) {
                     echo 
                     "<tr>
-                    <td>$i</td><td>$value[Name]</td><td>$value[Aadhar]</td><td>$value[Mobile]</td><td>$value[Area]</td><td><a href='paymentpage?id=$value[id]' class='btn btn-primary' style='height:fit-content;'>Pay tax</a></td>
+                    <td class='fw-bold text-muted'>$i</td>
+                    <td class='fw-bold text-dark'>$value[Name]</td>
+                    <td>$value[Aadhar]</td>
+                    <td>$value[Mobile]</td>
+                    <td>$value[Area]</td>
+                    <td><a href='paymentpage?id=$value[id]' class='btn-action-premium btn-pay-premium'><i class='fa-solid fa-indian-rupee-sign'></i>Pay Tax</a></td>
                     </tr>";
                     $i++;
                     }

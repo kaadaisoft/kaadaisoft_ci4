@@ -259,42 +259,21 @@
     }
 
     /* Fixed Layout Adjustments */
-    .layout-container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .top-navbar-row {
-      height: auto;
-      min-height: 70px;
-      flex-shrink: 0;
-      z-index: 1050;
-      background: #0f172a;
-      display: flex;
-      align-items: stretch;
-      margin: 0;
-    }
-    .main-body-row {
-      flex-grow: 1;
-      display: flex;
-      overflow: hidden;
-      margin: 0;
-    }
-    #menu-bar {
-      height: 100%;
-      overflow-y: auto;
-      flex-shrink: 0;
-      background-color: rgb(248, 245, 245);
-      border-right: 1px solid #e2e8f0;
-      padding: 0;
-    }
-    .main-content-area {
-      flex-grow: 1;
-      overflow-y: auto;
-      height: 100%;
-      background-color: #f8fafc;
-      padding-bottom: 50px;
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 70px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-wrap: wrap; }
+      .main-body-row { flex-direction: column; overflow: auto; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
     }
 
     @media screen and (max-width: 768px) {
@@ -336,14 +315,14 @@
 </head>
 <body>
         
-    <div class="container-fluid layout-container p-0">
+    <div class="layout-container">
       
         <div class="top-navbar-row"><!-----top-bar--------------->
 
-            <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-center" style="background: #0f172a;">
+            <div id="ps-logo" class="col-md-2 py-3 d-flex align-items-center justify-content-start ps-2">
             </div>
 
-            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-4" style="background: #0f172a;">
+            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between px-4">
             </div>
 
         </div><!-----------top-bar-end----------------------->
@@ -351,10 +330,10 @@
 
         <div class="main-body-row"><!----------main-navbar----------->
 
-            <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
+            <div id="menu-bar"><!----------side-bar-------------------->
             </div><!-----------side-bar-end-------------->
              
-            <div id="pagecontrol" class="col-md-10 main-content-area"><!-----------main-dashboard------------------------->
+            <div id="pagecontrol" class="main-content-area"><!-----------main-dashboard------------------------->
          <div class="ps-4 mt-2">
          <?php 
          echo " <table class='table-bordered border-secondary col-md-4'>";
@@ -423,7 +402,7 @@
 
 
         </div><!--------------main-navbar-end------------------->
-
+        </div> <!-- layout-container -->
       </div>
 
     <!---------------------offcanvas-------------------------->
