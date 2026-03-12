@@ -72,23 +72,20 @@ class Events extends BaseController {
         }
     }
 
-    public function searchEvents(){
+    public function searchevents(){
         $searchfields = $this->request->getGet('searchfields');
-        if($this->request->isAJAX()){
-            if ($searchfields == "") {
-                $counts = $this->session->get('eventscounts');
-                $events = $this->eventsModel->getEvents($counts);
-                echo view('eventslist', ["events" => $events, "sno" => $counts]);
-            } 
+        if ($searchfields == "") {
+            $counts = $this->session->get('eventscounts') ?? 0;
+            $events = $this->eventsModel->getEvents($counts);
+            return view('eventslist', ["events" => $events, "sno" => $counts]);
+        } 
+        else {
+            $events = $this->eventsModel->getEventsSearchfields($searchfields);
+            if(count($events) == 0){
+                return view('eventslist', ["events" => "No search results"]);
+            }
             else{
-                $events = $this->eventsModel->getEventsSearchfields($searchfields);
-                $counts = count($events);
-                if($counts == 0){
-                    echo view('eventsList', ["events" => "No search results"]);
-                }
-                else{
-                    echo view('eventsList', ["events" => $events, "sno" => 0]);
-                }
+                return view('eventslist', ["events" => $events, "sno" => 0]);
             }
         }
     }
@@ -122,6 +119,11 @@ class Events extends BaseController {
     }
 
     public function topmenu(){
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
+        $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         return view("topmenu");
     }
 

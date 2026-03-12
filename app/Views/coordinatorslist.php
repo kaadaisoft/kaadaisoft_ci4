@@ -10,24 +10,28 @@
 
 <?php if(isset($coordinators) && isset($sno)):?>
     
-    <?php $j = $sno+1; foreach ($coordinators as $key => $coordinator):?> 
+     <?php $j = $sno+1; foreach ($coordinators as $key => $coordinator):?> 
                 
-                 <tr>
-                    <td style='font-weight:500;'><?=$j?></td>
+                 <tr style="cursor: pointer;" onclick="viewCoordinatordata('view-coordinator-data?coord_id=<?=$coordinator->Familymembershipid?>')">
+                    <td class='ps-4'><?=$j?></td>
                     <td class='text-primary fw-bold'><?=$coordinator->Familymembershipid?></td>
-                    <td style='font-weight:500;'><?=$coordinator->Name?></td>
-                    <td style='font-weight:500;'><?=$coordinator->Phonenumber?></td>
-                    <td style='font-weight:500;'><?=$coordinator->District?></td>
-                    <td style='font-weight:500;'><?=$coordinator->Taluk?></td>
-                    <td style='font-weight:500;'><?=$coordinator->Panchayat?></td>
-                    <td style='font-weight:500;'><?=$coordinator->VillageNames?></td>
-                    <td class='d-flex justify-content-evenly'>
-                    <button onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="deletecoord('<?=trim($coordinator->Familymembershipid)?>','<?=trim($coordinator->Name)?>')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-trash-can'></i><span class='trashtooltip'>Trash</span></button>
-                    <button onclick ="viewCoordinatordata('view-coordinator-data?coord_id=<?=$coordinator->Familymembershipid?>')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <td class='fw-bold text-dark'><?=$coordinator->Name?></td>
+                    <td><?=$coordinator->Phonenumber?></td>
+                    <td><?=$coordinator->District?></td>
+                    <td><?=$coordinator->Taluk?></td>
+                    <td><?=$coordinator->Panchayat?></td>
+                    <td class='<?=$coordinator->VillageNames ? '' : 'text-center'?>'>
+                        <?=$coordinator->VillageNames ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' . $coordinator->VillageNames . '</span>' : '-'?>
                     </td>
-                    </tr>
-                  <?php ++$j; endforeach;?>
+                    <td onclick="event.stopPropagation();">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button onclick="showupdatecoordsmodal('<?=trim($coordinator->Familymembershipid)?>')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                            <button onclick="viewCoordinatordata('view-coordinator-data?coord_id=<?=$coordinator->Familymembershipid?>')" class='btn btn-sm btn-outline-secondary rounded-circle' style='width:32px;height:32px;padding:0;' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                        </div>
+                    </td>
+                 </tr>
+                  <?php ++$j;?>
+                  <?php endforeach;?>
                 <?php else:?>
                   <tr>
                       <td colspan='7' class='text-center'>No results</td>

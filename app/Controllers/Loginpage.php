@@ -158,7 +158,7 @@ class Loginpage extends BaseController {
         $user = $this->kaadailoginModel->getDetails($identifier, $username);
 
         if (!$user) {
-            return redirect()->back()->with('error', 'No user found with the given Mobile/Aadhar.');
+            return redirect()->back()->with('error', 'Invalid Mobile/Aadhar.');
         }
 
         if (empty($user->Email)) {

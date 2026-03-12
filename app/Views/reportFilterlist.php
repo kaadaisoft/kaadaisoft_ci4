@@ -22,14 +22,10 @@
     }
 
     .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
-
-    li:hover {
-      background-color: rgb(230, 230, 230);
-    }
 
     .ps-logo {
       display: flex;
@@ -128,33 +124,174 @@
             display: none;
         }
     }
+
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
+    }
+
+    /* Premium Filter Card Styling */
+    .filter-card-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      padding: 24px;
+      margin-top: 15px;
+    }
+    .filter-card-premium .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-card-premium .form-select,
+    .filter-card-premium .form-control {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      box-shadow: none;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    .filter-card-premium .form-select:focus,
+    .filter-card-premium .form-control:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .custom-radio {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .btn-apply-filter {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 10px 30px;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s;
+    }
+    .btn-apply-filter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+      color: #fff;
+    }
+
+    /* Modern Table Styling */
+    .table-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .custom-table-modern {
+      margin-bottom: 0;
+      width: 100%;
+    }
+    .custom-table-modern caption {
+      padding: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .custom-table-modern thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      padding: 1rem;
+      border-bottom: 2px solid #334155;
+    }
+    .custom-table-modern tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-modern tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+    .custom-table-modern td {
+      padding: 1rem;
+      vertical-align: middle;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="container-fluid" style="position:absolute;overflow:hidden;">
+  <div class="container-fluid layout-container p-0">
 
-    <div class="row"><!-----top-bar--------------->
+    <div class="top-navbar-row"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-
+      <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
       </div>
 
-      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom">
-
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-3" style="background: #0f172a;">
       </div>
     </div><!-----------top-bar-end----------------------->
 
 
-    <div class="row "><!----------main-navbar----------->
+    <div class="main-body-row"><!----------main-navbar----------->
 
-      <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-
-
+      <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
       </div><!-----------side-bar-end-------------->
 
-      <div id="reportsFilteredpageHeight" style="overflow:auto;" class="col-md-10">
+      <div id="reportsFilteredpageHeight" class="col-md-10 main-content-area px-4 pt-3">
         <!-----------main-dashboard------------------------->
         <div class="container-fluid">
           <br>
@@ -162,13 +299,11 @@
             <!--<div id="alertContainer" class="h6 fw-normal text-danger "></div>-->
           </span>
           <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off">
-            <div class="pt-2 row pb-4"><!----------filter-start------------>
+            <div class="row filter-card-premium"><!----------filter-start------------>
 
-
-              <div id="showyear" class="col-md-3"><!-----year-search--------->
-                <label class="container-fluid" for="aadhar">Choose event year:<br>
-                  <select onchange="getEventsbyYear(this)" class="container-fluid border rounded" name="eventyear"
-                    id="eventyear">
+              <div id="showyear" class="col-md-3 mb-3"><!-----year-search--------->
+                <label class="form-label" for="eventyear"><i class="fas fa-calendar-alt me-2 text-primary"></i>Choose event year</label>
+                  <select onchange="getEventsbyYear(this)" class="form-select" name="eventyear" id="eventyear">
                     <option value="">Choose Year</option>
                     <option value="search">Search Event</option>
                     <?php if (isset($eventyears) && isset($year))
@@ -177,12 +312,11 @@
                       }
                     ?>
                   </select>
-                </label>
-
               </div><!-----year-search--------->
-              <div id="showevents" class="col-md-3"><!----------event-search------------>
-                <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose Events: <br>
-                  <select class="container-fluid border rounded" name="eventid" id="eventid">
+
+              <div id="showevents" class="col-md-3 mb-3"><!----------event-search------------>
+                <label id="eventnamelabel" class="form-label" for="eventid"><i class="fas fa-calendar-check me-2 text-warning"></i>Choose Events</label>
+                  <select class="form-select" name="eventid" id="eventid">
                     <option value="">Choose Event</option>
                     <?php if (isset($events) && isset($eventid))
                       foreach ($events as $key => $value) {
@@ -190,43 +324,35 @@
                       }
                     ?>
                   </select>
-                  <div id='searchresults' hidden style='display:none;'
-                    class='rounded border position-absolute bg-white px-2'></div>
-                </label>
-
-
+                  <div id="searchresults" class="dropdown-menu w-100 shadow-sm mt-1" style="display:none; max-height: 200px; overflow-y: auto; z-index: 1000;"></div>
               </div><!--------event-search-end--------------------------->
 
-              <div class="col-md-4 d-flex justify-content-between align-items-center">
+              <div class="col-md-6 mb-3">
                 <!------------paid-filter------------>
-                <div class="mt-3">
+                <label class="form-label"><i class="fas fa-money-bill-wave me-2 text-success"></i>Payment Status</label>
+                <div class="border rounded px-3 py-2 bg-light d-flex justify-content-between align-items-center">
                   <input id="sentstatus" hidden type="text" value="<?php echo "$status"; ?>">
-                  <label for="paid">Paid Users:</label>
-                  <input onchange="setStatus(this)" <?php if ($status == "Paid") {
+                  <label class="custom-radio">
+                    <input onchange="setStatus(this)" <?php if ($status == "Paid") {
                     echo 'checked';
-                  } ?> type="radio"
-                    value="Paid" name="paymentstatus" id="paid" required>
-                </div>
-                <div class="mt-3">
-                  <label for="unpaid">Unpaid Users:</label>
-                  <input onchange="setStatus(this)" <?php if ($status == "Pending") {
+                  } ?> type="radio" value="Paid" name="paymentstatus" id="paid" required> Paid Users
+                  </label>
+                  <label class="custom-radio">
+                    <input onchange="setStatus(this)" <?php if ($status == "Pending") {
                     echo 'checked';
-                  } ?> type="radio"
-                    value="Pending" name="paymentstatus" id="pending" required>
-                </div>
-                <div class="mt-3">
-                  <label for="unpaid">All Users:</label>
-                  <input onchange="setStatus(this)" <?php if ($status == "All") {
+                  } ?> type="radio" value="Pending" name="paymentstatus" id="pending" required> Unpaid Users
+                  </label>
+                  <label class="custom-radio">
+                    <input onchange="setStatus(this)" <?php if ($status == "All") {
                     echo 'checked';
-                  } ?> type="radio"
-                    value="All" name="paymentstatus" id="all" required>
+                  } ?> type="radio" value="All" name="paymentstatus" id="all" required> All Users
+                  </label>
                 </div>
-
               </div><!------------paid-filter-end----------->
 
-              <div id="filterbutton" class="col-md-2 pt-3 d-flex align-items-center justify-content-center">
+              <div id="filterbutton" class="col-12 mt-2 d-flex justify-content-end">
                 <!------------filter-button-start------------>
-                <button type="submit" class="btn btn-success fw-bold">Apply Filter</button>
+                <button type="submit" class="btn btn-apply-filter px-5"><i class="fas fa-filter me-2"></i>Apply Filter</button>
               </div><!------------filter-button-end----------->
 
             </div><!---------filter-end-------------->
@@ -270,14 +396,14 @@
             ?>
           </div>
 
-          <div id="main-reports" style="overflow:auto" class="mt-3 "><!----------------table-------->
-            <table class="table table-responsive table-bordered text-center">
+          <div id="main-reports" class="table-container mt-4"><!----------------table-------->
+            <table class="table custom-table-modern text-center">
               <?php
               if (!empty($reports)) {
                 echo "
             <thead>
-            <tr class='ps-gray text-center'>
-            <th>S.No</th><th >Familymembershipid</th><th>Name</th><th>Role</th><th>Phone No</th><th >EventMoney</th><th>PaidCash</th><th>Pending</th><th>lastPaid</th><!--<th> Actions&nbsp;&nbsp;</th>-->
+            <tr>
+            <th>S.No</th><th>Familymembershipid</th><th>Name</th><th>Role</th><th>Phone No</th><th>EventMoney</th><th>PaidCash</th><th>Pending</th><th>lastPaid</th>
             </tr>
             </thead>";
               }
@@ -289,17 +415,18 @@
                   $i = $sno;
                   foreach ($reports as $key => $value) {
                     $j = $i + 1;
+                    $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
                     echo "
-                   <tr>
-                       <td>$j</td>
-                       <td class='fw-bold text-primary'>$value[Familymembershipid]</td>
-                       <td >$value[Name]</td>
-                       <td >$value[Role]</td>
-                       <td>$value[Mobile]</td>
-                       <td>" . ($value['Taxamount'] ?? '_') . "</td>
-                       <td>" . ($value['paidamount'] ?? '_') . "</td>
-                       <td>" . ($value['balancemount'] ?? '_') . "</td>
-                       <td>" . ($value['paymentdate'] ?? '_') . "</td>           
+                   <tr $rowBg>
+                       <td class='fw-medium text-muted'>$j</td>
+                       <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
+                       <td class='fw-medium'>$value[Name]</td>
+                       <td class='text-muted'>$value[Role]</td>
+                       <td class='text-muted'>$value[Mobile]</td>
+                       <td class='text-muted'>" . ($value['Taxamount'] ?? '_') . "</td>
+                       <td class='text-muted'>" . ($value['paidamount'] ?? '_') . "</td>
+                       <td class='text-muted'>" . ($value['balancemount'] ?? '_') . "</td>
+                       <td class='text-muted'>" . ($value['paymentdate'] ?? '_') . "</td>           
                    </tr>";
                     ++$i;
                   }
@@ -521,14 +648,20 @@
   function getEventsbyYear(yeardata) {
     let year = yeardata.value;
     if (year == "search") {
-      let height = document.getElementById("eventnamelabel").getBoundingClientRect().width;
-      document.getElementById("eventnamelabel").innerHTML = `Search Event:<br><input id='eventname' name="eventname" onkeyup='searchEvent(this)' class='container-fluid border rounded' type='text'><div id='searchresults' style='width:${height}px;display:none;' class='rounded border position-absolute bg-white px-2'></div>`;
+      document.getElementById("showevents").innerHTML = `
+        <label id="eventnamelabel" class="form-label" for="eventname"><i class="fas fa-search me-2 text-info"></i>Search Event:</label>
+        <div class="position-relative">
+          <input id="eventname" name="eventname" autocomplete="off" onkeyup="searchEvent(this)" class="form-control" type="text" placeholder="Type event name...">
+          <input type="hidden" name="eventid" id="eventid_hidden" value="">
+          <div id="searchresults" class="dropdown-menu w-100 shadow-sm mt-1" style="display:none; max-height: 200px; overflow-y: auto; z-index: 1000;"></div>
+        </div>
+      `;
     } else if (year == "") {
-      document.getElementById("showevents").innerHTML = ` <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose Events: <br>                                       
-        <select class="container-fluid border rounded" name="eventid" id="eventid" required>
+      document.getElementById("showevents").innerHTML = `
+        <label id="eventnamelabel" class="form-label" for="eventid"><i class="fas fa-calendar-check me-2 text-warning"></i>Choose Events</label>                                       
+        <select class="form-select" name="eventid" id="eventid" required>
         <option value="">Choose Event</option>
-        </select>
-        </label>`;
+        </select>`;
     } else {
       $.ajax({
         type: "get",
@@ -546,27 +679,35 @@
 
   function searchEvent(events) {
     let event = events.value;
-    document.getElementById("searchresults").style.display = "block";
+    const resultsDiv = document.getElementById("searchresults");
+    
     if (event == "") {
-      document.getElementById("searchresults").innerHTML = "No Events Available";
+      resultsDiv.style.display = "none";
+      resultsDiv.innerHTML = "";
     } else {
+      resultsDiv.style.display = "block";
       $.ajax({
         type: "get",
         url: "<?= base_url('reports/getSearchevents'); ?>",
         data: { "event": event },
         success: function (result) {
-          document.getElementById('searchresults').innerHTML = result;
+          resultsDiv.innerHTML = result;
         },
         error: function (err) {
-          document.getElementById('searchresults').innerHTML = "Error";
+          resultsDiv.innerHTML = "Error fetching results";
         }
       });
     }
   }
 
-  function setEventname(year, eventname) {
+  function setEventname(year, eventname, id) {
     document.getElementById("eventyear").value = year;
-    document.getElementById("eventid").value = eventname;
+    document.getElementById("eventname").value = eventname;
+    if (document.getElementById("eventid_hidden")) {
+      document.getElementById("eventid_hidden").value = id;
+    }
+    const results = document.getElementById("searchresults");
+    if(results) results.style.display = "none";
   }
 
   function setStatus(status) {

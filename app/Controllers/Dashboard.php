@@ -5,10 +5,12 @@ class Dashboard extends BaseController {
 
     protected $session;
     protected $db;
+    protected $adminDashboardModel;
 
     public function __construct(){
         $this->session = session();
         $this->db = \Config\Database::connect();
+        $this->adminDashboardModel = new \App\Models\AdminDashboardModel();
     } 
 
     public function index(){
@@ -32,6 +34,11 @@ class Dashboard extends BaseController {
     }
 
     public function topmenu(){
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
+        $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         return view("topmenu");
     }
 

@@ -178,8 +178,15 @@
                         <!-- Phone Number -->
                         <div class="col-md-4">
                             <label for="phoneno-member">Phone Number</label>
-                            <input id="phoneno-member" class="form-control" type="number" name="phoneno-update" value="<?= $member->Phonenumber ?>" onkeyup="validateMemberInput(this)">
+                            <div class="input-group">
+                                <input id="phoneno-member" class="form-control" type="number" name="phoneno-update" value="<?= $member->Phonenumber ?>" onkeyup="validateMemberInput(this)">
+                                <button class="btn btn-outline-primary" type="button" id="verify_phone_btn-member" onclick="checkPhoneVerificationMember()" style="display: none;">Verify</button>
+                            </div>
                             <small id="phonenoerror-member" class="text-danger"></small>
+                            <div id="phone_verified_badge-member" class="mt-1 text-success fw-bold" style="display:<?= (!empty($member->Phonenumber)) ? 'block' : 'none' ?>;">
+                                <i class="fa-solid fa-circle-check"></i> Verified
+                            </div>
+                            <input type="hidden" id="is_phone_verified-member" name="is_phone_verified-update" value="<?= (!empty($member->Phonenumber)) ? '1' : '0' ?>">
                         </div>
 
                         <!-- Aadhar Number -->
@@ -230,8 +237,26 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-member">Email</label>
-                            <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
+                            <div class="input-group">
+                                <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
+                                <button class="btn btn-outline-primary" type="button" id="verify_email_btn-member" onclick="sendUpdateEmailOTP()">Verify</button>
+                            </div>
                             <small id="emailerror-member" class="text-danger"></small>
+                            
+                            <!-- OTP Verification Section -->
+                            <div id="otp_section-member" class="mt-2" style="display:none;">
+                                <div class="input-group">
+                                    <input type="text" id="email_otp-member" class="form-control" placeholder="Enter OTP">
+                                    <button class="btn btn-success" type="button" onclick="verifyUpdateEmailOTP()">Confirm</button>
+                                </div>
+                                <small class="text-muted">OTP sent to your email. Valid for 10 mins.</small>
+                                <small id="otperror-member" class="text-danger d-block"></small>
+                            </div>
+                            
+                            <div id="email_verified_badge-member" class="mt-1 text-success fw-bold" style="display:<?= (!empty($member->Email)) ? 'block' : 'none' ?>;">
+                                <i class="fa-solid fa-circle-check"></i> Verified
+                            </div>
+                            <input type="hidden" id="is_email_verified-member" name="is_email_verified-update" value="<?= (!empty($member->Email)) ? '1' : '0' ?>">
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -626,23 +651,33 @@
 
                         <div class="col-md-3">
                             <label for="taluks-dropdown-member">Taluk</label>
-                            <select id="taluks-dropdown-member" onchange="setDropdownpanchayatMember(this); validateMemberInput(this)" class="form-select" name="taluk-update">
+                            <select id="taluks-dropdown-member" onchange="toggleTalukOthersMember(this); setDropdownpanchayatMember(this); validateMemberInput(this)" class="form-select" name="taluk-update">
                                 <option value="">Select Taluk</option>
                                 <?php if (isset($taluks)): foreach ($taluks as $t): ?>
                                     <option value="<?= $t->taluk_name ?>" <?= ($member->Taluk == $t->taluk_name) ? 'selected' : '' ?>><?= $t->taluk_name ?></option>
                                 <?php endforeach; endif; ?>
                             </select>
+                            <input type="text" id="taluk_others_input_member" name="taluk_others_update" 
+                                class="form-control mt-2" 
+                                placeholder="Enter taluk name" 
+                                style="display:none;" 
+                                onkeyup="validateMemberInput(this)">
                             <small id="talukerror-member" class="text-danger"></small>
                         </div>
 
                         <div class="col-md-3">
                             <label for="panchayat-dropdown-member">Panchayat</label>
-                            <select id="panchayat-dropdown-member" onchange="setDropdownVillageMember(this); validateMemberInput(this)" class="form-select" name="panchayat-update">
+                            <select id="panchayat-dropdown-member" onchange="togglePanchayatOthersMember(this); setDropdownVillageMember(this); validateMemberInput(this)" class="form-select" name="panchayat-update">
                                 <option value="">Select Panchayat</option>
                                 <?php if (isset($panchayats)): foreach ($panchayats as $p): ?>
                                     <option value="<?= $p->panchayat_name ?>" <?= ($member->Panchayat == $p->panchayat_name) ? 'selected' : '' ?>><?= $p->panchayat_name ?></option>
                                 <?php endforeach; endif; ?>
                             </select>
+                            <input type="text" id="panchayat_others_input_member" name="panchayat_others_update" 
+                                class="form-control mt-2" 
+                                placeholder="Enter panchayat name" 
+                                style="display:none;" 
+                                onkeyup="validateMemberInput(this)">
                             <small id="panchayaterror-member" class="text-danger"></small>
                         </div>
 
@@ -673,7 +708,9 @@
 
                         <div class="col-md-3">
                             <label for="pincode-member">Pin Code</label>
-                            <input id="pincode-member" onkeyup="validateMemberInput(this)" class="form-control" type="number" name="pincode-update" value="<?= $member->Pincode ?>">
+                            <input id="pincode-member" onkeyup="validateMemberInput(this)" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                                class="form-control" type="text" inputmode="numeric" name="pincode-update" maxlength="6" value="<?= $member->Pincode ?>">
                             <small id="pincodeerror-member" class="text-danger"></small>
                         </div>
                     </div>
@@ -730,16 +767,26 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_taluk-member">Taluk</label>
-                                 <select id="cur_taluk-member" style="border: 1px solid #ced4da;" onchange="setDropdownpanchayatCurrentMember(this); validateMemberInput(this)" class="form-select" name="cur_taluk-update">
+                                 <select id="cur_taluk-member" style="border: 1px solid #ced4da;" onchange="toggleTalukOthersCurrentMember(this); setDropdownpanchayatCurrentMember(this); validateMemberInput(this)" class="form-select" name="cur_taluk-update">
                                     <option value="<?= $member->Curtaluk ?>"><?= $member->Curtaluk ?: 'Select Taluk' ?></option>
                                 </select>
+                                <input type="text" id="cur_taluk_others_input_member" name="cur_taluk_others_update" 
+                                    class="form-control mt-2" 
+                                    placeholder="Enter taluk name" 
+                                    style="display:none;" 
+                                    onkeyup="validateMemberInput(this)">
                                 <small id="cur_talukerror-member" class="text-danger"></small>
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_panchayat-member">Panchayat</label>
-                                 <select id="cur_panchayat-member" style="border: 1px solid #ced4da;" onchange="setDropdownVillageCurrentMember(this); validateMemberInput(this)" class="form-select" name="cur_panchayat-update">
+                                 <select id="cur_panchayat-member" style="border: 1px solid #ced4da;" onchange="togglePanchayatOthersCurrentMember(this); setDropdownVillageCurrentMember(this); validateMemberInput(this)" class="form-select" name="cur_panchayat-update">
                                     <option value="<?= $member->Curpanchayat ?>"><?= $member->Curpanchayat ?: 'Select Panchayat' ?></option>
                                 </select>
+                                <input type="text" id="cur_panchayat_others_input_member" name="cur_panchayat_others_update" 
+                                    class="form-control mt-2" 
+                                    placeholder="Enter panchayat name" 
+                                    style="display:none;" 
+                                    onkeyup="validateMemberInput(this)">
                                 <small id="cur_panchayaterror-member" class="text-danger"></small>
                             </div>
                             <div class="col-md-3">
@@ -766,7 +813,9 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_pincode-member">Pin Code</label>
-                                <input id="cur_pincode-member" onkeyup="validateMemberInput(this)" class="form-control" type="number" name="cur_pincode-update" value="<?= $member->Curpincode ?>">
+                                <input id="cur_pincode-member" onkeyup="validateMemberInput(this)" 
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                                    class="form-control" type="text" inputmode="numeric" name="cur_pincode-update" maxlength="6" value="<?= $member->Curpincode ?>">
                                 <small id="cur_pincodeerror-member" class="text-danger"></small>
                             </div>
                         </div>
@@ -795,7 +844,9 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_nri_zip-member">Zip Code</label>
-                                <input id="cur_nri_zip-member" name="cur_nri_zip-update" class="form-control" type="text" value="<?= $member->Curnrizip ?>" onkeyup="validateMemberInput(this)">
+                                <input id="cur_nri_zip-member" name="cur_nri_zip-update" class="form-control" type="text" value="<?= $member->Curnrizip ?>" 
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9 -]/g, '').slice(0, 12)"
+                                    onkeyup="validateMemberInput(this)">
                             </div>
                             <div class="col-md-12">
                                 <label for="cur_nri_fulladdress-member">Full Address</label>
@@ -941,9 +992,29 @@
                 url: "<?= base_url('members/getTaluksfordropdown') ?>",
                 data: { "district_name": district_name },
                 success: (result) => {
-                    document.getElementById("taluks-dropdown-member").innerHTML = result;
+                    let dropdown = document.getElementById("taluks-dropdown-member");
+                    dropdown.innerHTML = result;
+                    dropdown.innerHTML += '<option value="Others">Others</option>';
+                    toggleTalukOthersMember(dropdown);
+                },
+                error: (err) => {
+                    document.getElementById("taluks-dropdown-member").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function toggleTalukOthersMember(selectEl) {
+            const othersInput = document.getElementById('taluk_others_input_member');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'taluk-update');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'taluk_others_update');
+                selectEl.setAttribute('name', 'taluk-update'); 
+            }
         }
 
         function setDropdownpanchayatMember(taluk) {
@@ -959,9 +1030,29 @@
                 url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
                 data: { "taluk_name": taluk_name },
                 success: (result) => {
-                    document.getElementById("panchayat-dropdown-member").innerHTML = result;
+                    let dropdown = document.getElementById("panchayat-dropdown-member");
+                    dropdown.innerHTML = result;
+                    dropdown.innerHTML += '<option value="Others">Others</option>';
+                    togglePanchayatOthersMember(dropdown);
+                },
+                error: (err) => {
+                    document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function togglePanchayatOthersMember(selectEl) {
+            const othersInput = document.getElementById('panchayat_others_input_member');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'panchayat-update');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'panchayat_others_update');
+                selectEl.setAttribute('name', 'panchayat-update'); 
+            }
         }
 
 
@@ -1169,6 +1260,23 @@
                 c_state.value = n_state;
                 // Trigger chained AJAX for current address dropdowns with full path
                 setDropdowndistrictsCurrentMember(c_state, n_district, n_taluk, n_panchayat, n_village);
+                
+                // Special handling for 'Others' in Taluk and Panchayat
+                setTimeout(() => {
+                    const c_taluk = document.getElementById('cur_taluk-member');
+                    const c_panchayat = document.getElementById('cur_panchayat-member');
+                    
+                    if (n_taluk === 'Others') {
+                        c_taluk.value = 'Others';
+                        toggleTalukOthersCurrentMember(c_taluk);
+                        document.getElementById('cur_taluk_others_input_member').value = document.getElementById('taluk_others_input_member').value;
+                    }
+                    if (n_panchayat === 'Others') {
+                        c_panchayat.value = 'Others';
+                        togglePanchayatOthersCurrentMember(c_panchayat);
+                        document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
+                    }
+                }, 1000); // Wait for AJAX cascade
             }
         }
 
@@ -1176,7 +1284,78 @@
             document.getElementById("membersubmitbutton").disabled = !checkbox.checked;
         }
 
+        var originalEmailMember = "<?= $member->Email ?>";
+        var originalPhoneMember = "<?= $member->Phonenumber ?>";
+
         function validateMemberInput(field) {
+            // Live Email Change check
+            if (field.id === 'email-member') {
+                const currentEmail = field.value.trim();
+                const verifyBtn = document.getElementById('verify_email_btn-member');
+                const verifiedBadge = document.getElementById('email_verified_badge-member');
+                const isVerifiedInput = document.getElementById('is_email_verified-member');
+                const otpSection = document.getElementById('otp_section-member');
+                const emailError = document.getElementById('emailerror-member');
+
+                // Basic Format Validation
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (currentEmail !== "" && !emailRegex.test(currentEmail)) {
+                    emailError.innerHTML = "Invalid email format.";
+                    field.classList.add('is-invalid');
+                } else {
+                    emailError.innerHTML = "";
+                    field.classList.remove('is-invalid');
+                }
+
+                if (currentEmail !== originalEmailMember) {
+                    verifiedBadge.style.display = 'none';
+                    isVerifiedInput.value = "0";
+                    verifyBtn.style.display = 'inline-block';
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerText = "Verify";
+                } else if (currentEmail !== "" && currentEmail === originalEmailMember) {
+                    verifiedBadge.style.display = 'block';
+                    isVerifiedInput.value = "1";
+                    verifyBtn.style.display = 'none';
+                    otpSection.style.display = 'none';
+                }
+            }
+
+            // Phone Uniqueness check
+            if (field.id === 'phoneno-member') {
+                const phone = field.value.trim();
+                const err = document.getElementById('phonenoerror-member');
+                const verifyPhoneBtn = document.getElementById('verify_phone_btn-member');
+                const verifiedPhoneBadge = document.getElementById('phone_verified_badge-member');
+                const isPhoneVerifiedInput = document.getElementById('is_phone_verified-member');
+
+                if (phone !== originalPhoneMember) {
+                    verifiedPhoneBadge.style.display = 'none';
+                    isPhoneVerifiedInput.value = "0";
+                    if (phone.length === 10) {
+                        verifyPhoneBtn.style.display = 'inline-block';
+                        verifyPhoneBtn.disabled = false;
+                        verifyPhoneBtn.innerText = "Verify";
+                        err.innerHTML = "";
+                    } else {
+                        verifyPhoneBtn.style.display = 'none';
+                        if (phone.length > 0) {
+                            err.innerHTML = "Phone number should be 10 digits.";
+                            field.classList.add('is-invalid');
+                        } else {
+                            err.innerHTML = "";
+                            field.classList.remove('is-invalid');
+                        }
+                    }
+                } else {
+                    verifiedPhoneBadge.style.display = 'block';
+                    isPhoneVerifiedInput.value = "1";
+                    verifyPhoneBtn.style.display = 'none';
+                    err.innerHTML = "";
+                    field.classList.remove('is-invalid');
+                }
+            }
+
             // Simplified validation for update
             if (field.value === "" && field.hasAttribute('required')) {
                 field.classList.add('is-invalid');
@@ -1197,6 +1376,24 @@
             // Basic check before submit
             var isValid = true;
             
+            // Validate Email Verification if changed
+            const isEmailVerified = document.getElementById('is_email_verified-member').value;
+            const emailInput = document.getElementById('email-member');
+            if (emailInput.value.trim() !== "" && isEmailVerified === "0") {
+                document.getElementById('emailerror-member').innerText = "Please verify your email.";
+                emailInput.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Phone Verification if changed
+            const isPhoneVerified = document.getElementById('is_phone_verified-member').value;
+            const phoneInput = document.getElementById('phoneno-member');
+            if (phoneInput.value.trim() !== "" && isPhoneVerified === "0") {
+                document.getElementById('phonenoerror-member').innerText = "Please verify your phone number.";
+                phoneInput.classList.add('is-invalid');
+                isValid = false;
+            }
+
             // Validate Education *
             const education = document.getElementById('educationfield-member').value.trim();
             const eduError = document.getElementById('educationerror-member');
@@ -1465,6 +1662,18 @@
             }
 
             if (!district_name) return;
+            
+            if (district_name === 'Others') {
+                let talukDropdown = document.getElementById("cur_taluk-member");
+                talukDropdown.innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                if (selectTaluk) {
+                    talukDropdown.value = selectTaluk;
+                    setDropdownpanchayatCurrentMember(talukDropdown, selectPanchayat, selectVillage);
+                }
+                toggleTalukOthersCurrentMember(talukDropdown);
+                return;
+            }
+
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getTaluksfordropdown') ?>",
@@ -1472,12 +1681,31 @@
                 success: function (result) {
                     let talukDropdown = document.getElementById("cur_taluk-member");
                     talukDropdown.innerHTML = result;
+                    talukDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectTaluk) {
                         talukDropdown.value = selectTaluk;
                         setDropdownpanchayatCurrentMember(talukDropdown, selectPanchayat, selectVillage);
                     }
+                    toggleTalukOthersCurrentMember(talukDropdown);
+                },
+                error: (err) => {
+                    document.getElementById("cur_taluk-member").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function toggleTalukOthersCurrentMember(selectEl) {
+            const othersInput = document.getElementById('cur_taluk_others_input_member');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'cur_taluk-update');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'cur_taluk_others_update');
+                selectEl.setAttribute('name', 'cur_taluk-update'); 
+            }
         }
 
         function setDropdownpanchayatCurrentMember(taluk, selectPanchayat = null, selectVillage = null) {
@@ -1492,6 +1720,18 @@
             }
 
             if (!taluk_name) return;
+
+            if (taluk_name === 'Others') {
+                let panchayatDropdown = document.getElementById("cur_panchayat-member");
+                panchayatDropdown.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                if (selectPanchayat) {
+                    panchayatDropdown.value = selectPanchayat;
+                    setDropdownVillageCurrentMember(panchayatDropdown, selectVillage);
+                }
+                togglePanchayatOthersCurrentMember(panchayatDropdown);
+                return;
+            }
+
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
@@ -1499,12 +1739,31 @@
                 success: function (result) {
                     let panchayatDropdown = document.getElementById("cur_panchayat-member");
                     panchayatDropdown.innerHTML = result;
+                    panchayatDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectPanchayat) {
                         panchayatDropdown.value = selectPanchayat;
                         setDropdownVillageCurrentMember(panchayatDropdown, selectVillage);
                     }
+                    togglePanchayatOthersCurrentMember(panchayatDropdown);
+                },
+                error: (err) => {
+                    document.getElementById("cur_panchayat-member").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function togglePanchayatOthersCurrentMember(selectEl) {
+            const othersInput = document.getElementById('cur_panchayat_others_input_member');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'cur_panchayat-update');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'cur_panchayat_others_update');
+                selectEl.setAttribute('name', 'cur_panchayat-update'); 
+            }
         }
 
         function loadCountriesDataMember() {
@@ -1582,6 +1841,128 @@
             } else {
                 wrapper.style.display = 'none';
             }
+        }
+        function sendUpdateEmailOTP() {
+            const email = document.getElementById('email-member').value.trim();
+            const btn = document.getElementById('verify_email_btn-member');
+            const err = document.getElementById('emailerror-member');
+            
+            if (!email) {
+                err.innerHTML = "Please enter email to verify.";
+                return;
+            }
+            
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                err.innerHTML = "Invalid email format.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            err.innerHTML = "";
+
+            $.ajax({
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                type: "POST",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section-member').style.display = 'block';
+                        btn.style.display = 'none';
+                        alert(response.message);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    err.innerHTML = "Error sending OTP. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTP() {
+            const otp = document.getElementById('email_otp-member').value.trim();
+            const email = document.getElementById('email-member').value.trim();
+            const err = document.getElementById('otperror-member');
+
+            if (!otp) {
+                err.innerHTML = "Please enter OTP.";
+                return;
+            }
+
+            $.ajax({
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                type: "POST",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section-member').style.display = 'none';
+                        document.getElementById('email_verified_badge-member').style.display = 'block';
+                        document.getElementById('is_email_verified-member').value = "1";
+                        document.getElementById('email-member').readOnly = true;
+                        document.getElementById('emailerror-member').innerHTML = "";
+                        alert(response.message);
+                    } else {
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    err.innerHTML = "Error verifying OTP.";
+                }
+            });
+        }
+
+        function checkPhoneVerificationMember() {
+            const phone = document.getElementById('phoneno-member').value.trim();
+            const btn = document.getElementById('verify_phone_btn-member');
+            const err = document.getElementById('phonenoerror-member');
+            const verifiedBadge = document.getElementById('phone_verified_badge-member');
+            const isVerifiedInput = document.getElementById('is_phone_verified-member');
+
+            if (phone.length !== 10) {
+                err.innerHTML = "Please enter a valid 10-digit mobile number.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Checking...";
+
+            $.ajax({
+                type: "post",
+                url: "<?= base_url('members/checkExistphoneno') ?>",
+                data: { 
+                    "phoneno": phone,
+                    "member_id": "<?= $member->Familymembershipid ?>"
+                },
+                success: (result) => {
+                    if (result.trim() === "true") {
+                        err.innerHTML = "Phone number already exists.";
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        btn.style.display = 'inline-block';
+                    } else {
+                        // For now, since no SMS gateway is available, 
+                        // we mark as verified if it is unique and valid format.
+                        err.innerHTML = "";
+                        btn.style.display = 'none';
+                        verifiedBadge.style.display = 'block';
+                        isVerifiedInput.value = "1";
+                        alert("Mobile number verified successfully (Uniqueness check).");
+                    }
+                },
+                error: () => {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    err.innerHTML = "Error verifying phone number.";
+                }
+            });
         }
     </script>
 

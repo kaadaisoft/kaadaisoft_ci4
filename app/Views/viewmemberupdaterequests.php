@@ -31,13 +31,13 @@
         }
 
         .heading-kaadaisoft {
-            color: rgb(120, 50, 186);
+            color: rgb(0, 123, 255);
             font-weight: 800;
             font-family: sans-serif;
         }
 
         .ps-letter {
-            background-color: rgb(120, 50, 186);
+            background-color: rgb(0, 123, 255);
         }
 
         .ps-user {
@@ -90,143 +90,197 @@
             border-radius: 25px;
         }
 
-        @media screen and (max-width:768px) {
-            #menu-bar {
-                display: none;
-            }
-            #pageheight {
-                position: relative !important;
-                height: auto !important;
-                overflow: visible !important;
-            }
-        }
-
-        /* Custom Mobile Menu Styles */
-        #custom-mobile-menu {
+    /* Hide default menu bar on mobile */
+    @media screen and (max-width: 768px) {
+        #menu-bar {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: white;
-            z-index: 9999;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease-out;
         }
+    }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-            }
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
 
-            to {
-                transform: translateX(0);
-            }
-        }
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
+    }
 
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            color: #333;
-        }
+    .active-updaterequests {
+        background-color: rgba(56, 189, 248, 0.15);
+        font-weight: 600;
+    }
 
-        #mobile-menu-content {
-            padding-top: 60px;
-            /* Space for close button */
-        }
+    /* Custom Mobile Menu Styles */
+    #custom-mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0f172a;
+        z-index: 9999;
+        overflow-y: auto;
+    }
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+        color: #cbd5e1;
+    }
+    #mobile-menu-content {
+        padding-top: 60px;
+    }
 
-        .ham-menu {
-            background-color: transparent;
-        }
+    .green-underline {
+        border-bottom: 2px solid #28a745;
+        color: #28a745;
+        font-weight: 600;
+        display: inline-block;
+    }
 
-        .green-underline {
-            text-decoration: underline;
-            text-decoration-color: #198754;
-            /* Success green */
-            text-decoration-thickness: 3px;
-            color: #198754;
-            font-weight: bold;
-        }
+    .old-value {
+        color: #dc3545;
+        text-decoration: line-through;
+        font-size: 0.85em;
+        opacity: 0.8;
+    }
 
-        .old-value {
-            color: #6c757d;
-            text-decoration: line-through;
-            font-size: 0.9em;
-        }
-        .active-updaterequests {
-            background-color: rgb(230, 230, 230);
-            font-weight: 600;
-        }
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1100px;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      margin: 0 4px;
+    }
+    .btn-action-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #fff;
+    }
+    .btn-view-premium { background: #eff6ff; color: #2563eb; }
+    .btn-view-premium:hover { background: #2563eb; }
+    .btn-approve-premium { background: #f0fdf4; color: #16a34a; }
+    .btn-approve-premium:hover { background: #16a34a; }
+    .btn-reject-premium { background: #fef2f2; color: #dc2626; }
+    .btn-reject-premium:hover { background: #dc2626; }
     </style>
 </head>
 
 <body>
 
-    <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+    <div id="pageheight" class="container-fluid layout-container p-0">
         <?= view('notification_toast') ?>
 
-        <script>
-            // Global Mobile Menu Functions (defined early to avoid ReferenceError)
-            function openMobileMenu() {
-                var menu = document.getElementById('custom-mobile-menu');
-                if (menu) menu.style.display = 'block';
-            }
+        <div class="top-navbar-row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
-            function closeMobileMenu() {
-                var menu = document.getElementById('custom-mobile-menu');
-                if (menu) menu.style.display = 'none';
-            }
-
-            $(document).ready(function () {
-                // Initial height set
-                function updateMenuBarHeight() {
-                    var menuBar = document.getElementById("menu-bar");
-                    var searchBar = document.getElementById("search-bar");
-                    if (menuBar && searchBar) {
-                        menuBar.style.height = (window.innerHeight - searchBar.getBoundingClientRect().height) + "px";
-                    }
-                }
-
-                updateMenuBarHeight();
-
-                window.addEventListener("resize", () => {
-                    updateMenuBarHeight();
-                });
-
-                // Load Sidebar content into mobile menu
-                $.ajax({
-                    type: "get",
-                    url: "<?= base_url('dashboard/sidemenu') ?>",
-                    success: (result) => {
-                        var mobileContent = document.getElementById("mobile-menu-content");
-                        if (mobileContent) mobileContent.innerHTML = result;
-                    },
-                    error: (error) => {
-                        console.error("Error loading mobile menu:", error);
-                    }
-                });
-            });
-        </script>
-
-        <div class="row">
-            <div class="col-md-2 border-bottom ps-gray py-3 ps-logo">
-                <?= view('pslogo'); ?>
-            </div>
-            <div id="search-bar" class="col-md-10 border-bottom d-flex align-items-center justify-content-between px-4">
-                <?= view('topmenu'); ?>
-            </div>
-        </div>
-
-        <div class="row" style="height: calc(100vh - 72px);">
-            <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray border-end">
-                <?= view('sidemenu'); ?>
+            <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
             </div>
 
-            <div class="col-md-10 py-4 px-5">
+            <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-4" style="background: #0f172a;">
+            </div>
+
+        </div><!-----------top-bar-end----------------------->
+
+
+        <div class="main-body-row"><!----------main-navbar----------->
+
+            <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
+            </div><!-----------side-bar-end-------------->
+
+            <div id="main-content-area" class="col-md-10 main-content-area py-4 px-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
@@ -236,45 +290,41 @@
                     </nav>
                 </div>
 
-                <div style="overflow:auto; height: 75vh;" class="bg-white rounded shadow-sm">
-                    <table class="table table-hover mb-0">
-                        <thead class="ps-gray sticky-top">
+                <div class="table-container-premium">
+                    <table class="custom-table-premium">
+                        <thead>
                             <tr>
                                 <th>S.No</th>
                                 <th>Member Name</th>
                                 <th>Member ID</th>
                                 <th>Request Date</th>
-                                <th class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($requests)): ?>
                                 <?php foreach ($requests as $index => $req): ?>
-                                    <tr>
-                                        <td><?= $index + 1 ?></td>
-                                        <td class="fw-bold"><?= $req->MemberName ?></td>
-                                        <td><?= $req->Familymembershipid ?></td>
-                                        <td><?= date('d-M-Y H:i', strtotime($req->created_at)) ?></td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm table-btn rounded-circle"
+                                    <tr onclick='viewRequest(<?= json_encode($req) ?>)'>
+                                        <td class="fw-bold text-muted"><?= $index + 1 ?></td>
+                                        <td class="fw-semibold text-primary"><?= $req->MemberName ?></td>
+                                        <td><span class="badge bg-light text-dark border"><?= $req->Familymembershipid ?></span></td>
+                                        <td class="text-secondary"><?= date('d-M-Y H:i', strtotime($req->created_at)) ?></td>
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            <button class="btn-action-premium btn-view-premium"
                                                 onclick='viewRequest(<?= json_encode($req) ?>)' title="View Diff">
-                                                <i class="fa-solid fa-eye text-primary"></i>
+                                                <i class="fa-solid fa-eye"></i>
                                             </button>
                                             <form action="<?= base_url('approve-member-update') ?>" method="POST"
                                                 class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-success border-0 rounded-circle ms-2"
-                                                    title="Approve">
+                                                <button type="submit" class="btn-action-premium btn-approve-premium" title="Approve">
                                                     <i class="fa-solid fa-check"></i>
                                                 </button>
                                             </form>
                                             <form action="<?= base_url('reject-member-update') ?>" method="POST"
                                                 class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
                                                 <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger border-0 rounded-circle ms-2"
-                                                    title="Reject">
+                                                <button type="submit" class="btn-action-premium btn-reject-premium" title="Reject">
                                                     <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </form>
@@ -292,6 +342,55 @@
                 </div>
             </div>
         </div>
+
+        <!-- Global Scripts added at appropriate place -->
+        <script>
+            // Global Mobile Menu Functions
+            function openMobileMenu() {
+                var menu = document.getElementById('custom-mobile-menu');
+                if (menu) menu.style.display = 'block';
+            }
+
+            function closeMobileMenu() {
+                var menu = document.getElementById('custom-mobile-menu');
+                if (menu) menu.style.display = 'none';
+            }
+
+            $(document).ready(function () {
+                // Load components via AJAX to ensure consistency
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/pslogo') ?>",
+                    success: (result) => {
+                        var logoArea = document.getElementById("ps-logo");
+                        if (logoArea) logoArea.innerHTML = result;
+                    }
+                });
+
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/topmenu') ?>",
+                    success: (result) => {
+                        var searchBar = document.getElementById("search-bar");
+                        if (searchBar) searchBar.innerHTML = result;
+                    }
+                });
+
+                $.ajax({
+                    type: "get",
+                    url: "<?= base_url('dashboard/sidemenu') ?>",
+                    success: (result) => {
+                        var menuBar = document.getElementById("menu-bar");
+                        var mobileContent = document.getElementById("mobile-menu-content");
+                        if (menuBar) menuBar.innerHTML = result;
+                        if (mobileContent) mobileContent.innerHTML = result;
+                    },
+                    error: (error) => {
+                        console.error("Error loading menus:", error);
+                    }
+                });
+            });
+        </script>
     </div>
 
     <!-- View Comparison Modal -->

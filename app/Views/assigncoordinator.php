@@ -12,7 +12,8 @@
     .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
     .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -21,12 +22,12 @@
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -188,9 +189,32 @@
       }    
       
       .assigncoordfilter{
-        border:5px solid rgb(23, 23, 184);
         row-gap:20px;
-        border-radius:15px;
+      }
+      .assign-card {
+        border-radius: 12px;
+        border: 1px solid #e3e6f0;
+        border-top: 4px solid rgb(0, 123, 255);
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .assign-card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        padding: 15px 20px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        align-items: center;
+      }
+      .assign-card-header h4 {
+        margin: 0;
+        font-weight: 600;
+        color: #007bff;
+        font-size: 1.2rem;
+      }
+      .assign-card-body {
+        padding: 20px;
       }
 
       .assigncoordfilter input,select{
@@ -349,44 +373,58 @@
         scrollbar-color: #888 #f1f1f1;
       }
 
-      /* Hide default menu bar on mobile */
+      /* Fixed Premium Layout */
+      html, body { height: 100%; margin: 0; overflow: hidden; }
+      .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+      .top-navbar-row { height: auto; min-height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; flex-wrap: wrap; align-items: stretch; margin: 0; border-bottom: 1px solid #1e293b; }
+      .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; width: 100%; }
+      #menu-bar { height: 100%; overflow-y: auto; flex-shrink: 0; padding: 0; }
+      .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
       @media screen and (max-width: 768px) {
-          #menu-bar {
-              display: none;
-          }
+          #menu-bar { display: none; }
+          .main-body-row { flex-direction: column; overflow: auto; }
+          .main-content-area { width: 100%; overflow: visible; }
+          html, body { overflow: auto; height: auto; }
+          .layout-container { height: auto; }
+          #ps-logo, #search-bar { width: 100% !important; }
       }
     </style>
 </head>
 <body>
         
-<div id="assigncoordpage" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
+<div id="assigncoordpage" class="container-fluid layout-container p-0">
   <?= view('notification_toast') ?>
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        
-
+        <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
         </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
+        <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
         </div>
         </div><!-----------top-bar-end----------------------->
 
-        <div class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
          
               
          </div><!-----------side-bar-end-------------->
             
-         <div id="changepage" style="overflow-y:auto;height:calc(100vh - 80px);overflow-x:hidden;" class="col-md-10 px-5 pb-5"><!-----------main-dashboard------------------------->
-
+         <div id="changepage" class="col-md-10 main-content-area px-5"><!-----------main-dashboard------------------------->
+         <?php 
+         $tn_id = "";
+         if(isset($states)){
+            foreach($states as $state){
+               if($state->state_title == "Tamil Nadu"){
+                  $tn_id = $state->state_id;
+                  break;
+               }
+            }
+         }
+         ?>
          <div class="pb-4">
          <div id="assigncoordalert">
 
@@ -397,10 +435,13 @@
          </div>
 
          <div><!-------------assign-coord-start------------->      
+         <div class="assign-card mb-4">
+         <div class="assign-card-header">
+            <h4><i class="fa-solid fa-user-plus me-2"></i>Assign Coordinator</h4>
+         </div>
+         <div class="assign-card-body">
+         <form class="row assigncoordfilter" Autocomplete="off" onsubmit="return validateAssigncoordinator()" method="POST" action="<?=base_url("assignCoordinatorsfortaluk")?>">
          
-         <form class="row assigncoordfilter py-3" Autocomplete="off" onsubmit="return validateAssigncoordinator()" method="POST" action="<?=base_url("assignCoordinatorsfortaluk")?>">
-         <span class="h3 ms-4">Assign Coordinator:</span>
-
          <div id="searchmember" class="col-md-3 position-relative"><!----------member-search-start------->
             <label class="container-fluid pb-1" for="membername">Search Member
             <input onkeyup="getMemberdata(this)" type="text" name="membername" class="border w-100" id="membername" required>
@@ -410,18 +451,19 @@
             <input hidden type="text" name="assignername" value="<?=session()->get("Kaadaisoft_userName")?>" class="border w-100" id="assignername" required>
             </label>
             <div id="limitcoorderror" style="color:red;" class="d-flex"></div>
-            <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:2;" id="searchmemberdata" class="bg-white border list-unstyled rounded-3 px-1 py-2">
+            <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:9999;" id="searchmemberdata" class="bg-white border list-unstyled rounded-3 px-1 py-2">
             </ul>
           </div><!---------------member-search-end---------------->
 
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateid">State:<br>
            <select onchange = "getDistricts(this)" class="container-fluid border rounded" name="stateid" id="stateid" required>
            <option value=''>Choose State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -465,22 +507,29 @@
             </label>
             </div><!------------select-villages-end----------->
 
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Assign</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn ps-btn text-white w-100">Assign</button></div>
            </form>
+         </div>
+         </div>
          </div><!-------------------assign-coord-filter-end----------------->
 
          <div class="mt-4"><!-------------status-filter-start------------->      
+         <div class="assign-card mb-4" style="border-top-color: #28a745;">
+         <div class="assign-card-header">
+            <h4 style="color: #28a745;"><i class="fa-solid fa-arrows-rotate me-2"></i>Reassign Coordinator</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="statusfilter" class="row assigncoordfilter" Autocomplete="off">
          
-         <form id="statusfilter" class="row assigncoordfilter py-3" Autocomplete="off">
-         <span class="h3 ms-4">Reassign Coordinator:</span>
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateidremove">State:<br>
            <select onchange = "getDistrictsforremove(this)" class="container-fluid border rounded" name="stateid" id="stateidremove" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -523,22 +572,29 @@
             </div>
             </label>
             </div>     <!------------select-villages-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Status</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-success text-white w-100">Status</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------status-filter-end----------------->
 
          <div class="mt-4"><!-------------add-village-filter-start------------->      
+         <div class="assign-card mb-4" style="border-top-color: #17a2b8;">
+         <div class="assign-card-header">
+            <h4 style="color: #17a2b8;"><i class="fa-solid fa-plus-square me-2"></i>Add Village</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="addvillageform" action="<?=base_url("AdminDashboard/addVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off">
          
-         <form id="addvillageform" action="<?=base_url("AdminDashboard/addVillage")?>" method="post" class="row assigncoordfilter py-3" Autocomplete="off">
-         <span class="h3 ms-4">Add Village:</span>
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateidadd">State:<br>
            <select onchange="getDistrictsforadd(this)" class="container-fluid border rounded" name="state" id="stateidadd" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -576,21 +632,29 @@
            <input type="text" name="village" class="container-fluid border rounded" id="villagenameadd" required placeholder="Enter new village">
             </label>
             </div>     <!------------village-input-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn ps-btn text-white">Add Village</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-info text-white w-100">Add Village</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------add-village-filter-end----------------->
 
          <div class="mt-4"><!-------------remove-village-filter-start------------->
-         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter py-3" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
-         <span class="h3 ms-4">Remove Village:</span>
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="assign-card mb-4" style="border-top-color: #dc3545;">
+         <div class="assign-card-header">
+            <h4 style="color: #dc3545;"><i class="fa-solid fa-trash-alt me-2"></i>Remove Village</h4>
+         </div>
+         <div class="assign-card-body">
+         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
+         
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateiddelete">State:<br>
            <select onchange="getDistrictsfordelete(this)" class="container-fluid border rounded" name="state" id="stateiddelete" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -628,8 +692,10 @@
            </select>
             </label>
             </div>     <!------------village-choose-end----------->
-            <div class="col-md-3 mb-3"><button type="submit" class="btn btn-danger text-white">Remove Village</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-danger text-white w-100">Remove Village</button></div>
            </form>
+          </div>
+         </div>
          </div><!-------------------remove-village-filter-end----------------->
          
          <div style="height: 100px;"></div><!-----------spacer----------->
@@ -1183,6 +1249,13 @@ function closeMobileMenu() {
         resultbox.style.display = "none";
     }
   } 
+
+  $(document).ready(function(){
+      if(document.getElementById('stateid')) getDistricts(document.getElementById('stateid'));
+      if(document.getElementById('stateidremove')) getDistrictsforremove(document.getElementById('stateidremove'));
+      if(document.getElementById('stateidadd')) getDistrictsforadd(document.getElementById('stateidadd'));
+      if(document.getElementById('stateiddelete')) getDistrictsfordelete(document.getElementById('stateiddelete'));
+  });
 
   function getDistrictsforadd(state){
     let stateid = state.value;

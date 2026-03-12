@@ -636,13 +636,16 @@ public function change_password() {
              return "Manager not found."; 
         }
         
+        $family_members = $this->membersModel->getFamilyMembers($id);
+        
         return view("updatemanager", [
             "manager" => $manager,
             "states" => $states,
             "districts" => $districts,
             "taluks" => $taluks,
             "panchayats" => $panchayats,
-            "villages" => $villages
+            "villages" => $villages,
+            "family_members" => $family_members
         ]);
     }
 
@@ -738,7 +741,10 @@ public function change_password() {
 
         $upcoming_head_id = $this->request->getPost("upcoming_head-update");
         if (!empty($upcoming_head_id)) {
-            $data['MemberRole'] = 'Old Head'; 
+            // Trigger automatic relationship mapping for other members
+            $old_head_new_role = $this->membersModel->autoUpdateFamilyRoles($id, $upcoming_head_id);
+            
+            $data['MemberRole'] = $old_head_new_role; 
             $this->db->table('kaadaimembers')->where('Familymembershipid', $upcoming_head_id)->update(['MemberRole' => 'Head']);
         }
 
@@ -778,7 +784,7 @@ public function change_password() {
              }
         }
         
-        return redirect()->to('admindashboard');
+        return redirect()->back();
     }
 
 

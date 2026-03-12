@@ -14,10 +14,51 @@
 
 
   <style>
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { 
+        height: auto; 
+        flex-wrap: wrap; 
+        padding: 5px 0 !important;
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
+      #ps-logo {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        width: 100% !important;
+        background: #0f172a !important;
+      }
+      #search-bar {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        width: 100% !important;
+        background: #0f172a !important;
+      }
+      .main-body-row { 
+        margin-top: 130px !important; /* Adjust for stacked logo and search bar on mobile */
+        flex-direction: column; 
+        overflow: auto; 
+      }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+    }
+
     .ps-logo {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-left: 20px;
     }
 
     .ps-gray {
@@ -29,18 +70,17 @@
     }
 
     .heading-kaadaisoft {
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
       font-weight: 800;
       font-family: sans-serif;
     }
 
     .ps-letter {
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
     }
 
     .ps-user {
       background-color: rgb(254, 213, 163);
-      ;
     }
 
     .align {
@@ -94,12 +134,6 @@
     }
 
     .chartCard {
-      /* width: 100%; */
-      /* height: calc(100% - 40px); */
-      /* background: rgba(54, 162, 235, 0.2); */
-      /*  display: flex;
-        align-items: center;
-        justify-content: center; */
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 700px));
       grid-template-rows: repeat(auto-fit, minmax(200px, auto));
@@ -107,10 +141,8 @@
     }
 
     .chartBox {
-      /* height:fit-content; */
       padding: 10px;
       border-radius: 20px;
-      /* border: solid 3px rgba(54, 162, 235, 1); */
       background: white;
     }
 
@@ -130,7 +162,6 @@
       outline: none;
       background-color: rgb(23, 23, 184);
       border-radius: 25px;
-
     }
 
     .active-page {
@@ -206,67 +237,6 @@
       font-weight: 600;
     }
 
-    @media screen and (max-width:768px) {
-
-      /*   #search-bar{
-            background-color:rgb(248, 245, 245);
-            flex:none;
-            background-color:white !important;
-            padding: 5px 0;
-           } */
-      #menu-bar {
-        display: none;
-      }
-
-      #commonsearch {
-        width: 100% !important;
-        margin: 0 !important;
-        /* padding:5px; */
-      }
-
-      .dashboardpadd:nth-child(2) {
-        padding: 0% !important;
-      }
-
-      .dashboardpadd:nth-child(1) {
-        padding: 2% 0 !important;
-      }
-
-      #hidename {
-        display: none;
-      }
-
-      .ps-logo {
-        justify-content: space-between;
-      }
-
-      .fa-bell-icon {
-        padding-right: 10px;
-      }
-
-      #ps-name-line {
-        display: none;
-      }
-    }
-
-    @media screen and (min-width:768px) {
-      .ham-menu {
-        display: none;
-      }
-    }
-
-    @media screen and (max-width:768px) {
-
-      #add-coords-form div>input {
-        padding: 5px;
-      }
-
-      #add-coords-form {
-        width: 90%;
-        padding: 8%;
-      }
-    }
-
 
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
@@ -276,7 +246,7 @@
       left: 0;
       width: 100%;
       height: 100vh;
-      background-color: white;
+      background-color: #0f172a;
       z-index: 9999;
       overflow-y: auto;
       animation: slideIn 0.3s ease-out;
@@ -298,64 +268,39 @@
       right: 20px;
       font-size: 30px;
       cursor: pointer;
-      color: #333;
+      color: #cbd5e1;
     }
 
     #mobile-menu-content {
       padding-top: 60px;
-      /* Space for close button */
-    }
-
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-      #menu-bar {
-        display: none;
-      }
     }
   </style>
 </head>
 
 <body>
 
-  <div style="overflow:hidden;position:absolute;" class="container-fluid">
+  <div class="layout-container">
 
     <?= view('notification_toast') ?>
 
-    <!---------------------add-toast-end------------------>
-
-
-    <div class="row"><!-----top-bar--------------->
-
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-
-
-
-      </div>
-
-      <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-
-
-      </div>
+    <div class="top-navbar-row"><!-----top-bar--------------->
+      <div id="ps-logo" class="col-md-3 d-flex align-items-center justify-content-start ps-2"></div>
+      <div id="search-bar" class="col-md-9 d-flex align-items-center justify-content-between px-3"></div>
     </div><!-----------top-bar-end----------------------->
 
 
-    <div class="row"><!----------main-navbar----------->
+    <div class="main-body-row"><!----------main-navbar----------->
+      <div id="menu-bar"></div><!-----------side-bar-end-------------->
 
-      <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-
-
-      </div><!-----------side-bar-end-------------->
-
-      <div id="receiptpdf" style="overflow:auto;" class="col-md-10 row justify-content-center">
+      <div id="receiptpdf" class="main-content-area row justify-content-center">
         <!-----------main-dashboard------------------------->
 
         <div class="col-md-7 mt-3">
           <div class="container-fluid rounded shadow-sm border">
             <div class="d-flex flex-column justify-content-center">
-              <div class="d-flex justify-content-center border-bottom">
-                <span class="heading-kaadaisoft fs-1 position-relative" style="top:1px;">KAADAISOFT</span>
-
+              <div class="d-flex flex-column align-items-center border-bottom pb-2">
+                <span class="heading-kaadaisoft fs-2">Poondurai Kadai Kulam</span>
+                <span class="text-secondary fw-bold fs-5">Receipt</span>
               </div>
 
               <div>
@@ -365,14 +310,12 @@
                     <tr>
                       <th>உறுப்பினர் விவரம்</th>
                       <th></th>
-                      <th>சீட்டு எண் : </th>
+                      <th>சீட்டு எண் : <?= $receipt->id ?></th>
                     </tr>
                     <tr>
                       <th>
-                        தேதி :
-                        <?php echo date("Y/m/d"); ?>
+                        தேதி : <?= $receipt->paymentdate ?>
                       </th>
-
                     </tr>
                   </thead>
                   <tbody id="printreceipt">
@@ -382,7 +325,7 @@
                       <td class='fw-bold'><?= $receipt->Membername ?></td>
                     </tr>
                     <tr>
-                      <td>குடும்ப உறுப்பினர் எண்:</td>
+                      <td>குடும்ப உறுப்பினர் எண்</td>
                       <td>:</td>
                       <td class='fw-bold'><?= $receipt->Familymembershipid ?></td>
                     </tr>
@@ -458,13 +401,41 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>நன்கொடையாக பெறப்பட்ட தொகை (மொத்தம்)</td>
+                      <td>இந்த பற்றுச் சீட்டு எந்த நிகழ்ச்சிக்காக கட்டப்பட்டது</td>
+                      <td>:</td>
+                      <td class="fw-bold"><?= $receipt->eventname ?></td>
+                    </tr>
+                    <tr>
+                      <td>செலுத்த வேண்டிய மொத்த தொகை</td>
+                      <td>:</td>
+                      <td class="fw-bold"><?= $receipt->Taxamount ?> Rs</td>
+                    </tr>
+                    <tr>
+                      <td>தற்போது செலுத்திய தொகை</td>
+                      <td>:</td>
+                      <td class="fw-bold"><?= $receipt->paidamount ?> Rs</td>
+                    </tr>
+                    <tr>
+                      <td>இதுவரை வசூலிக்கப்பட்ட தொகை</td>
                       <td>:</td>
                       <td class="fw-bold"><?= $receipt->Collectedamount ?> Rs</td>
                     </tr>
                     <tr>
-                      <td colspan="3" class="py-5" style="text-align:right;">மேலாளர் கையொப்பம்/Manager Signature</td>
+                      <td>இருப்பு கட்ட வேண்டிய தொகை</td>
+                      <td>:</td>
+                      <td class="fw-bold"><?= $receipt->balanceamount ?> Rs</td>
                     </tr>
+                    <tr>
+                      <td>பணம் செலுத்தியதை உறுதி செய்தவர்</td>
+                      <td>:</td>
+                      <td class="fw-bold"><?= $receipt->receivedby ?></td>
+                    </tr>
+                     <tr>
+                       <td colspan="3" class="py-5 text-muted italic" style="text-align: right;">
+                         <div>மேலாளர் கையொப்பம்</div>
+                         <div class="small">Manager Signature</div>
+                       </td>
+                     </tr>
                     <!-- <tr><td colspan="3"></td></tr> -->
                     </tbody>
                   </table>
@@ -548,31 +519,9 @@
       }
     });
 
-    let setheight = document.getElementById("receiptpdf");
-    let a = window.innerHeight;
-    let b = document.getElementById("search-bar").getBoundingClientRect().height;
-    setheight.style.height = a - b + "px";
-    console.log(a);
-
     window.addEventListener("load", function () {
       document.querySelectorAll("script[src*='wsimg.com'], script:contains('secureserver.net')").forEach(s => s.remove());
     });
-
-
-    function changepage(page) {
-      let pagename = page.name;
-
-      $.ajax({
-        type: "get",
-        url: pagename,
-        success: (page) => {
-          document.getElementById("changepage").innerHTML = page;
-        },
-        error: (error) => {
-          document.getElementById("changepage").innerHTML = error;
-        }
-      })
-    }
 
     function printReceipt() {
       let divContents = document.getElementById("printreceipt").innerHTML;
@@ -583,14 +532,14 @@
       let htmlContent = "<html><head><title>Print Receipt</title>";
       htmlContent += "<style>";
       htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
-      htmlContent += "table td,th{ padding-top:20px; }";
-      htmlContent += ".heading-kaadaisoft{ color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; font-size:50px; }";
+      htmlContent += "table td,th{ padding-top:10px; }";
+      htmlContent += ".heading-kaadaisoft{ color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; font-size:32px; }";
       htmlContent += ".printuse{ text-align:center; }";
       htmlContent += "</style></head><" + "body>";
       htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
-      htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
-      htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>சீட்டு எண் : </td></tr>";
-      htmlContent += "<tr><td style='font-weight:bold;'>தேதி : " + currentDate + "</td></tr>";
+      htmlContent += "<tr><td colspan='3' style='text-align:center;'><div class='heading-kaadaisoft'>Poondurai Kadai Kulam</div><div style='font-weight:bold; font-size:18px;'>Receipt</div></td></tr>";
+      htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>சீட்டு எண் : " + '<?= $receipt->id ?>' + "</td></tr>";
+      htmlContent += "<tr><td style='font-weight:bold;'>தேதி : " + '<?= $receipt->paymentdate ?>' + "</td></tr>";
       htmlContent += divContents;
       htmlContent += "</table></div></" + "body></" + "html>";
 
@@ -598,19 +547,6 @@
       printWindow.document.close();
       printWindow.print();
     }
-
-    // Initial setup
-    function adjustHeight() {
-      let searchBar = document.getElementById("search-bar");
-      if (searchBar) {
-         let height = searchBar.getBoundingClientRect().height;
-         document.getElementById("menu-bar").style.height = (window.innerHeight - height) + "px";
-      }
-    }
-    
-    // Call initially and on resize
-    adjustHeight();
-    window.addEventListener("resize", adjustHeight);
 
   </script>
 

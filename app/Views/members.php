@@ -29,13 +29,13 @@
       }
 
       .heading-kaadaisoft {
-         color: rgb(120, 50, 186);
+         color: rgb(0, 123, 255);
          font-weight: 800;
          font-family: sans-serif;
       }
 
       .ps-letter {
-         background-color: rgb(120, 50, 186);
+         background-color: rgb(0, 123, 255);
       }
 
       .ps-user {
@@ -187,11 +187,12 @@
       }
 
       #members-modal-hide {
-         position: absolute;
+         position: fixed;
          width: 100%;
          height: 100%;
          top: 0;
          left: -100%;
+         z-index: 2000;
          transition: 0.4s;
          transition-timing-function: ease;
       }
@@ -242,11 +243,12 @@
 
 
       #updatemember-modal-hide {
-         position: absolute;
+         position: fixed;
          width: 100%;
          height: 100%;
          top: 0;
          left: -100%;
+         z-index: 2000;
          transition: 0.4s;
          transition-timing-function: ease;
       }
@@ -257,9 +259,57 @@
          overflow: hidden;
       }
 
-      .active-members {
+      /* .active-members {
          background-color: rgb(230, 230, 230);
          font-weight: 600;
+      } */
+      .custom-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0 !important;
+        margin-top: 20px;
+        background: white;
+      }
+      
+      .custom-table thead th {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 16px !important;
+        border: none !important;
+        text-align: center;
+        vertical-align: middle;
+      }
+      
+      .custom-table tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      
+      .custom-table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: inset 4px 0 0 #3b82f6;
+      }
+      
+      .custom-table td {
+        padding: 16px !important;
+        vertical-align: middle;
+        border: none !important;
+        color: #334155;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .custom-table tbody tr:last-child td {
+        border-bottom: none !important;
       }
 
       .table-btn {
@@ -267,7 +317,7 @@
       }
 
       .member-text {
-         color: rgb(120, 50, 186);
+         color: rgb(0, 123, 255);
       }
 
       .updatemember {
@@ -281,7 +331,7 @@
       .updatetooltip {
          visibility: hidden;
          width: max-content;
-         background-color: rgb(120, 50, 186);
+         background-color: rgb(0, 123, 255);
          color: white;
          border-radius: 6px;
          padding: 5px 10px;
@@ -298,7 +348,7 @@
          right: 50%;
          border: 7px;
          border-style: solid;
-         border-color: transparent transparent rgb(120, 50, 186) transparent;
+         border-color: transparent transparent rgb(0, 123, 255) transparent;
       }
 
       .updatemember:hover .updatetooltip {
@@ -308,7 +358,7 @@
       .trashtooltip {
          visibility: hidden;
          width: max-content;
-         background-color: rgb(120, 50, 186);
+         background-color: rgb(0, 123, 255);
          ;
          color: white;
          border-radius: 6px;
@@ -326,7 +376,7 @@
          right: 50%;
          border: 7px;
          border-style: solid;
-         border-color: transparent transparent rgb(120, 50, 186);
+         border-color: transparent transparent rgb(0, 123, 255);
          transparent;
       }
 
@@ -505,58 +555,65 @@
           padding-top: 60px; /* Space for close button */
       }
       
-      /* Hide default menu bar on mobile */
+      /* Fixed Premium Layout */
+      html, body { height: 100%; margin: 0; overflow: hidden; }
+      .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+      .top-navbar-row { height: auto; min-height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; flex-wrap: wrap; align-items: stretch; margin: 0; border-bottom: 1px solid #1e293b; }
+      .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; width: 100%; }
+      #menu-bar { height: 100%; overflow-y: auto; flex-shrink: 0; padding: 0; }
+      .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
       @media screen and (max-width: 768px) {
-          #menu-bar {
-              display: none;
+          .top-navbar-row { 
+              position: fixed;
+              top: 0;
+              width: 100%;
+              z-index: 1050;
+              flex-direction: column;
           }
-          #pageheight {
-            position: relative !important;
-            height: auto !important;
-            overflow: visible !important;
+          .main-body-row { 
+              margin-top: 130px !important; /* Adjust for stacked top bar elements */
+              flex-direction: column; 
+              overflow: auto; 
           }
-          #pagecontrol {
-            max-height: none !important;
-            overflow: visible !important;
-          }
-          div[style*="height: 75vh"] {
-            height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-          }
+          #menu-bar { display: none; }
+          .main-content-area { width: 100%; overflow: visible; }
+          html, body { overflow: auto; height: auto; }
+          .layout-container { height: auto; }
+          #ps-logo, #search-bar { width: 100% !important; }
       }
     </style>
 </head>
 
 <body>
 
-   <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+   <div id="pageheight" class="container-fluid layout-container p-0">
 
       <?= view('notification_toast') ?>
 
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+         <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
 
          </div>
 
-         <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+         <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
 
          </div>
 
       </div><!-----------top-bar-end----------------------->
 
 
-      <div class="row min-vh-100"><!----------main-navbar----------->
+      <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray min-vh-100"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
 
 
          </div><!-----------side-bar-end-------------->
 
-         <div id="pagecontrol" class="col-md-10">
+         <div id="main-dashboard-content" class="col-md-10 main-content-area">
             <!-----------main-dashboard------------------------->
 
             <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-md-end justify-content-center memberpadd">
@@ -585,12 +642,27 @@
 
             <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
              <div id="bulk-upload-segment" class="container-fluid px-4 pt-3" style="display: none;">
-                <div class="ps-gray p-3 border rounded shadow-sm d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-                   <h6 class="mb-0 fw-bold">Upload Members Bulk Data</h6>
-                   <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="d-flex flex-column flex-sm-row align-items-center gap-2 w-100 w-md-auto">
-                       <input type="file" class="form-control" name="file" id="file" required style="max-width: 100%;">
-                       <button class="btn btn-primary px-4" type="submit">Upload</button>
-                   </form>
+                <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                   <div class="card-header bg-info text-white border-0 py-3">
+                      <h5 class="mb-0 fw-bold"><i class="fas fa-file-upload me-2 border p-1 rounded bg-white text-info" style="font-size: 0.8rem;"></i>Upload Members Bulk Data</h5>
+                   </div>
+                   <div class="card-body bg-white p-4">
+                      <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+                          <div class="col-md-9">
+                              <label class="form-label fw-bold text-muted small">Select Excel File (.xlsx, .xls)</label>
+                              <input type="file" class="form-control" name="file" id="file" required accept=".xlsx, .xls">
+                          </div>
+                          <div class="col-md-3">
+                              <button class="btn btn-primary w-100 fw-bold shadow-sm" type="submit"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Data</button>
+                          </div>
+                      </form>
+                      <div class="mt-3 small text-muted">
+                        <i class="fas fa-info-circle me-1 text-info"></i> Please ensure your Excel file matches the required template format before uploading. 
+                        <a href="<?= base_url('bulk_upload/download_sample') ?>" class="text-primary fw-bold text-decoration-none ms-2">
+                            <i class="fas fa-download me-1"></i>Download Sample Format
+                        </a>
+                      </div>
+                   </div>
                 </div>
              </div>
              <?php endif; ?>
@@ -775,28 +847,29 @@
              <?php endif; ?>
 
 
-            <div style="overflow-x:auto; height: 75vh;" class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
-               <table class="table table-responsive table-bordered">
-                  <thead <?php if (count($members) == 0) {
-                     echo "hidden";
-                  } ?>>
-                     <caption id="memberTotalCount" class="fw-bold" style="caption-side: top">Total Members: <?php echo count($members) ?>
-                     </caption>
-                     <tr style="font-size:18px;" class="ps-gray">
-                        <th>S.No</th>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>District</th>
-                        <th>Taluk</th>
-                        <th>Panchayat</th>
-                        <th class="text-center">Actions</th>
-                     </tr>
-                  </thead>
-                  <tbody id="ps-members">
+            <div class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
+               <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;" id="memberTotalCountHolder">Total Members: <span class="badge bg-primary rounded-pill"><?php echo count($members) ?></span></div>
+               <div class="table-responsive">
+                  <table class="table custom-table">
+                     <thead <?php if (count($members) == 0) {
+                        echo "hidden";
+                     } ?>>
+                        <tr>
+                           <th>S.No</th>
+                           <th>User ID</th>
+                           <th>Name</th>
+                           <th>Mobile</th>
+                           <th>District</th>
+                           <th>Taluk</th>
+                           <th>Panchayat</th>
+                           <th class="text-center">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody id="ps-members">
 
-                  </tbody>
-               </table>
+                     </tbody>
+                  </table>
+               </div>
 
             </div> <!----------------table-end------->
 
@@ -1160,18 +1233,20 @@
 
          data.forEach(value => {
             html += `
-            <tr>
-                    <td style='font-weight:500;'>${i}</td>
+            <tr style="cursor: pointer;" onclick="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')">
+                    <td class='ps-4'>${i}</td>
                     <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td style='font-weight:500;'>${value.Name}</td>
-                    <td style='font-weight:500;'>${value.Phonenumber}</td>
-                    <td style='font-weight:500;'>${value.District}</td>
-                    <td style='font-weight:500;'>${value.Taluk}</td>
-                    <td style='font-weight:500;'>${value.Panchayat}</td>
-                    <td class='d-flex justify-content-evenly'>
-                    <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
-                    <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <td class='fw-bold text-dark'>${value.Name}</td>
+                    <td>${value.Phonenumber}</td>
+                    <td>${value.District}</td>
+                    <td>${value.Taluk}</td>
+                    <td>${value.Panchayat}</td>
+                    <td onclick="event.stopPropagation();">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
+                            <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" class='btn btn-sm btn-outline-danger shadow-sm rounded-circle trashcoord' style='width:32px;height:32px;padding:0;'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
+                            <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary shadow-sm rounded-circle' style='width:32px;height:32px;padding:0;' data-bs-toggle='tooltip' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                        </div>
                     </td>
             </tr>
         `;
@@ -1220,7 +1295,7 @@
           }
           setUpPagination(paginationHtml);
           renderMembers(membersData.slice(0, 10), 0);
-          document.getElementById('memberTotalCount').innerText = "Total Members: " + membersCount;
+          document.getElementById('memberTotalCountHolder').innerHTML = `Total Members: <span class="badge bg-primary rounded-pill">${membersCount}</span>`;
       }
 
       function setUpPagination(html) {

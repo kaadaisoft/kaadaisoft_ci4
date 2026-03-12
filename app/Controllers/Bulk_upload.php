@@ -4,6 +4,8 @@ namespace App\Controllers;
 use App\Models\Bulk_upload_model;
 use CodeIgniter\Controller;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Exception;
 
 // require FCPATH . 'vendor/autoload.php'; // Usually autoloaded by Composer via framework, but keeping if standalone composer
@@ -25,6 +27,50 @@ class Bulk_upload extends BaseController {
             return redirect()->to('admindashboard');
         }
         return view('bulk_upload_view');
+    }
+
+    public function download_sample() {
+        $filename = "sample_members_bulk_upload_format.xlsx";
+        $headers = ['Name', 'Phonenumber', 'State', 'District', 'Taluk', 'Panchayat', 'Village', 'Street', 'Doornumber', 'Pincode', 'Aadharnumber', 'Approvedstatus'];
+        
+        $sample_data = [
+            ['John Doe', '9876543210', 'Tamil Nadu', 'Erode', 'Erode', 'Panchayat Name', 'Village Name', 'Main Street', '123/A', '638001', '123456789012', 'Verified'],
+            ['Jane Smith', '9123456789', 'Tamil Nadu', 'Coimbatore', 'Coimbatore North', 'Example Panchayat', 'Example Village', 'Second Street', '45', '641001', '987654321098', 'Pending']
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Add headers
+        $column = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($column . '1', $header);
+            $column++;
+        }
+
+        // Add sample data
+        $row_index = 2;
+        foreach ($sample_data as $data_row) {
+            $column = 'A';
+            foreach ($data_row as $cell_value) {
+                $sheet->setCellValue($column . $row_index, $cell_value);
+                $column++;
+            }
+            $row_index++;
+        }
+
+        // Auto-size columns
+        foreach (range('A', $column) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit();
     }
 
     public function upload_file() {

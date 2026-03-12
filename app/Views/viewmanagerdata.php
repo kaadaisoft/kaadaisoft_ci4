@@ -19,7 +19,7 @@
      }
 
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
@@ -29,7 +29,7 @@
      }
 
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
 
      .ps-user{
@@ -122,10 +122,379 @@
       }
 
       .dead-member-row, .dead-member-row td, .dead-member-row th {
-        background-color: #f5f5f5 !important;
-        color: #999 !important;
-        opacity: 0.7;
+        background-color: #f1f5f9 !important;
+        color: #94a3b8 !important;
+        opacity: 0.65;
+        pointer-events: none;
+        transition: none !important;
       }
+      .dead-member-row:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        background-color: #f1f5f9 !important;
+      }
+      /* Family Tree CSS - Premium Design with Arrows */
+      .family-tree-container {
+        padding: 60px 20px;
+        background-color: #f8fafc;
+        background-image: 
+            radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+        background-size: 30px 30px; /* Clean dot grid background */
+        overflow-x: auto;
+        min-height: 600px;
+        border-radius: 0 0 20px 20px;
+        position: relative;
+        box-shadow: inset 0 0 60px rgba(0,0,0,0.02);
+        display: block;
+        width: 100%;
+        text-align: center; /* Center the fit-content tree */
+      }
+      .tree {
+        display: inline-block;
+        min-width: 100%;
+        padding-bottom: 50px;
+      }
+      .tree ul {
+        padding-top: 40px;
+        position: relative;
+        transition: all 0.5s;
+        display: flex;
+        justify-content: center;
+        padding-left: 0;
+        width: fit-content;
+        margin: 0 auto; /* Center when smaller than container */
+      }
+      .tree li {
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: 40px 15px 0 15px;
+        transition: all 0.5s;
+      }
+      
+      /* Horizontal Lines */
+      .tree li::before, .tree li::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 50%;
+        border-top: 3px solid #475569; /* Darker and thicker */
+        width: 50%;
+        height: 40px;
+        z-index: 1;
+      }
+      .tree li::after {
+        right: auto;
+        left: 50%;
+        border-left: 3px solid #475569; /* Darker and thicker */
+      }
+      
+      /* Vertical Connector with Arrow */
+      .tree ul ul::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        border-left: 3px solid #475569; /* Darker and thicker */
+        width: 0;
+        height: 40px;
+      }
+
+      /* Distinct Downward Arrow Marker */
+      .tree ul ul::after {
+          content: '';
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          border-top: 10px solid #3b82f6;
+          display: block;
+          z-index: 2;
+          filter: drop-shadow(0 2px 2px rgba(59, 130, 246, 0.4));
+      }
+
+      .tree li:only-child::after, .tree li:only-child::before {
+        display: none;
+      }
+      .tree li:only-child {
+        padding-top: 0;
+      }
+      .tree li:first-child::before, .tree li:last-child::after {
+        border: 0 none;
+      }
+      .tree li:last-child::before {
+        border-right: 3px solid #475569;
+        border-top-right-radius: 12px;
+      }
+      .tree li:first-child::after {
+        border-top-left-radius: 12px;
+      }
+
+      .member-card {
+        border: none;
+        padding: 12px;
+        text-decoration: none;
+        color: #1e293b;
+        font-family: 'Outfit', sans-serif;
+        display: inline-block;
+        border-radius: 18px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #ffffff;
+        min-width: 140px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: relative;
+        z-index: 10;
+        border: 1px solid rgba(226, 232, 240, 1);
+        overflow: hidden;
+      }
+
+      /* Colored Top Accent Bar */
+      .member-card::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: #cbd5e1;
+      }
+
+      /* Card Entry Arrow */
+      .tree li > .member-card::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 8px solid #475569; /* Darker arrow */
+          display: block;
+      }
+
+      .tree li:only-child > .member-card::before {
+          display: none;
+      }
+
+      .member-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        border-color: #3b82f6;
+      }
+      
+      .member-card:hover + ul li::after, 
+      .member-card:hover + ul li::before, 
+      .member-card:hover + ul::before, 
+      .member-card:hover + ul ul::before {
+        border-color: #3b82f6 !important;
+      }
+
+      .member-card:hover + ul ul::after {
+          color: #3b82f6;
+      }
+      
+      .member-name {
+        display: block;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 14px;
+        margin: 5px 0;
+        letter-spacing: -0.3px;
+      }
+      .member-role {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      /* Vibrant Role Colors & Card Accents */
+      .member-card:has(.role-head)::after { background: #3b82f6; }
+      .member-card:has(.role-spouse)::after { background: #f43f5e; }
+      .member-card:has(.role-child)::after { background: #22c55e; }
+      .member-card:has(.role-parent)::after { background: #64748b; }
+      .member-card:has(.role-sibling)::after { background: #f97316; }
+      .member-card:has(.role-inlaw)::after { background: #a855f7; }
+      .member-card:has(.role-grand)::after { background: #ea580c; }
+
+      .role-head { 
+        background: #eff6ff; color: #1d4ed8; 
+        border: 1px solid #3b82f6 !important;
+      }
+      .role-spouse { 
+        background: #fff1f2; color: #be123c; 
+        border: 1px solid #f43f5e !important;
+      }
+      .role-child { 
+        background: #f0fdf4; color: #15803d; 
+        border: 1px solid #22c55e !important;
+      }
+      .role-parent { 
+        background: #f8fafc; color: #475569; 
+        border: 1px solid #94a3b8 !important;
+      }
+      .role-sibling { 
+        background: #fff7ed; color: #c2410c; 
+        border: 1px solid #f97316 !important;
+      }
+      .role-inlaw { 
+        background: #faf5ff; color: #7e22ce; 
+        border: 1px solid #a855f7 !important;
+      }
+      .role-grand { 
+        background: #fdfaf9; color: #7c2d12; 
+        border: 1px solid #ea580c !important;
+      }
+
+      .member-img {
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50%;
+        margin-bottom: 5px;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+        background: #f1f5f9;
+        transition: transform 0.3s;
+      }
+      .member-card:hover .member-img {
+          transform: scale(1.1);
+      }
+      .spouse-container {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+        position: relative;
+        padding: 0 20px;
+      }
+      
+      /* Marriage Line Connector */
+      .spouse-container::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 40px;
+          height: 3px;
+          background: #475569; /* Darker marriage line */
+          z-index: 1;
+      }
+      .dead-member { 
+        filter: grayscale(1); 
+        opacity: 0.6; 
+        background: #f8fafc !important; 
+        pointer-events: none;
+        border: 1px dashed #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+      .member-card.dead-member::after {
+        background: #94a3b8 !important;
+      }
+      .tree-dead-badge { 
+        position: absolute; 
+        top: -5px; 
+        right: -5px; 
+        background: #94a3b8; 
+        color: white; 
+        font-size: 8px; 
+        font-weight: 800; 
+        padding: 2px 8px; 
+        border-radius: 12px; 
+        z-index: 20; 
+        text-transform: uppercase;
+      }
+      .dead-badge { display: none; }
+
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1000px;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+
+    @media (max-width: 576px) {
+        .card-header.d-flex {
+            flex-direction: column !important;
+            gap: 15px;
+            align-items: center !important;
+            text-align: center;
+        }
+        .btn-group {
+            width: 100%;
+        }
+        .btn-group .btn {
+            flex: 1;
+            padding: 8px 5px;
+            font-size: 13px;
+        }
+        .family-tree-container {
+            padding: 40px 10px;
+        }
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-action-premium:hover {
+      background: #0f172a;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn-edit-premium { color: #2563eb; background: #eff6ff; }
+    .btn-edit-premium:hover { background: #2563eb; color: #fff; }
     </style>
 </head>
 <body>
@@ -133,7 +502,7 @@
 <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
 
       <div id="side-bar" class="row"><!-----top-bar--------------->
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3"></div>
+      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2"></div>
       <div id="search-bar" class="col-md-10 border-bottom"></div>
       </div><!-----------top-bar-end----------------------->
 
@@ -146,92 +515,258 @@
 
           <?php if(isset($manager)):?>
             <div class="container-fluid px-4 py-4">   
-            <h3 style="font-weight:500;">Manager Details:</h3> 
-            <div class="row mt-4">
-              <div class="col-md-4">
-                  <img style="width:200px;height:200px;object-fit:cover;border-radius:10px;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
-                  
-                  <div style="gap:10px;" class="row mt-4 pb-3 ps-3">
-                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-primary fw-bold" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')">View Documents</button>
-                      <button style="width:fit-content;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('<?=$manager->Familymembershipid?>')">Event Participation</button>
-                      <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-primary fw-bold'>Update Details</button>
-                      <a href="<?= base_url('add_family_member'); ?>" style="width:fit-content;" class="btn btn-primary fw-bold">Add Family Member</a>
-                  </div>
-              </div>  
-              <div class="col-md-8">
-            <table id="manager_data" class="table table-bordered border-dark">
-                <thead>
-                    <tr><th width="30%">Name:</th><td class="text-primary fw-bold"><?=$manager->Name?></td></tr>
-                    <tr><th>Familymembershipid:</th><td class="text-primary fw-bold"><?=$manager->Familymembershipid?></td></tr>
-                    <tr><th style="vertical-align:middle;">Address:</th>
-                        <td>
-                        <ul class="list-unstyled mb-0">
-                        <li><?=$manager->Doornumber?></li>
-                        <li><?=$manager->Street?></li>
-                        <li><?=$manager->Village?></li>
-                        <li><?=$manager->Taluk?></li>
-                        <li><?=$manager->District?> - <?=$manager->Pincode?></li>
-                        <li><?=$manager->State?></li>
-                        </ul>
-                        </td>
-                    </tr>
-                </thead>
-            </table>
-            </div>  
-            </div> 
             
+            <div class="card shadow-sm rounded border-0 mb-5">
+                <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i>Manager Details</h4> 
+                </div>
+                <div class="card-body px-4 py-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
+                            
+                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
+                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$manager->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
+                                <button style="width: 100%; border-radius: 8px;" onclick="showupdatemanagermodal('<?=trim($manager->Familymembershipid)?>')" class='btn btn-outline-warning fw-bold text-dark py-2'><i class="fa-solid fa-user-pen me-2"></i>Update Details</button>
+                                <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                            </div>
+                        </div>  
+                        <div class="col-md-8 mt-4 mt-md-0">
+                            <div class="table-responsive h-100 p-4 bg-light rounded shadow-sm">
+                                <table id="manager_data" class="table table-borderless align-middle mb-0">
+                                    <tbody>
+                                        <tr class="border-bottom border-light">
+                                            <th width="35%" class="text-secondary py-3 fs-6">Name:</th>
+                                            <td class="text-primary fw-bold fs-5 py-3"><?=$manager->Name?></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
+                                            <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$manager->Familymembershipid?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
+                                            <td class="py-3 fw-medium text-dark">
+                                                <ul class="list-unstyled mb-0" style="line-height: 1.8;">
+                                                    <li><i class="fa-solid fa-house fa-fw text-primary me-2"></i> <?=$manager->Doornumber?>, <?=$manager->Street?></li>
+                                                    <li><i class="fa-solid fa-location-dot fa-fw text-primary me-2"></i> <?=$manager->Village?>, <?=$manager->Taluk?></li>
+                                                    <li><i class="fa-solid fa-map-pin fa-fw text-primary me-2"></i> <?=$manager->District?> - <?=$manager->Pincode?></li>
+                                                    <li><i class="fa-solid fa-map fa-fw text-primary me-2"></i> <?=$manager->State?></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
             
             <?php if(isset($family_members) && !empty($family_members)): ?>
-            <div class="row mt-5">
+            <div class="row mt-4">
                 <div class="col-12">
-                    <h4 style="font-weight:500;">Family Members</h4>
-                    <table class="table table-bordered border-dark mt-3">
-                        <thead class="ps-gray">
-                            <tr>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="family_members_body">
-                            <?php 
-                                $role_counts = [];
-                                foreach($family_members as $fm) {
-                                    $role = $fm->MemberRole;
-                                    $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                }
-                                $role_counters = [];
-                                
-                                foreach($family_members as $fm): 
-                                    $dob = new DateTime($fm->Dob);
-                                    $now = new DateTime();
-                                    $age = $now->diff($dob)->y;
-                                    
-                                    $role = $fm->MemberRole;
-                                    $display_role = $role;
-                                    if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                        $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                        $display_role .= '_' . $role_counters[$role];
-                                    }
-                            ?>
-                                <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row' : '' ?>">
-                                    <td><?= $fm->Name ?></td>
-                                    <td><?= $display_role ?></td>
-                                    <td><?= $fm->Gender ?></td>
-                                    <td><?= $age ?></td>
-                                    <td>
-                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                            <button style="width:fit-content;" onclick="showupdatemanagermodal('<?=trim($fm->Familymembershipid)?>')" class='btn btn-sm btn-primary fw-bold'>Edit</button>
-                                        <?php else: ?>
-                                            <button style="width:fit-content;" class='btn btn-sm btn-secondary fw-bold' disabled>Edit</button>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="card shadow-sm border-0 rounded mb-4">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="tableViewBtn" class="btn btn-primary active" onclick="switchView('table')"><i class="fa-solid fa-table me-1"></i> Table View</button>
+                                <button type="button" id="treeViewBtn" class="btn btn-outline-primary" onclick="switchView('tree')"><i class="fa-solid fa-tree me-1"></i> Tree View</button>
+                            </div>
+                        </div>
+                        <div class="card-body p-4" id="tableView">
+                            <div class="table-container-premium">
+                                <table class="custom-table-premium">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Name</th>
+                                            <th>Relationship</th>
+                                            <th>Gender</th>
+                                            <th>Age</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="family_members_body">
+                                        <?php 
+                                            $sno = 1;
+                                            $role_counts = [];
+                                            foreach($family_members as $fm) {
+                                                $role = $fm->MemberRole;
+                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+                                            }
+                                            $role_counters = [];
+                                            
+                                            foreach($family_members as $fm): 
+                                                $dob = new DateTime($fm->Dob);
+                                                $now = new DateTime();
+                                                $age = $now->diff($dob)->y;
+                                                
+                                                $role = $fm->MemberRole;
+                                                $display_role = $role;
+                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                                                    $display_role .= '_' . $role_counters[$role];
+                                                }
+                                        ?>
+                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= !(isset($fm->is_dead) && $fm->is_dead == 1) ? "onclick=\"showupdatemanagermodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
+                                                <td class="fw-bold text-muted"><?= $sno++ ?></td>
+                                                <td class="fw-bold text-dark"><?= $fm->Name ?></td>
+                                                <td><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
+                                                <td>
+                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
+                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
+                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
+                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= $fm->Gender ?>
+                                                </td>
+                                                <td class="fw-medium"><?= $age ?></td>
+                                                <td onclick="event.stopPropagation();">
+                                                    <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
+                                                        <button onclick="showupdatemanagermodal('<?=trim($fm->Familymembershipid)?>')" class='btn-action-premium btn-edit-premium'><i class="fa-solid fa-pen-to-square"></i>Edit</button>
+                                                    <?php else: ?>
+                                                        <button class='btn-action-premium' disabled><i class="fa-solid fa-pen-to-square"></i>Edit</button>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Family Tree View Container -->
+                        <div class="card-body p-0 d-none" id="treeView">
+                            <div class="family-tree-container">
+                                <div class="tree">
+                                    <?php 
+                                        $default_img = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23bdbdbd'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
+                                        
+                                        $g0 = []; // Grand Father / Grand Mother
+                                        $g1 = []; // Father / Mother
+                                        $g2_manager = null; // Head / Husband
+                                        $g2_spouse = null; // Wife
+                                        $g2_siblings = []; // Brother / Sister
+                                        $g3_children = []; // Son / Daughter / In-laws
+                                        
+                                        foreach($family_members as $fm) {
+                                            $role = strtolower(trim($fm->MemberRole));
+                                            if (strpos($role, 'grand') !== false) {
+                                                $g0[] = $fm;
+                                            } else if ($role == 'father' || $role == 'mother' || strpos($role, 'old head') !== false) {
+                                                $g1[] = $fm;
+                                            } else if ($role == 'head') {
+                                                $g2_manager = $fm;
+                                            } else if ($role == 'husband' || $role == 'wife') {
+                                                $g2_spouse = $fm;
+                                            } else if (strpos($role, 'brother') !== false || strpos($role, 'sister') !== false || $role == 'other') {
+                                                $g2_siblings[] = $fm;
+                                            } else if (strpos($role, 'son') !== false || strpos($role, 'daughter') !== false || strpos($role, 'law') !== false) {
+                                                $g3_children[] = $fm;
+                                            }
+                                        }
+
+                                        // Start rendering tree
+                                        if (!empty($g0) || !empty($g1) || $g2_manager || $g2_spouse || !empty($g2_siblings) || !empty($g3_children)):
+                                    ?>
+                                    <ul>
+                                        <li>
+                                            <!-- G0: Oldest Generation -->
+                                            <?php if (!empty($g0)): ?>
+                                                <div class="spouse-container mb-3">
+                                                    <?php foreach($g0 as $gm): ?>
+                                                        <div class="member-card <?= (isset($gm->is_dead) && $gm->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($gm->is_dead) && $gm->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($gm->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                            <?php if(isset($gm->is_dead) && $gm->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                            <img src="<?= (!empty($gm->Memberimage) && file_exists('assets/membersdocuments/'.$gm->Memberimage)) ? base_url('assets/membersdocuments/'.$gm->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                            <span class="member-name"><?= $gm->Name ?></span>
+                                                            <span class="member-role role-grand"><?= $gm->MemberRole ?></span>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <ul>
+                                                <li>
+                                                    <!-- G1: Parents Container -->
+                                                    <?php if (!empty($g1)): ?>
+                                                        <div class="spouse-container mb-3">
+                                                            <?php foreach($g1 as $gp): ?>
+                                                                <div class="member-card <?= (isset($gp->is_dead) && $gp->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($gp->is_dead) && $gp->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($gp->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                                    <?php if(isset($gp->is_dead) && $gp->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                                    <img src="<?= (!empty($gp->Memberimage) && file_exists('assets/membersdocuments/'.$gp->Memberimage)) ? base_url('assets/membersdocuments/'.$gp->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <span class="member-name"><?= $gp->Name ?></span>
+                                                                    <span class="member-role role-parent"><?= $gp->MemberRole ?></span>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!-- G2: Manager & Spouse & Siblings -->
+                                                    <ul>
+                                                        <?php if($g2_manager || $g2_spouse || !empty($g3_children)): ?>
+                                                        <li>
+                                                            <div class="spouse-container">
+                                                                <?php if($g2_manager): ?>
+                                                                    <div class="member-card <?= (isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($g2_manager->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                                        <?php if(isset($g2_manager->is_dead) && $g2_manager->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                                        <img src="<?= (!empty($g2_manager->Memberimage) && file_exists('assets/membersdocuments/'.$g2_manager->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_manager->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <span class="member-name"><?= $g2_manager->Name ?></span>
+                                                                        <span class="member-role role-head"><?= $g2_manager->MemberRole ?></span>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                                
+                                                                <?php if($g2_spouse): ?>
+                                                                    <div class="member-card <?= (isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($g2_spouse->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                                        <?php if(isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                                        <img src="<?= (!empty($g2_spouse->Memberimage) && file_exists('assets/membersdocuments/'.$g2_spouse->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_spouse->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <span class="member-name"><?= $g2_spouse->Name ?></span>
+                                                                        <span class="member-role role-spouse"><?= $g2_spouse->MemberRole ?></span>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            </div>
+
+                                                            <!-- G3: Children & In-laws -->
+                                                            <?php if (!empty($g3_children)): ?>
+                                                                <ul>
+                                                                    <?php foreach($g3_children as $child): 
+                                                                        $c_role = strtolower(trim($child->MemberRole));
+                                                                        $role_class = (strpos($c_role, 'law') !== false) ? 'role-inlaw' : 'role-child';
+                                                                    ?>
+                                                                        <li>
+                                                                            <div class="member-card <?= (isset($child->is_dead) && $child->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($child->is_dead) && $child->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($child->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                                                <?php if(isset($child->is_dead) && $child->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                                                <img src="<?= (!empty($child->Memberimage) && file_exists('assets/membersdocuments/'.$child->Memberimage)) ? base_url('assets/membersdocuments/'.$child->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                                <span class="member-name"><?= $child->Name ?></span>
+                                                                                <span class="member-role <?= $role_class ?>"><?= $child->MemberRole ?></span>
+                                                                            </div>
+                                                                        </li>
+                                                                    <?php endforeach; ?>
+                                                                </ul>
+                                                            <?php endif; ?>
+                                                        </li>
+                                                        <?php endif; ?>
+
+                                                        <?php foreach($g2_siblings as $sib): ?>
+                                                            <li>
+                                                                <div class="member-card <?= (isset($sib->is_dead) && $sib->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($sib->is_dead) && $sib->is_dead == 1) ? '' : "onclick=\"showupdatemanagermodal('".trim($sib->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
+                                                                    <?php if(isset($sib->is_dead) && $sib->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
+                                                                    <img src="<?= (!empty($sib->Memberimage) && file_exists('assets/membersdocuments/'.$sib->Memberimage)) ? base_url('assets/membersdocuments/'.$sib->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <span class="member-name"><?= $sib->Name ?></span>
+                                                                    <span class="member-role role-sibling"><?= $sib->MemberRole ?></span>
+                                                                </div>
+                                                            </li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>
@@ -429,7 +964,7 @@
           let tr = tableBody.getElementsByTagName("tr");
 
           for (let i = 0; i < tr.length; i++) {
-              let tdName = tr[i].getElementsByTagName("td")[0];
+              let tdName = tr[i].getElementsByTagName("td")[1]; // Modified to index 1 as Name is second column
               if (tdName) {
                   let txtValue = tdName.textContent || tdName.innerText;
                   if (txtValue.toLowerCase().indexOf(filter) > -1) {
@@ -440,6 +975,24 @@
               }
           }
       }
+
+    function switchView(view) {
+        if (view === 'table') {
+            document.getElementById('tableView').classList.remove('d-none');
+            document.getElementById('treeView').classList.add('d-none');
+            document.getElementById('tableViewBtn').classList.add('btn-primary', 'active');
+            document.getElementById('tableViewBtn').classList.remove('btn-outline-primary');
+            document.getElementById('treeViewBtn').classList.add('btn-outline-primary');
+            document.getElementById('treeViewBtn').classList.remove('btn-primary', 'active');
+        } else {
+            document.getElementById('tableView').classList.add('d-none');
+            document.getElementById('treeView').classList.remove('d-none');
+            document.getElementById('treeViewBtn').classList.add('btn-primary', 'active');
+            document.getElementById('treeViewBtn').classList.remove('btn-outline-primary');
+            document.getElementById('tableViewBtn').classList.add('btn-outline-primary');
+            document.getElementById('tableViewBtn').classList.remove('btn-primary', 'active');
+        }
+    }
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>

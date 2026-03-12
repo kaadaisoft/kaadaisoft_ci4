@@ -9,58 +9,60 @@
 
 <body>
     <?php if (isset($event)): ?>
-
-        <input type='text' hidden class='form-control input-style p-3' id='name' placeholder='Enter the Event'
-            value='<?= $event->Id ?>' name='eventId' required>
-        <div class='mb-3'>
-            <label for='name' class='form-label'>Event Name</label>
-            <input type='text' readonly onkeyup="validateUpdateevent(this)" class='form-control input-style p-3' id='name'
-                placeholder='Enter the Event' value='<?= $event->EventName ?>' name='eventupdatename' required>
-            <small id="eventupdatenameerror" style="color:red;" class="mt-1 eventimage"></small>
+        <input type='hidden' value='<?= $event->Id ?>' name='eventId'>
+        
+        <div class="mb-4">
+            <label for='name' class="form-label small fw-bold text-muted text-uppercase">Event Name</label>
+            <input type='text' readonly class='form-control input-style bg-light' id='name' 
+                   value='<?= $event->EventName ?>' name='eventupdatename' required>
+            <small id="eventupdatenameerror" class="text-danger mt-1 d-block"></small>
         </div>
-        <div class='form-group mb-3'>
-            <label for='date_from' class='form-label'>Due Date</label>
-            <div class='row'>
-                <div class='col'>
-                    <label for='date_from'>From</label>
-                    <input type='date' class='form-control input-style p-3' onchange="validateDate()" id='update_date_from'
-                        name='event_update_date_from' value='<?= $event->From_date ?>' placeholder='0000-00-00'>
+
+        <div class='mb-4'>
+            <label class="form-label small fw-bold text-muted text-uppercase d-block">Duration</label>
+            <div class='row g-3'>
+                <div class='col-6'>
+                    <label for='update_date_from' class="small text-muted mb-1">From</label>
+                    <input type='date' class='form-control input-style' onchange="validateDate()" id='update_date_from'
+                        name='event_update_date_from' value='<?= $event->From_date ?>' required>
                 </div>
-                <div class='col'>
-                    <label for='date_to'>To</label>
-                    <input type='date' class='form-control input-style p-3' onchange="validateDate()" id='update_date_to'
-                        name='event_update_date_to' value='<?= $event->To_date ?>'>
+                <div class='col-6'>
+                    <label for='update_date_to' class="small text-muted mb-1">To</label>
+                    <input type='date' class='form-control input-style' onchange="validateDate()" id='update_date_to'
+                        name='event_update_date_to' value='<?= $event->To_date ?>' required>
                 </div>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="taxamount" class="form-label">Tax Amount</label>
+        <div class="mb-4">
+            <label for="taxamount" class="form-label small fw-bold text-muted text-uppercase">Tax Amount (₹)</label>
             <input type="number" name="eventupdatetaxamount" value="<?= $event->TaxAmount ?>"
-                class="form-control input-style p-3" id="taxamount" placeholder="Enter Tax amount" required>
-            <small id="eventupdateamounterror" style="color:red;" class="mt-1 eventimage"></small>
+                class="form-control input-style" id="taxamount" placeholder="0.00" required>
+            <small id="eventupdateamounterror" class="text-danger mt-1 d-block"></small>
         </div>
 
-        <div class='d-flex justify-content-center'>
-            <input type='submit' name='eventupdatesubmit' style='border-radius:25px;' value='Save'
-                class='btn btn-primary px-4'>
-        </div>
+        <button type='submit' name='eventupdatesubmit' value="true" class='btn-save-premium'>Save Changes</button>
     <?php endif; ?>
 
     <?php if (isset($id) && isset($eventname)): ?>
-
-        <span class='fs-5' style='color: #2c3e50;'><?= $eventname ?></span>
         <input type='hidden' value='<?= $id ?>' name='id'>
-        <div class='mb-3'>
-            <label for='image' class='form-label'>Image</label>
-            <input type='file' class='form-control input-style file-input p-3' id='image' name='eventupdatebanner'>
-
+        
+        <div class="mb-3 p-3 bg-light rounded-3 border border-dashed text-center">
+            <div class="small text-muted text-uppercase fw-bold mb-1">Current Event</div>
+            <div class="h6 fw-bold m-0 text-primary"><?= $eventname ?></div>
         </div>
-        <div class='d-flex justify-content-center'>
-            <input type='submit' name='eventupdatebannersubmit' style='border-radius:25px;' value='Save'
-                class='btn btn-primary px-4'>
-            <div>
-            <?php endif; ?>
+
+        <div class='mb-4'>
+            <label for='image' class="form-label small fw-bold text-muted text-uppercase">New Banner Image</label>
+            <input type='file' onchange="uploadFile(this)" accept="image/*" class='form-control input-style' id='image' name='eventupdatebanner' required>
+            <div class="mt-2">
+                <span class="text-primary small" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info me-1"></i>Choose a high-quality JPG or PNG.</span>
+            </div>
+            <small id="eventupdatebannererror" class="text-danger mt-1 d-block eventupdatebanner"></small>
+        </div>
+
+        <button type='submit' name='eventupdatebannersubmit' value="true" class='btn-save-premium'>Update Banner</button>
+    <?php endif; ?>
 
 </body>
 

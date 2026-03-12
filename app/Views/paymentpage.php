@@ -27,13 +27,13 @@
     }
 
     .heading-kaadaisoft {
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
       font-weight: 800;
       font-family: sans-serif;
     }
 
     .ps-letter {
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
     }
 
     .ps-user {
@@ -213,7 +213,7 @@
         color: rgb(95, 73, 30);
       } */
     label {
-      /* color: rgb(120, 50, 186); */
+      /* color: rgb(0, 123, 255); */
       font-size: 18px;
       font-weight: 700;
     }
@@ -336,31 +336,183 @@
               display: none;
           }
       }
+
+      /* Fixed Layout Adjustments */
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 70px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-wrap: wrap; }
+      .main-body-row { flex-direction: column; overflow: auto; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+    }
+
+      @media screen and (max-width: 768px) {
+        .top-navbar-row { height: auto; flex-direction: column; }
+        .main-body-row { flex-direction: column; }
+        #menu-bar { display: none; }
+        .main-content-area { width: 100% !important; }
+      }
+
+      /* Modern Table Styling */
+      .table-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 2rem;
+      }
+
+      .custom-table-modern {
+        margin-bottom: 0;
+        width: 100%;
+        min-width: 800px;
+      }
+      .custom-table-modern thead th {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: #f8fafc;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: 2px solid #334155;
+      }
+      .custom-table-modern tbody tr {
+        transition: all 0.2s ease;
+      }
+      .custom-table-modern tbody tr:hover {
+        background-color: #f1f5f9;
+      }
+      .custom-table-modern td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #1e293b;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .btn-pay-modern {
+        background-color: #10b981;
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+      }
+      .btn-pay-modern:hover {
+        background-color: #059669;
+        color: white;
+        transform: translateY(-2px);
+      }
+      
+      .btn-view-modern {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+      }
+      .btn-view-modern:hover {
+        background-color: #2563eb;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* Premium Filter Card Styling */
+      .filter-card-premium {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        padding: 24px;
+        margin-top: 15px;
+      }
+      .filter-card-premium .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .filter-card-premium .form-select,
+      .filter-card-premium .form-control {
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        padding: 10px 14px;
+        box-shadow: none;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        color: #1e293b;
+      }
+      .filter-card-premium .form-select:focus,
+      .filter-card-premium .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      .custom-radio {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        color: #334155;
+        cursor: pointer;
+        margin: 0;
+      }
+      .btn-apply-filter {
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px 30px;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s;
+      }
+      .btn-apply-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        color: #fff;
+      }
   </style>
 </head>
 
 <body>
 
-  <div class="container-fluid">
+  <div class="container-fluid layout-container p-0">
 
     <?php if (session()->getFlashdata('paymentsuccessstatus')): ?>
-      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+      <div class="alert alert-success alert-dismissible fade show mt-3 mx-3" style="position:absolute; top:70px; right:20px; z-index:9999;" role="alert">
         <?= session()->getFlashdata('paymentsuccessstatus'); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
-      <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+      <div class="alert alert-danger alert-dismissible fade show mt-3 mx-3" style="position:absolute; top:70px; right:20px; z-index:9999;" role="alert">
         <?= session()->getFlashdata('error'); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     <?php endif; ?>
 
-
-
-
-    <!-- Bulk Upload Modal -->
+    <!-- Bulk Upload Modal (same output) -->
     <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel"
       aria-hidden="true">
       <div class="modal-dialog modal-lg">
@@ -394,10 +546,6 @@
                   <select class="form-select border rounded-pill py-3" name="eventid" id="eventSelect" required>
                     <option value="">Choose Event</option>
                   </select>
-                  <!-- <div class="form-text small text-muted mt-2">
-                    <i class="fas fa-info-circle me-1"></i>
-                    <strong>CSV Priority:</strong> EventId from CSV takes precedence over this dropdown
-                  </div> -->
                 </div>
 
               </div>
@@ -412,6 +560,11 @@
                   <div class="mt-2 small text-muted">
                     <strong>CSV Priority:</strong> Familymembershipid,EventName,EventId,paymentdate,paidamount,...<br>
                     <span style="color:#295CF5;">Note: File Size should be below 2MB.</span>
+                    <div class="mt-2">
+                        <a href="<?= base_url('payments/download-payment-sample') ?>" class="text-primary fw-bold text-decoration-none">
+                            <i class="fas fa-file-excel me-1"></i>Download Sample Excel Format
+                        </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -426,25 +579,15 @@
     </div>
 
 
-    <div class="row"><!-----top-bar--------------->
+    <div class="layout-container">
+      <div class="top-navbar-row"><!-----top-bar--------------->
+        <div id="ps-logo" class="col-md-2 py-3 d-flex align-items-center justify-content-start ps-2"></div>
+        <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between px-3"></div>
+      </div><!-----------top-bar-end----------------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-
-      </div>
-
-      <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-      </div>
-    </div><!-----------top-bar-end----------------------->
-
-    <div class="row min-vh-100"><!----------main-navbar----------->
-
-      <div id="menu-bar" class="col-md-2 ps-gray min-vh-100"><!----------side-bar-------------------->
-
-      </div><!-----------side-bar-end-------------->
-
-      <div id="changepage" class="col-md-10 pt-3">
-        <!-----------main-dashboard------------------------->
+      <div class="main-body-row"><!----------main-navbar----------->
+        <div id="menu-bar"></div><!-----------side-bar-end-------------->
+        <div id="changepage" class="main-content-area px-4"><!-----------main-dashboard------------------------->
         <div id="filter-form" class="ms-4">
 
           <div class="pt-3 pb-4 px-3">
@@ -469,17 +612,14 @@
           } ?>
             ><!------------------------------->
             <div class="d-flex justify-content-between">
-              <span class="text-secondary fs-4">Payment Status Filter:</span>
-              <a href='download_members_data' style='height:fit-content;'
-                class='btn btn-sm btn-success fw-bold float-end btn-warning' id='download' role='button'>Download</a>
+              <span class="text-secondary fs-4 fw-bold">Payment Status Filter</span>
+              <a href='download_members_data' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
             </div>
             <div class="pt-2 pb-4 px-3"><!----------filter-start------------>
-              <form class="row border py-4 border-4 border-success" method="POST" style="row-gap:20px;"
-                action="<?= base_url("get-filtered-users") ?>">
-                <div class="col-md-3"><!------------state-choose------------>
-                  <label class="container-fluid" for="aadhar">State:<br>
-                    <select onchange="getDistricts(this)" class="container-fluid border rounded" name="stateid"
-                      id="stateid">
+              <form class="row filter-card-premium" method="POST" action="<?= base_url("get-filtered-users") ?>">
+                <div class="col-md-3 mb-3"><!------------state-choose------------>
+                  <label class="form-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>State</label>
+                  <select onchange="getDistricts(this)" class="form-select" name="stateid" id="stateid">
                       <option value=''>Choose State</option>
                       <?php if (isset($states) || session()->get('filterdata')):
                         $statesData = isset($states) ? $states : session()->get('filterdata')['states'];
@@ -488,12 +628,11 @@
                         <?php endforeach; 
                       endif; ?>
                     </select>
-
-                  </label>
                 </div><!------------state-choose-end----------->
-                <div class="col-md-3"><!------------district-choose------------>
-                  <label class="container-fluid" for="district">Districts:<br>
-                    <select onchange="getTaluks(this)" class="container-fluid border rounded" name="districtname" id="districtstitle">
+
+                <div class="col-md-3 mb-3"><!------------district-choose------------>
+                  <label class="form-label"><i class="fas fa-map me-2 text-primary"></i>District</label>
+                  <select onchange="getTaluks(this)" class="form-select" name="districtname" id="districtstitle">
                       <option value=''>Choose District</option>
                       <?php if (session()->get('filterdata')):
                         $districtsData = session()->get('filterdata')['districts'];
@@ -502,36 +641,32 @@
                         <?php endforeach;
                       endif; ?>
                     </select>
-                  </label>
                 </div><!------------district-choose-end----------->
 
-                <div class="col-md-3"><!------------local-area-search------------>
-                  <label class="container-fluid" for="aadhar">Taluks:<br>
-                    <select class="container-fluid border rounded" name="talukname" id="talukslist">
+                <div class="col-md-3 mb-3"><!------------local-area-search------------>
+                  <label class="form-label"><i class="fas fa-city me-2 text-primary"></i>Taluk</label>
+                  <select class="form-select" name="talukname" id="talukslist">
                       <option value=''>Taluks</option>
                       <?php if (session()->get("role") == 1 && session()->get('filterdata')) {
                         $taluksData = session()->get('filterdata')['taluks'];
                         foreach ($taluksData as $value) {
                           $val = is_object($value) ? $value->taluk_name : $value['taluk_name'];
-                          echo
-                            "<option value='$val'>$val</option>";
+                          echo "<option value='$val'>$val</option>";
                         }
                       } elseif (session()->get("role") == 2) {
                         $taluksData = session()->get('filterdata')['taluks'] ?? ($taluks ?? []);
                         foreach ($taluksData as $key => $row) {
                           $val = is_object($row) ? $row->taluk_name : $row['taluk_name'];
-                          echo
-                            "<option value='$val'>$val</option>";
+                          echo "<option value='$val'>$val</option>";
                         }
                       }
                       ?>
                     </select>
-                  </label>
                 </div><!------------local-area-search-end----------->
 
-                <div class="col-md-3"><!------------panchayat-choose------------>
-                  <label class="container-fluid" for="panchayat">Panchayats:<br>
-                    <select onchange="getVillagesFiltered(this)" class="container-fluid border rounded" name="panchayatname" id="panchayatlist">
+                <div class="col-md-3 mb-3"><!------------panchayat-choose------------>
+                  <label class="form-label"><i class="fas fa-building me-2 text-primary"></i>Panchayat</label>
+                  <select onchange="getVillagesFiltered(this)" class="form-select" name="panchayatname" id="panchayatlist">
                       <option value=''>Choose Panchayat</option>
                       <?php if (session()->get('filterdata')):
                         $panchayatsData = session()->get('filterdata')['panchayats'] ?? [];
@@ -541,12 +676,11 @@
                         <?php endforeach; 
                       endif; ?>
                     </select>
-                  </label>
                 </div><!------------panchayat-choose-end----------->
 
-                <div class="col-md-3"><!------------village-choose------------>
-                  <label class="container-fluid" for="village">Villages:<br>
-                    <select class="container-fluid border rounded" name="villagename" id="villagelist">
+                <div class="col-md-3 mb-3"><!------------village-choose------------>
+                  <label class="form-label"><i class="fas fa-home me-2 text-primary"></i>Village</label>
+                  <select class="form-select" name="villagename" id="villagelist">
                       <option value=''>Choose Village</option>
                       <?php if (session()->get('filterdata')):
                         $villagesData = session()->get('filterdata')['villages'] ?? [];
@@ -556,25 +690,22 @@
                         <?php endforeach; 
                       endif; ?>
                     </select>
-                  </label>
                 </div><!------------village-choose-end----------->
 
-                <div class="col-md-3"><!------------choose-years---------------------->
-                  <label class="container-fluid" for="aadhar">Choose event year:<br>
-                    <select onchange="getEventsbyyear(this)" class='container-fluid border rounded' name='eventyear'
-                      id='eventyear' required>
+                <div class="col-md-3 mb-3"><!------------choose-years---------------------->
+                  <label class="form-label"><i class="fas fa-calendar-alt me-2 text-warning"></i>Event Year</label>
+                  <select onchange="getEventsbyyear(this)" class='form-select' name='eventyear' id='eventyear' required>
                       <option value="">Choose Year</option>
                       <?php if (isset($eventyears)):
                         foreach ($eventyears as $key => $value): ?>
                           <option value='<?= $value['Year'] ?>'><?= $value['Year'] ?></option>
                       <?php endforeach; endif; ?>
                     </select>
-                  </label>
                 </div><!-----------------choose-years-end---------------->
 
-                <div id="showevents" class="col-md-3"><!----------event-search------------>
-                  <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose Event: <br>
-                    <select onchange="" class="container-fluid border rounded" name="eventid" id="eventid" required>
+                <div id="showevents" class="col-md-3 mb-3"><!----------event-search------------>
+                  <label id="eventnamelabel" class="form-label"><i class="fas fa-calendar-check me-2 text-warning"></i>Event</label>
+                  <select class="form-select" name="eventid" id="eventid" required>
                       <option value=''>Choose Event</option>
                       <?php if (session()->get('filterdata')):
                         $eventsData = session()->get('filterdata')['eventsbyyear'] ?? [];
@@ -582,22 +713,24 @@
                           <option value='<?= $value['Id'] ?>'><?= $value['EventName'] ?></option>
                       <?php endforeach; endif; ?>
                     </select>
-                    <!--  <div id="eventsearchresult" style="visibility:hidden;overflow-x:auto;position:absolute;box-sizing:border-box;" class="d-flex flex-column py-2 ps-3 mt-2 rounded-3 border shadow-sm bg-white">
-          </div> -->
-                  </label>
                 </div><!--------event-search-end--------------------------->
 
-                <div class="col-md-3 d-flex justify-content-between align-items-center">
+                <div class="col-md-3 mb-3">
                   <!------------paid-filter------------>
-                  <div class="mt-3"><label for="paid">Paid Users:</label>&nbsp;<input onchange="setStatus(this)"
-                      type="radio" value="Paid" name="paymentstatus" required></div>
-                  <div class="mt-3"><label for="paid">Unpaid Users:</label>&nbsp;<input onchange="setStatus(this)"
-                      type="radio" value="Pending" name="paymentstatus" required></div>
+                  <label class="form-label"><i class="fas fa-money-bill-wave me-2 text-success"></i>Payment Status</label>
+                  <div class="border rounded px-3 py-2 bg-light d-flex justify-content-around">
+                    <label class="custom-radio">
+                      <input onchange="setStatus(this)" type="radio" value="Paid" name="paymentstatus" required> Paid
+                    </label>
+                    <label class="custom-radio">
+                      <input onchange="setStatus(this)" type="radio" value="Pending" name="paymentstatus" required> Unpaid
+                    </label>
+                  </div>
                 </div><!------------paid-filter-end----------->
 
-                <div id="filterbutton" class="col-md-3 pt-3 d-flex align-items-center justify-content-center">
+                <div id="filterbutton" class="col-12 mt-2 d-flex justify-content-end">
                   <!------------filter-button-start------------>
-                  <button type="submit" class="btn btn-success fw-bold">Apply Filter</button>
+                  <button type="submit" class="btn btn-apply-filter px-5"><i class="fas fa-filter me-2"></i>Apply Filter</button>
                 </div><!------------filter-button-end----------->
               </form>
             </div><!---------filter-end-------------->
@@ -617,43 +750,35 @@
                     class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
                 </div>
               </div>
-              <form class="row border py-4 border-4 border-success" method="POST" style="row-gap:20px;"
-                action="<?= base_url("get-filtered-users") ?>">
-                <div class="col-md-3"><!------------state-choose------------>
-                  <label class="container-fluid" for="aadhar">State:<br>
-                    <input class="container-fluid border rounded" name="statename" id="statename" readonly
-                      value="<?= isset($memberdata) ? $memberdata->State : "" ?>" required>
-                  </label>
+              <form class="row filter-card-premium" method="POST" action="<?= base_url("get-filtered-users") ?>">
+                <div class="col-md-3 mb-3"><!------------state-choose------------>
+                  <label class="form-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>State</label>
+                  <input class="form-control bg-light" name="statename" id="statename" readonly value="<?= isset($memberdata) ? $memberdata->State : "" ?>" required>
                 </div><!------------state-choose-end----------->
+
                 <div class="d-none col-md-3"><!------------state-choose------------>
-                  <label class="container-fluid" for="aadhar">State:<br>
-                    <input onchange="getDistricts(this)" class="container-fluid border rounded" name="stateid"
-                      id="stateid" readonly value="<?= isset($memberdata) ? $memberdata->State_id : '' ?>" required>
-                  </label>
+                  <label class="form-label">State</label>
+                  <input onchange="getDistricts(this)" class="form-control bg-light" name="stateid" id="stateid" readonly value="<?= isset($memberdata) ? $memberdata->State_id : '' ?>" required>
                 </div><!------------state-choose-end----------->
-                <div class="col-md-3"><!------------district-choose------------>
-                  <label class="container-fluid" for="aadhar">Districts:<br>
-                    <input onchange="getTaluks(this)" readonly class="container-fluid border rounded"
-                      name="districtname" id="districtstitle"
-                      value="<?= isset($memberdata) ? $memberdata->district_name : ""; ?>" required>
-                  </label>
+
+                <div class="col-md-3 mb-3"><!------------district-choose------------>
+                  <label class="form-label"><i class="fas fa-map me-2 text-primary"></i>District</label>
+                  <input onchange="getTaluks(this)" readonly class="form-control bg-light" name="districtname" id="districtstitle" value="<?= isset($memberdata) ? $memberdata->district_name : ""; ?>" required>
                 </div><!------------district-choose-end----------->
 
-                <div class="col-md-3"><!------------local-area-search------------>
-                  <label class="container-fluid" for="aadhar">Taluks:<br>
-                    <select onchange="getPanchayatsFiltered(this, 'panchayatlist_coord')" class="container-fluid border rounded" name="talukname"
-                      id="taluk_list" value="<?= isset($memberdata) ? $memberdata->district_name : ""; ?>" required>
+                <div class="col-md-3 mb-3"><!------------local-area-search------------>
+                  <label class="form-label"><i class="fas fa-city me-2 text-primary"></i>Taluk</label>
+                  <select onchange="getPanchayatsFiltered(this, 'panchayatlist_coord')" class="form-select" name="talukname" id="taluk_list" required>
                       <option value="">Choose Taluks</option>
                       <?php if(isset($taluks)) { foreach ($taluks as $key => $taluk) {
-                        echo "<option value='$taluk[taluk_name]'>$taluk[taluk_name]</option>";
+                        echo "<option value='$taluk[taluk_name]' " . (isset($memberdata) && $memberdata->district_name == $taluk['taluk_name'] ? "selected" : "") . ">$taluk[taluk_name]</option>";
                       } } ?>
                     </select>
-                  </label>
                 </div><!------------local-area-search-end----------->
 
-                <div class="col-md-3"><!------------panchayat-choose------------>
-                  <label class="container-fluid" for="panchayat">Panchayats:<br>
-                    <select onchange="getVillagesFiltered(this, 'villagelist_coord')" class="container-fluid border rounded" name="panchayatname" id="panchayatlist_coord">
+                <div class="col-md-3 mb-3"><!------------panchayat-choose------------>
+                  <label class="form-label"><i class="fas fa-building me-2 text-primary"></i>Panchayat</label>
+                  <select onchange="getVillagesFiltered(this, 'villagelist_coord')" class="form-select" name="panchayatname" id="panchayatlist_coord">
                       <option value=''>Choose Panchayat</option>
                       <?php if (session()->get('filterdata')):
                         $panchayatsData = session()->get('filterdata')['panchayats'] ?? [];
@@ -663,12 +788,11 @@
                         <?php endforeach; 
                       endif; ?>
                     </select>
-                  </label>
                 </div><!------------panchayat-choose-end----------->
 
-                <div class="col-md-3"><!------------village-choose------------>
-                  <label class="container-fluid" for="village">Villages:<br>
-                    <select class="container-fluid border rounded" name="villagename" id="villagelist_coord">
+                <div class="col-md-3 mb-3"><!------------village-choose------------>
+                  <label class="form-label"><i class="fas fa-home me-2 text-primary"></i>Village</label>
+                  <select class="form-select" name="villagename" id="villagelist_coord">
                       <option value=''>Choose Village</option>
                       <?php if (session()->get('filterdata')):
                         $villagesData = session()->get('filterdata')['villages'] ?? [];
@@ -678,13 +802,11 @@
                         <?php endforeach; 
                       endif; ?>
                     </select>
-                  </label>
                 </div><!------------village-choose-end----------->
 
-                <div class="col-md-3"><!------------choose-years---------------------->
-                  <label class="container-fluid" for="aadhar">Choose event year:<br>
-                    <select onchange="getEventsbyyearFilter(this)" class='container-fluid border rounded'
-                      name='eventyear' id='eventyear' required>
+                <div class="col-md-3 mb-3"><!------------choose-years---------------------->
+                  <label class="form-label"><i class="fas fa-calendar-alt me-2 text-warning"></i>Event Year</label>
+                  <select onchange="getEventsbyyearFilter(this)" class='form-select' name='eventyear' id='eventyear' required>
                       <option value="">Choose Year</option>
                       <?php if (isset($eventyears))
                         foreach ($eventyears as $key => $value) {
@@ -692,31 +814,31 @@
                         }
                       ?>
                     </select>
-
-                  </label>
                 </div><!-----------------choose-years-end---------------->
 
-                <div id="showeventsforcoordinatorfilter" class="col-md-3"><!----------event-search------------>
-                  <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose Event: <br>
-                    <select onchange="" class="container-fluid border rounded" name="eventid" id="eventid" required>
+                <div id="showeventsforcoordinatorfilter" class="col-md-3 mb-3"><!----------event-search------------>
+                  <label id="eventnamelabel" class="form-label"><i class="fas fa-calendar-check me-2 text-warning"></i>Event</label>
+                  <select class="form-select" name="eventid" id="eventid" required>
                       <option value=''>Choose Event</option>
                     </select>
-                    <!--  <div id="eventsearchresult" style="visibility:hidden;overflow-x:auto;position:absolute;box-sizing:border-box;" class="d-flex flex-column py-2 ps-3 mt-2 rounded-3 border shadow-sm bg-white">
-          </div> -->
-                  </label>
                 </div><!--------event-search-end--------------------------->
 
-                <div class="col-md-3 d-flex justify-content-between align-items-center">
+                <div class="col-md-3 mb-3">
                   <!------------paid-filter------------>
-                  <div class="mt-3"><label for="paid">Paid Users:</label>&nbsp;<input onchange="setStatus(this)"
-                      type="radio" value="Paid" name="paymentstatus" required></div>
-                  <div class="mt-3"><label for="paid">Unpaid Users:</label>&nbsp;<input onchange="setStatus(this)"
-                      type="radio" value="Pending" name="paymentstatus" required></div>
+                  <label class="form-label"><i class="fas fa-money-bill-wave me-2 text-success"></i>Payment Status</label>
+                  <div class="border rounded px-3 py-2 bg-light d-flex justify-content-around">
+                    <label class="custom-radio">
+                      <input onchange="setStatus(this)" type="radio" value="Paid" name="paymentstatus" required> Paid
+                    </label>
+                    <label class="custom-radio">
+                      <input onchange="setStatus(this)" type="radio" value="Pending" name="paymentstatus" required> Unpaid
+                    </label>
+                  </div>
                 </div><!------------paid-filter-end----------->
 
-                <div id="filterbutton" class="col-md-3 pt-3 d-flex align-items-center justify-content-center">
+                <div id="filterbutton" class="col-12 mt-2 d-flex justify-content-end">
                   <!------------filter-button-start------------>
-                  <button type="submit" class="btn btn-success fw-bold">Apply Filter</button>
+                  <button type="submit" class="btn btn-apply-filter px-5"><i class="fas fa-filter me-2"></i>Apply Filter</button>
                 </div><!------------filter-button-end----------->
               </form>
             </div><!---------filter-end-------------->
@@ -725,17 +847,16 @@
 
           <div id="paymentdetails">
             <?php if(isset($counts) && $counts > 0): ?>
-            <div class="alert alert-info mb-3" role="alert">
-              <strong>Total Members:</strong> <?= $counts ?>
+            <div class="alert alert-info mb-3 d-inline-block px-4 py-2 fw-semibold" role="alert" style="background-color: #e0f2fe; color: #0284c7; border: none;">
+              Total Members: <?= $counts ?>
             </div>
             <?php endif; ?>
-            <table class='table table-bordered'>
-              <thead <?php if (count($members) == 0) {
-                echo "hidden";
-              } ?>>
-                <tr style='font-size:18px;' class="ps-gray">
-                  <th>Sno</th>
-                  <th>Familymembershipid</th>
+            <div class="table-container">
+            <table class='table custom-table-modern table-hover'>
+              <thead <?php if (count($members) == 0) {  echo "hidden"; } ?>>
+                <tr>
+                  <th>S.No</th>
+                  <th>Family ID</th>
                   <th>Name</th>
                   <th>Role</th>
                   <th>Aadhar</th>
@@ -750,13 +871,22 @@
                   $i = $sno + 1;
                   foreach ($members as $key => $value) {
                     $roleText = ($value['MemberRole'] == 'Head') ? 'Head' : (($value['Role'] == 1) ? 'Manager' : (($value['Role'] == 2) ? 'Coordinator' : 'Member'));
+                    $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
                     echo
-                      "<tr>
-                    <td style='font-weight:500;'>$i</td><td class='fw-bold text-primary'>$value[Familymembershipid]</td><td style='font-weight:500;'>$value[Name]</td><td style='font-weight:500;'>$roleText</td><td style='font-weight:500;'>$value[Aadharnumber]</td><td style='font-weight:500;'>$value[Phonenumber]</td>
-                    <td style='font-weight:500;'>$value[Taluk]</td>
+                      "<tr $rowBg>
+                    <td class='fw-medium text-muted'>$i</td>
+                    <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
+                    <td class='fw-medium'>$value[Name]</td>
+                    <td><span class='badge bg-light text-dark border'>$roleText</span></td>
+                    <td class='text-muted'>$value[Aadharnumber]</td>
+                    <td class='text-muted'>$value[Phonenumber]</td>
+                    <td class='text-muted'>$value[Taluk]</td>
                     <td>
-                    <div class='d-flex justify-content-evenly'><a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;
-                    <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a></div></td>
+                      <div class='d-flex justify-content-center align-items-center gap-2'>
+                        <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-pay-modern'>Pay Now</a>
+                        <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-view-modern'>View Receipts</a>
+                      </div>
+                    </td>
                     </tr>";
                     $i++;
                   }
@@ -764,6 +894,7 @@
                 ?>
               </tbody>
             </table>
+            </div>
           </div>
 
           <div class='d-flex justify-content-center container-fluid'>
@@ -819,12 +950,13 @@
               ?>
             </div>
           </div><!--------------pagination-end--------------------->
+        <div style="height: 100px;"></div> <!-- Bottom Spacer -->
         </div>
       </div><!-----------main-dashboard-end------------------------>
 
 
     </div><!--------------main-navbar-end------------------->
-
+    </div> <!-- layout-container -->
   </div>
 
   <!---------------------offcanvas-------------------------->
@@ -923,12 +1055,12 @@
       });
     }
 
-    let setheight = document.getElementById("changepage");
-    let menubarheight = document.getElementById("menu-bar");
-    let a = window.innerHeight;
-    let b = document.getElementById("search-bar").getBoundingClientRect().height;
+    // let setheight = document.getElementById("changepage");
+    // let menubarheight = document.getElementById("menu-bar");
+    // let a = window.innerHeight;
+    // let b = document.getElementById("search-bar").getBoundingClientRect().height;
     //  menubarheight.style.height = a - b+"px";
-    setheight.style.height = a - b + "px";
+    // setheight.style.height = a - b + "px";
 
     function getDistricts(state) {
       let stateid = state.value;

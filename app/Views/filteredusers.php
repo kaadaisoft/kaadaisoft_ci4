@@ -21,12 +21,12 @@
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -210,12 +210,12 @@
         color:red;
       }
       label{
-        /* color: rgb(120, 50, 186); */
+        /* color: rgb(0, 123, 255); */
         font-size:18px;
         font-weight:700;
       }
       input:focus,select:focus{
-        outline:2px solid rgb(120, 50, 186);
+        outline:2px solid rgb(0, 123, 255);
       }
 
     @media screen and (max-width:768px) {
@@ -312,43 +312,216 @@
             display: none;
         }
     }
+
+    /* Fixed Layout Adjustments */
+    .layout-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .top-navbar-row {
+      height: auto;
+      min-height: 70px;
+      flex-shrink: 0;
+      z-index: 1050;
+      background: #0f172a;
+      display: flex;
+      align-items: stretch;
+      margin: 0;
+    }
+    .main-body-row {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      margin: 0;
+    }
+    #menu-bar {
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      background-color: rgb(248, 245, 245);
+      border-right: 1px solid #e2e8f0;
+      padding: 0;
+    }
+    .main-content-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 100%;
+      background-color: #f8fafc;
+      padding-bottom: 50px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { height: auto; flex-direction: column; }
+      .main-body-row { flex-direction: column; }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100% !important; }
+    }
+
+    /* Premium Filter Card Styling */
+    .filter-card-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      padding: 24px;
+      margin-top: 15px;
+    }
+    .filter-card-premium .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-card-premium .form-select,
+    .filter-card-premium .form-control {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      box-shadow: none;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    .filter-card-premium .form-select:focus,
+    .filter-card-premium .form-control:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .custom-radio {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      margin: 0;
+    }
+    .btn-apply-filter {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 10px 30px;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s;
+    }
+    .btn-apply-filter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+      color: #fff;
+    }
+
+    /* Modern Table Styling */
+    .table-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .custom-table-modern {
+      margin-bottom: 0;
+      width: 100%;
+    }
+    .custom-table-modern caption {
+      padding: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .custom-table-modern thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      padding: 1rem;
+      border-bottom: 2px solid #334155;
+    }
+    .custom-table-modern tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-modern tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+    .custom-table-modern td {
+      padding: 1rem;
+      vertical-align: middle;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .btn-pay-modern {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .btn-pay-modern:hover {
+      background-color: #059669;
+      color: white;
+      transform: translateY(-2px);
+    }
+    .btn-view-modern {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .btn-view-modern:hover {
+      background-color: #2563eb;
+      color: white;
+      transform: translateY(-2px);
+    }
     </style>
 </head>
 <body>
         
-    <div class="container-fluid">
-      
-      <div class="row"><!-----top-bar--------------->
+  <div class="container-fluid layout-container p-0">
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        </div>
+    <div class="top-navbar-row"><!-----top-bar--------------->
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+      <div id="ps-logo" class="col-md-2 border-bottom py-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
+      </div>
 
-        </div>
-        </div><!-----------top-bar-end----------------------->
+      <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between border-bottom px-3" style="background: #0f172a;">
+      </div>
+    </div><!-----------top-bar-end----------------------->
 
-        <div class="row"><!----------main-navbar----------->
+    <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-              
-         </div><!-----------side-bar-end-------------->
-            
-         <div id="changepage" style='height:inherit;overflow:auto;' class="col-md-10 pt-3"><!-----------main-dashboard------------------------->
+      <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
+      </div><!-----------side-bar-end-------------->
+
+      <div id="changepage" class="col-md-10 main-content-area px-4 pt-3"><!-----------main-dashboard------------------------->
           
-         <div id="filter-form" class="ps-4">
+         <div id="filter-form" class="ms-0">
          <?= view('notification_toast') ?>
          <div><!------------------------------------>     
          <div class="pt-2 px-3 pb-4"><!----------filter-start------------>
-         <div class="d-flex justify-content-between">
-         <span class="text-secondary h4">Payment Status Filter:</span>
-         <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-sm btn-success fw-bold float-end btn-warning' id ='download' role='button'>Download</a>
+         <div class="d-flex justify-content-between align-items-center">
+         <span class="text-secondary fs-4 fw-bold">Payment Status Filter</span>
+         <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id ='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
          </div> 
-         <form id="filter-form-height" class="row border py-4 border-4 border-success" method="post" action="<?=base_url('get-filtered-users')?>">
-         <div class="col-md-3"><!------------state-choose------------>
-           <label class="container-fluid" for="aadhar">Choose State: <br>
-           <select onchange = "getDistricts(this)" class="container-fluid border rounded" name="stateid" id="stateid">
+         <form id="filter-form-height" class="row filter-card-premium" method="post" action="<?=base_url('get-filtered-users')?>">
+         <div class="col-md-3 mb-3"><!------------state-choose------------>
+           <label class="form-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>State</label>
+           <select onchange="getDistricts(this)" class="form-select" name="stateid" id="stateid">
            <option value=''>Choose State</option>
            <?php if(isset($states) && session()->get("role") == 1) {
            foreach ($states as $key => $value){
@@ -364,11 +537,10 @@
            }
            ?>
            </select>
-           </label>
            </div><!------------state-choose-end----------->
-          <div class="col-md-3"><!------------district-choose------------>
-            <label class="container-fluid" for="aadhar">District:<br>
-            <select id="districtstitle" onchange="getTaluks(this)" class="container-fluid border rounded" name="districtname">
+          <div class="col-md-3 mb-3"><!------------district-choose------------>
+            <label class="form-label"><i class="fas fa-map me-2 text-primary"></i>District</label>
+            <select id="districtstitle" onchange="getTaluks(this)" class="form-select" name="districtname">
             <option value=''>Choose District</option>
             <?php if(isset($districts)) {
             foreach ($districts as $key => $value){
@@ -377,11 +549,10 @@
             }} 
             ?>
             </select>
-            </label>
             </div><!------------district-choose-end----------->
-           <div id="localareas" class="col-md-3"><!------------local-area-search------------>
-            <label class="container-fluid" for="aadhar">Taluks:<br>
-            <select onchange="getPanchayatsFiltered(this)" class="container-fluid border rounded" name="talukname" id="talukslist">
+           <div id="localareas" class="col-md-3 mb-3"><!------------local-area-search------------>
+            <label class="form-label"><i class="fas fa-city me-2 text-primary"></i>Taluk</label>
+            <select onchange="getPanchayatsFiltered(this)" class="form-select" name="talukname" id="talukslist">
             <option value=''>Choose Taluks</option>
             <?php if(isset($taluks) && session()->get("role") == 1) {
             foreach ($taluks as $key => $value){
@@ -398,12 +569,11 @@
             }
             ?>
             </select>
-            </label>
             </div><!------------local-area-search-end----------->
 
-            <div class="col-md-3"><!------------panchayat-choose------------>
-              <label class="container-fluid" for="panchayat">Panchayats:<br>
-                <select onchange="getVillagesFiltered(this)" class="container-fluid border rounded" name="panchayatname" id="panchayatlist">
+            <div class="col-md-3 mb-3"><!------------panchayat-choose------------>
+              <label class="form-label"><i class="fas fa-building me-2 text-primary"></i>Panchayat</label>
+                <select onchange="getVillagesFiltered(this)" class="form-select" name="panchayatname" id="panchayatlist">
                   <option value=''>Choose Panchayat</option>
                   <?php if (isset($panchayats)): 
                       foreach($panchayats as $row):
@@ -412,12 +582,11 @@
                       <option <?= (isset($filterlist['panchayatname']) && $filterlist['panchayatname'] == $val) ? "selected" : "" ?> value="<?= $val ?>"><?= $val ?></option>
                   <?php endforeach; endif; ?>
                 </select>
-              </label>
             </div><!------------panchayat-choose-end----------->
 
-            <div class="col-md-3"><!------------village-choose------------>
-              <label class="container-fluid" for="village">Villages:<br>
-                <select class="container-fluid border rounded" name="villagename" id="villagelist">
+            <div class="col-md-3 mb-3"><!------------village-choose------------>
+              <label class="form-label"><i class="fas fa-home me-2 text-primary"></i>Village</label>
+                <select class="form-select" name="villagename" id="villagelist">
                   <option value=''>Choose Village</option>
                   <?php if (isset($villages)): 
                       foreach($villages as $row):
@@ -426,12 +595,11 @@
                       <option <?= (isset($filterlist['villagename']) && $filterlist['villagename'] == $val) ? "selected" : "" ?> value="<?= $val ?>"><?= $val ?></option>
                   <?php endforeach; endif; ?>
                 </select>
-              </label>
             </div><!------------village-choose-end----------->
 
-           <div class="col-md-3"><!------------choose-years---------------------->
-             <label class="container-fluid" for="aadhar">Event year:<br>
-             <select onchange="getEventsbyyear(this)" class='container-fluid border rounded' name='eventyear' id='eventyear'>
+           <div class="col-md-3 mb-3"><!------------choose-years---------------------->
+             <label class="form-label"><i class="fas fa-calendar-alt me-2 text-warning"></i>Event Year</label>
+             <select onchange="getEventsbyyear(this)" class='form-select' name='eventyear' id='eventyear'>
              <option value="">Choose Year</option>
              <?php if(isset($eventyears))
              foreach ($eventyears as $key => $value) {
@@ -440,12 +608,11 @@
              }
             ?>
             </select>
-            </label>
             </div><!-----------------choose-years-end---------------->
 
-           <div id ="showevents" class="col-md-3"><!----------event-search------------>
-           <label id="eventnamelabel" class="container-fluid" for="aadhar">Events: <br>
-           <select onchange="" class="container-fluid border rounded" name="eventid" id="eventid">
+           <div id ="showevents" class="col-md-3 mb-3"><!----------event-search------------>
+           <label id="eventnamelabel" class="form-label"><i class="fas fa-calendar-check me-2 text-warning"></i>Event</label>
+           <select onchange="" class="form-select" name="eventid" id="eventid">
            <option value=''>Choose Event</option>
            <?php if(isset($events))
            foreach ($events as $key => $value){
@@ -454,33 +621,40 @@
            }
            ?>
            </select>
-          </label>
           </div><!--------event-search-end--------------------------->
 
-          <div class="col-md-3 d-flex justify-content-between align-items-center"><!------------paid-filter------------>
-          <div class="mt-3"><label for="paid">Paid Users:</label>&nbsp;<input onchange="setStatus(this)" type="radio" <?=$filterlist['paymentstatus'] == 'Paid' ? 'checked' : ''?> value="Paid" name="paymentstatus"></div>
-          <div class="mt-3"><label for="paid">Un Paid Users:</label>&nbsp;<input onchange="setStatus(this)" type="radio" <?=$filterlist['paymentstatus'] == 'Pending' ? 'checked' : ''?> value="Pending" name="paymentstatus">
-          <input hidden id="currentstatus" type="radio" value="<?=$filterlist['paymentstatus']?>" name="paymentstatus"></div>
+          <div class="col-md-3 mb-3"><!------------paid-filter------------>
+            <label class="form-label"><i class="fas fa-money-bill-wave me-2 text-success"></i>Payment Status</label>
+            <div class="border rounded px-3 py-2 bg-light d-flex justify-content-around">
+              <label class="custom-radio">
+                <input onchange="setStatus(this)" type="radio" <?=$filterlist['paymentstatus'] == 'Paid' ? 'checked' : ''?> value="Paid" name="paymentstatus"> Paid
+              </label>
+              <label class="custom-radio">
+                <input onchange="setStatus(this)" type="radio" <?=$filterlist['paymentstatus'] == 'Pending' ? 'checked' : ''?> value="Pending" name="paymentstatus"> Unpaid
+                <input hidden id="currentstatus" type="radio" value="<?=$filterlist['paymentstatus']?>" name="paymentstatus">
+              </label>
+            </div>
           </div><!------------paid-filter-end----------->   
-          <div id="filterbutton" class="col-md-3 pt-3 d-flex align-items-center justify-content-center"><!------------filter-button-start------------>
-             <button class="btn btn-success fw-bold">Apply Filter</button>
+          <div id="filterbutton" class="col-12 mt-2 d-flex justify-content-end"><!------------filter-button-start------------>
+             <button type="submit" class="btn btn-apply-filter px-5"><i class="fas fa-filter me-2"></i>Apply Filter</button>
           </div><!------------filter-button-end----------->
           </form>
          </div><!---------filter-end-------------->
         </div><!---------------------------------->   
 
-          <div style="overflow:auto;" id="paymentdetails">  
+          <div style="overflow:auto;" id="paymentdetails" class="px-4 pb-4">  
                 <?php
                 if(isset($filteredusers) && count($filteredusers) > 0){ ?>
-                <table class='table table-bordered'>
-                <caption style='caption-side:top;' class='h4'>
-                  Location: <?= $filterlist['talukname'] . (!empty($filterlist['panchayatname']) ? ' -> ' . $filterlist['panchayatname'] : '') . (!empty($filterlist['villagename']) ? ' -> ' . $filterlist['villagename'] : '') ?>
-                  <span class='float-end'><?= $title ?></span>
+                <div class="table-container mt-4">
+                <table class='table custom-table-modern table-hover'>
+                <caption style='caption-side:top;' class='h6 px-4 py-3 bg-light m-0 border-bottom'>
+                  <i class="fas fa-map-marker-alt text-danger me-2"></i>Location: <?= $filterlist['talukname'] . (!empty($filterlist['panchayatname']) ? ' <i class="fas fa-chevron-right mx-1 text-muted small"></i> ' . $filterlist['panchayatname'] : '') . (!empty($filterlist['villagename']) ? ' <i class="fas fa-chevron-right mx-1 text-muted small"></i> ' . $filterlist['villagename'] : '') ?>
+                  <span class='float-end badge bg-primary'><?= $title ?></span>
                 </caption>
                 <thead>
-                <tr style='font-size:18px;' class='ps-gray'>
-                <th>Sno</th>
-                <th>Familymembership id</th>
+                <tr>
+                <th>S.No</th>
+                <th>Family ID</th>
                 <th>Name</th>
                 <th>Mobile</th>
                 <th>Address</th>
@@ -493,21 +667,24 @@
                     
                    if(count($filteredusers) == 0){
                     echo "<tr>
-                    <td class='fw-bold text-center' colspan='6'>No results found</td>
+                    <td class='fw-bold text-center py-4 text-muted' colspan='6'><i class='fas fa-search me-2'></i>No results found</td>
                     </tr>";
                     }
                     elseif(count($filteredusers) > 0){
                     $i = $sno + 1;
                     foreach ($filteredusers as $key => $value) {
+                    $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
                     echo 
-                    "<tr>
-                    <td>$i</td><td class='fw-bold text-primary'>$value[Familymembershipid]</td><td style='font-weight:500;'>$value[Name]</td>
-                    <td style='font-weight:500;'>$value[Mobile]</td>
-                    <td style='font-weight:500;'>$value[MemberTaluk]</td>
+                    "<tr $rowBg>
+                    <td class='fw-medium text-muted'>$i</td>
+                    <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
+                    <td class='fw-medium'>$value[Name]</td>
+                    <td class='text-muted'>$value[Mobile]</td>
+                    <td class='text-muted'>$value[MemberTaluk]</td>
                     <td>
-                      <div class='d-flex justify-content-evenly'>
-                        " . (($filterlist['paymentstatus'] != 'Paid') ? "<a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn btn-success fw-bold' style='height:fit-content;'>Pay Now</a> &nbsp;&nbsp;" : "") . "
-                        <a target='_blank' href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn btn-primary fw-bold' style='height:fit-content;'>View Receipts</a>
+                      <div class='d-flex justify-content-center align-items-center gap-2'>
+                        " . (($filterlist['paymentstatus'] != 'Paid') ? "<a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn-pay-modern'>Pay Now</a>" : "") . "
+                        <a target='_blank' href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-view-modern'>View Receipts</a>
                       </div>
                     </td>
                     </tr>";
@@ -517,9 +694,10 @@
                   } ?>
                 </tbody>
                 </table>
+                </div>
               <?php }
               else{
-                echo "<div class='h-100 fw-bold text-muted text-center d-flex justify-content-center align-items-center'>No records found</div>";
+                echo "<div class='h-100 fw-bold text-muted text-center d-flex justify-content-center align-items-center' style='min-height:200px;'><div class='text-center'><i class='fas fa-folder-open fa-3x mb-3 text-light-gray'></i><br>No records found</div></div>";
               }
                 ?>
           </div> 
@@ -646,13 +824,9 @@
     });
     
 
-    let searchbar_height = document.getElementById("search-bar").getBoundingClientRect().height;
-    let filterform_height = document.getElementById("filter-form-height").getBoundingClientRect().height;
-    // let paymentdetails_height = document.getElementById("paymentdetails").style.height = `${window.innerHeight - (searchbar_height + filterform_height)}px`;
-
-    // console.log(window.innerHeight - (searchbar_height + filterform_height));
 
     function getDistricts(state){
+
       let stateid = state.value;
 
       $.ajax({

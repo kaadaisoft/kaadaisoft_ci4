@@ -140,6 +140,7 @@ $routes->post('members/verify-registration-otp', 'Members::verify_registration_o
 
 // Events Routes
 $routes->get('events', 'Events::index');
+$routes->get('events/searchevents', 'Events::searchevents');
 $routes->get('changeEventspagesetup', 'Events::changeEventspagesetup');
 $routes->post('events/addevent', 'Events::addevent'); // Fix for 404 on Add Event
 $routes->get('events/getevent', 'Events::getevent'); // For AJAX modal content
@@ -187,6 +188,7 @@ $routes->get('payments/get-all-events', 'Payments::getAllevents');
 $routes->get('payments/get-events-list', 'Payments::getEventslist');
 $routes->get('payments/search-events', 'Payments::searchEvents');
 $routes->get('payments/get-tax-amount', 'Payments::getTaxamount');
+$routes->get('payments/download-payment-sample', 'Payments::download_payment_sample');
 
 // Payments Filter Routes
 $routes->get('filteredusers', 'PaymentsFilter::index');
@@ -218,4 +220,5 @@ $routes->get('reports/displayFilteredeventsreports', 'Reports::displayFilteredev
 // Bulk Upload
 $routes->get('bulk_upload', 'Bulk_upload::index');
 $routes->post('bulk_upload/upload_file', 'Bulk_upload::upload_file');
+$routes->get('bulk_upload/download_sample', 'Bulk_upload::download_sample');
 

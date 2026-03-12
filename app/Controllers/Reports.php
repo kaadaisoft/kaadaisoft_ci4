@@ -220,6 +220,11 @@ class Reports extends BaseController{
     }
 
     public function topmenu(){
+        $pendingapplications = $this->adminDashboardModel->getPendingapplications();
+        $pendingcounts = count($pendingapplications);
+        $updaterequestcounts = count($this->adminDashboardModel->getMemberUpdateRequests());
+        $this->session->set("pendingcounts", $pendingcounts);
+        $this->session->set("updaterequestcounts", $updaterequestcounts);
         return view("topmenu");
     }
 
@@ -255,17 +260,15 @@ class Reports extends BaseController{
         }
             $events = $this->paymentsModel->getEventslist(); // Using PaymentsModel here as per original
             echo "
-            <label id='eventslist' class='container-fluid' for='events'>Choose Events: <br>
-                    
-                      <select class='container-fluid border rounded' name='eventid' id='eventid' required>
+            <label id='eventslist' class='form-label' for='eventid'><i class='fas fa-calendar-check me-2 text-warning'></i>Choose Events</label>
+                      <select class='form-select' name='eventid' id='eventid' required>
                       <option value=''>Choose Events</option>";
                       
             foreach ($events as $key => $value) {
             echo "<option value='$value[SNo]'>$value[EventName] - $value[year]</option>";
             }                  
                         
-            echo "</select>
-              </label>";
+            echo "</select>";
             
     }
 
@@ -277,16 +280,15 @@ class Reports extends BaseController{
         if($this->request->isAJAX()){
             $year =  $this->request->getGet('year');
             $data = $this->reportsModel->getEventslistbyYear($year);
-            echo "<label id='eventnamelabel' class='container-fluid' for='aadhar'>Choose Events: <br>
-               <select onchange='' class='container-fluid border rounded ' name='eventid' id='eventname'>
+            echo "<label id='eventnamelabel' class='form-label' for='eventname'><i class='fas fa-calendar-check me-2 text-warning'></i>Choose Events</label>
+               <select onchange='' class='form-select' name='eventid' id='eventname'>
                <option value=''>Choose Event</option>";
                foreach ($data as $key => $value){
                  
                 echo"<option value='$value[Id]'>$value[EventName]</option>";
                }
             echo "
-               </select>
-            </label>";
+               </select>";
     }
     }
 
@@ -297,9 +299,9 @@ class Reports extends BaseController{
         $searchdata = $this->request->getGet("event");
         if($this->request->isAJAX()){
            $events = $this->reportsModel->getSearcheventslist($searchdata);
-            echo "<ul class='list-unstyled'>";       
+            echo "<ul class='list-unstyled m-0 p-0'>";       
            foreach ($events as $key => $value) {
-             echo "<li onclick='setEventname(`".$value['Year']."`,`".$value['EventName']."`)'>".$value['EventName']."</li>";
+             echo "<li><a class='dropdown-item cursor-pointer py-2' style='cursor: pointer;' onclick='setEventname(`".$value['Year']."`,`".$value['EventName']."`,`".($value['Id'] ?? $value['SNo'])."`)'>".$value['EventName']." <span class='text-muted small'>(".$value['Year'].")</span></a></li>";
            }
            echo "</ul>"; 
         }
@@ -312,9 +314,9 @@ class Reports extends BaseController{
         $searchdata = $this->request->getGet("event");
         if($this->request->isAJAX()){
            $events = $this->reportsModel->getSearchFilteredeventslist($searchdata);
-            echo "<ul class='list-unstyled'>";       
+            echo "<ul class='list-unstyled m-0 p-0'>";       
            foreach ($events as $key => $value) {
-             echo "<li onclick='setEventname(`".$value['year']."`,`".$value['EventName']."`)'>".$value['EventName']."</li>";
+             echo "<li><a class='dropdown-item cursor-pointer py-2' style='cursor: pointer;' onclick='setEventname(`".$value['year']."`,`".$value['EventName']."`,`".($value['Id'] ?? $value['SNo'])."`)'>".$value['EventName']." <span class='text-muted small'>(".$value['year'].")</span></a></li>";
            }
            echo "</ul>"; 
         }

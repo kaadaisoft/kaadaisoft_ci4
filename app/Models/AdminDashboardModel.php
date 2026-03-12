@@ -557,6 +557,25 @@ public function update_password($id, $hashedPassword) {
                  }
             }
 
+            if (isset($data['MemberRole']) && $data['MemberRole'] === 'Head') {
+                $membersModel = new \App\Models\MembersModel();
+                $currentMember = $this->db->table('kaadaimembers')->select('Familymembershipid, Existfamilyid')->where('Familymembershipid', $request->Familymembershipid)->get()->getRow();
+                $myFamilyId = $currentMember ? ($currentMember->Existfamilyid ?: $currentMember->Familymembershipid) : $request->Familymembershipid;
+                
+                // Track current head to demote
+                $old_head_new_role = $membersModel->autoUpdateFamilyRoles($myFamilyId, $request->Familymembershipid);
+                
+                // Demote existing head (if any)
+                $this->db->table('kaadaimembers')
+                    ->groupStart()
+                        ->where('Existfamilyid', $myFamilyId)
+                        ->orWhere('Familymembershipid', $myFamilyId)
+                    ->groupEnd()
+                    ->where('MemberRole', 'Head')
+                    ->where('Familymembershipid !=', $request->Familymembershipid)
+                    ->update(['MemberRole' => $old_head_new_role]);
+            }
+
             $this->db->table('kaadaimembers')->where('Familymembershipid', $request->Familymembershipid)
             ->update($data); // Note: update() returns bool
 

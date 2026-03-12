@@ -9,22 +9,50 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <style>
-    /* ✅ Added to enable page scroll */
-html, body {
-  height: 100%;
-  overflow-y: auto;
-}
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
 
-/* ✅ Added to make #changepage section scrollable if content is large */
-#changepage {
-  overflow-y: auto;
-  max-height: 80vh; /* adjust if needed */
-}
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { 
+        height: auto; 
+        flex-wrap: wrap; 
+        padding: 5px 0 !important;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1050;
+      }
+      #ps-logo {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        width: 100% !important;
+      }
+      #search-bar {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        width: 100% !important;
+      }
+      .main-body-row { 
+        margin-top: 130px !important; /* Adjust for stacked top bar elements */
+        flex-direction: column; 
+        overflow: auto; 
+      }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+    }
 
     .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
     .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -33,12 +61,12 @@ html, body {
       background-color:rgb(230, 230, 230);
     }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
     }
     .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
     }
     .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -56,49 +84,67 @@ html, body {
     gap:20px;
     }
 
-    .card-round{
-      width: 220px;
-      border-radius:15px;
-      padding: 15px !important;
+    .letter-spacing-1 {
+      letter-spacing: 1px;
+    }
+    .z-1 {
+      z-index: 1;
     }
 
-    ul > li{
-      cursor:pointer;
+    .card-round{
+      width: 250px;
+      border-radius:20px;
+      padding: 25px !important;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card-icon-bg {
+      position: absolute;
+      right: -15px;
+      bottom: -15px;
+      font-size: 5.5rem;
+      opacity: 0.2;
+      transform: rotate(-15deg);
+      transition: all 0.4s ease;
+    }
+
+    .card-round:hover .card-icon-bg {
+      transform: rotate(0deg) scale(1.1);
+      opacity: 0.3;
     }
 
      .card1{
-    background: linear-gradient(135deg, #1fa2ff, #12d8fa, #a6ffcb);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     border: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(31, 162, 255, 0.3);
-    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    text-decoration: none !important;
     }
+
     .card2{
-      background: linear-gradient(135deg, #f7971e, #ffd200);
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
       border: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3);
-      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+      text-decoration: none !important;
     }
+
     .card3{
-      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
       border: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
-      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(244, 63, 94, 0.2);
+      text-decoration: none !important;
      }
 
      .card1:hover, .card2:hover, .card3:hover {
-        transform: translateY(-8px) scale(1.02);
-        filter: brightness(1.15);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
      }
 
      .card-round:active {
-        transform: scale(0.98);
+        transform: scale(0.95);
      }
 
      .card4{
@@ -303,7 +349,7 @@ html, body {
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -320,7 +366,7 @@ html, body {
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
 
      .updatecoord:hover .updatetooltip{
@@ -391,7 +437,7 @@ html, body {
           }
       }
       
-     #registration-form label{
+      #registration-form label{
             width:100%;
             font-size:18px;
             font-weight:500;
@@ -448,6 +494,20 @@ html, body {
             padding:8%;
           }
     }
+      
+    #custom-mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0f172a;
+        z-index: 9999;
+        overflow: auto;
+    }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #cbd5e1; }
+    #mobile-menu-content { padding-top: 60px; }
 
     @media screen and (max-width:768px) {
   #ps-logo {
@@ -465,7 +525,7 @@ html, body {
   }
   
   .ham-menu:hover {
-    background-color: rgba(120, 50, 186, 0.1) !important;
+    background-color: rgba(0, 123, 255, 0.1) !important;
   }
 }
 
@@ -478,69 +538,67 @@ html, body {
 
 
       /* ✅ Premium Table Design */
-      .custom-table {
+      .table-container-premium {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 2rem;
+      }
+      .custom-table-premium {
+        width: 100%;
+        min-width: 900px; /* Force scroll on mobile */
+        margin-bottom: 0;
         border-collapse: separate;
         border-spacing: 0;
-        width: 100%;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border: none !important;
-        margin-top: 20px;
       }
-      
-      .custom-table thead th {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      .custom-table-premium thead th {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
         color: white;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 1px;
-        padding: 18px !important;
+        padding: 16px !important;
         border: none !important;
         text-align: center;
+        vertical-align: middle;
       }
-      
-      .custom-table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #eee;
+      .custom-table-premium tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
       }
-      
-      .custom-table tbody tr:hover {
-        background-color: rgba(37, 117, 252, 0.04);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      .custom-table-premium tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+        box-shadow: inset 4px 0 0 #3b82f6;
       }
-      
-      .custom-table td {
-        padding: 15px !important;
+      .custom-table-premium td {
+        padding: 16px !important;
         vertical-align: middle;
         border: none !important;
-        color: #555;
+        color: #334155;
         text-align: center;
         font-size: 0.95rem;
       }
-
-      .custom-table tbody tr:last-child td {
-        border-bottom: none !important;
-      }
-      
-      .custom-table tfoot td {
+      .custom-table-premium tfoot td {
         background-color: #fcfcfc;
-        border-top: 2px solid #eee !important;
+        border-top: 2px solid #f1f5f9 !important;
         padding: 20px !important;
       }
       
       .total-label {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.1rem;
-        font-weight: 800;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
       
       .total-amount {
-        color: #2575fc;
+        color: #0f172a;
         font-size: 1.25rem;
         font-weight: 800;
       }
@@ -562,31 +620,19 @@ html, body {
 </head>
 <body>
        
-    <div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
+    <div class="layout-container">
         <!---------------------admindashboard-status-notifications---------------------->
-<?= view('notification_toast') ?>
-      <div class="row"><!-----top-bar--------------->
-
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        </div>
-
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
-        </div>
+        <?= view('notification_toast') ?>
+        
+        <div class="top-navbar-row"><!-----top-bar--------------->
+            <div id="ps-logo" class="col-md-3 py-3 d-flex align-items-center justify-content-start ps-2"></div>
+            <div id="search-bar" class="col-md-9 d-flex align-items-center justify-content-between px-3"></div>
         </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
-
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
-         
-              
-         </div><!-----------side-bar-end-------------->
-            
-         <div id="changepage" style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div class="main-body-row"><!----------main-navbar----------->
+            <div id="menu-bar"></div><!-----------side-bar-end-------------->
+            <div id="changepage" class="main-content-area"><!-----------main-dashboard------------------------->
          
          <div class="container-fluid px-4 pt-4">
           <div class="d-flex justify-content-between">
@@ -600,36 +646,39 @@ html, body {
             echo "hidden";
           } ?>  class="dashboard-cards mt-4 border-bottom pb-5">
 
-            <a href="<?= base_url('coordinators') ?>" class="card-round card1 text-white <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
+            <a href="<?= base_url('coordinators') ?>" class="card-round card1 text-white shadow-sm <?php if (session()->get('role') == 3 || session()->get('role') == 2) {
               echo "d-none";
             } else {
               echo "d-flex";
-            } ?> align-items-center justify-content-center">
-
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Coordinators</li>
-              <li class="fs-4 text-center fw-bold"><?= $coordscount ?></li>
-            </ul>
-            </a>
-            <a href="<?= base_url('members') ?>" class="card-round card2 text-white d-flex align-items-center justify-content-center">
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Total Members</li>
-              <li class="fs-4 text-center fw-bold"><?= $memberscount ?></li>
-            </ul>
+            } ?> align-items-center">
+              <i class="fa-solid fa-cart-shopping card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Coordinators</div>
+                <div class="fs-1 fw-bold mt-1"><?= $coordscount ?></div>
+              </div>
             </a>
 
-            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 text-white d-flex align-items-center justify-content-center">
-            <ul class="nav flex-column align-items-center mb-0">
-              <li class="text-center fw-bold small opacity-75">Approvals</li>
-              <li class="fs-4 text-center fw-bold">
-                <?php if (!empty($pendingcounts)) {
-                  echo "$pendingcounts";
-                } else {
-                  echo "0";
-                }
+            <a href="<?= base_url('members') ?>" class="card-round card2 text-white shadow-sm d-flex align-items-center">
+              <i class="fa-solid fa-user-group card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Total Members</div>
+                <div class="fs-1 fw-bold mt-1"><?= $memberscount ?></div>
+              </div>
+            </a>
 
-                ?></li>
-            </ul>
+            <a href="<?= base_url('viewreceivedapplications') ?>" class="card-round card3 text-white shadow-sm d-flex align-items-center">
+              <i class="fa-solid fa-bell card-icon-bg"></i>
+              <div class="position-relative z-1">
+                <div class="text-uppercase fw-bold small opacity-75 letter-spacing-1">Approvals</div>
+                <div class="fs-1 fw-bold mt-1">
+                  <?php if (!empty($pendingcounts)) {
+                    echo "$pendingcounts";
+                  } else {
+                    echo "0";
+                  }
+                  ?>
+                </div>
+              </div>
             </a>
 
           </div>
@@ -637,30 +686,32 @@ html, body {
         
 
       <!-------------------------------total-pendings-------------------------------->
-<h3 class="mt-5 mb-3 fw-bold text-center" style="color: #444;">Payment pending details</h3>
+<h3 class="mt-5 mb-4 fw-bold text-center" style="color: #1e293b;">Payment Pending Details</h3>
 <div class="row px-2">
     <div class="col-12">
-        <table class="table custom-table">
-            <thead id="nomemberresult">
-                <tr>
-                    <th>SNo</th>
-                    <th>Event Name</th>
-                    <th>Tax Amount</th>
-                    <th>Balance Amount</th>
-                </tr>
-            </thead>
-            <tbody id="showparticipation"></tbody>
-            <tfoot>
-                <tr>
-                    <td class="text-end" colspan="3">
-                        <span class="total-label text-uppercase">Total Pending Amount</span>
-                    </td>
-                    <td>
-                        <span id="total_pending" class="total-amount"></span>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="table-container-premium">
+            <table class="custom-table-premium">
+                <thead id="nomemberresult">
+                    <tr>
+                        <th>SNo</th>
+                        <th>Event Name</th>
+                        <th>Tax Amount</th>
+                        <th>Balance Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="showparticipation"></tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-end" colspan="3">
+                            <span class="total-label">Total Pending Amount</span>
+                        </td>
+                        <td>
+                            <span id="total_pending" class="total-amount"></span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -690,12 +741,12 @@ html, body {
 </div>
 
          </div>
-
+             <div style="height: 100px;"></div> <!-- Bottom Spacer -->
          </div><!-----------main-dashboard-end------------------------>
 
 
         </div><!--------------main-navbar-end------------------->
-
+        </div> <!-- layout-container -->
       </div>
 
       <!-----------------------Update-Coordinators-modal-------------------------------------------->
@@ -724,12 +775,8 @@ html, body {
  <!---------------------Custom Mobile Menu End-------------------------------->   
   <script>
 
-      let pageheight = window.innerHeight;
+      /* Fixed Layout logic handled by CSS */
       let showupdatemanager = document.getElementById("updatemanager-modal-hide");
-      document.getElementById("pageheight").style.height = pageheight+"px";
-      let topbar = document.getElementById("search-bar").getBoundingClientRect().height;
-      document.getElementById("menu-bar").style.height = `${pageheight - topbar}px` 
-      
       // Mobile Menu Functions
       function openMobileMenu() {
         document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -856,22 +903,31 @@ html, body {
     }
 
     function printReceiptFromModal() {
-        const modalBody = document.getElementById('receiptModalBody');
-        const printContent = modalBody.innerHTML;
-        const printWindow = window.open('', '', 'height=600,width=800');
+        let divContents = document.getElementById("printreceipt") ? document.getElementById("printreceipt").innerHTML : '';
+        let receiptId = document.getElementById("receipt_id_val") ? document.getElementById("receipt_id_val").innerText : 'சீட்டு எண் : -';
+        let paymentDate = document.getElementById("receipt_date_val") ? document.getElementById("receipt_date_val").innerText : 'தேதி : -';
         
-        printWindow.document.write("<html><head><title>Print Receipt</title>");
-        printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
-        printWindow.document.write('<style>');
-        printWindow.document.write('.heading-kaadaisoft { color: rgb(120, 50, 186); font-weight:800; font-family:sans-serif; }');
-        printWindow.document.write('table td, th { padding: 10px; }');
-        printWindow.document.write('</style></head><' + 'body>');
-        printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</' + 'body></' + 'html>');
+        let printWindow = window.open('', '', 'height=auto, width=auto');
+        printWindow.document.open();
         
+        let htmlContent = "<html><head><title>Print Receipt</title>";
+        htmlContent += "<style>";
+        htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
+        htmlContent += "table td,th{ padding-top:10px; }";
+        htmlContent += ".heading-kaadaisoft{ color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; font-size:32px; }";
+        htmlContent += ".printuse{ text-align:center; }";
+        htmlContent += "</style></head><" + "body>";
+        htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
+        htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
+        htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>" + receiptId + "</td></tr>";
+        htmlContent += "<tr><td style='font-weight:bold;'>" + paymentDate + "</td></tr>";
+        htmlContent += divContents;
+        htmlContent += "</table></div></" + "body></" + "html>";
+
+        printWindow.document.write(htmlContent);
         printWindow.document.close();
+        printWindow.focus();
         setTimeout(function() {
-            printWindow.focus();
             printWindow.print();
             printWindow.close();
         }, 500);

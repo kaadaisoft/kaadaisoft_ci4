@@ -16,10 +16,10 @@
 <body>
     <div class="forgot-container text-center">
         <h3 class="mb-4">Forgot Password</h3>
-        <p class="text-muted">Enter your registered Mobile Number to receive an OTP on your email.</p>
+        <p class="text-muted">Enter your registered Mobile / Aadhar Number to receive an OTP on your email.</p>
         <form action="<?= base_url('send-otp') ?>" method="POST">
             <div class="form-group">
-                <input type="text" name="identifier" class="form-control" placeholder="Mobile Number" required>
+                <input type="text" name="identifier" class="form-control" placeholder="Mobile / Aadhar Number" required>
             </div>
             <button type="submit" class="btn btn-primary mt-3">Send OTP</button>
         </form>

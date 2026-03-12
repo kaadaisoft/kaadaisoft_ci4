@@ -22,12 +22,12 @@
       background-color:rgb(230, 230, 230);
      }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
      .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -123,11 +123,12 @@
       }
 
       #members-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -177,11 +178,12 @@
 
 
       #updatemember-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -200,7 +202,7 @@
         background-color: rgb(239, 236, 236);
      }
      .member-text{
-      color: rgb(120, 50, 186);
+      color: rgb(0, 123, 255);
      }
 
      .updatemember{
@@ -214,7 +216,7 @@
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -230,7 +232,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
      .updatemember:hover .updatetooltip{
         visibility:visible;
@@ -238,7 +240,7 @@
      .trashtooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -254,7 +256,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186); transparent;
+          border-color:transparent transparent rgb(0, 123, 255); transparent;
      }
      .trashmember:hover .trashtooltip{
         visibility:visible;
@@ -384,6 +386,36 @@
       }
 
 
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { 
+          position: fixed;
+          top: 0;
+          width: 100%;
+          z-index: 1050;
+          height: auto; 
+          flex-wrap: wrap; 
+          padding: 5px 0 !important;
+      }
+      .main-body-row { 
+          margin-top: 130px !important; /* Adjust for stacked top bar elements */
+          flex-direction: column; 
+          overflow: auto; 
+      }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+      #ps-logo, #search-bar { width: 100% !important; }
+    }
+
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
         display: none;
@@ -392,55 +424,31 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-color: white;
+        background-color: #0f172a;
         z-index: 9999;
         overflow-y: auto;
-        animation: slideIn 0.3s ease-out;
     }
-
-    @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-    }
-
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 30px;
-        cursor: pointer;
-        color: #333;
-    }
-
-    #mobile-menu-content {
-        padding-top: 60px; /* Space for close button */
-    }
-    
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-        #menu-bar {
-            display: none;
-        }
-    }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #cbd5e1; }
+    #mobile-menu-content { padding-top: 60px; }
   </style>
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
+<div id="pageheight" class="layout-container container-fluid p-0">
       
 <?= view('notification_toast') ?>
 
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+      <div id="ps-logo" class="col-md-3 d-flex align-items-center justify-content-start ps-2">
                
       
 
         </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+        <div id="search-bar" class="col-md-9 d-flex align-items-center justify-content-between px-3">
 
 
        
@@ -449,14 +457,14 @@
       </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar"><!----------side-bar-------------------->
        
               
          </div><!-----------side-bar-end-------------->
             
-         <div id="pagecontrol" class="col-md-10"><!-----------main-dashboard------------------------->
+         <div id="pagecontrol" class="main-content-area"><!-----------main-dashboard------------------------->
          
          <div class="container-fluid px-4 pt-4 d-flex justify-content-between memberpadd">
            
@@ -692,14 +700,16 @@
 
 <!------------------------show-member-data------------------------->
 <div id="showmembers" class="modal fade">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
-   <div class="modal-content">
-     <div class="modal-header">
-     <h4>Member details:</h4>
-     <button class="btn btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+   <div class="modal-content border-0 shadow-lg">
+     <div class="modal-header bg-white border-bottom pb-3">
+        <h4 class="modal-title d-flex align-items-center m-0" style="font-weight: 600; color: #2c3e50;">
+            <i class="fa-solid fa-user text-primary me-3"></i> Member Details
+        </h4>
+        <button class="btn btn-close" data-bs-dismiss="modal"></button>
      </div>
 
-     <div id="memberdata" class="modal-body">
+     <div id="memberdata" class="modal-body p-0">
      
      </div>
 
@@ -1141,37 +1151,67 @@ function setDropdownpanchayat(taluk){
         data:{"id":id},
         success:function(result){
         let member_data = JSON.parse(result);
-        document.getElementById("memberdata").innerHTML = `<div class="container-fluid px-4 py-2">   
-            <h3 style="font-weight:500;">${member_data.Role == "coordinator" ? "Coordinator Details:" : "Member Details"}</h3> 
-            <div class="row">
-              <div class="col-md-4">
-                  <img style="width:200px;height:200px;" src="assets/membersdocuments/${member_data.Memberimage} alt="assets/membersdocuments/${member_data.Memberimage}">
-                  <div class="mt-4">
-                    <button data-bs-toggle="modal" data-bs-target="#showmembersdocuments" class="btn btn-primary fw-bold" onclick="viewMemberdocuments('${member_data.Aadharfrontimage}','${member_data.Aadharbackimage}','${member_data.Communitycertificate}')">View Documents</button>
-
-                    <button data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-primary fw-bold" onclick="viewMembereventparticipation('${member_data.Familymembershipid}')">Event Partcipation</button>
-                  </div>
-              </div>  
-              <div class="col-md-8">
-            <table id="coord_data" class="table table-bordered border-dark">
-                <thead>
-                    <tr><th>Name:</th><td>${member_data.Name}</td></tr>
-                    <tr><th>Familymembershipid:</th><td class="text-primary fw-bold">${member_data.Familymembershipid}</td></tr>
-                    <tr><th style="vertical-align:middle;">Address:</th><td>
-                        <ul class="list-unstyled">
-                        <li>${member_data.Doornumber}</li></li>
-                        <li>${member_data.Street}</li>
-                        <li>${member_data.Village}</li>
-                        <li>${member_data.Taluk}</li>
-                        <li>${member_data.District} - ${member_data.Pincode}</li>
-                        <li>${member_data.State}</li></td>
-                        </ul>
-                    </tr>
-                </thead>
-            </table>
-            </div>  
-            </div>
-            </div> `;
+        document.getElementById("memberdata").innerHTML = `
+            <div class="p-4 bg-white rounded-bottom">
+                
+                <div class="row align-items-center bg-light rounded shadow-sm py-4 border">
+                    <div class="col-md-4 text-center mb-4 mb-md-0 border-end">
+                        <div class="position-relative d-inline-block">
+                            <img class="img-fluid rounded-circle mb-2 shadow-sm bg-white p-1" style="width:160px;height:160px;object-fit:cover;" src="assets/membersdocuments/${member_data.Memberimage}" alt="Member Image" onerror="this.onerror=null; this.src=''; this.alt='Member Image';">
+                        </div>
+                        <div class="d-flex flex-column gap-3 mt-4 px-xl-4 pb-2">
+                            <button data-bs-toggle="modal" data-bs-target="#showmembersdocuments" class="btn btn-outline-primary fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMemberdocuments('${member_data.Aadharfrontimage}','${member_data.Aadharbackimage}','${member_data.Communitycertificate}')">
+                                <i class="fa-solid fa-file-lines me-2"></i> View Documents
+                            </button>
+                            <button data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMembereventparticipation('${member_data.Familymembershipid}')">
+                                <i class="fa-solid fa-calendar-check me-2"></i> Event Participation
+                            </button>
+                            ${member_data.Role != 'coordinator' ? `
+                            <button data-bs-dismiss="modal" class="btn btn-outline-warning fw-bold text-dark py-2 rounded bg-white shadow-sm" onclick="showupdatecoordsmodal('${member_data.Familymembershipid}')">
+                                <i class="fa-solid fa-user-pen me-2"></i> Update Details
+                            </button>
+                            ` : ''}
+                        </div>
+                     </div>  
+                    <div class="col-md-8">
+                        <div class="card border-0 bg-transparent h-100">
+                            <div class="card-body p-0 p-lg-4">
+                                <table class="table table-borderless align-middle mb-0" style="font-size: 1.05rem;">
+                                    <tbody>
+                                        <tr>
+                                            <th width="35%" class="text-secondary py-3 fw-bold">Name:</th>
+                                            <td class="fw-bold text-primary fs-5 py-3">${member_data.Name}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fw-bold">Family Membership ID:</th>
+                                            <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm">${member_data.Familymembershipid}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fw-bold" style="vertical-align:top;">Address:</th>
+                                            <td class="py-3 fw-medium text-dark">
+                                                <ul class="list-unstyled mb-0" style="line-height: 2;">
+                                                    <li><i class="fa-solid fa-house fa-fw text-primary me-2"></i> ${member_data.Doornumber}, ${member_data.Street}</li>
+                                                    <li><i class="fa-solid fa-location-dot fa-fw text-primary me-2"></i> ${member_data.Village}, ${member_data.Taluk}</li>
+                                                    <li><i class="fa-solid fa-map-pin fa-fw text-primary me-2"></i> ${member_data.District} - ${member_data.Pincode}</li>
+                                                    <li><i class="fa-solid fa-map fa-fw text-primary me-2"></i> ${member_data.State}</li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fw-bold">Phone:</th>
+                                            <td class="py-3 fw-medium text-dark">${member_data.Phonenumber ? member_data.Phonenumber : ''}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary py-3 fw-bold">Aadhar:</th>
+                                            <td class="py-3 fw-medium text-dark">${member_data.Aadharnumber ? member_data.Aadharnumber : ''}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>`;
         let membermodal = new bootstrap.Modal(document.getElementById("showmembers"),{backdrop:"static",keyboard:false});
         membermodal.show();
         },
@@ -1181,17 +1221,30 @@ function setDropdownpanchayat(taluk){
       })
   }
 
- function viewMemberdocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
-         document.getElementById("showdocuments").innerHTML = `<div><p>Aadhar Front Image:</p><a href="assets/membersdocuments/${aadharfrontimage}">
-         <img style="width:300px;height:200px;" src="assets/membersdocuments/${aadharfrontimage}"></a></div>
-         <div>
-         <p>Aadhar Back Image:</p>
-         <a href="assets/membersdocuments/${aadharfrontimage}">
-         <img style="width:300px;height:200px;" src="assets/membersdocuments/${aadharbackimage}"></a></div>
-         <div>
-         <p>Communitycertificate:</p>
-         <a href="assets/membersdocuments/${communitycertificate}">
-         <img style="width:200px;height:300px;" src="assets/membersdocuments/${aadharfrontimage}"></a></div>`;
+    function viewMemberdocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
+         document.getElementById("showdocuments").innerHTML = `
+         <div class="d-flex flex-wrap justify-content-center gap-4 py-3">
+             <div class="text-center">
+                 <p class="fw-bold text-secondary mb-2">Aadhar Front Image:</p>
+                 <a href="assets/membersdocuments/${aadharfrontimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharfrontimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 </a>
+             </div>
+             
+             <div class="text-center">
+                 <p class="fw-bold text-secondary mb-2">Aadhar Back Image:</p>
+                 <a href="assets/membersdocuments/${aadharbackimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharbackimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 </a>
+             </div>
+             
+             <div class="text-center">
+                 <p class="fw-bold text-secondary mb-2">Community Certificate:</p>
+                 <a href="assets/membersdocuments/${communitycertificate}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${communitycertificate}" onerror="this.src=''; this.alt='Image Not Found';">
+                 </a>
+             </div>
+         </div>`;
     }
 
     function viewMembereventparticipation(id) {

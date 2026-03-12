@@ -14,7 +14,8 @@
       .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
      .ps-gray{
         background-color: rgb(248, 245, 245);
@@ -26,12 +27,12 @@
       background-color:rgb(230, 230, 230);
      }
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
      .ps-user{
     background-color: rgb(254, 213, 163);;
@@ -93,6 +94,130 @@
         border-radius: 20px;
         /* border: solid 3px rgba(54, 162, 235, 1); */
         background: white;
+      }
+
+      #search-bar { padding: 0 !important; }
+      
+      .ps-add-btn {
+        border: none;
+        outline: none;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .ps-add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        filter: brightness(1.2);
+      }
+
+      /* Modern Table Styling */
+      .table-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .custom-table-modern {
+        margin-bottom: 0;
+        min-width: 600px;
+      }
+      .custom-table-modern thead th {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        padding: 16px;
+        border: none;
+        text-align: center;
+      }
+      .custom-table-modern tbody tr {
+        transition: all 0.2s ease;
+      }
+      .custom-table-modern tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.002);
+        box-shadow: inset 4px 0 0 #3b82f6;
+      }
+      .custom-table-modern td {
+        padding: 16px;
+        vertical-align: middle;
+        color: #334155;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: center;
+      }
+
+      .event-banner-wrapper {
+        position: relative;
+        width: 80px;
+        height: 50px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #f1f5f9;
+        cursor: pointer;
+      }
+      .event-banner-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .banner-change-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.85);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 600;
+        text-align: center;
+        padding: 5px 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        z-index: 5;
+      }
+      .event-banner-wrapper:hover .banner-change-overlay {
+        opacity: 1;
+      }
+
+      .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.2s;
+        margin: 0 4px;
+      }
+      .btn-edit-modern {
+        background-color: #eff6ff;
+        color: #2563eb;
+      }
+      .btn-edit-modern:hover {
+        background-color: #2563eb;
+        color: #fff;
+      }
+      .btn-delete-modern {
+        background-color: #fef2f2;
+        color: #dc2626;
+      }
+      .btn-delete-modern:hover {
+        background-color: #dc2626;
+        color: #fff;
       }
 
       #search-bar{
@@ -201,104 +326,137 @@
         z-index: 10;
       }
 
-      .form-grid{
-        grid-template-rows:repeat(auto-fit,minmax(50px,auto));
+      /* Fixed Layout Adjustments */
+      .layout-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .top-navbar-row {
+        height: auto;
+        min-height: 70px;
+        flex-shrink: 0;
+        z-index: 1050;
+        background: #0f172a;
+        display: flex;
+        align-items: stretch;
+        margin: 0;
+      }
+      .main-body-row {
+        flex-grow: 1;
+        display: flex;
+        overflow: hidden;
+        margin: 0;
+      }
+      #menu-bar {
+        height: 100%;
+        overflow-y: auto;
+        flex-shrink: 0;
+        background-color: rgb(248, 245, 245);
+        border-right: 1px solid #e2e8f0;
+        padding: 0;
+      }
+      .main-content-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        height: 100%;
+        background-color: #f8fafc;
+        padding-bottom: 50px;
       }
 
-      #events-modal-hide{
-        position: absolute;
+      @media screen and (max-width: 768px) {
+        .top-navbar-row { height: auto; flex-direction: column; }
+        .main-body-row { flex-direction: column; }
+        #menu-bar { display: none; }
+        .main-content-area { width: 100% !important; }
+      }
+
+      /* Premium Modal Styling */
+      .events-modal {
+        position: fixed;
         width: 100%;
-        height:100%;
-        top:0;
-        left:-100%;
-        transition:0.4s;
-        transition-timing-function:ease;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 30px 0;
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .events-modal{
-        padding:10px 0;
-        background-color:rgba(128, 128, 128, 0.4);
-        overflow:hidden;
-      }
-      #eventtoast{
-        position:absolute;
-        top:10%;
-        right:-380px;
-        transition:0.5s;
-      }
-
-      #update-event-form div > input{
-         border-radius:50px;
-         border:1px solid rgb(208, 205, 205);
-         outline:none;
-         padding:13px 10px;
-      }
-
-      #update-event-form div > button{
-        border-radius:50px;
-      }
-
-      #update-event-section{
-        width:42%;
-        border-radius:25px;
-        box-sizing:border-box;
-        padding:3%;
+      .modal-box-premium {
+        background: #fff;
+        width: 95%;
+        max-width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         position: relative;
+        padding: 0 !important;
+        margin: auto;
+        overflow: hidden;
+        animation: modalScale 0.3s ease-out;
       }
 
-      .form-grid{
-        grid-template-rows:repeat(auto-fit,minmax(50px,auto));
+      @keyframes modalScale {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
       }
 
-      #updateevent-modal-hide{
-        position: absolute;
+      .modal-header-premium {
+        padding: 20px 30px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .modal-body-premium {
+        padding: 30px;
+      }
+
+      .input-style {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 12px 16px !important;
+        transition: all 0.3s ease;
+      }
+
+      .input-style:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+      }
+
+      .btn-save-premium {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s;
         width: 100%;
-        height:100%;
-        top:0;
-        left:-100%;
-        transition:0.4s;
-        transition-timing-function:ease;
+        margin-top: 10px;
       }
 
-      .updateevent-modal{
-        padding:10px 0;
-        background-color:rgba(128, 128, 128, 0.4);
-        overflow:hidden;
+      .btn-save-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        filter: brightness(1.1);
       }
 
       .active-events{
         background-color:rgb(230, 230, 230);
         font-weight:600;
       }
-      #updateeventbanner-modal-hide{
-        position: absolute;
-        width: 100%;
-        height:100%;
-        top:0;
-        left:-100%;
-        transition:0.4s;
-        transition-timing-function:ease;
-      } 
-      #update-event-banner div > input{
-         border-radius:50px;
-         border:1px solid rgb(208, 205, 205);
-         outline:none;
-         padding:13px 10px;
-      }
 
-      #update-event-banner div > button{
-        border-radius:50px;
-      }
-
-      #update-eventbanner-section{
-        width:42%;
-        border-radius:25px;
-        box-sizing:border-box;
-        padding:3%;
-        position: relative;
-      }
-   
-      .updateevent{
+      .updateevent {
         position: relative;
       }
 
@@ -309,7 +467,7 @@
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -325,7 +483,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
      .updateevent:hover .updatetooltip{
         visibility:visible;
@@ -333,7 +491,7 @@
      .trashtooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -349,7 +507,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186); transparent;
+          border-color:transparent transparent rgb(0, 123, 255); transparent;
      }
      .trashevent:hover .trashtooltip{
         visibility:visible;
@@ -492,162 +650,146 @@
 </head>
 <body>
         
-<div class="container-fluid" style="position:absolute;overflow:hidden;">
+<div class="container-fluid layout-container p-0">
 
 <?= view('notification_toast') ?>
       
-
-      <div class="row"><!-----top-bar--------------->
-
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
-               
-        </div>
-
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-        </div>
-        </div><!-----------top-bar-end----------------------->
-
-
-        <div class="row"><!----------main-navbar----------->
-
-        <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->  
-       
-              
-         </div><!-----------side-bar-end-------------->
-            
-         <div style="overflow:auto;" class="col-md-10 h-100"><!-----------main-dashboard------------------------->
-         
-         <div class="container-fluid px-4 pt-4 d-flex justify-content-between eventpadd">
-         <span class="h5">Events</span>    
-         <div>
-         <button <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> onclick = "showeventsmodal()" class='ps-add-btn float-end text-white py-1 px-4'>+&nbsp;Add</button>
-         </div>
-         </div>
-         
-        <div style="overflow:auto" class="container-fluid pt-3 px-4 eventpadd"><!----------------table-------->
-        <table class="table table-responsive table-bordered">
-            <thead>
-              <caption class="fw-bold" style="caption-side: top">Total Events: <?php echo count($events)?></caption>
-            <tr style="font-size:18px;" class="ps-gray">
-            <th>S.No</th><th>EventName</th><th>Banner</th><th>From</th><th>To</th><th>TaxAmount</th><th class='text-center' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>Actions</th>
-            </tr>
-            </thead>
-            <tbody id="ps-events">
-              
-            </tbody>
-            </table>
-
-        </div> <!----------------table-end------->
-
-        <div class='d-flex justify-content-center container-fluid page'> <!-----------------pagination---------------------->
-        
-        <div id="eventsPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center">
-
-        </div>
-        </div><!--------------pagination-end--------------------->
-
-        </div><!-----------main-dashboard-end------------------------>
-
-
-        </div><!--------------main-navbar-end------------------->
-
+      <!-- Top Bar -->
+      <div class="row top-navbar-row">
+          <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
+              <!-- Content loaded via AJAX -->
+          </div>
+          <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+              <!-- Content loaded via AJAX -->
+          </div>
       </div>
+
+      <!-- Main Body -->
+      <div class="row main-body-row">
+          <div id="menu-bar" class="col-md-2 ps-gray">
+              <!-- Content loaded via AJAX -->
+          </div>
+            
+          <div class="main-content-area col-md-10">
+              <div class="container-fluid px-4 pt-4 d-flex justify-content-between eventpadd">
+                  <span class="h5 fw-bold">Events Management</span>    
+                  <div>
+                      <button <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> onclick="showeventsmodal()" class='ps-add-btn float-end text-white py-2 px-4'>
+                          <i class="fa-solid fa-plus me-2"></i>Add New Event
+                      </button>
+                  </div>
+              </div>
+         
+              <div class="container-fluid pt-3 px-4 eventpadd"><!----------------table-------->
+                  <div class="table-container mb-4">
+                      <table class="table custom-table-modern">
+                          <thead>
+                              <tr>
+                                  <th>S.No</th>
+                                  <th>Event Name</th>
+                                  <th>Banner</th>
+                                  <th>Duration</th>
+                                  <th>Tax Amount</th>
+                                  <th class='text-center' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>Actions</th>
+                              </tr>
+                          </thead>
+                          <tbody id="ps-events">
+                          </tbody>
+                      </table>
+                  </div>
+                  <div class="small text-muted mb-4 px-2">Total Events: <strong><?php echo count($events)?></strong></div>
+              </div> <!----------------table-end------->
+
+              <div class='d-flex justify-content-center container-fluid page mb-5'> <!-----------------pagination---------------------->
+                  <div id="eventsPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center">
+                  </div>
+              </div><!--------------pagination-end--------------------->
+          </div><!-----------main-content-area-end------------------------>
+      </div><!--------------main-body-row-end------------------->
+</div><!--------------layout-container-end------------------->
 <!-----------------------Add-Events-modal-------------------------------------------->
 <div id="events-modal-hide" class="events-modal">
-    <div id="add-events-form" class="bg-white py-4 px-5">
-        <div class="pb-4">  
-            <span class="fs-5" style="color: #2c3e50;">Add Events</span>
-            <button onclick="hideEventsform()" class="float-end btn btn-close"></button>
+    <div id="add-events-form" class="modal-box-premium">
+        <div class="modal-header-premium">
+            <h5 class="m-0 fw-bold" style="color: #1e293b;">Add New Event</h5>
+            <button onclick="hideEventsform()" class="btn-close" style="font-size: 0.8rem;"></button>
         </div>
 
-        <form id="events-form" name="eventform" method="POST" action="<?=base_url("events/addevent");?>" onsubmit="return eventValidate()" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="eventname" class="form-label">Event Name</label>
-                <input type="text" onkeyup="validateEvent(this)" class="form-control input-style p-3" id="eventname" placeholder="Enter the Event" name="eventname" required>
-                <small id="eventnameerror" style="color:red;"></small>
-            </div>
+        <div class="modal-body-premium">
+          <form id="events-form" name="eventform" method="POST" action="<?=base_url("events/addevent");?>" onsubmit="return eventValidate()" enctype="multipart/form-data">
+              <div class="mb-4">
+                  <label for="eventname" class="form-label small fw-bold text-muted text-uppercase">Event Name</label>
+                  <input type="text" onkeyup="validateEvent(this)" class="form-control input-style" id="eventname" placeholder="e.g. Event_2026" name="eventname" required>
+                  <small class="text-primary d-block mt-1" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info me-1"></i>Note: Year should be at the end of the event name (e.g. Event_2026).</small>
+                  <small id="eventnameerror" class="text-danger mt-1 d-block"></small>
+              </div>
 
-            <div class="mb-3">
-                <label for="eventimage" class="form-label">Image</label>
-                <input type="file" onchange="uploadFile(this)" accept="image/jpg,image/jpeg,image/png" class="form-control input-style file-input p-3" id="eventimage" name="eventimage" required>
-                <small id="eventimageerror" style="color:red;" class="mt-1 eventimage"></small>
-                <div class="mt-1">
-                    <span style="color:#295CF5; font-size: 0.85rem;">Note: File Size should be below 2MB.</span>
-                </div>
-            </div>
+              <div class="mb-4">
+                  <label for="eventimage" class="form-label small fw-bold text-muted text-uppercase">Event Banner</label>
+                  <input type="file" onchange="uploadFile(this)" accept="image/jpg,image/jpeg,image/png" class="form-control input-style" id="eventimage" name="eventimage" required>
+                  <div class="mt-2">
+                      <span class="text-primary small" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info me-1"></i>Note: Max file size 2MB (JPG, PNG).</span>
+                  </div>
+                  <small id="eventimageerror" class="text-danger mt-1 d-block"></small>
+              </div>
 
-            <div class="form-group mb-3">
-                <label class="form-label">Due Date</label>
-                <div class="row">
-                    <div class="col">
-                        <label for="date_from">From</label>
-                        <input type="date" class="form-control input-style p-3" id="date_from" name="event_date_from" required>
-                    </div>
+              <div class="mb-4">
+                  <label class="form-label small fw-bold text-muted text-uppercase d-block">Duration</label>
+                  <div class="row g-3">
+                      <div class="col-6">
+                          <label for="date_from" class="small text-muted mb-1">From</label>
+                          <input type="date" class="form-control input-style" id="date_from" name="event_date_from" required>
+                      </div>
+                      <div class="col-6">
+                          <label for="date_to" class="small text-muted mb-1">To</label>
+                          <input type="date" class="form-control input-style" id="date_to" name="event_date_to" required>
+                      </div>
+                  </div>
+              </div>
 
-                    <div class="col">
-                        <label for="date_to">To</label>
-                        <input type="date" class="form-control input-style p-3" id="date_to" name="event_date_to" required>
-                    </div>
-                </div>
+              <div class="mb-4">
+                  <label for="taxamount" class="form-label small fw-bold text-muted text-uppercase">Tax Amount (₹)</label>
+                  <input type="number" name="eventtaxamount" class="form-control input-style" id="taxamount" placeholder="0.00" required>
+                  <small id="eventamounterror" class="text-danger mt-1 d-block"></small>
+              </div>
 
-            </div>
-
-            <div class="mb-3">
-                <label for="eventtaxamount" class="form-label">Tax Amount</label>
-                <input type="number" name="eventtaxamount" class="form-control input-style p-3" id="taxamount" placeholder="Enter Tax amount" required>
-                <small id="eventamounterror" style="color:red;" class="mt-1 taxamount"></small>
-            </div>
-
-            <button type="submit" id="eventaddbtn" name="addeventsubmit" class="btn btn-primary rounded-pill px-2">Save</button>
-        </form>
+              <button type="submit" id="eventaddbtn" name="addeventsubmit" class="btn-save-premium">Create Event</button>
+          </form>
+        </div>
      </div>
-     </div>   
-<!-----------------------------Add-Eventsmodal-end-------------------------------->
-
-
-<!---------------------offcanvas-------------------------->
-
-<!---------------------Custom Mobile Menu-------------------------->
-<div id="custom-mobile-menu">
-    <div class="close-btn" onclick="closeMobileMenu()">&times;</div>
-    <div id="mobile-menu-content">
-        <!-- Content loaded via JS -->
-    </div>
 </div>
-<!---------------------Custom Mobile Menu End-------------------------------->
-
-<!---------------------offcanvas-end-------------------------------->
 
 <!-----------------------update-Events-modal-------------------------------------------->
 <div id="updateevent-modal-hide" class="events-modal">
-    <div id="update-event-section" class="bg-white py-4 px-5">
-        <div class="pb-4">  
-            <span id="updatebanner" class="fs-5" style="color: #2c3e50;">Update Event</span>
-            <button onclick="hideupdateEventform()" class="float-end btn btn-close"></button>
+    <div id="update-event-section" class="modal-box-premium">
+        <div class="modal-header-premium">
+            <h5 class="m-0 fw-bold" style="color: #1e293b;">Update Event Details</h5>
+            <button onclick="hideupdateEventform()" class="btn-close" style="font-size: 0.8rem;"></button>
         </div>
         
-        <form id="update-event-form" method="post" onsubmit="eventUpdatevalidate()" action="<?=base_url("events/updateevent")?>"  name="updateeventform" >
-            
-        </form>
+        <div class="modal-body-premium">
+          <form id="update-event-form" method="post" onsubmit="eventUpdatevalidate()" action="<?=base_url("events/updateevent")?>" name="updateeventform">
+              <!-- Content loaded via AJAX -->
+          </form>
+        </div>
      </div>
-     </div>   
-<!-----------------------------update-Eventsmodal-end-------------------------------->
+</div>
 
 <!-----------------------update-banner-modal-------------------------------------------->
 <div id="updateeventbanner-modal-hide" class="events-modal">
-    <div id="update-eventbanner-section" class="bg-white py-4 px-5">
-        <div class="pb-4">  
-            <span class="fs-5" style="color: #2c3e50;">Update Event</span>
-            <button onclick="hideupdateEventbannerform()" class="float-end btn btn-close"></button>
+    <div id="update-eventbanner-section" class="modal-box-premium">
+        <div class="modal-header-premium">
+            <h5 class="m-0 fw-bold" style="color: #1e293b;">Update Event Banner</h5>
+            <button onclick="hideupdateEventbannerform()" class="btn-close" style="font-size: 0.8rem;"></button>
         </div>
         
-        <form id="update-event-banner" method="post" enctype="multipart/form-data" action="<?=base_url("events/updateeventbanner")?>">
-            
-        </form>
+        <div class="modal-body-premium">
+          <form id="update-event-banner" method="post" enctype="multipart/form-data" action="<?=base_url("events/updateeventbanner")?>">
+              <!-- Content loaded via AJAX -->
+          </form>
+        </div>
      </div>
-     </div>   
+</div>
 <!-----------------------------update-banner-end-------------------------------->
     
 <!--------------------------delete-modal---------------------->
@@ -717,7 +859,7 @@ unset($_SESSION["altereventsindex"]);
 <!-----------------set-index-end----------------->
    <script>
     let eventsData = [];
-    const baseUrl = "<?= base_url() ?>/";
+    const baseUrl = "<?= base_url() ?>";
     <?php if (isset($events) && !empty($events)): ?>
     eventsData = <?php echo json_encode($events); ?> || [];
     <?php endif; ?>
@@ -736,7 +878,6 @@ function renderEvents(data, sNo) {
     let i = sNo + 1;
 
     data.forEach(value => {
-        // Ensure image path is clean
         let imagePath = value.Image;
         if (imagePath && !imagePath.startsWith('http')) {
             imagePath = baseUrl + imagePath;
@@ -744,25 +885,31 @@ function renderEvents(data, sNo) {
 
         html += `
             <tr>
-           <td style='font-weight:500;'>${i}</td>
-                    <td style='font-weight:500;font-size:18px;' class='text-primary'>${value.EventName}</td>
-                    <td>
-                    <div class='rounded-top' style='width:100px;height:100px;'>
-                    <a href='${imagePath}'>
-                    <img class='rounded-top' style='width:100px;height:75px;' src='${imagePath}' alt='${value.EventName}'/>
-                    </a>
-                    <button <?=(session()->get('role') == 2) ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> onclick='showupdateeventbannermodal(${value.Id},\"${value.EventName}\")' style='width:100px;height:25px;outline:none;border:none;' class = 'rounded-bottom text-center bg-dark text-white'>
-                    change
-                    </button>
+                <td class="fw-bold text-muted">${i}</td>
+                <td class="fw-bold text-dark">${value.EventName}</td>
+                <td>
+                    <div class="event-banner-wrapper">
+                        <img class="event-banner-img" src="${imagePath}" alt="${value.EventName}"/>
+                        <button class="banner-change-overlay" <?=(session()->get('role') == 2) ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> 
+                                onclick='showupdateeventbannermodal(${value.Id}, "${value.EventName}")'>
+                            CHANGE
+                        </button>
                     </div>
-                    </td>
-                    <td style='font-weight:500;'>${formatDate(value.From_date)}</td>
-                    <td style='font-weight:500;'>${formatDate(value.To_date)}</td>
-                    <td style='font-weight:500;'>${value.TaxAmount}</td>
-                    <td class='px-3' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>
-                    <div class='d-flex justify-content-evenly'>
-                    <button onclick='showupdateeventmodal(${value.Id})' style='width:30px;height:30px;outline:none;border:none;' class='updateevent text-dark table-btn rounded-circle shadow-sm'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick='deleteevent(${value.Id},\"${value.EventName}\")' style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashevent table-btn rounded-circle shadow-sm'><i class='fa-solid fa-trash-can'></i><span class='trashtooltip'>Trash</span></button></div></td>
+                </td>
+                <td>
+                    <div class="small fw-bold">From: <span class="text-secondary fw-normal">${formatDate(value.From_date)}</span></div>
+                    <div class="small fw-bold">To: <span class="text-secondary fw-normal">${formatDate(value.To_date)}</span></div>
+                </td>
+                <td><span class="badge bg-light text-primary border px-2 py-1">₹ ${value.TaxAmount}</span></td>
+                <td class='text-center' <?=session()->get('role') == 2 ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?>>
+                    <button onclick='showupdateeventmodal(${value.Id})' class='action-btn btn-edit-modern shadow-sm' title="Update">
+                        <i class='fa-regular fa-pen-to-square'></i>
+                    </button>
+                    <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick='deleteevent(${value.Id}, "${value.EventName}")' 
+                            class='action-btn btn-delete-modern shadow-sm' title="Delete">
+                        <i class='fa-solid fa-trash-can'></i>
+                    </button>
+                </td>
             </tr>
         `;
         i++;
@@ -861,7 +1008,6 @@ renderEvents(eventsData.slice(0 ,3), 0);
           }
 
 
-       document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px"; 
 // Mobile Menu Functions
 function openMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -906,39 +1052,53 @@ $.ajax({
       }
     });
 
-    document.getElementById("date_from").addEventListener("change", (event)=>{
-        let fromDate = event.target.value;
-        let toDate = document.getElementById("date_to");
-        toDate.min = fromDate;
-        if(toDate.value < fromDate) {
-          toDate.value = "";
-        }
-    });
+    const today = new Date().toISOString().split('T')[0];
+    const dateFromElement = document.getElementById("date_from");
+    if(dateFromElement) {
+        dateFromElement.min = today;
+        dateFromElement.addEventListener("change", (event)=>{
+            let fromDate = event.target.value;
+            let toDate = document.getElementById("date_to");
+            toDate.min = fromDate || today;
+            if(toDate.value && toDate.value < fromDate) {
+              toDate.value = "";
+            }
+        });
+    }
+
+    const dateToElement = document.getElementById("date_to");
+    if(dateToElement) dateToElement.min = today;
 
      function validateDate() {
         let fromDate = document.getElementById("update_date_from");
         let toDate = document.getElementById("update_date_to");
-        toDate.min = fromDate.value;
-        if(toDate.value < fromDate.value) {
-          toDate.value = "";
+        const currDate = new Date().toISOString().split('T')[0];
+        
+        if(fromDate) fromDate.min = currDate;
+        
+        if(fromDate && toDate) {
+            toDate.min = fromDate.value || currDate;
+            if(toDate.value && toDate.value < fromDate.value) {
+              toDate.value = "";
+            }
         }
     }
 
-function commonSearch(events){
-         
-         let searchfields = events.value;
- 
-         $.ajax({
-           type:"get",
-           url:"events/searchEvents",
-           data:{"searchfields":searchfields},
-           success:(result)=>{
-             document.getElementById('ps-events').innerHTML = result;
-           },
-           error:(error)=>{
-             document.getElementById('ps-events').innerHTML = "Error fetching data";
-           }
-        })}; 
+    function commonSearch(events) {
+        let searchfields = events.value;
+
+        $.ajax({
+            type: "get",
+            url: baseUrl + "events/searchevents",
+            data: { "searchfields": searchfields },
+            success: (result) => {
+                document.getElementById('ps-events').innerHTML = result;
+            },
+            error: (error) => {
+                document.getElementById('ps-events').innerHTML = "<tr><td colspan='6' class='text-center text-danger py-4'>Error fetching search results</td></tr>";
+            }
+        });
+    }
 
     function displayEvents(counts,index){
         const itemsPerPage = 3;
@@ -959,12 +1119,7 @@ function commonSearch(events){
       renderEvents(eventsData.slice(start, end), start);
     }
 
-    document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-
     window.addEventListener("resize", () => {
-       let topbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
-       document.getElementById("menu-bar").style.height = (window.innerHeight - topbarHeight) + "px";
-       
        let addEventsForm = document.getElementById("add-events-form");
        let updateEventSection = document.getElementById("update-event-section");
        let b = window.innerWidth;
@@ -982,158 +1137,63 @@ function commonSearch(events){
     let showaddevent = document.getElementById("events-modal-hide");
     let showupdateevent = document.getElementById("updateevent-modal-hide");
     let showupdateeventbanner = document.getElementById("updateeventbanner-modal-hide");
-    showaddevent.style.height = 300+innerHeight+"px";
-    showupdateevent.style.height = 100+window.innerHeight+"px";
 
     function showeventsmodal(){
-      let showaddevent = document.getElementById("events-modal-hide");
-      showaddevent.style.display = "block";
-      let formmodal = document.getElementById("add-events-form");
-       let b = window.innerWidth;
-       if( b > 768){
-        showaddevent.style.left = "0%";
-        formmodal.style.left = "29%";
-       }
-       else{
-        showaddevent.style.left = "0%";
-        formmodal.style.left = "5%";
-       }
+      showaddevent.style.left = "0%";
     }
 
     function showupdateeventmodal(id) {
-       let formmodal = document.getElementById("update-event-section");
-       let b = window.innerWidth;
-
        $.ajax({
         type:"get",
         url: baseUrl + "events/getevent",
         data:{"id":id},
         success:(result)=>{
            document.getElementById("update-event-form").innerHTML = result;
+           showupdateevent.style.left = "0%";
         },
         error:(error)=>{
-           document.getElementById("update-event-form").innerHTML = "Error fetching data";
+           psShowToast('error', 'Error fetching data');
         }
       });
-
-       if( b > 768){
-
-        showupdateevent.style.left = "0%";
-        formmodal.style.left = "29%";
-
-       }
-       else{
-        showupdateevent.style.left = "0%";
-        formmodal.style.left = "5%";
-       }
     }
 
     function showupdateeventbannermodal(id,eventname){
-      let formmodal = document.getElementById("update-eventbanner-section");
-      let b = window.innerWidth;
       $.ajax({
         type:"get",
         url: baseUrl + "events/showupdateeventbanner",
         data:{"id":id,"eventname":eventname},
         success:(result)=>{
            document.getElementById("update-event-banner").innerHTML = result;
+           showupdateeventbanner.style.left = "0%";
         },
         error:(error)=>{
-           document.getElementById("update-event-banner").innerHTML = error;
+           psShowToast('error', 'Error fetching banner info');
         }
       });
-      if( b > 768){
-
-      showupdateeventbanner.style.left = "0%";
-      formmodal.style.left = "29%";
-
-      }
-      else{
-      showupdateeventbanner.style.left = "0%";
-      formmodal.style.left = "5%";
-}
-
     }
 
     window.onclick = function(event) {
+      if (event.target == showaddevent) {
+          showaddevent.style.left = "-100%";
+      }
+      else if (event.target == showupdateevent) {
+          showupdateevent.style.left = "-100%";
+      }
+      else if (event.target == showupdateeventbanner) {
+          showupdateeventbanner.style.left = "-100%";
+      }
+    }
 
-    if (event.target == showaddevent) {
-    let formmodal = document.getElementById("add-events-form");
-        let b = window.innerWidth;
-    if( b > 768){
+    function hideEventsform(){
         showaddevent.style.left = "-100%";
-        formmodal.style.left = "-42%";
-       }
-       else{
-        showaddevent.style.left = "-100%";
-        formmodal.style.left = "-90%";
-       }
-       
-    }
-    else if (event.target == showupdateevent) {
-    let formmodal = document.getElementById("update-events-section");
-    let b = window.innerWidth;
-    if( b > 768){
-    showupdateevent.style.left = "-100%";
-    formmodal.style.left = "-42%";
-    }
-    else{
-    showupdateevent.style.left = "-100%";
-    formmodal.style.left = "-90%";
-   }
-   }
-   else if (event.target == showupdateeventbanner) {
-    let formmodal = document.getElementById("update-eventbanner-section");
-    let b = window.innerWidth;
-    if( b > 768){
-    showupdateeventbanner.style.left = "-100%";
-    formmodal.style.left = "-42%";
-    }
-    else{
-    showupdateeventbanner.style.left = "-100%";
-    formmodal.style.left = "-90%";
-   }
-   }
-  }
-
-  function hideEventsform(){
-    let formmodal = document.getElementById("add-events-form");
-        let b = window.innerWidth;
-    if( b > 768){
-        showaddevent.style.left = "-100%";
-        formmodal.style.left = "-42%";
-       }
-       else{
-        showaddevent.style.left = "-100%";
-        formmodal.style.left = "-90%";
-       }
-       
     }
 
     function hideupdateEventform(){
-    let formmodal = document.getElementById("update-event-section");
-        let b = window.innerWidth;
-    if( b > 768){
         showupdateevent.style.left = "-100%";
-        formmodal.style.left = "-42%";
-       }
-       else{
-        showupdateevent.style.left = "-100%";
-        formmodal.style.left = "-90%";
-       }
     }
 
     function hideupdateEventbannerform(){
-    let formmodal = document.getElementById("update-eventbanner-section");
-        let b = window.innerWidth;
-    if( b > 768){
         showupdateeventbanner.style.left = "-100%";
-        formmodal.style.left = "-42%";
-       }
-       else{
-        showupdateeventbanner.style.left = "-100%";
-        formmodal.style.left = "-90%";
-       }
     }
 
     function deleteevent(id,name){
@@ -1180,25 +1240,37 @@ function commonSearch(events){
 
   function validateEvent(event){
       let eventname = event.value;
-      let validatereg = /^[A-Za-z_.]+[0-9]{4}$/;
+      let currentYear = new Date().getFullYear();
+      let validatereg = /^[\w.]+[0-9]{4}$/; 
       let validate = eventname.match(validatereg);
       if(!validate){
-         document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+         document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
       }
       else{
-        document.getElementById("eventnameerror").innerHTML = "";
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+           document.getElementById("eventnameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+        } else {
+           document.getElementById("eventnameerror").innerHTML = "";
+        }
       }
     }
 
     function validateUpdateevent(event){
       let eventname = event.value;
-      let validatereg = /^[A-Za-z_.]+[0-9]{4}$/;
+      let currentYear = new Date().getFullYear();
+      let validatereg = /^[\w.]+[0-9]{4}$/; 
       let validate = eventname.match(validatereg);
       if(!validate){
-         document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+         document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
       }
       else{
-        document.getElementById("eventupdatenameerror").innerHTML = "";
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+           document.getElementById("eventupdatenameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+        } else {
+           document.getElementById("eventupdatenameerror").innerHTML = "";
+        }
       }
     }
 
@@ -1216,8 +1288,16 @@ function commonSearch(events){
        return false;
     }
     else if(!eventname.match(validatereg)){
-        document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+        document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
         return false;
+    }
+    else {
+        let currentYear = new Date().getFullYear();
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+            document.getElementById("eventnameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+            return false;
+        }
     }
 
     if(eventimage == ""){
@@ -1225,12 +1305,12 @@ function commonSearch(events){
        return false;
     }
 
-    if(evenamount == ""){
+    if(taxamount == ""){
        document.getElementById("eventamounterror").innerHTML = "Please enter amount";
        return false;
     }
     else{
-      if(eventamount < 0) {
+      if(taxamount < 0) {
        document.getElementById("eventamounterror").innerHTML = "Please enter valid amount";
        return false;
       }
@@ -1252,17 +1332,25 @@ function commonSearch(events){
     }
     else{
       if(!eventname.match(validatereg)){
-        document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+        document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
         return false;
+      }
+      else {
+        let currentYear = new Date().getFullYear();
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+            document.getElementById("eventupdatenameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+            return false;
+        }
       }
     }
 
-    if(evenamount == "") {
+    if(taxamount == "") {
        document.getElementById("eventupdateamounterror").innerHTML = "Please enter amount";
        return false;
     }
     else{
-      if(eventamount < 0) {
+      if(taxamount < 0) {
        document.getElementById("eventupdateamounterror").innerHTML = "Please enter valid amount";
        return false;
       }
@@ -1308,6 +1396,15 @@ function commonSearch(events){
       document.getElementById('custom-mobile-menu').style.display = 'none';
   }
    </script>
+    <!---------------------Custom Mobile Menu-------------------------->
+    <div id="custom-mobile-menu">
+        <div class="close-btn" onclick="closeMobileMenu()">&times;</div>
+        <div id="mobile-menu-content">
+            <!-- Content loaded via JS -->
+        </div>
+    </div>
+    <!---------------------Custom Mobile Menu End-------------------------------->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> 
     
 </body>

@@ -12,7 +12,8 @@
       .ps-logo{
         display:flex;
         align-items:center;
-        justify-content:center;
+        justify-content:flex-start;
+        padding-left: 20px;
       }
 
      .ps-gray{
@@ -29,13 +30,13 @@
      }
 
      .heading-kaadaisoft{
-        color: rgb(120, 50, 186);
+        color: rgb(0, 123, 255);
         font-weight:800;
         font-family:sans-serif;
      }
 
      .ps-letter{
-        background-color: rgb(120, 50, 186);
+        background-color: rgb(0, 123, 255);
      }
 
      .ps-user{
@@ -125,12 +126,25 @@
         margin-top:5px;
       }
 
-      .ps-add-btn{
-        border:none;
-        outline:none;
-        background-color:rgb(23, 23, 184);
-        border-radius:25px;
-
+      .ps-add-btn {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .ps-add-btn:hover {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
       }
 
       .active-page{
@@ -154,6 +168,86 @@
         background-color:#6495ED;
       }
 
+    /* Modern Premium Table Styling */
+    .table-container-premium {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+    .custom-table-premium {
+      width: 100%;
+      min-width: 1000px;
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .custom-table-premium thead th {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 16px;
+      border: none;
+      text-align: center;
+    }
+    .custom-table-premium tbody tr {
+      transition: all 0.2s ease;
+    }
+    .custom-table-premium tbody tr:hover {
+      background-color: #f8fafc;
+      transform: scale(1.002);
+      box-shadow: inset 4px 0 0 #3b82f6;
+    }
+    .custom-table-premium td {
+      padding: 16px;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    .btn-action-premium {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin: 0 2px;
+    }
+    .btn-action-premium:hover {
+      background: #0f172a;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn-view-premium { color: #2563eb; background: #eff6ff; }
+    .btn-edit-premium { color: #0891b2; background: #ecfeff; }
+    .btn-trash-premium { color: #dc2626; background: #fef2f2; }
+    
+    .btn-view-premium:hover { background: #2563eb; color: #fff; }
+    .btn-edit-premium:hover { background: #0891b2; color: #fff; }
+    .btn-trash-premium:hover { background: #dc2626; color: #fff; }
+
+    .table-container-premium::-webkit-scrollbar {
+      height: 8px;
+    }
+    .table-container-premium::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
       #coords-form div > input{
          border-radius:50px;
          border:1px solid rgb(208, 205, 205);
@@ -173,11 +267,12 @@
       }
 
       #coords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -206,11 +301,12 @@
       }
 
       #assigncoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -248,11 +344,12 @@
       }
 
       #updatecoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -279,7 +376,7 @@
       .updatetooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -296,7 +393,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186) transparent;
+          border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
 
      .updatecoord:hover .updatetooltip{
@@ -306,7 +403,7 @@
      .trashtooltip{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(120, 50, 186);;
+      background-color: rgb(0, 123, 255);;
       color:white;
       border-radius:6px;
       padding:5px 10px;
@@ -323,7 +420,7 @@
           right:50%;
           border:7px;
           border-style:solid;
-          border-color:transparent transparent rgb(120, 50, 186); transparent;
+          border-color:transparent transparent rgb(0, 123, 255); transparent;
      }
 
      .trashcoord:hover .trashtooltip{
@@ -495,20 +592,70 @@
             overflow: visible !important;
           }
       }
+
+      /* ✅ Premium Table Design */
+      .custom-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none !important;
+        margin-top: 20px;
+        background: white;
+      }
+      
+      .custom-table thead th {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        padding: 18px !important;
+        border: none !important;
+        text-align: center;
+        vertical-align: middle;
+      }
+      
+      .custom-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .custom-table tbody tr:hover {
+        background-color: rgba(37, 117, 252, 0.04);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      
+      .custom-table td {
+        padding: 15px !important;
+        vertical-align: middle;
+        border: none !important;
+        color: #555;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .custom-table tbody tr:last-child td {
+        border-bottom: none !important;
+      }
     </style>
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;">
+<div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
 <?= view('notification_toast') ?>
 
-      <div id="side-bar" class="row"><!-----top-bar--------------->
+      <div id="side-bar" class="row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3">
+      <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
                
                </div>
        
-               <div id="search-bar" class="col-md-10 border-bottom">
+               <div id="search-bar" class="col-12 col-md-10 border-bottom border-md-0" style="background: #0f172a;">
        
               
                </div>
@@ -517,12 +664,12 @@
 
         <div id="pagecontrol" class="row"><!----------main-navbar----------->
 
-        <div id="menu-bar" style="height:inherit;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+        <div id="menu-bar" style="overflow-y:auto; overflow-x:hidden;" class="col-md-2 ps-gray"><!----------side-bar-------------------->
        
               
         </div><!-----------side-bar-end-------------->
             
-        <div style="overflow:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
+        <div id="main-dashboard-content" style="overflow-y:auto; padding-bottom:50px; overflow-x:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
          
         <div class="container-fluid px-4 pt-4 d-flex justify-content-between coordpadd">
          <span class="h5">Coordinators</span>
@@ -533,18 +680,19 @@
         </div>
          
         <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
-        <table class="table table-bordered">
-            <thead>
-               <caption class="fw-bold" style="caption-side: top">Total Coordinators: <?php echo count($coordinators)?></caption>
-            <tr style="font-size:18px;" class="ps-gray">
-            <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody id="ps-coords">
-
-            </tbody>
+        <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;">Total Coordinators: <span class="badge bg-primary rounded-pill"><?php echo count($coordinators)?></span></div>
+        <div class="table-container-premium">
+            <table class="custom-table-premium">
+                <thead>
+                <tr>
+                <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="ps-coords">
+    
+                </tbody>
             </table>
-
+        </div>
         </div> <!----------------table-end------->
 
         <div class='d-flex justify-content-center container-fluid'> <!-----------------pagination---------------------->
@@ -687,18 +835,22 @@ function renderCoordinators(data, sNo) {
 
     data.forEach(value => {
         html += `
-            <tr>
-               <td style='font-weight:500;'>${i}</td>
+            <tr style="cursor: pointer;" onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')">
+               <td class='ps-4'>${i}</td>
                     <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td style='font-weight:500;'>${value.Name}</td>
-                    <td style='font-weight:500;'>${value.Phonenumber}</td>
-                    <td style='font-weight:500;'>${value.District}</td>
-                    <td style='font-weight:500;'>${value.Taluk}</td>
-                    <td style='font-weight:500;'>${value.Panchayat}</td>
-                    <td style='font-weight:500;' class='${value.VillageNames ? '' : 'text-center'}'>${value.VillageNames ? value.VillageNames : '-'}</td>
-                    <td class='d-flex justify-content-evenly'>
-                    <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" style='width:30px;height:30px;outline:none;border:none;' class='updatecoord shadow-sm text-dark table-btn rounded-circle'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                    <button onclick ="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" data-bs-toggle='tooltip' title='View Details' style='width:30px;height:30px;outline:none;border:none;' class='table-btn text-dark shadow-sm rounded-circle'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                    <td class='fw-bold text-dark'>${value.Name}</td>
+                    <td>${value.Phonenumber}</td>
+                    <td>${value.District}</td>
+                    <td>${value.Taluk}</td>
+                    <td>${value.Panchayat}</td>
+                    <td class='${value.VillageNames ? '' : 'text-center'}'>
+                        ${value.VillageNames ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' + value.VillageNames + '</span>' : '-'}
+                    </td>
+                    <td onclick="event.stopPropagation();">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
+                            <button onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary rounded-circle' style='width:32px;height:32px;padding:0;' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
+                        </div>
                     </td>
             </tr>`
          i++;
@@ -917,8 +1069,8 @@ function setDropdownpanchayat(taluk){
       });
     }
   
-       document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height) + "px";
-
+   
+   
         function commonSearch(coords){
              
             let searchfields = coords.value;
@@ -1825,6 +1977,24 @@ let searchmemberdata = document.getElementById("searchmemberdata")
           document.getElementById("ps-logo").innerHTML = result;
       }
   });
+
+  // Perfect Sidebar Height Calculation
+  function adjustSidebarHeight() {
+      if(window.innerWidth > 768) {
+          let topBarHeight = document.getElementById("side-bar").offsetHeight || 80;
+          let availableHeight = window.innerHeight - topBarHeight;
+          document.getElementById("menu-bar").style.height = availableHeight + "px";
+          document.getElementById("main-dashboard-content").style.height = availableHeight + "px";
+      } else {
+          document.getElementById("menu-bar").style.height = "auto";
+          document.getElementById("main-dashboard-content").style.height = "auto";
+      }
+  }
+
+  window.addEventListener('load', adjustSidebarHeight);
+  window.addEventListener('resize', adjustSidebarHeight);
+  // Also call it now just in case
+  adjustSidebarHeight();
 
   // Mobile Menu Functions
   function openMobileMenu() {
