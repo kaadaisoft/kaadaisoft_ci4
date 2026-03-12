@@ -187,11 +187,12 @@
       }
 
       #members-modal-hide {
-         position: absolute;
+         position: fixed;
          width: 100%;
          height: 100%;
          top: 0;
          left: -100%;
+         z-index: 2000;
          transition: 0.4s;
          transition-timing-function: ease;
       }
@@ -242,11 +243,12 @@
 
 
       #updatemember-modal-hide {
-         position: absolute;
+         position: fixed;
          width: 100%;
          height: 100%;
          top: 0;
          left: -100%;
+         z-index: 2000;
          transition: 0.4s;
          transition-timing-function: ease;
       }
@@ -553,58 +555,65 @@
           padding-top: 60px; /* Space for close button */
       }
       
-      /* Hide default menu bar on mobile */
+      /* Fixed Premium Layout */
+      html, body { height: 100%; margin: 0; overflow: hidden; }
+      .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+      .top-navbar-row { height: auto; min-height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; flex-wrap: wrap; align-items: stretch; margin: 0; border-bottom: 1px solid #1e293b; }
+      .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; width: 100%; }
+      #menu-bar { height: 100%; overflow-y: auto; flex-shrink: 0; padding: 0; }
+      .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
       @media screen and (max-width: 768px) {
-          #menu-bar {
-              display: none;
+          .top-navbar-row { 
+              position: fixed;
+              top: 0;
+              width: 100%;
+              z-index: 1050;
+              flex-direction: column;
           }
-          #pageheight {
-            position: relative !important;
-            height: auto !important;
-            overflow: visible !important;
+          .main-body-row { 
+              margin-top: 130px !important; /* Adjust for stacked top bar elements */
+              flex-direction: column; 
+              overflow: auto; 
           }
-          #pagecontrol {
-            max-height: none !important;
-            overflow: visible !important;
-          }
-          div[style*="height: 75vh"] {
-            height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-          }
+          #menu-bar { display: none; }
+          .main-content-area { width: 100%; overflow: visible; }
+          html, body { overflow: auto; height: auto; }
+          .layout-container { height: auto; }
+          #ps-logo, #search-bar { width: 100% !important; }
       }
     </style>
 </head>
 
 <body>
 
-   <div id="pageheight" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
+   <div id="pageheight" class="container-fluid layout-container p-0">
 
       <?= view('notification_toast') ?>
 
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-         <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
+         <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
 
          </div>
 
-         <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+         <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
 
          </div>
 
       </div><!-----------top-bar-end----------------------->
 
 
-      <div class="row"><!----------main-navbar----------->
+      <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
 
 
          </div><!-----------side-bar-end-------------->
 
-         <div id="main-dashboard-content" style="overflow-y:auto; height:calc(100vh - 80px); padding-bottom:50px;" class="col-md-10">
+         <div id="main-dashboard-content" class="col-md-10 main-content-area">
             <!-----------main-dashboard------------------------->
 
             <div id="btn-header" class="container-fluid px-4 pt-4 d-flex justify-content-md-end justify-content-center memberpadd">
@@ -648,7 +657,10 @@
                           </div>
                       </form>
                       <div class="mt-3 small text-muted">
-                        <i class="fas fa-info-circle me-1 text-info"></i> Please ensure your Excel file matches the required template format before uploading.
+                        <i class="fas fa-info-circle me-1 text-info"></i> Please ensure your Excel file matches the required template format before uploading. 
+                        <a href="<?= base_url('bulk_upload/download_sample') ?>" class="text-primary fw-bold text-decoration-none ms-2">
+                            <i class="fas fa-download me-1"></i>Download Sample Format
+                        </a>
                       </div>
                    </div>
                 </div>

@@ -272,6 +272,7 @@
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -305,6 +306,7 @@
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -347,6 +349,7 @@
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }

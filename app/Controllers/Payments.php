@@ -4,7 +4,10 @@ namespace App\Controllers;
 use App\Models\PaymentsModel;
 use App\Models\AdminDashboardModel;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Exception;
 
 class Payments extends BaseController {
@@ -167,7 +170,8 @@ class Payments extends BaseController {
                 '', '', '', '',          // banknameforcheckque, checkqueno, upi, cashtype
                 $balanceamount,          // computed: TaxAmount - Collectedamount
                 $paymentdate,
-                'coordinator'
+                'coordinator',
+                'System/Bulk'
             );
 
             if ($savereceipt !== false) {
@@ -185,6 +189,54 @@ class Payments extends BaseController {
         );
 
         return redirect()->to('payments');
+    }
+
+    public function download_payment_sample() {
+        if (!$this->session->has('Kaadaisoft_userId')) {
+            return redirect()->to('/');
+        }
+        
+        $filename = "sample_bulk_payment_format.xlsx";
+        $headers = ['Familymembershipid', 'EventName', 'EventId', 'paymentdate', 'paidamount', 'membername', 'mobile', 'membertaluk', 'paymenttype', 'transactionid', 'bankname'];
+        
+        $sample_data = [
+            ['NMK00001', 'Sample Event 2025', '12', '2025-05-20', '500', 'John Doe', '9876543210', 'Erode', 'cash', '', ''],
+            ['NMK00002', 'Sample Event 2025', '12', '2025-05-21', '1000', 'Jane Smith', '9123456789', 'Coimbatore', 'online', 'TXN123456', 'SBI']
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Add headers
+        $column = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($column . '1', $header);
+            $column++;
+        }
+
+        // Add sample data
+        $row_index = 2;
+        foreach ($sample_data as $data_row) {
+            $column = 'A';
+            foreach ($data_row as $cell_value) {
+                $sheet->setCellValue($column . $row_index, $cell_value);
+                $column++;
+            }
+            $row_index++;
+        }
+
+        // Auto-size columns
+        foreach (range('A', $column) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit();
     }
 
     public function gopaymentpage(){
@@ -524,6 +576,7 @@ class Payments extends BaseController {
          $balanceamount = $this->request->getPost("balanceamount");
          $paymentdate = $this->request->getPost("paymentdate");
          $wheretopay = $this->request->getPost("where");
+         $receivedby = $this->request->getPost("receivedby");
 
          // Check if already paid
          $paydetails = $this->paymentsModel->getPaydetails($memberid, $eventid);
@@ -548,7 +601,7 @@ class Payments extends BaseController {
          $taxamount = $geteventdata->TaxAmount;
          $year = $geteventdata->Year;
 
-         $savereceipt = $this->paymentsModel->saveTaxreport($eventid,$eventname,$fromdate,$todate,$taxamount,$year,$memberid,$membermobile,$membertaluk,$name,$paymenttype,$paidamount,$bankname,$transactionid,$banknameforcheckque,$checkqueno,$upitranscationid,$cashtype,$balanceamount,$paymentdate,$wheretopay);
+         $savereceipt = $this->paymentsModel->saveTaxreport($eventid,$eventname,$fromdate,$todate,$taxamount,$year,$memberid,$membermobile,$membertaluk,$name,$paymenttype,$paidamount,$bankname,$transactionid,$banknameforcheckque,$checkqueno,$upitranscationid,$cashtype,$balanceamount,$paymentdate,$wheretopay,$receivedby);
 
          if($path == "paymentform"){
             $userdata = array("userreceiptid"=>$memberid,"userdue"=>$savereceipt,"usereventid"=>$eventid);
@@ -636,12 +689,17 @@ class Payments extends BaseController {
         $eventid = $this->request->getGet("eventid");
         $receipt = $this->paymentsModel->getReceiptdetail($userid,$dues,$eventid);
         $html = view("downloadreceipt",array("receipt"=>$receipt));
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
         
-        $dompdf = new Dompdf();
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        
+        $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait'); // Optional
+        $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        $dompdf->stream(); 
+        $dompdf->stream("receipt_" . ($receipt->id ?? 'data') . ".pdf", array("Attachment" => 1)); 
     }
 
 }

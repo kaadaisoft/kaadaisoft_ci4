@@ -128,6 +128,7 @@
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -182,6 +183,7 @@
         height:100%;
         top:0;
         left:-100%;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -384,6 +386,36 @@
       }
 
 
+    /* Fixed Premium Layout */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+    .top-navbar-row { height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
+    .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; }
+    #menu-bar { width: 260px; height: 100%; overflow-y: auto; flex-shrink: 0; background-color: #0f172a !important; border-right: 1px solid #1e293b; padding: 0; }
+    .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
+    @media screen and (max-width: 768px) {
+      .top-navbar-row { 
+          position: fixed;
+          top: 0;
+          width: 100%;
+          z-index: 1050;
+          height: auto; 
+          flex-wrap: wrap; 
+          padding: 5px 0 !important;
+      }
+      .main-body-row { 
+          margin-top: 130px !important; /* Adjust for stacked top bar elements */
+          flex-direction: column; 
+          overflow: auto; 
+      }
+      #menu-bar { display: none; }
+      .main-content-area { width: 100%; overflow: visible; }
+      html, body { overflow: auto; height: auto; }
+      .layout-container { height: auto; }
+      #ps-logo, #search-bar { width: 100% !important; }
+    }
+
     /* Custom Mobile Menu Styles */
     #custom-mobile-menu {
         display: none;
@@ -392,55 +424,31 @@
         left: 0;
         width: 100%;
         height: 100vh;
-        background-color: white;
+        background-color: #0f172a;
         z-index: 9999;
         overflow-y: auto;
-        animation: slideIn 0.3s ease-out;
     }
-
-    @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-    }
-
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 30px;
-        cursor: pointer;
-        color: #333;
-    }
-
-    #mobile-menu-content {
-        padding-top: 60px; /* Space for close button */
-    }
-    
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-        #menu-bar {
-            display: none;
-        }
-    }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #cbd5e1; }
+    #mobile-menu-content { padding-top: 60px; }
   </style>
 </head>
 <body>
         
-<div id="pageheight" class="container-fluid" style="position:absolute;overflow:hidden;">
+<div id="pageheight" class="layout-container container-fluid p-0">
       
 <?= view('notification_toast') ?>
 
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-      <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
+      <div id="ps-logo" class="col-md-3 d-flex align-items-center justify-content-start ps-2">
                
       
 
         </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
+        <div id="search-bar" class="col-md-9 d-flex align-items-center justify-content-between px-3">
 
 
        
@@ -449,14 +457,14 @@
       </div><!-----------top-bar-end----------------------->
 
 
-        <div class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar"><!----------side-bar-------------------->
        
               
          </div><!-----------side-bar-end-------------->
             
-         <div id="pagecontrol" class="col-md-10"><!-----------main-dashboard------------------------->
+         <div id="pagecontrol" class="main-content-area"><!-----------main-dashboard------------------------->
          
          <div class="container-fluid px-4 pt-4 d-flex justify-content-between memberpadd">
            

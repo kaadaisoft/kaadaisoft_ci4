@@ -107,6 +107,12 @@
             <input hidden value="<?= $coordinator->Familymembershipid ?>" id="membershipid-coord" type="text" name="membershipid-coord">
             <input hidden value="coordinator" type="text" name="path">
             <input hidden value="updatecoordinator" type="text" name="reason">
+            
+            <!-- Verification Tracking -->
+            <input type="hidden" id="is_email_verified-coord" name="is_email_verified-coord" value="1">
+            <input type="hidden" id="is_phone_verified-coord" name="is_phone_verified-coord" value="1">
+            <input type="hidden" id="original_email-coord" value="<?= esc($coordinator->Email) ?>">
+            <input type="hidden" id="original_phone-coord" value="<?= esc($coordinator->Phonenumber) ?>">
 
 
             <!-- Basic Details Section -->
@@ -159,7 +165,11 @@
                         <!-- Phone Number -->
                         <div class="col-md-4">
                             <label for="phoneno-coord">Phone Number</label>
-                            <input id="phoneno-coord" class="form-control" type="number" name="phoneno-coord" value="<?= $coordinator->Phonenumber ?>" onkeyup="validateCoordInput(this)">
+                            <div class="input-group">
+                                <input id="phoneno-coord" class="form-control" type="number" name="phoneno-coord" value="<?= $coordinator->Phonenumber ?>" onkeyup="validateCoordInput(this)">
+                                <button type="button" id="verify-phone-btn-coord" class="btn btn-outline-primary" style="display:none;" onclick="checkPhoneVerificationCoord()">Verify</button>
+                                <span id="phone-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <small id="phonenoerror-coord" class="text-danger"></small>
                         </div>
 
@@ -211,8 +221,22 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-coord">Email</label>
-                            <input id="email-coord" onkeyup="validateCoordInput(this)" class="form-control" type="email" name="email-coord" value="<?= $coordinator->Email ?>">
+                            <div class="input-group">
+                                <input id="email-coord" onkeyup="validateCoordInput(this)" class="form-control" type="email" name="email-coord" value="<?= $coordinator->Email ?>">
+                                <button type="button" id="verify-email-btn-coord" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPCoord()">Verify</button>
+                                <span id="email-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <small id="emailerror-coord" class="text-danger"></small>
+                        </div>
+
+                        <!-- Email OTP Section (Coordinator) -->
+                        <div class="col-md-4" id="email-otp-section-coord" style="display:none;">
+                            <label for="email-otp-coord">Enter OTP Sent to Email <span class="mandatory-star">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="email-otp-coord" class="form-control" placeholder="6-digit OTP" maxlength="6">
+                                <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPCoord()">Verify OTP</button>
+                            </div>
+                            <small id="email-otp-error-coord" class="text-danger"></small>
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -493,23 +517,33 @@
 
                         <div class="col-md-3">
                             <label for="taluks-dropdown-coord">Taluk</label>
-                            <select id="taluks-dropdown-coord" onchange="setDropdownpanchayatCoord(this); validateCoordInput(this)" class="form-select" name="taluk-coord">
+                            <select id="taluks-dropdown-coord" onchange="toggleTalukOthersCoord(this); setDropdownpanchayatCoord(this); validateCoordInput(this)" class="form-select" name="taluk-coord">
                                 <option value="">Select Taluk</option>
                                 <?php if (isset($taluks)): foreach ($taluks as $t): ?>
                                     <option value="<?= $t->taluk_name ?>" <?= ($coordinator->Taluk == $t->taluk_name) ? 'selected' : '' ?>><?= $t->taluk_name ?></option>
                                 <?php endforeach; endif; ?>
                             </select>
+                            <input type="text" id="taluk_others_input_coord" name="taluk_others_coord" 
+                                class="form-control mt-2" 
+                                placeholder="Enter taluk name" 
+                                style="display:none;" 
+                                onkeyup="validateCoordInput(this)">
                             <small id="talukerror-coord" class="text-danger"></small>
                         </div>
 
                         <div class="col-md-3">
                             <label for="panchayat-dropdown-coord">Panchayat</label>
-                            <select id="panchayat-dropdown-coord" onchange="setDropdownVillageCoord(this); validateCoordInput(this)" class="form-select" name="panchayat-coord">
+                            <select id="panchayat-dropdown-coord" onchange="togglePanchayatOthersCoord(this); setDropdownVillageCoord(this); validateCoordInput(this)" class="form-select" name="panchayat-coord">
                                 <option value="">Select Panchayat</option>
                                 <?php if (isset($panchayats)): foreach ($panchayats as $p): ?>
                                     <option value="<?= $p->panchayat_name ?>" <?= ($coordinator->Panchayat == $p->panchayat_name) ? 'selected' : '' ?>><?= $p->panchayat_name ?></option>
                                 <?php endforeach; endif; ?>
                             </select>
+                            <input type="text" id="panchayat_others_input_coord" name="panchayat_others_coord" 
+                                class="form-control mt-2" 
+                                placeholder="Enter panchayat name" 
+                                style="display:none;" 
+                                onkeyup="validateCoordInput(this)">
                             <small id="panchayaterror-coord" class="text-danger"></small>
                         </div>
 
@@ -540,7 +574,9 @@
 
                         <div class="col-md-3">
                             <label for="pincode-coord">Pin Code</label>
-                            <input id="pincode-coord" onkeyup="validateCoordInput(this)" class="form-control" type="number" name="pincode-coord" value="<?= $coordinator->Pincode ?>">
+                            <input id="pincode-coord" onkeyup="validateCoordInput(this)" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                                class="form-control" type="text" inputmode="numeric" name="pincode-coord" maxlength="6" value="<?= $coordinator->Pincode ?>">
                             <small id="pincodeerror-coord" class="text-danger"></small>
                         </div>
                     </div>
@@ -596,16 +632,26 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_taluk-coord">Taluk</label>
-                                 <select id="cur_taluk-coord" style="border: 1px solid #ced4da;" onchange="setDropdownpanchayatCurrentCoord(this); validateCoordInput(this)" class="form-select" name="cur_taluk-coord">
+                                 <select id="cur_taluk-coord" style="border: 1px solid #ced4da;" onchange="toggleTalukOthersCurrentCoord(this); setDropdownpanchayatCurrentCoord(this); validateCoordInput(this)" class="form-select" name="cur_taluk-coord">
                                     <option value="<?= $coordinator->Curtaluk ?>"><?= $coordinator->Curtaluk ?: 'Select Taluk' ?></option>
                                 </select>
+                                <input type="text" id="cur_taluk_others_input_coord" name="cur_taluk_others_coord" 
+                                    class="form-control mt-2" 
+                                    placeholder="Enter taluk name" 
+                                    style="display:none;" 
+                                    onkeyup="validateCoordInput(this)">
                                 <small id="cur_talukerror-coord" class="text-danger"></small>
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_panchayat-coord">Panchayat</label>
-                                 <select id="cur_panchayat-coord" style="border: 1px solid #ced4da;" onchange="setDropdownVillageCurrentCoord(this); validateCoordInput(this)" class="form-select" name="cur_panchayat-coord">
+                                 <select id="cur_panchayat-coord" style="border: 1px solid #ced4da;" onchange="togglePanchayatOthersCurrentCoord(this); setDropdownVillageCurrentCoord(this); validateCoordInput(this)" class="form-select" name="cur_panchayat-coord">
                                     <option value="<?= $coordinator->Curpanchayat ?>"><?= $coordinator->Curpanchayat ?: 'Select Panchayat' ?></option>
                                 </select>
+                                <input type="text" id="cur_panchayat_others_input_coord" name="cur_panchayat_others_coord" 
+                                    class="form-control mt-2" 
+                                    placeholder="Enter panchayat name" 
+                                    style="display:none;" 
+                                    onkeyup="validateCoordInput(this)">
                                 <small id="cur_panchayaterror-coord" class="text-danger"></small>
                             </div>
                             <div class="col-md-3">
@@ -632,7 +678,9 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_pincode-coord">Pin Code</label>
-                                <input id="cur_pincode-coord" onkeyup="validateCoordInput(this)" class="form-control" type="number" name="cur_pincode-coord" value="<?= $coordinator->Curpincode ?>">
+                                <input id="cur_pincode-coord" onkeyup="validateCoordInput(this)" 
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                                    class="form-control" type="text" inputmode="numeric" name="cur_pincode-coord" maxlength="6" value="<?= $coordinator->Curpincode ?>">
                                 <small id="cur_pincodeerror-coord" class="text-danger"></small>
                             </div>
                         </div>
@@ -661,7 +709,9 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_nri_zip-coord">Zip Code</label>
-                                <input id="cur_nri_zip-coord" name="cur_nri_zip-coord" class="form-control" type="text" value="<?= $coordinator->Curnrizip ?>" onkeyup="validateCoordInput(this)">
+                                <input id="cur_nri_zip-coord" name="cur_nri_zip-coord" class="form-control" type="text" value="<?= $coordinator->Curnrizip ?>" 
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9 -]/g, '').slice(0, 12)"
+                                    onkeyup="validateCoordInput(this)">
                             </div>
                             <div class="col-md-12">
                                 <label for="cur_nri_fulladdress-coord">Full Address</label>
@@ -805,9 +855,29 @@
                 url: "<?= base_url('members/getTaluksfordropdown') ?>",
                 data: { "district_name": district_name },
                 success: (result) => {
-                    document.getElementById("taluks-dropdown-coord").innerHTML = result;
+                    let dropdown = document.getElementById("taluks-dropdown-coord");
+                    dropdown.innerHTML = result;
+                    dropdown.innerHTML += '<option value="Others">Others</option>';
+                    toggleTalukOthersCoord(dropdown);
+                },
+                error: (err) => {
+                    document.getElementById("taluks-dropdown-coord").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function toggleTalukOthersCoord(selectEl) {
+            const othersInput = document.getElementById('taluk_others_input_coord');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'taluk-coord');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'taluk_others_coord');
+                selectEl.setAttribute('name', 'taluk-coord'); 
+            }
         }
 
         function setDropdownpanchayatCoord(taluk) {
@@ -823,9 +893,29 @@
                 url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
                 data: { "taluk_name": taluk_name },
                 success: (result) => {
-                    document.getElementById("panchayat-dropdown-coord").innerHTML = result;
+                    let dropdown = document.getElementById("panchayat-dropdown-coord");
+                    dropdown.innerHTML = result;
+                    dropdown.innerHTML += '<option value="Others">Others</option>';
+                    togglePanchayatOthersCoord(dropdown);
+                },
+                error: (err) => {
+                    document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function togglePanchayatOthersCoord(selectEl) {
+            const othersInput = document.getElementById('panchayat_others_input_coord');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'panchayat-coord');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'panchayat_others_coord');
+                selectEl.setAttribute('name', 'panchayat-coord'); 
+            }
         }
 
         function setDropdownVillageCoord(panchayatEl, selectedVillage = null) {
@@ -963,6 +1053,23 @@
             if (c_state && n_state) {
                 c_state.value = n_state;
                 setDropdowndistrictsCurrentCoord(c_state, n_district, n_taluk, n_panchayat, n_village);
+                
+                // Special handling for 'Others' in Taluk and Panchayat
+                setTimeout(() => {
+                    const c_taluk = document.getElementById('cur_taluk-coord');
+                    const c_panchayat = document.getElementById('cur_panchayat-coord');
+                    
+                    if (n_taluk === 'Others') {
+                        c_taluk.value = 'Others';
+                        toggleTalukOthersCurrentCoord(c_taluk);
+                        document.getElementById('cur_taluk_others_input_coord').value = document.getElementById('taluk_others_input_coord').value;
+                    }
+                    if (n_panchayat === 'Others') {
+                        c_panchayat.value = 'Others';
+                        togglePanchayatOthersCurrentCoord(c_panchayat);
+                        document.getElementById('cur_panchayat_others_input_coord').value = document.getElementById('panchayat_others_input_coord').value;
+                    }
+                }, 1000); // Wait for AJAX cascade
             }
         }
 
@@ -976,10 +1083,194 @@
             } else {
                 field.classList.remove('is-invalid');
             }
+
+            // Real-time Email Change Check
+            if (field.id === 'email-coord') {
+                const originalEmail = document.getElementById('original_email-coord').value;
+                const verifyBtn = document.getElementById('verify-email-btn-coord');
+                const badge = document.getElementById('email-verified-badge-coord');
+                const statusInput = document.getElementById('is_email_verified-coord');
+
+                if (field.value !== originalEmail && field.value !== "") {
+                    verifyBtn.style.display = 'block';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                    document.getElementById('email-otp-section-coord').style.display = 'none';
+                } else if (field.value === originalEmail) {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'block';
+                    statusInput.value = "1";
+                    document.getElementById('email-otp-section-coord').style.display = 'none';
+                } else {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                }
+            }
+
+            // Real-time Phone Change Check
+            if (field.id === 'phoneno-coord') {
+                const originalPhone = document.getElementById('original_phone-coord').value;
+                const verifyBtn = document.getElementById('verify-phone-btn-coord');
+                const badge = document.getElementById('phone-verified-badge-coord');
+                const statusInput = document.getElementById('is_phone_verified-coord');
+
+                if (field.value !== originalPhone && field.value.length === 10) {
+                    verifyBtn.style.display = 'block';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                } else if (field.value === originalPhone) {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'block';
+                    statusInput.value = "1";
+                } else {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                }
+            }
         }
 
         function validateCoordForm() {
+            const isEmailVerified = document.getElementById('is_email_verified-coord').value;
+            const isPhoneVerified = document.getElementById('is_phone_verified-coord').value;
+            const email = document.getElementById('email-coord').value;
+            const phone = document.getElementById('phoneno-coord').value;
+
+            if (email !== "" && isEmailVerified === "0") {
+                alert("Please verify your new email address before updating.");
+                document.getElementById('email-coord').focus();
+                return false;
+            }
+
+            if (phone !== "" && isPhoneVerified === "0") {
+                alert("Please verify your new phone number before updating.");
+                document.getElementById('phoneno-coord').focus();
+                return false;
+            }
+
             return true;
+        }
+
+        function sendUpdateEmailOTPCoord() {
+            const email = document.getElementById('email-coord').value;
+            const errorElem = document.getElementById('emailerror-coord');
+            const otpSection = document.getElementById('email-otp-section-coord');
+            const btn = document.getElementById('verify-email-btn-coord');
+
+            if (!email || !email.includes('@')) {
+                errorElem.textContent = "Please enter a valid email address.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        otpSection.style.display = 'block';
+                        errorElem.textContent = "";
+                        btn.style.display = 'none';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        errorElem.textContent = response.message || "Failed to send OTP. Try again.";
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    errorElem.textContent = "Server error occurred. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTPCoord() {
+            const email = document.getElementById('email-coord').value;
+            const otp = document.getElementById('email-otp-coord').value;
+            const errorElem = document.getElementById('email-otp-error-coord');
+            const statusInput = document.getElementById('is_email_verified-coord');
+            const verifyBtn = document.getElementById('verify-email-btn-coord');
+            const badge = document.getElementById('email-verified-badge-coord');
+            const otpSection = document.getElementById('email-otp-section-coord');
+
+            if (otp.length !== 6) {
+                errorElem.textContent = "Enter a valid 6-digit OTP.";
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        statusInput.value = "1";
+                        verifyBtn.style.display = 'none';
+                        badge.style.display = 'block';
+                        otpSection.style.display = 'none';
+                        errorElem.textContent = "";
+                    } else {
+                        errorElem.textContent = response.message || "Invalid or expired OTP.";
+                    }
+                },
+                error: function() {
+                    errorElem.textContent = "Verification failed. Try again.";
+                }
+            });
+        }
+
+        function checkPhoneVerificationCoord() {
+            const phoneno = document.getElementById('phoneno-coord').value;
+            const errorElem = document.getElementById('phonenoerror-coord');
+            const statusInput = document.getElementById('is_phone_verified-coord');
+            const verifyBtn = document.getElementById('verify-phone-btn-coord');
+            const badge = document.getElementById('phone-verified-badge-coord');
+
+            if (phoneno.length !== 10) {
+                errorElem.textContent = "Enter a valid 10-digit phone number.";
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerText = "Checking...";
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/checkExistphoneno') ?>",
+                data: { 
+                    phoneno: phoneno,
+                    member_id: "<?= $coordinator->Familymembershipid ?>"
+                },
+                success: function(response) {
+                    if (response.trim() === "false") {
+                        alert("Phone number is unique and verified.");
+                        statusInput.value = "1";
+                        verifyBtn.style.display = 'none';
+                        badge.style.display = 'block';
+                        errorElem.textContent = "";
+                    } else {
+                        errorElem.textContent = "This phone number is already registered.";
+                        statusInput.value = "0";
+                        badge.style.display = 'none';
+                        verifyBtn.disabled = false;
+                        verifyBtn.innerText = "Verify";
+                    }
+                },
+                error: function() {
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerText = "Verify";
+                    errorElem.textContent = "Error checking phone number. Try again.";
+                }
+            });
         }
 
         function uploadFileCoord(file) {
@@ -1253,6 +1544,16 @@
             }
 
             if (!district_name) return;
+            if (district_name === 'Others') {
+                let talukDropdown = document.getElementById("cur_taluk-coord");
+                talukDropdown.innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                if (selectTaluk) {
+                    talukDropdown.value = selectTaluk;
+                    setDropdownpanchayatCurrentCoord(talukDropdown, selectPanchayat, selectVillage);
+                }
+                toggleTalukOthersCurrentCoord(talukDropdown);
+                return;
+            }
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getTaluksfordropdown') ?>",
@@ -1260,12 +1561,31 @@
                 success: function (result) {
                     let talukDropdown = document.getElementById("cur_taluk-coord");
                     talukDropdown.innerHTML = result;
+                    talukDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectTaluk) {
                         talukDropdown.value = selectTaluk;
                         setDropdownpanchayatCurrentCoord(talukDropdown, selectPanchayat, selectVillage);
                     }
+                    toggleTalukOthersCurrentCoord(talukDropdown);
+                },
+                error: (err) => {
+                    document.getElementById("cur_taluk-coord").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function toggleTalukOthersCurrentCoord(selectEl) {
+            const othersInput = document.getElementById('cur_taluk_others_input_coord');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'cur_taluk-coord');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'cur_taluk_others_coord');
+                selectEl.setAttribute('name', 'cur_taluk-coord'); 
+            }
         }
 
         function setDropdownpanchayatCurrentCoord(taluk, selectPanchayat = null, selectVillage = null) {
@@ -1280,6 +1600,16 @@
             }
 
             if (!taluk_name) return;
+            if (taluk_name === 'Others') {
+                let panchayatDropdown = document.getElementById("cur_panchayat-coord");
+                panchayatDropdown.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                if (selectPanchayat) {
+                    panchayatDropdown.value = selectPanchayat;
+                    setDropdownVillageCurrentCoord(panchayatDropdown, selectVillage);
+                }
+                togglePanchayatOthersCurrentCoord(panchayatDropdown);
+                return;
+            }
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
@@ -1287,12 +1617,31 @@
                 success: function (result) {
                     let panchayatDropdown = document.getElementById("cur_panchayat-coord");
                     panchayatDropdown.innerHTML = result;
+                    panchayatDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectPanchayat) {
                         panchayatDropdown.value = selectPanchayat;
                         setDropdownVillageCurrentCoord(panchayatDropdown, selectVillage);
                     }
+                    togglePanchayatOthersCurrentCoord(panchayatDropdown);
+                },
+                error: (err) => {
+                    document.getElementById("cur_panchayat-coord").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function togglePanchayatOthersCurrentCoord(selectEl) {
+            const othersInput = document.getElementById('cur_panchayat_others_input_coord');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'cur_panchayat-coord');
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'cur_panchayat_others_coord');
+                selectEl.setAttribute('name', 'cur_panchayat-coord'); 
+            }
         }
 
         function setDropdownVillageCurrentCoord(panchayatEl, selectedVillage = null) {

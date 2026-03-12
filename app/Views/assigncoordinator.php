@@ -373,41 +373,58 @@
         scrollbar-color: #888 #f1f1f1;
       }
 
-      /* Hide default menu bar on mobile */
+      /* Fixed Premium Layout */
+      html, body { height: 100%; margin: 0; overflow: hidden; }
+      .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+      .top-navbar-row { height: auto; min-height: 75px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; flex-wrap: wrap; align-items: stretch; margin: 0; border-bottom: 1px solid #1e293b; }
+      .main-body-row { flex: 1; display: flex; overflow: hidden; margin: 0 !important; width: 100%; }
+      #menu-bar { height: 100%; overflow-y: auto; flex-shrink: 0; padding: 0; }
+      .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
+
       @media screen and (max-width: 768px) {
-          #menu-bar {
-              display: none;
-          }
+          #menu-bar { display: none; }
+          .main-body-row { flex-direction: column; overflow: auto; }
+          .main-content-area { width: 100%; overflow: visible; }
+          html, body { overflow: auto; height: auto; }
+          .layout-container { height: auto; }
+          #ps-logo, #search-bar { width: 100% !important; }
       }
     </style>
 </head>
 <body>
         
-<div id="assigncoordpage" class="container-fluid" style="overflow:hidden;position:absolute;height:100vh;width:100%;">
+<div id="assigncoordpage" class="container-fluid layout-container p-0">
   <?= view('notification_toast') ?>
 
 
-      <div class="row"><!-----top-bar--------------->
+      <div class="top-navbar-row"><!-----top-bar--------------->
 
-        <div id="ps-logo" class="col-md-2 border-bottom ps-gray py-3 d-flex align-items-center justify-content-start ps-2">
+        <div id="ps-logo" class="col-12 col-md-2 border-bottom border-md-0 py-2 py-md-3 d-flex align-items-center justify-content-start ps-2" style="background: #0f172a;">
         </div>
 
-        <div id="search-bar" class="col-md-10 align-items-center justify-content-between border-bottom">
-
-       
-       
+        <div id="search-bar" class="col-12 col-md-10 d-flex align-items-center justify-content-between border-bottom border-md-0 px-3" style="background: #0f172a;">
         </div>
         </div><!-----------top-bar-end----------------------->
 
-        <div class="row"><!----------main-navbar----------->
+        <div class="main-body-row"><!----------main-navbar----------->
 
-         <div id="menu-bar" style="overflow-y:auto;height:calc(100vh - 80px);" class="col-md-2 ps-gray"><!----------side-bar-------------------->
+         <div id="menu-bar" class="col-md-2"><!----------side-bar-------------------->
          
               
          </div><!-----------side-bar-end-------------->
             
-         <div id="changepage" style="overflow-y:auto;height:calc(100vh - 80px);overflow-x:hidden;" class="col-md-10 px-5 pb-5"><!-----------main-dashboard------------------------->
-
+         <div id="changepage" class="col-md-10 main-content-area px-5"><!-----------main-dashboard------------------------->
+         <?php 
+         $tn_id = "";
+         if(isset($states)){
+            foreach($states as $state){
+               if($state->state_title == "Tamil Nadu"){
+                  $tn_id = $state->state_id;
+                  break;
+               }
+            }
+         }
+         ?>
          <div class="pb-4">
          <div id="assigncoordalert">
 
@@ -434,18 +451,19 @@
             <input hidden type="text" name="assignername" value="<?=session()->get("Kaadaisoft_userName")?>" class="border w-100" id="assignername" required>
             </label>
             <div id="limitcoorderror" style="color:red;" class="d-flex"></div>
-            <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:2;" id="searchmemberdata" class="bg-white border list-unstyled rounded-3 px-1 py-2">
+            <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:9999;" id="searchmemberdata" class="bg-white border list-unstyled rounded-3 px-1 py-2">
             </ul>
           </div><!---------------member-search-end---------------->
 
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateid">State:<br>
            <select onchange = "getDistricts(this)" class="container-fluid border rounded" name="stateid" id="stateid" required>
            <option value=''>Choose State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -503,14 +521,15 @@
          <div class="assign-card-body">
          <form id="statusfilter" class="row assigncoordfilter" Autocomplete="off">
          
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateidremove">State:<br>
            <select onchange = "getDistrictsforremove(this)" class="container-fluid border rounded" name="stateid" id="stateidremove" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -567,14 +586,15 @@
          <div class="assign-card-body">
          <form id="addvillageform" action="<?=base_url("AdminDashboard/addVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off">
          
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateidadd">State:<br>
            <select onchange="getDistrictsforadd(this)" class="container-fluid border rounded" name="state" id="stateidadd" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -626,14 +646,15 @@
          <div class="assign-card-body">
          <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
          
-         <div class="col-md-3"><!------------state-choose------------>
+         <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateiddelete">State:<br>
            <select onchange="getDistrictsfordelete(this)" class="container-fluid border rounded" name="state" id="stateiddelete" required>
            <option value=''>State</option>
            <?php if(isset($states))
            foreach ($states as $key => $value){
+           $selected = ($value->state_title == "Tamil Nadu") ? "selected" : "";
            echo 
-           "<option value='$value->state_id'>$value->state_title</option>";
+           "<option value='$value->state_id' $selected>$value->state_title</option>";
            }
            ?>
            </select>
@@ -1228,6 +1249,13 @@ function closeMobileMenu() {
         resultbox.style.display = "none";
     }
   } 
+
+  $(document).ready(function(){
+      if(document.getElementById('stateid')) getDistricts(document.getElementById('stateid'));
+      if(document.getElementById('stateidremove')) getDistrictsforremove(document.getElementById('stateidremove'));
+      if(document.getElementById('stateidadd')) getDistrictsforadd(document.getElementById('stateidadd'));
+      if(document.getElementById('stateiddelete')) getDistrictsfordelete(document.getElementById('stateiddelete'));
+  });
 
   function getDistrictsforadd(state){
     let stateid = state.value;

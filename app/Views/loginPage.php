@@ -428,7 +428,7 @@
     <div class="login-wrapper">
         <!-- Full Screen Background Image -->
         <div class="login-image">
-            <img src="<?= base_url('assets/perumal kovil.png') ?>" alt="Kaadaisoft Temple">
+            <img src="<?= base_url('assets/perumal kovil.jpg') ?>" alt="Kaadaisoft Temple">
         </div>
 
         <!-- Transparent Login Container -->
@@ -444,7 +444,7 @@
                         <div class="input-icon-wrapper">
                             <input type="text" class="unique" id="username" name="username"
                                 value="<?= $username ?? '' ?>"
-                                placeholder="Username" onkeypress="return isNumberKey(event)"
+                                placeholder="Mobile / Aadhar Number" onkeypress="return isNumberKey(event)"
                                 maxlength="12">
                             <i class="fa-solid fa-user"></i>
                         </div>

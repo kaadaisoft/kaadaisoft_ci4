@@ -560,6 +560,11 @@
                   <div class="mt-2 small text-muted">
                     <strong>CSV Priority:</strong> Familymembershipid,EventName,EventId,paymentdate,paidamount,...<br>
                     <span style="color:#295CF5;">Note: File Size should be below 2MB.</span>
+                    <div class="mt-2">
+                        <a href="<?= base_url('payments/download-payment-sample') ?>" class="text-primary fw-bold text-decoration-none">
+                            <i class="fas fa-file-excel me-1"></i>Download Sample Excel Format
+                        </a>
+                    </div>
                   </div>
                 </div>
               </div>

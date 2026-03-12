@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-
-
     <style>
     .ps-logo{
         display:flex;
@@ -77,12 +75,6 @@
         font-size: 20px;
       }
       .chartCard {
-        /* width: 100%; */
-        /* height: calc(100% - 40px); */
-        /* background: rgba(54, 162, 235, 0.2); */
-       /*  display: flex;
-        align-items: center;
-        justify-content: center; */
         display:grid;
         grid-template-columns: repeat(auto-fit,minmax(250px,700px)) ;
         grid-template-rows: repeat(auto-fit,minmax(200px,auto)) ;
@@ -90,10 +82,8 @@
       }
 
       .chartBox {
-        /* height:fit-content; */
         padding: 10px;
         border-radius: 20px;
-        /* border: solid 3px rgba(54, 162, 235, 1); */
         background: white;
       }
 
@@ -113,7 +103,6 @@
         outline:none;
         background-color:rgb(23, 23, 184);
         border-radius:25px;
-
       }
 
       .active-page{
@@ -188,15 +177,6 @@
         background-color:rgb(230, 230, 230);
         font-weight:600;
       }      
-     /*  #paymentlistaddress  table,tr,th,td{
-        border:4px solid rgb(0, 123, 255);
-        border-collapse:collapse;
-        border-radius:10px;
-      }
-      #paymentlistaddress > th{
-        background-color:rgb(248, 245, 245);
-      }
- */
 
      .member-color{
       color:red;
@@ -205,18 +185,18 @@
         background-color: rgb(239, 236, 236);
         position:relative;
      }
-     .viewtooltip{
+     .viewtooltip, .downloadreceipt{
       visibility:hidden;
       width:max-content;
-      background-color: rgb(0, 123, 255);;
+      background-color: rgb(0, 123, 255);
       color:white;
       border-radius:6px;
       padding:5px 10px;
       position: absolute;
       top:100%;
-      z-index: 1;
+      z-index: 10;
      }
-     .viewtooltip::after{
+     .viewtooltip::after, .downloadreceipt::after{
           content:"";
           position: absolute;
           bottom: 100%;
@@ -225,41 +205,10 @@
           border-style:solid;
           border-color:transparent transparent rgb(0, 123, 255) transparent;
      }
-     .table-btn:hover .viewtooltip{
+     .table-btn:hover .viewtooltip, .table-btn:hover .downloadreceipt{
         visibility:visible;
      }
-     .downloadreceipt{
-      visibility:hidden;
-      width:max-content;
-      background-color: rgb(0, 123, 255);;
-      color:white;
-      border-radius:6px;
-      padding:5px 10px;
-      position: absolute;
-      top:100%;
-      z-index: 1;
-     }
-     .downloadreceipt::after{
-          content:"";
-          position: absolute;
-          bottom: 100%;
-          right:50%;
-          border:7px;
-          border-style:solid;
-          border-color:transparent transparent rgb(0, 123, 255); transparent;
-     }
-     .table-btn:hover .downloadreceipt{
-        visibility:visible;
-     }
-    /* Hide default menu bar on mobile */
-    @media screen and (max-width: 768px) {
-        #menu-bar {
-            display: none;
-        }
-    }
 
-    /* Fixed Layout Adjustments */
-    /* Fixed Premium Layout */
     html, body { height: 100%; margin: 0; overflow: hidden; }
     .layout-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
     .top-navbar-row { height: 70px; flex-shrink: 0; z-index: 1050; background: #0f172a; display: flex; align-items: center; margin: 0 !important; border-bottom: 1px solid #1e293b; }
@@ -268,291 +217,233 @@
     .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
 
     @media screen and (max-width: 768px) {
-      .top-navbar-row { height: auto; flex-wrap: wrap; }
-      .main-body-row { flex-direction: column; overflow: auto; }
+      .top-navbar-row { 
+          position: fixed;
+          top: 0;
+          width: 100%;
+          z-index: 1050;
+          height: auto; 
+          flex-wrap: wrap; 
+      }
+      .main-body-row { 
+          margin-top: 130px !important; /* Adjust for stacked top bar elements */
+          flex-direction: column; 
+          overflow: auto; 
+      }
       #menu-bar { display: none; }
       .main-content-area { width: 100%; overflow: visible; }
       html, body { overflow: auto; height: auto; }
       .layout-container { height: auto; }
     }
-
-    @media screen and (max-width: 768px) {
-      .top-navbar-row { height: auto; flex-direction: column; }
-      .main-body-row { flex-direction: column; }
-      #menu-bar { display: none; }
-      .main-content-area { width: 100% !important; }
-    }
-
-    .active-payments {
-        background: rgba(56, 189, 248, 0.1) !important;
-        font-weight: 700 !important;
-    }
-
-    /* Custom Mobile Menu Styles */
-    #custom-mobile-menu {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background-color: #0f172a;
-        z-index: 9999;
-        overflow-y: auto;
-    }
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 30px;
-        cursor: pointer;
-        color: #cbd5e1;
-    }
-    #mobile-menu-content {
-        padding-top: 60px;
-    }
     </style>
 </head>
 <body>
-        
     <div class="layout-container">
-      
-        <div class="top-navbar-row"><!-----top-bar--------------->
-
-            <div id="ps-logo" class="col-md-2 py-3 d-flex align-items-center justify-content-start ps-2">
-            </div>
-
-            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between px-4">
-            </div>
-
-        </div><!-----------top-bar-end----------------------->
-
-
-        <div class="main-body-row"><!----------main-navbar----------->
-
-            <div id="menu-bar"><!----------side-bar-------------------->
-            </div><!-----------side-bar-end-------------->
-             
-            <div id="pagecontrol" class="main-content-area"><!-----------main-dashboard------------------------->
-         <div class="ps-4 mt-2">
-         <?php 
-         echo " <table class='table-bordered border-secondary col-md-4'>";
-         if(isset($member)){
-         echo "<h4 class='text-secondary'>".($member->Role == 'member' ? 'Member Details:' : 'Coordinator Details:')."</h4>
-         <thead>
-         <tr><th class='py-1 ps-2'>Name</th><td class='py-1 ps-2 heading-kaadaisoft'>".$member->Name."</td></tr>
-         <tr><th class='py-1 ps-2'>Userid</th><td class='fw-bold ".($member->Role == 'coordinator' ? 'text-primary' : 'member-color')." py-1 ps-2'>".$member->Familymembershipid."</td></tr>
-         <tr><th class='py-1 ps-2'>Taluk</th><td class='py-1 ps-2'>".$member->Taluk."</td></tr>
-         <tr><th class='py-1 ps-2'>District</th><td class='py-1 ps-2'>".$member->District."</td></tr>
-         <tr><th class='py-1 ps-2'>Pincode</th><td class='py-1 ps-2'>".$member->Pincode."</td></tr>
-         <tr><th class='py-1 ps-2'>Phone Number</th><td class='py-1 ps-2 text-success fw-bold'>".$member->Phonenumber."</td></tr></thead>
-         <tbody><td colspan='2'class='text-end'><a href='gopaymentpage?memberid=".$member->Familymembershipid."' class='btn btn-primary' style='height:fit-content;'>Pay Now</a></td></tbody>
-         </table>";
-         }
-         else{
-          echo "<tr><td class='text-center fw-bold text-secondary' colspan='2'>No Member details found.</td></tr></thead></table>";
-        }
-        echo "</div>";
-           
-         if(isset($receipts)){
-          echo "<div class='px-4'>";       
-          echo "<table class='mt-2 table table-bordered'>
-          <tbody>";
-                if(count($receipts) > 0){        
-                  $i = 0;
-                  $last_event = "";
-                  foreach ($receipts as $key => $value) {
-                    $status = $value["status"];
-
-                    if($value['eventname'] != $last_event){
-                     $last_event = $value['eventname'];
-                     echo "<tr class='table-transparent'><td style='font-size:20px;' class='fw-bold text-center' colspan='10'>$value[eventname]</td></tr>
-                     <tr style='font-size:18px;' class='ps-gray fw-bold'>
-                     <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class='text-center'>Actions</th>
-                     </tr>";
-                    }
-                    
-                    $i++;
-                    echo "<tr>
-                    <td>$i</td>
-                    <td style='font-size:18px;' class='fw-bold text-primary'>$value[eventname]</td>
-                    <td style='font-weight:500;'>$value[Taxamount] Rs</td>
-                    <td style='font-weight:500;'>".($value['Collectedamount'] ? $value['Collectedamount']." ".'Rs' : '-')."</td>
-                    <td style='font-weight:500;'>".($value['balanceamount'] ? $value['balanceamount']." ".'Rs' : '-')."</td>
-                    <td style='font-weight:500;'>$value[paymentdate]</td>
-                    <td style='font-weight:500;'>$value[year]</td>
-                    <td style='font-weight:500;'>$value[dues]</td>
-                    <td><span class ='rounded-pill ".($status == NULL || $status == 'Pending' ? 'bg-danger text-white py-2 px-3 btn rounded-3' : 'bg-success text-white py-2 px-3 btn rounded-3')."'>".($status == NULL || $status == 'Pending' ? 'Pending' : $value['status'])."</span></td>
-                    <td>
-                    <div class='d-flex justify-content-evenly'><button onclick='viewReceipt(\"paymentreceiptpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-sharp fa-solid fa-eye'></i><span class='viewtooltip'>View</span></button>
-                    <button onclick='downloadReceipt(\"downloadpdf?memberid=$value[Familymembershipid]&dues=$value[dues]&eventid=$value[eventid]\")' style='width:40px;height:40px;outline:none;border:none;' class='table-btn btn text-dark shadow-sm rounded-circle d-flex justify-content-center align-items-center text-decoration-none'><i class='fa-solid fa-download'></i><span class='downloadreceipt'>Download</span></button></div></td>
-                    </tr>";
-                  } 
-                 }
-                 else{
-                   echo "<tr><td class='text-center text-secondary fw-bold' colspan='10'>No Receipts found.</td></tr>";
-                 }
-                 }
-                 echo "</tbody>
-                 </table>";
-
-            ?>
-          </div>
-         </div><!-----------main-dashboard-end------------------------>
-
-
-        </div><!--------------main-navbar-end------------------->
-        </div> <!-- layout-container -->
-      </div>
-
-    <!---------------------offcanvas-------------------------->
-
-<!---------------------Custom Mobile Menu-------------------------->
-<div id="custom-mobile-menu">
-    <div class="close-btn" onclick="closeMobileMenu()">&times;</div>
-    <div id="mobile-menu-content">
-        <!-- Content loaded via JS -->
-    </div>
-</div>
-<!---------------------Custom Mobile Menu End-------------------------------->
-
-<!---------------------offcanvas-end-------------------------------->
-<!-- Receipt Modal -->
-<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 bg-light" style="border-radius: 20px 20px 0 0;">
-                <h5 class="modal-title heading-kaadaisoft" id="receiptModalLabel">Payment Receipt</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0" id="receiptModalBody">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+        <div class="top-navbar-row">
+            <div id="ps-logo" class="col-md-2 py-3 d-flex align-items-center justify-content-start ps-2"></div>
+            <div id="search-bar" class="col-md-10 d-flex align-items-center justify-content-between px-4"></div>
+        </div>
+        <div class="main-body-row">
+            <div id="menu-bar"></div>
+            <div id="pagecontrol" class="main-content-area">
+                <div class="ps-4 mt-2">
+                    <?php if(isset($member)): ?>
+                        <h4 class="text-secondary"><?= ($member->Role == 'member' ? 'Member Details:' : 'Coordinator Details:') ?></h4>
+                        <table class="table-bordered border-secondary col-md-4">
+                            <thead>
+                                <tr><th class="py-1 ps-2">Name</th><td class="py-1 ps-2 heading-kaadaisoft"><?= $member->Name ?></td></tr>
+                                <tr><th class="py-1 ps-2">Userid</th><td class="fw-bold <?= ($member->Role == 'coordinator' ? 'text-primary' : 'member-color') ?> py-1 ps-2"><?= $member->Familymembershipid ?></td></tr>
+                                <tr><th class="py-1 ps-2">Taluk</th><td class="py-1 ps-2"><?= $member->Taluk ?></td></tr>
+                                <tr><th class="py-1 ps-2">District</th><td class="py-1 ps-2"><?= $member->District ?></td></tr>
+                                <tr><th class="py-1 ps-2">Pincode</th><td class="py-1 ps-2"><?= $member->Pincode ?></td></tr>
+                                <tr><th class="py-1 ps-2">Phone Number</th><td class="py-1 ps-2 text-success fw-bold"><?= $member->Phonenumber ?></td></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="2" class="text-end"><a href="gopaymentpage?memberid=<?= $member->Familymembershipid ?>" class="btn btn-primary">Pay Now</a></td></tr>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <p class="text-secondary fw-bold">No Member details found.</p>
+                    <?php endif; ?>
                 </div>
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()">Print Receipt</button>
+
+                <?php if(isset($receipts)): ?>
+                    <div class="px-4 mt-4">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <?php 
+                                $last_event = "";
+                                foreach ($receipts as $key => $value): 
+                                    $status = $value["status"];
+                                    if($value['eventname'] != $last_event):
+                                        $last_event = $value['eventname'];
+                                ?>
+                                    <tr class="table-transparent"><td style="font-size:20px;" class="fw-bold text-center" colspan="10"><?= $value['eventname'] ?></td></tr>
+                                    <tr style="font-size:18px;" class="ps-gray fw-bold">
+                                        <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class="text-center">Actions</th>
+                                    </tr>
+                                <?php endif; ?>
+                                    <tr>
+                                        <td><?= $key + 1 ?></td>
+                                        <td style="font-size:18px;" class="fw-bold text-primary"><?= $value['eventname'] ?></td>
+                                        <td><?= $value['Taxamount'] ?> Rs</td>
+                                        <td><?= ($value['Collectedamount'] ? $value['Collectedamount']." Rs" : '-') ?></td>
+                                        <td><?= ($value['balanceamount'] ? $value['balanceamount']." Rs" : '-') ?></td>
+                                        <td><?= $value['paymentdate'] ?></td>
+                                        <td><?= $value['year'] ?></td>
+                                        <td><?= $value['dues'] ?></td>
+                                        <td><span class="rounded-pill <?= ($status == NULL || $status == 'Pending' ? 'bg-danger text-white' : 'bg-success text-white') ?> py-2 px-3 btn"><?= ($status == NULL || $status == 'Pending' ? 'Pending' : $value['status']) ?></span></td>
+                                        <td>
+                                            <div class="d-flex justify-content-evenly">
+                                                <button onclick="viewReceipt('paymentreceiptpdf?memberid=<?= $value['Familymembershipid'] ?>&dues=<?= $value['dues'] ?>&eventid=<?= $value['eventid'] ?>', '<?= $value['id'] ?>')" class="table-btn btn text-dark shadow-sm rounded-circle"><i class="fa-sharp fa-solid fa-eye"></i><span class="viewtooltip">View</span></button>
+                                                <button onclick="downloadReceipt('downloadpdf?memberid=<?= $value['Familymembershipid'] ?>&dues=<?= $value['dues'] ?>&eventid=<?= $value['eventid'] ?>', '<?= $value['id'] ?>')" class="table-btn btn text-dark shadow-sm rounded-circle"><i class="fa-solid fa-download"></i><span class="viewtooltip">Download</span></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
-</div>
 
-  
-  <script>
+    <!-- Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header border-0 bg-light">
+                    <h5 class="modal-title heading-kaadaisoft">Payment Receipt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="receiptModalBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="modalDownloadBtn" class="btn btn-success rounded-pill px-4" disabled>Download PDF</button>
+                    <button type="button" id="modalPrintBtn" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()" disabled>Print Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Mobile Menu Functions
-    function openMobileMenu() {
-      document.getElementById('custom-mobile-menu').style.display = 'block';
-    }
+    </div>
 
-    function closeMobileMenu() {
-      document.getElementById('custom-mobile-menu').style.display = 'none';
-    }
+    <!-- Hidden Area for off-screen High-Quality PDF capture (Perfect Tamil) -->
+    <div id="captureArea" style="position: absolute; left: -9999px; width: 800px; padding: 20px; background: white;"></div>
 
-    // Load components via AJAX to ensure consistency
-    $.ajax({
-      type: "get",
-      url: "<?= base_url('dashboard/sidemenu') ?>",
-      success: (result) => {
-        document.getElementById("menu-bar").innerHTML = result;
-        // Populate custom mobile menu content
-        document.getElementById("mobile-menu-content").innerHTML = result;
-      },
-      error: (error) => {
-        document.getElementById("menu-bar").innerHTML = "Error loading menu";
-      }
-    }); 
+    <script>
+        // Load side menu, top menu, and logo
+        $.ajax({ url: "<?= base_url('dashboard/sidemenu') ?>", success: (r) => { document.getElementById("menu-bar").innerHTML = r; } });
+        $.ajax({ url: "<?= base_url('dashboard/topmenu') ?>", success: (r) => { document.getElementById("search-bar").innerHTML = r; } });
+        $.ajax({ url: "<?= base_url('dashboard/pslogo') ?>", success: (r) => { document.getElementById("ps-logo").innerHTML = r; } });
 
+        function viewReceipt(url, receiptId){
+            // This is for the EYE icon - it SHOWS the modal
+            $('#receiptModal').modal('show');
+            $('#receiptModalBody').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
+            $('#modalDownloadBtn, #modalPrintBtn').prop('disabled', true);
 
-    $.ajax({
-      type:"get",
-      url:"<?= base_url('dashboard/topmenu') ?>",
-      success:(result)=>{
-           document.getElementById("search-bar").innerHTML = result;
-      },
-      error:(error)=>{
-           document.getElementById("search-bar").innerHTML = "Error loading top menu";
-      }
-    }); 
-
-    $.ajax({
-      type:"get",
-      url:"<?= base_url('dashboard/pslogo') ?>",
-      success:(result)=>{
-           document.getElementById("ps-logo").innerHTML = result;
-      },
-      error:(error)=>{
-           document.getElementById("ps-logo").innerHTML = "Error loading logo";
-      }
-    });
-
-     /* let setheight = document.getElementById("pagecontrol");
-     let pageheight = window.innerHeight;
-     let b = document.getElementById("search-bar").getBoundingClientRect().height;
-     setheight.style.height = pageheight - b+"px";
-     document.getElementById("menu-bar").style.height = (pageheight - b) + "px";
-
-     window.addEventListener("resize", () => {
-         let currentHeight = window.innerHeight;
-         let currentTopbarHeight = document.getElementById("search-bar").getBoundingClientRect().height;
-         document.getElementById("menu-bar").style.height = (currentHeight - currentTopbarHeight) + "px";
-         setheight.style.height = (currentHeight - currentTopbarHeight) + "px";
-     }); */
-
-     function viewReceipt(url){
-      // Open in modal instead of new tab
-      $('#receiptModal').modal('show');
-      $('#receiptModalBody').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
-      
-      $.ajax({
-        type: "get",
-        url: url + "&ajax=1", // Add ajax flag
-        success: (result) => {
-          $('#receiptModalBody').html(result);
-        },
-        error: (error) => {
-          $('#receiptModalBody').html('<div class="alert alert-danger m-3">Error loading receipt. Please try again.</div>');
+            let downloadUrl = url.replace('paymentreceiptpdf', 'downloadpdf');
+            document.getElementById('modalDownloadBtn').setAttribute('onclick', "downloadReceipt('" + downloadUrl + "', '" + receiptId + "')");
+            
+            $.ajax({
+                type: "get",
+                url: url + "&ajax=1",
+                success: (result) => { 
+                    $('#receiptModalBody').html(result);
+                    $('#modalDownloadBtn, #modalPrintBtn').prop('disabled', false);
+                },
+                error: () => { $('#receiptModalBody').html('<div class="alert alert-danger m-3">Error loading receipt.</div>'); }
+            });
         }
-      });
-     }
 
-     function printReceiptFromModal() {
-        const modalBody = document.getElementById('receiptModalBody');
-        const printContent = modalBody.innerHTML;
-        const printWindow = window.open('', '', 'height=600,width=800');
-        
-        printWindow.document.write("<html><head><title>Print Receipt</title>");
-        // Copy relevant styles for printing
-        printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
-        printWindow.document.write('<style>');
-        printWindow.document.write('.heading-kaadaisoft { color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; }');
-        printWindow.document.write('table td, th { padding: 10px; }');
-        printWindow.document.write('.print-only { font-size: 14px; }');
-        printWindow.document.write('</style></head><' + 'body>');
-        printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</' + 'body></' + 'html>');
-        
-        printWindow.document.close();
-        setTimeout(function() {
+        function downloadReceipt(url, receiptId){
+            // If the modal is open and current content matches the requested receipt, capture from modal
+            const modalContent = document.querySelector('#receiptModalBody .container-fluid');
+            const isModalOpen = $('#receiptModal').is(':visible');
+            const isLoaded = $('#modalDownloadBtn').prop('disabled') === false;
+
+            if (isModalOpen && modalContent && isLoaded) {
+                // High-quality capture from visible modal
+                captureAndSave(modalContent, receiptId);
+            } else {
+                // SILENT DOWNLOAD - Render off-screen and save
+                // This happens when clicking the DOWNLOAD (Arrow) icon in the list
+                const captureArea = document.getElementById('captureArea');
+                captureArea.innerHTML = '<div style="text-align:center; padding:50px;">Generating PDF...</div>';
+                
+                $.ajax({
+                    type: "get",
+                    url: url.replace('downloadpdf', 'paymentreceiptpdf') + "&ajax=1",
+                    success: (result) => {
+                        captureArea.innerHTML = result;
+                        // Wait for fonts/images
+                        setTimeout(() => {
+                            const element = captureArea.querySelector('.container-fluid');
+                            if(element) {
+                                captureAndSave(element, receiptId, true);
+                            }
+                        }, 800);
+                    }
+                });
+            }
+        }
+
+        function captureAndSave(element, receiptId, isSilent = false) {
+            const fileName = receiptId ? 'receipt_' + receiptId + '.pdf' : 'receipt.pdf';
+            const opt = {
+                margin:       0.3,
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 3, useCORS: true, letterRendering: true, scrollY: 0 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                if(isSilent) {
+                    document.getElementById('captureArea').innerHTML = '';
+                }
+            });
+        }
+
+        function printReceiptFromModal() {
+            let divContents = document.getElementById("printreceipt") ? document.getElementById("printreceipt").innerHTML : '';
+            let receiptId = document.getElementById("receipt_id_val") ? document.getElementById("receipt_id_val").innerText : 'சீட்டு எண் : -';
+            let paymentDate = document.getElementById("receipt_date_val") ? document.getElementById("receipt_date_val").innerText : 'தேதி : -';
+            
+            let printWindow = window.open('', '', 'height=1000, width=1000');
+            printWindow.document.open();
+            
+            let htmlContent = `<html><head><title>Print Receipt</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    .heading-kaadaisoft { color: #007bff; font-weight: 800; font-size: 32px; text-align: center; }
+                    .receipt-title { font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; border: 2px solid grey; border-radius: 15px; padding: 20px; }
+                    td { padding: 10px; }
+                </style></head><body>
+                <table>
+                <tr><td colspan='3' style='text-align:center;'><div class='heading-kaadaisoft'>Poondurai Kadai Kulam</div><div class='receipt-title'>Receipt</div></td></tr>
+                <tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td></td><td style='font-weight:bold; text-align: right;'>${receiptId}</td></tr>
+                <tr><td style='font-weight:bold;'>${paymentDate}</td></tr>
+                ${divContents}
+                </table></body></html>`;
+
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
             printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        }, 500);
-     }
-
-     function downloadReceipt(url){
-      var link = document.createElement('a');
-      link.href = url;
-      link.dispatchEvent(new MouseEvent('click'));
-     }
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

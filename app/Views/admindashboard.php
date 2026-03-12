@@ -22,6 +22,10 @@
         height: auto; 
         flex-wrap: wrap; 
         padding: 5px 0 !important;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1050;
       }
       #ps-logo {
         padding-top: 5px !important;
@@ -33,7 +37,11 @@
         padding-right: 5px !important;
         width: 100% !important;
       }
-      .main-body-row { flex-direction: column; overflow: auto; }
+      .main-body-row { 
+        margin-top: 130px !important; /* Adjust for stacked top bar elements */
+        flex-direction: column; 
+        overflow: auto; 
+      }
       #menu-bar { display: none; }
       .main-content-area { width: 100%; overflow: visible; }
       html, body { overflow: auto; height: auto; }
@@ -895,22 +903,31 @@
     }
 
     function printReceiptFromModal() {
-        const modalBody = document.getElementById('receiptModalBody');
-        const printContent = modalBody.innerHTML;
-        const printWindow = window.open('', '', 'height=600,width=800');
+        let divContents = document.getElementById("printreceipt") ? document.getElementById("printreceipt").innerHTML : '';
+        let receiptId = document.getElementById("receipt_id_val") ? document.getElementById("receipt_id_val").innerText : 'சீட்டு எண் : -';
+        let paymentDate = document.getElementById("receipt_date_val") ? document.getElementById("receipt_date_val").innerText : 'தேதி : -';
         
-        printWindow.document.write("<html><head><title>Print Receipt</title>");
-        printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">');
-        printWindow.document.write('<style>');
-        printWindow.document.write('.heading-kaadaisoft { color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; }');
-        printWindow.document.write('table td, th { padding: 10px; }');
-        printWindow.document.write('</style></head><' + 'body>');
-        printWindow.document.write('<div class="p-4">' + printContent + '</div>');
-        printWindow.document.write('</' + 'body></' + 'html>');
+        let printWindow = window.open('', '', 'height=auto, width=auto');
+        printWindow.document.open();
         
+        let htmlContent = "<html><head><title>Print Receipt</title>";
+        htmlContent += "<style>";
+        htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
+        htmlContent += "table td,th{ padding-top:10px; }";
+        htmlContent += ".heading-kaadaisoft{ color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; font-size:32px; }";
+        htmlContent += ".printuse{ text-align:center; }";
+        htmlContent += "</style></head><" + "body>";
+        htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
+        htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
+        htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>" + receiptId + "</td></tr>";
+        htmlContent += "<tr><td style='font-weight:bold;'>" + paymentDate + "</td></tr>";
+        htmlContent += divContents;
+        htmlContent += "</table></div></" + "body></" + "html>";
+
+        printWindow.document.write(htmlContent);
         printWindow.document.close();
+        printWindow.focus();
         setTimeout(function() {
-            printWindow.focus();
             printWindow.print();
             printWindow.close();
         }, 500);

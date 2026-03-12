@@ -379,6 +379,14 @@
       <div id="getpaymentdetail" class="container-fluid py-2">
 
       </div>
+
+      <div class="row pt-2 px-3">
+        <div class="col-md-6 mb-3">
+            <label class="form-label" for="receivedby"><i class="fas fa-user-check me-2 text-primary"></i>Person Received the Money</label>
+            <input type="text" name="receivedby" id="receivedby" class="form-control border rounded-pill py-3 px-4" placeholder="Enter name of receiver" required>
+        </div>
+      </div>
+
       <div class="container-fluid">
       <div class="d-flex mt-3">
       <input type="checkbox" onchange="enablesubmitbutton(this)">&nbsp;&nbsp;<label for="checkpaymentdetails">Above details are correct.</label> 

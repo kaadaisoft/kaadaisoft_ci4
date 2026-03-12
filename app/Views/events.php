@@ -383,19 +383,22 @@
         backdrop-filter: blur(4px);
         z-index: 2000;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
+        overflow-y: auto;
+        padding: 30px 0;
         transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .modal-box-premium {
         background: #fff;
-        width: 90%;
+        width: 95%;
         max-width: 500px;
         border-radius: 20px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         position: relative;
         padding: 0 !important;
+        margin: auto;
         overflow: hidden;
         animation: modalScale 0.3s ease-out;
       }
@@ -716,7 +719,8 @@
           <form id="events-form" name="eventform" method="POST" action="<?=base_url("events/addevent");?>" onsubmit="return eventValidate()" enctype="multipart/form-data">
               <div class="mb-4">
                   <label for="eventname" class="form-label small fw-bold text-muted text-uppercase">Event Name</label>
-                  <input type="text" onkeyup="validateEvent(this)" class="form-control input-style" id="eventname" placeholder="e.g. Pongal_2026" name="eventname" required>
+                  <input type="text" onkeyup="validateEvent(this)" class="form-control input-style" id="eventname" placeholder="e.g. Event_2026" name="eventname" required>
+                  <small class="text-primary d-block mt-1" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info me-1"></i>Note: Year should be at the end of the event name (e.g. Event_2026).</small>
                   <small id="eventnameerror" class="text-danger mt-1 d-block"></small>
               </div>
 
@@ -1048,21 +1052,35 @@ $.ajax({
       }
     });
 
-    document.getElementById("date_from").addEventListener("change", (event)=>{
-        let fromDate = event.target.value;
-        let toDate = document.getElementById("date_to");
-        toDate.min = fromDate;
-        if(toDate.value < fromDate) {
-          toDate.value = "";
-        }
-    });
+    const today = new Date().toISOString().split('T')[0];
+    const dateFromElement = document.getElementById("date_from");
+    if(dateFromElement) {
+        dateFromElement.min = today;
+        dateFromElement.addEventListener("change", (event)=>{
+            let fromDate = event.target.value;
+            let toDate = document.getElementById("date_to");
+            toDate.min = fromDate || today;
+            if(toDate.value && toDate.value < fromDate) {
+              toDate.value = "";
+            }
+        });
+    }
+
+    const dateToElement = document.getElementById("date_to");
+    if(dateToElement) dateToElement.min = today;
 
      function validateDate() {
         let fromDate = document.getElementById("update_date_from");
         let toDate = document.getElementById("update_date_to");
-        toDate.min = fromDate.value;
-        if(toDate.value < fromDate.value) {
-          toDate.value = "";
+        const currDate = new Date().toISOString().split('T')[0];
+        
+        if(fromDate) fromDate.min = currDate;
+        
+        if(fromDate && toDate) {
+            toDate.min = fromDate.value || currDate;
+            if(toDate.value && toDate.value < fromDate.value) {
+              toDate.value = "";
+            }
         }
     }
 
@@ -1222,25 +1240,37 @@ $.ajax({
 
   function validateEvent(event){
       let eventname = event.value;
-      let validatereg = /^[A-Za-z_.]+[0-9]{4}$/;
+      let currentYear = new Date().getFullYear();
+      let validatereg = /^[\w.]+[0-9]{4}$/; 
       let validate = eventname.match(validatereg);
       if(!validate){
-         document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+         document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
       }
       else{
-        document.getElementById("eventnameerror").innerHTML = "";
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+           document.getElementById("eventnameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+        } else {
+           document.getElementById("eventnameerror").innerHTML = "";
+        }
       }
     }
 
     function validateUpdateevent(event){
       let eventname = event.value;
-      let validatereg = /^[A-Za-z_.]+[0-9]{4}$/;
+      let currentYear = new Date().getFullYear();
+      let validatereg = /^[\w.]+[0-9]{4}$/; 
       let validate = eventname.match(validatereg);
       if(!validate){
-         document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+         document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
       }
       else{
-        document.getElementById("eventupdatenameerror").innerHTML = "";
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+           document.getElementById("eventupdatenameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+        } else {
+           document.getElementById("eventupdatenameerror").innerHTML = "";
+        }
       }
     }
 
@@ -1258,8 +1288,16 @@ $.ajax({
        return false;
     }
     else if(!eventname.match(validatereg)){
-        document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+        document.getElementById("eventnameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
         return false;
+    }
+    else {
+        let currentYear = new Date().getFullYear();
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+            document.getElementById("eventnameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+            return false;
+        }
     }
 
     if(eventimage == ""){
@@ -1267,12 +1305,12 @@ $.ajax({
        return false;
     }
 
-    if(evenamount == ""){
+    if(taxamount == ""){
        document.getElementById("eventamounterror").innerHTML = "Please enter amount";
        return false;
     }
     else{
-      if(eventamount < 0) {
+      if(taxamount < 0) {
        document.getElementById("eventamounterror").innerHTML = "Please enter valid amount";
        return false;
       }
@@ -1294,17 +1332,25 @@ $.ajax({
     }
     else{
       if(!eventname.match(validatereg)){
-        document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) insteadof space. Must include year";
+        document.getElementById("eventupdatenameerror").innerHTML = "Only use ( _ ) instead of space. Year must be at the end (e.g. Event_2026)";
         return false;
+      }
+      else {
+        let currentYear = new Date().getFullYear();
+        let year = parseInt(eventname.substring(eventname.length - 4));
+        if(year < currentYear) {
+            document.getElementById("eventupdatenameerror").innerHTML = "Year should be current year (" + currentYear + ") or a future year.";
+            return false;
+        }
       }
     }
 
-    if(evenamount == "") {
+    if(taxamount == "") {
        document.getElementById("eventupdateamounterror").innerHTML = "Please enter amount";
        return false;
     }
     else{
-      if(eventamount < 0) {
+      if(taxamount < 0) {
        document.getElementById("eventupdateamounterror").innerHTML = "Please enter valid amount";
        return false;
       }

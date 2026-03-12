@@ -179,12 +179,12 @@
       }
 
       #coords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
-        z-index: 1050;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -213,12 +213,12 @@
       }
 
       #assigncoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
-        z-index: 1050;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -261,12 +261,12 @@
       }
 
       #updatecoords-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
-        z-index: 1050;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
@@ -347,12 +347,12 @@
 
 
       #updatemember-modal-hide{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height:100%;
         top:0;
         left:-100%;
-        z-index: 1050;
+        z-index: 2000;
         transition:0.4s;
         transition-timing-function:ease;
       }
