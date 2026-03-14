@@ -715,6 +715,19 @@
                       </div>
 
                       <div class="row mb-3">
+                         <!-- Specific Search (Name, ID, Mobile, Email, Aadhar) -->
+                         <div class="col-md-12 mb-3">
+                            <label class="small fw-bold mb-1 text-muted" for="advanced-search-input">Specific Search (Name, Membership ID, Mobile, Email, Aadhar):</label>
+                            <div class="input-group input-group-sm shadow-sm border rounded" style="background: white;">
+                               <span class="input-group-text bg-white border-0"><i class="fas fa-search text-warning"></i></span>
+                               <input type="text" id="advanced-search-input" onkeyup="commonSearch(this)" 
+                                  class="form-control border-0" placeholder="Type Name, Email, Mobile, Aadhar or Membership ID...">
+                            </div>
+                            <small class="text-muted mt-1 d-block"><i class="fas fa-info-circle me-1"></i>Search by Name, Email, Mobile, Aadhar Card, or Membership ID directly.</small>
+                         </div>
+                      </div>
+
+                      <div class="row mb-3">
                          <!-- Blood Group -->
                          <div class="col-md-4">
                             <label class="small fw-bold mb-1 text-muted" for="bloodgroup-dropdown">Blood Group:</label>
@@ -1485,9 +1498,13 @@
          if (searchInput) {
              search = searchInput.value;
          } else {
-             let inputEl = document.querySelector("#commonsearch input");
-             if (inputEl) {
-                 search = inputEl.value;
+             let advInput = document.getElementById("advanced-search-input");
+             let globalInput = document.querySelector("#commonsearch input");
+             
+             if (advInput && advInput.value.trim() !== "") {
+                 search = advInput.value;
+             } else if (globalInput) {
+                 search = globalInput.value;
              }
          }
 

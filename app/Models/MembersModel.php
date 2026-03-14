@@ -358,6 +358,7 @@ class MembersModel extends Model
                 $term = $searchfields['search'];
                 $builder->groupStart();
                 $builder->like('Name', $term);
+                $builder->orLike('Email', $term);
                 $builder->orLike('Familymembershipid', $term);
                 $builder->orLike('Phonenumber', $term);
                 $builder->orLike('Aadharnumber', $term);
@@ -368,6 +369,7 @@ class MembersModel extends Model
             // Simple string search
             $builder->groupStart();
             $builder->like('Name', $searchfields);
+            $builder->orLike('Email', $searchfields);
             $builder->orLike('Familymembershipid', $searchfields);
             $builder->orLike('Phonenumber', $searchfields);
             $builder->orLike('Aadharnumber', $searchfields);

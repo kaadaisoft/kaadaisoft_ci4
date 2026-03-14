@@ -492,7 +492,7 @@
                         <i class="fa-solid fa-location-dot text-primary me-2"></i>Native Address
                     </h5>
                     <div class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-3" style="display: none;">
                             <label for="states-dropdown-update">State</label>
                             <select id="states-dropdown-update" onchange="setDropdowndistrictsUpdate(this); validateUpdateInput(this)" class="form-select" name="state-update">
                                 <option value=''>Select State</option>
@@ -550,10 +550,10 @@
 
                         <div class="col-md-3">
                             <label for="village-update">Village</label>
-                            <select id="village-update" onchange="toggleVillageOthersUpdate(this); validateUpdateInput(this)" class="form-select" name="village-update">
+                            <select id="village-update" onchange="toggleVillageOthersManager(this); validateUpdateInput(this)" class="form-select" name="village-update">
                                 <option value="<?= $manager->Village ?>"><?= $manager->Village ?: 'Select Village' ?></option>
                             </select>
-                           <input type="text" id="village_others_input_update" name="village_others_update" 
+                           <input type="text" id="village_others_input_manager" name="village_others_update" 
                                 class="form-control mt-2" 
                                 placeholder="Enter village name" 
                                 style="display:none;" 
@@ -597,10 +597,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="d-block">Current Address Type</label>
+                        <label class="d-block">Current Address Type <span class="text-danger">*</span></label>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_india-update" value="India" <?= ($manager->Curaddresstype == 'India') ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
-                            <label class="form-check-label" for="cur_address_india-update">India</label>
+                            <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_tn-update" value="TamilNadu" <?= ($manager->Curaddresstype == 'TamilNadu' || ($manager->Curaddresstype == 'India' && $manager->Curstate == 35)) ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
+                            <label class="form-check-label" for="cur_address_tn-update">Tamil Nadu</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_others-update" value="OtherState" <?= ($manager->Curaddresstype == 'OtherState' || ($manager->Curaddresstype == 'India' && $manager->Curstate != 35 && $manager->Curstate != '')) ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
+                            <label class="form-check-label" for="cur_address_others-update">Other State</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_nri-update" value="NRI" <?= ($manager->Curaddresstype == 'NRI') ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
@@ -609,10 +613,9 @@
                         <small id="cur_address_type_error-update" class="text-danger"></small>
                     </div>
 
-                    <!-- INDIA CURRENT ADDRESS BLOCK -->
-                    <div id="cur_india_block-update" style="display:<?= ($manager->Curaddresstype == 'India') ? 'block' : 'none' ?>;">
+                    <div id="cur_india_block-update" style="display:<?= ($manager->Curaddresstype == 'TamilNadu' || ($manager->Curaddresstype == 'India' && $manager->Curstate == 35)) ? 'block' : 'none' ?>;">
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-3" id="cur_state_container-update" style="display: <?= ($manager->Curaddresstype == 'OtherState' || ($manager->Curaddresstype == 'India' && $manager->Curstate != 35)) ? 'block' : 'none' ?>;">
                                 <label for="cur_state-update">State</label>
                                 <select id="cur_state-update" onchange="setDropdowndistrictsCurrentUpdate(this); validateUpdateInput(this)" class="form-select" name="cur_state-update">
                                     <option value="">Select State</option>
@@ -657,10 +660,10 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="cur_village-update">Village</label>
-                                <select id="cur_village-update" onchange="toggleVillageOthersCurrentUpdate(this); validateUpdateInput(this)" class="form-select" name="cur_village-update">
+                                <select id="cur_village-update" onchange="toggleVillageOthersCurrentManager(this); validateUpdateInput(this)" class="form-select" name="cur_village-update">
                                     <option value="<?= $manager->Curvillage ?>"><?= $manager->Curvillage ?: 'Select Village' ?></option>
                                 </select>
-                                <input type="text" id="cur_village_others_input_update" name="cur_village_others_update" 
+                                <input type="text" id="cur_village_others_input_manager" name="cur_village_others_update" 
                                     class="form-control mt-2" 
                                     placeholder="Enter village name" 
                                     style="display:none;" 
@@ -688,9 +691,9 @@
                     </div>
 
                     <!-- NRI CURRENT ADDRESS BLOCK -->
-                    <div id="cur_nri_block-update" style="display:<?= ($manager->Curaddresstype == 'NRI') ? 'block' : 'none' ?>;">
+                    <div id="cur_nri_block-update" style="display:<?= ($manager->Curaddresstype == 'NRI' || $manager->Curaddresstype == 'OtherState' || ($manager->Curaddresstype == 'India' && $manager->Curstate != 35 && $manager->Curstate != '')) ? 'block' : 'none' ?>;">
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-3" id="cur_nri_country_container-update" style="display: <?= ($manager->Curaddresstype == 'NRI') ? 'block' : 'none' ?>;">
                                 <label for="cur_nri_country-update">Country</label>
                                 <select id="cur_nri_country-update" name="cur_nri_country-update" class="form-select" onchange="loadNRIStatesUpdate(this.value); validateUpdateInput(this)">
                                     <option value="<?= $manager->Curnricountry ?>"><?= $manager->Curnricountry ?: 'Select Country' ?></option>
@@ -848,8 +851,8 @@
             // Clear dependent dropdowns
             document.getElementById("panchayat-dropdown-update").innerHTML = '<option value="">Select Panchayat</option>';
             document.getElementById("village-update").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_update").style.display = 'none';
-            document.getElementById("village_others_input_update").value = '';
+            document.getElementById("village_others_input_manager").style.display = 'none';
+            document.getElementById("village_others_input_manager").value = '';
 
             $.ajax({
                 type: "get",
@@ -859,7 +862,7 @@
                     let dropdown = document.getElementById("taluks-dropdown-update");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    toggleTalukOthersUpdate(dropdown);
+                    toggleTalukOthersManager(dropdown);
                 },
                 error: () => {
                     document.getElementById("taluks-dropdown-update").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
@@ -867,7 +870,7 @@
             });
         }
 
-        function toggleTalukOthersUpdate(selectEl) {
+        function toggleTalukOthersManager(selectEl) {
             const othersInput = document.getElementById('taluk_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
@@ -887,8 +890,8 @@
             // Clear dependent dropdowns if we are just changing taluk (not pre-filling)
             if (!selectPanchayat) {
                 document.getElementById("village-update").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("village_others_input_update").style.display = 'none';
-                document.getElementById("village_others_input_update").value = '';
+                document.getElementById("village_others_input_manager").style.display = 'none';
+                document.getElementById("village_others_input_manager").value = '';
             }
 
             if (!taluk_name) return;
@@ -904,7 +907,7 @@
                         panchayatDropdown.value = selectPanchayat;
                         setDropdownVillageUpdate(panchayatDropdown, selectVillage);
                     }
-                    togglePanchayatOthersUpdate(panchayatDropdown);
+                    togglePanchayatOthersManager(panchayatDropdown);
                 },
                 error: function () {
                     document.getElementById("panchayat-dropdown-update").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
@@ -912,7 +915,7 @@
             });
         }
 
-        function togglePanchayatOthersUpdate(selectEl) {
+        function togglePanchayatOthersManager(selectEl) {
             const othersInput = document.getElementById('panchayat_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
@@ -932,8 +935,8 @@
             
             // Clear manual input if just changing panchayat
             if (!selectedVillage) {
-                document.getElementById("village_others_input_update").style.display = 'none';
-                document.getElementById("village_others_input_update").value = '';
+                document.getElementById("village_others_input_manager").style.display = 'none';
+                document.getElementById("village_others_input_manager").value = '';
             }
 
             if(!panchayat_name) {
@@ -956,20 +959,19 @@
 
                      if(selectedVillage) {
                          villageSelect.value = selectedVillage;
-                         // If value didn't stick, it means it's not in the list -> set to Others
-                         if (villageSelect.value !== selectedVillage) {
+                         if (villageSelect.value !== selectedVillage && selectedVillage !== "") {
                              villageSelect.value = 'Others';
-                             toggleVillageOthersUpdate(villageSelect, selectedVillage);
+                             toggleVillageOthersManager(villageSelect, selectedVillage);
                          } else {
-                             toggleVillageOthersUpdate(villageSelect);
+                             toggleVillageOthersManager(villageSelect);
                          }
                      }
                 }
             });
         }
 
-        function toggleVillageOthersUpdate(selectEl, manualValue = '') {
-            const othersInput = document.getElementById('village_others_input_update');
+        function toggleVillageOthersManager(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('village_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 othersInput.setAttribute('required', 'required');
@@ -985,93 +987,265 @@
             }
         }
 
-        function toggleCurrentAddressTypeUpdate() {
-            const selected = document.querySelector('input[name="cur_address_type-update"]:checked');
-            const indiaBlock = document.getElementById('cur_india_block-update');
+        function clearCurrentIndiaAddressUpdate() {
+            $('#cur_state-update').val('');
+            $('#cur_district-update').html('<option value="">Select District</option>');
+            $('#cur_taluk-update').html('<option value="">Select Taluk</option>');
+            $('#cur_panchayat-update').html('<option value="">Select Panchayat</option>');
+            $('#cur_village-update').val('');
+            $('#cur_street-update').val('');
+            $('#cur_doorno-update').val('');
+            $('#cur_pincode-update').val('');
+            $('#cur_taluk_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_taluk_others_update');
+            $('#cur_panchayat_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_panchayat_others_update');
+            $('#cur_village_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_village_others_update');
+        }
+
+        function clearCurrentOtherStateAddressUpdate() {
+            $('#cur_state-update').val(''); // Clear state if it was set to TN
+            $('#cur_district-update').html('<option value="">Select District</option>');
+            $('#cur_taluk-update').html('<option value="">Select Taluk</option>');
+            $('#cur_panchayat-update').html('<option value="">Select Panchayat</option>');
+            $('#cur_village-update').val('');
+            $('#cur_street-update').val('');
+            $('#cur_doorno-update').val('');
+            $('#cur_pincode-update').val('');
+            $('#cur_taluk_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_taluk_others_update');
+            $('#cur_panchayat_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_panchayat_others_update');
+            $('#cur_village_others_input_manager').val('').hide().removeAttr('name').attr('name', 'cur_village_others_update');
+
+            $('#cur_nri_country-update').val('');
+            $('#cur_nri_state-update').html('<option value="">Select State</option>');
+            $('#cur_nri_city-update').html('<option value="">Select City</option>');
+            $('#cur_nri_zip-update').val('');
+            $('#cur_nri_fulladdress-update').val('');
+        }
+
+        function clearCurrentNriAddressUpdate() {
+            $('#cur_nri_country-update').val('');
+            $('#cur_nri_state-update').html('<option value="">Select State</option>');
+            $('#cur_nri_city-update').html('<option value="">Select City</option>');
+            $('#cur_nri_zip-update').val('');
+            $('#cur_nri_fulladdress-update').val('');
+        }
+
+        function toggleCurrentAddressTypeUpdate(isInitial = false) {
+            const tnBlock = document.getElementById('cur_india_block-update');
             const nriBlock = document.getElementById('cur_nri_block-update');
             const sameBtn = document.getElementById('btn_same_as_native-update');
-            if(!selected) return;
+            const curStateContainer = document.getElementById('cur_state_container-update');
+            const curNriCountryContainer = document.getElementById('cur_nri_country_container-update');
 
-            if (selected.value === 'India') {
-                indiaBlock.style.display = 'block';
-                nriBlock.style.display = 'none';
+            const selected = document.querySelector('input[name="cur_address_type-update"]:checked');
+
+            // Hide all by default
+            if (tnBlock) tnBlock.style.display = 'none';
+            if (nriBlock) nriBlock.style.display = 'none';
+            if (sameBtn) sameBtn.style.display = 'none';
+            if (curStateContainer) curStateContainer.style.display = 'block'; // Default for India block
+            if (curNriCountryContainer) curNriCountryContainer.style.display = 'block'; // Default for NRI block
+
+            if (!selected) {
+                if (!isInitial) {
+                    clearCurrentIndiaAddressUpdate();
+                    clearCurrentNriAddressUpdate();
+                }
+                return;
+            }
+
+            if (selected.value === 'TamilNadu') {
+                if (tnBlock) tnBlock.style.display = 'block';
+                if (nriBlock) nriBlock.style.display = 'none';
+                if (curStateContainer) curStateContainer.style.display = 'none';
                 if (sameBtn) sameBtn.style.display = 'inline-block';
-                // Clear NRI fields
-                if(document.getElementById('cur_nri_country-update')) document.getElementById('cur_nri_country-update').value = "";
-                if(document.getElementById('cur_nri_state-update')) document.getElementById('cur_nri_state-update').value = "";
-                if(document.getElementById('cur_nri_city-update')) document.getElementById('cur_nri_city-update').value = "";
-                if(document.getElementById('cur_nri_zip-update')) document.getElementById('cur_nri_zip-update').value = "";
-                if(document.getElementById('cur_nri_fulladdress-update')) document.getElementById('cur_nri_fulladdress-update').value = "";
-            } else {
-                indiaBlock.style.display = 'none';
-                nriBlock.style.display = 'block';
-                if (sameBtn) sameBtn.style.display = 'none';
-                // Clear India fields
-                if(document.getElementById('cur_state-update')) document.getElementById('cur_state-update').value = "";
-                if(document.getElementById('cur_district-update')) document.getElementById('cur_district-update').innerHTML = '<option value="">Select District</option>';
-                if(document.getElementById('cur_taluk-update')) document.getElementById('cur_taluk-update').innerHTML = '<option value="">Select Taluk</option>';
-                if(document.getElementById('cur_panchayat-update')) document.getElementById('cur_panchayat-update').innerHTML = '<option value="">Select Panchayat</option>';
-                if(document.getElementById('cur_village-update')) document.getElementById('cur_village-update').value = "";
-                if(document.getElementById('cur_street-update')) document.getElementById('cur_street-update').value = "";
-                if(document.getElementById('cur_doorno-update')) document.getElementById('cur_doorno-update').value = "";
-                if(document.getElementById('cur_pincode-update')) document.getElementById('cur_pincode-update').value = "";
+                if (!isInitial) clearCurrentNriAddressUpdate(); 
                 
-                loadCountriesDataUpdate();
+                let stateSelect = document.getElementById("cur_state-update");
+                if (stateSelect) {
+                    for (let i = 0; i < stateSelect.options.length; i++) {
+                        if (stateSelect.options[i].text === "Tamil Nadu") {
+                            stateSelect.selectedIndex = i;
+                            if (!isInitial) setDropdowndistrictsCurrentUpdate(stateSelect);
+                            break;
+                        }
+                    }
+                }
+                if (!isInitial) {
+                    // Clear other state fields if any
+                    $('#cur_nri_country-update').val('');
+                    $('#cur_nri_state-update').html('<option value="">Select State</option>');
+                    $('#cur_nri_city-update').html('<option value="">Select City</option>');
+                }
+            } else if (selected.value === 'OtherState') {
+                if (tnBlock) tnBlock.style.display = 'none';
+                if (nriBlock) nriBlock.style.display = 'block';
+                if (curNriCountryContainer) curNriCountryContainer.style.display = 'none';
+                if (sameBtn) sameBtn.style.display = 'none';
+
+                if (!isInitial) {
+                    clearCurrentIndiaAddressUpdate();
+                    clearCurrentNriAddressUpdate();
+                }
+
+                // Set Country to India and Load States via callback
+                loadCountriesDataUpdate(isInitial); 
+            } else if (selected.value === 'NRI') {
+                if (tnBlock) tnBlock.style.display = 'none';
+                if (nriBlock) nriBlock.style.display = 'block';
+                if (curNriCountryContainer) curNriCountryContainer.style.display = 'block';
+                if (sameBtn) sameBtn.style.display = 'none';
+
+                if (!isInitial) {
+                    clearCurrentIndiaAddressUpdate(); // Clear India fields
+                    clearCurrentNriAddressUpdate(); // Clear NRI fields
+                }
+                loadCountriesDataUpdate(isInitial);
             }
         }
 
         function copyNativeAddressUpdate() {
-            var indiaRadio = document.getElementById('cur_address_india-update');
-            if (indiaRadio) {
-                indiaRadio.checked = true;
-                toggleCurrentAddressTypeUpdate();
+            // Target elements
+            const c_state = document.getElementById('cur_state-update');
+            const c_district = document.getElementById('cur_district-update');
+            const c_taluk = document.getElementById('cur_taluk-update');
+            const c_panchayat = document.getElementById('cur_panchayat-update');
+            const c_village = document.getElementById('cur_village-update');
+            const c_street = document.getElementById('cur_street-update');
+            const c_doorno = document.getElementById('cur_doorno-update');
+            const c_pincode = document.getElementById('cur_pincode-update');
+
+            // Source data
+            const n_state = document.getElementById('states-dropdown-update');
+            const n_district = document.getElementById('districts-dropdown-update');
+            const n_taluk = document.getElementById('taluks-dropdown-update');
+            const n_panchayat = document.getElementById('panchayat-dropdown-update');
+            const n_village_sel = document.getElementById('village-update');
+            const n_street = document.getElementById('street-update');
+            const n_doorno = document.getElementById('doorno-update');
+            const n_pincode = document.getElementById('pincode-update');
+
+            // Source 'Others' inputs
+            const n_taluk_others_input = document.getElementById('taluk_others_input_manager');
+            const n_panchayat_others_input = document.getElementById('panchayat_others_input_manager');
+            const n_village_others_input = document.getElementById('village_others_input_manager');
+
+            // Target 'Others' inputs
+            const c_taluk_others_input = document.getElementById('cur_taluk_others_input_manager');
+            const c_panchayat_others_input = document.getElementById('cur_panchayat_others_input_manager');
+            const c_village_others_input = document.getElementById('cur_village_others_input_manager');
+
+            // 1. Set Address Type to Tamil Nadu (since we are copying from there)
+            let tnRadio = document.getElementById('cur_address_tn-update');
+            if (tnRadio) {
+                tnRadio.checked = true;
+                toggleCurrentAddressTypeUpdate(); // This will clear NRI fields and set TN state
             }
 
-            var fields = {
-                'street-update': 'cur_street-update',
-                'doorno-update': 'cur_doorno-update',
-                'pincode-update': 'cur_pincode-update'
-            };
+            // Copy simple fields
+            c_street.value = n_street.value;
+            c_doorno.value = n_doorno.value;
+            c_pincode.value = n_pincode.value;
 
-            for (var sourceId in fields) {
-                var source = document.getElementById(sourceId);
-                var target = document.getElementById(fields[sourceId]);
-                if (source && target) target.value = source.value;
-            }
-            
-            var n_state = document.getElementById('states-dropdown-update').value;
-            var n_district = document.getElementById('districts-dropdown-update').value;
-            var n_taluk = document.getElementById('taluks-dropdown-update').value;
-            var n_panchayat = document.getElementById('panchayat-dropdown-update').value;
-            
-            var n_village_select = document.getElementById('village-update');
-            var n_village = n_village_select.value;
-            if (n_village === 'Others') {
-                n_village = document.getElementById('village_others_input_update').value;
-            }
-            
-            var c_state = document.getElementById('cur_state-update');
-            if (c_state && n_state) {
-                c_state.value = n_state;
-                setDropdowndistrictsCurrentUpdate(c_state, n_district, n_taluk, n_panchayat, n_village);
-                
-                // Special handling for 'Others' in Taluk and Panchayat
-                setTimeout(() => {
-                    const c_taluk = document.getElementById('cur_taluk-update');
-                    const c_panchayat = document.getElementById('cur_panchayat-update');
-                    
-                    if (n_taluk === 'Others') {
-                        c_taluk.value = 'Others';
-                        toggleTalukOthersCurrentManager(c_taluk);
-                        document.getElementById('cur_taluk_others_input_manager').value = document.getElementById('taluk_others_input_manager').value;
-                    }
-                    if (n_panchayat === 'Others') {
-                        c_panchayat.value = 'Others';
-                        togglePanchayatOthersCurrentManager(c_panchayat);
-                        document.getElementById('cur_panchayat_others_input_manager').value = document.getElementById('panchayat_others_input_manager').value;
-                    }
-                }, 1000); // Wait for AJAX cascade
-            }
+            // 2. Set State (Tamil Nadu is pre-selected by toggleCurrentAddressTypeUpdate)
+            // c_state.value = n_state.value; // This is handled by toggleCurrentAddressTypeUpdate for TN
+
+            // 3. Chain AJAX for District/Taluk/Panchayat/Village
+            $.ajax({
+                type: "get",
+                url: "<?= base_url('members/getDistrictsfordropdown') ?>",
+                data: { state_id: n_state.value },
+                success: function (resultDist) {
+                    c_district.innerHTML = resultDist;
+                    c_district.value = n_district.value;
+
+                    // Now load Taluks based on the copied district
+                    $.ajax({
+                        type: "get",
+                        url: "<?= base_url('members/getTaluksfordropdown') ?>",
+                        data: { district_name: n_district.value },
+                        success: function (resultTaluk) {
+                            c_taluk.innerHTML = resultTaluk;
+                            c_taluk.innerHTML += '<option value="Others">Others</option>';
+                            c_taluk.value = n_taluk.value;
+                            toggleTalukOthersCurrentManager(c_taluk);
+                            if (n_taluk.value === 'Others') {
+                                c_taluk_others_input.value = n_taluk_others_input.value;
+                            }
+
+                            // Now load Panchayats based on the copied taluk
+                            if (n_taluk.value === 'Others') {
+                                c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                                c_panchayat.value = n_panchayat.value;
+                                togglePanchayatOthersCurrentManager(c_panchayat);
+                                if (n_panchayat.value === 'Others') {
+                                    c_panchayat_others_input.value = n_panchayat_others_input.value;
+                                }
+                                // Load Village for 'Others' Taluk (which means no panchayat dropdown)
+                                setDropdownVillageCurrentUpdate(c_panchayat, n_village_sel.value);
+                                setTimeout(() => {
+                                    if (n_village_sel.value === 'Others') {
+                                        c_village_others_input.value = n_village_others_input.value;
+                                    }
+                                }, 100); // Small delay to ensure dropdown is populated
+                            } else {
+                                $.ajax({
+                                    type: "get",
+                                    url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
+                                    data: { taluk_name: n_taluk.value },
+                                    success: function (resultPanch) {
+                                        c_panchayat.innerHTML = resultPanch;
+                                        c_panchayat.innerHTML += '<option value="Others">Others</option>';
+                                        c_panchayat.value = n_panchayat.value;
+                                        togglePanchayatOthersCurrentManager(c_panchayat);
+                                        if (n_panchayat.value === 'Others') {
+                                            c_panchayat_others_input.value = n_panchayat_others_input.value;
+                                        }
+
+                                        // Finally, load Villages based on the copied panchayat
+                                        setDropdownVillageCurrentUpdate(c_panchayat, n_village_sel.value);
+                                        setTimeout(() => {
+                                            if (n_village_sel.value === 'Others') {
+                                                c_village_others_input.value = n_village_others_input.value;
+                                            }
+                                        }, 100); // Small delay to ensure dropdown is populated
+                                    }
+                                });
+                            }
+                        },
+                        error: function () {
+                            c_taluk.innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                            c_taluk.value = n_taluk.value;
+                            toggleTalukOthersCurrentManager(c_taluk);
+                            if (n_taluk.value === 'Others') {
+                                c_taluk_others_input.value = n_taluk_others_input.value;
+                            }
+                            // If taluk load fails, still try to set panchayat/village if they were 'Others'
+                            c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                            c_panchayat.value = n_panchayat.value;
+                            togglePanchayatOthersCurrentManager(c_panchayat);
+                            if (n_panchayat.value === 'Others') {
+                                c_panchayat_others_input.value = n_panchayat_others_input.value;
+                            }
+                            setDropdownVillageCurrentUpdate(c_panchayat, n_village_sel.value);
+                            setTimeout(() => {
+                                if (n_village_sel.value === 'Others') {
+                                    c_village_others_input.value = n_village_others_input.value;
+                                }
+                            }, 100);
+                        }
+                    });
+                },
+                error: function () {
+                    c_district.innerHTML = '<option value="">Select District</option>';
+                    // If district load fails, clear subsequent dropdowns
+                    c_taluk.innerHTML = '<option value="">Select Taluk</option>';
+                    c_panchayat.innerHTML = '<option value="">Select Panchayat</option>';
+                    c_village.innerHTML = '<option value="">Select Village</option>';
+                    c_taluk_others_input.value = '';
+                    c_panchayat_others_input.value = '';
+                    c_village_others_input.value = '';
+                }
+            });
         }
 
         function activateUpdateButton(checkbox) {
@@ -1135,68 +1309,82 @@
         function validateUpdateManagerform() {
             const isEmailVerified = document.getElementById('is_email_verified-manager').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-manager').value;
-            const email = document.getElementById('email-update').value;
-            const phone = document.getElementById('phoneno-update').value;
+             const f = document.forms['managerregistration-update'];
 
-            if (email !== "" && isEmailVerified === "0") {
+            if (f['email-update'].value !== "" && isEmailVerified === "0") {
                 alert("Please verify your new email address before updating.");
-                document.getElementById('email-update').focus();
+                f['email-update'].focus();
                 return false;
             }
 
-            if (phone !== "" && isPhoneVerified === "0") {
+            if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number before updating.");
-                document.getElementById('phoneno-update').focus();
+                f['phoneno-update'].focus();
                 return false;
             }
 
             let isValid = true;
-            const requiredFields = [
-                { id: "name-update", errorId: "nameerror-update", msg: "Name is required" },
-                { id: "phoneno-update", errorId: "phonenoerror-update", msg: "Phone number is required" },
-                { id: "aadharno-update", errorId: "aadharnoerror-update", msg: "Aadhar number is required" },
-                { id: "states-dropdown-update", errorId: "stateerror-update", msg: "State is required" },
-                { id: "districts-dropdown-update", errorId: "districterror-update", msg: "District is required" },
-                { id: "taluk-dropdown-update", errorId: "talukerror-update", msg: "Taluk is required" }
-            ];
+            let firstInvalid = null;
+
+            const setErr = (id, msg, el) => {
+                const errBox = document.getElementById(id);
+                if (errBox) errBox.innerHTML = msg;
+                if (!firstInvalid && el) firstInvalid = el;
+                isValid = false;
+            };
 
             // Clear errors
             document.querySelectorAll(".text-danger").forEach(el => el.innerHTML = "");
 
-            requiredFields.forEach(field => {
-                const el = document.getElementById(field.id);
-                if (el && !el.value.trim()) {
-                    document.getElementById(field.errorId).innerHTML = field.msg;
-                    isValid = false;
-                }
-            });
+            // Basic Details
+            if (!f['name-update'].value.trim()) setErr('nameerror-update', 'Name is required', f['name-update']);
+            if (!f['phoneno-update'].value.trim()) setErr('phonenoerror-update', 'Phone number is required', f['phoneno-update']);
+            else if (f['phoneno-update'].value.length < 10) setErr('phonenoerror-update', 'Min 10 digits required', f['phoneno-update']);
 
-            // Length checks
-            const phoneno = document.getElementById("phoneno-update").value;
-            if (phoneno && phoneno.length < 10) {
-                document.getElementById("phonenoerror-update").innerHTML = "Phone number must be at least 10 digits";
-                isValid = false;
-            }
+            if (!f['aadharno-update'].value.trim()) setErr('aadharnoerror-update', 'Aadhar number is required', f['aadharno-update']);
+            else if (f['aadharno-update'].value.length !== 12) setErr('aadharnoerror-update', 'Aadhar must be 12 digits', f['aadharno-update']);
 
-            const aadharno = document.getElementById("aadharno-update").value;
-            if (aadharno && aadharno.length !== 12) {
-                document.getElementById("aadharnoerror-update").innerHTML = "Aadhar number must be 12 digits";
-                isValid = false;
+            // Native Address
+            if (!f['state-update'].value) setErr('stateerror-update', 'State is required', f['state-update']);
+            if (!f['district-update'].value) setErr('districterror-update', 'District is required', f['district-update']);
+            if (!f['taluk-update'].value) setErr('talukerror-update', 'Taluk is required', f['taluk-update']);
+            if (!f['panchayat-update'].value) setErr('panchayaterror-update', 'Panchayat is required', f['panchayat-update']);
+            if (!f['village-update'].value.trim()) setErr('villageerror-update', 'Village is required', f['village-update']);
+            if (!f['street-update'].value.trim()) setErr('streeterror-update', 'Street is required', f['street-update']);
+            if (!f['doorno-update'].value.trim()) setErr('doornoerror-update', 'Door no is required', f['doorno-update']);
+            if (!f['pincode-update'].value.trim()) setErr('pincodeerror-update', 'Pincode is required', f['pincode-update']);
+
+            // Current Address
+            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
+            if (!curType) {
+                setErr('cur_address_type_error-update', 'Please select address type', document.getElementById('cur_address_tn-update'));
+            } else if (curType === 'TamilNadu') {
+                if (!f['cur_state-update'].value) setErr('cur_stateerror-update', 'State is required', f['cur_state-update']);
+                if (!f['cur_district-update'].value) setErr('cur_districterror-update', 'District is required', f['cur_district-update']);
+                if (!f['cur_taluk-update'].value) setErr('cur_talukerror-update', 'Taluk is required', f['cur_taluk-update']);
+                if (!f['cur_panchayat-update'].value) setErr('cur_panchayaterror-update', 'Panchayat is required', f['cur_panchayat-update']);
+                if (!f['cur_village-update'].value.trim()) setErr('cur_villageerror-update', 'Village is required', f['cur_village-update']);
+                if (!f['cur_street-update'].value.trim()) setErr('cur_streeterror-update', 'Street is required', f['cur_street-update']);
+                if (!f['cur_doorno-update'].value.trim()) setErr('cur_doornoerror-update', 'Door no is required', f['cur_doorno-update']);
+                if (!f['cur_pincode-update'].value.trim()) setErr('cur_pincodeerror-update', 'Pincode is required', f['cur_pincode-update']);
+            } else if (curType === 'OtherState' || curType === 'NRI') {
+                if (curType === 'NRI' && !f['cur_nri_country-update'].value) setErr('cur_nri_countryerror-update', 'Country is required', f['cur_nri_country-update']);
+                if (!f['cur_nri_state-update'].value) setErr('cur_nri_stateerror-update', 'State is required', f['cur_nri_state-update']);
+                if (!f['cur_nri_city-update'].value) setErr('cur_nri_cityerror-update', 'City is required', f['cur_nri_city-update']);
+                if (!f['cur_nri_zip-update'].value.trim()) setErr('cur_nri_ziperror-update', 'Zip code is required', f['cur_nri_zip-update']);
+                if (!f['cur_nri_fulladdress-update'].value.trim()) setErr('cur_nri_fulladdresserror-update', 'Full address is required', f['cur_nri_fulladdress-update']);
             }
 
             // Relationship Transfer Check
-            let relationshipSelect = document.getElementById("relationship-update");
             let aliveStatusDead = document.getElementById("alive_no-update");
             let upcomingHeadSelect = document.getElementById("upcoming_head-update");
-
-            if (relationshipSelect.value === "Head" && aliveStatusDead.checked && !upcomingHeadSelect.value) {
-                document.getElementById("upcomingheaderror-update").innerHTML = "Please select an upcoming head to transfer the role.";
-                isValid = false;
+            if (f['relationship-update'].value === "Head" && aliveStatusDead && aliveStatusDead.checked && !upcomingHeadSelect.value) {
+                setErr('upcomingheaderror-update', 'Please select upcoming head', upcomingHeadSelect);
             }
 
-            if (!isValid) {
-                const firstError = document.querySelector(".text-danger:not(:empty)");
-                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!isValid && firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (firstInvalid.focus) firstInvalid.focus();
             }
 
             return isValid;
@@ -1510,17 +1698,25 @@
 
 
         var countriesDataUpdate = null;
-        function loadCountriesDataUpdate() {
-            if (countriesDataUpdate) { populateCountriesUpdate(); return; }
+        function loadCountriesDataUpdate(isInitial = false) {
+            if (countriesDataUpdate) { populateCountriesUpdate(isInitial); return; }
             $.getJSON('<?= base_url('assets/countries_states_cities.json') ?>', function(data) {
                 countriesDataUpdate = data;
-                populateCountriesUpdate();
+                populateCountriesUpdate(isInitial);
             });
         }
 
-        function populateCountriesUpdate() {
+        function populateCountriesUpdate(isInitial = false) {
             var select = document.getElementById('cur_nri_country-update');
-            var currentVal = select.value || '<?= $manager->Curnricountry ?>';
+            var selectedType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
+            var currentVal = select.value;
+            
+            if (selectedType === 'OtherState') {
+                currentVal = "India";
+            } else if (isInitial && !currentVal) {
+                currentVal = '<?= $manager->Curnricountry ?>';
+            }
+            
             select.innerHTML = '<option value="">Select Country</option>';
             Object.values(countriesDataUpdate).forEach(function(c) {
                 var opt = document.createElement('option');
@@ -1529,12 +1725,16 @@
                 if (c.name === currentVal) opt.selected = true;
                 select.appendChild(opt);
             });
+            
             if (currentVal) {
-                loadNRIStatesUpdate(currentVal, '<?= $manager->Curnristate ?>', '<?= $manager->Curnricity ?>');
+                var sVal = (isInitial) ? '<?= $manager->Curnristate ?>' : '';
+                var cityVal = (isInitial) ? '<?= $manager->Curnricity ?>' : '';
+                loadNRIStatesUpdate(currentVal, sVal, cityVal);
             }
         }
 
         function loadNRIStatesUpdate(countryName, selectState, selectCity) {
+            if (!countriesDataUpdate) return;
             var select = document.getElementById('cur_nri_state-update');
             select.innerHTML = '<option value="">Select State</option>';
             var country = Object.values(countriesDataUpdate).find(function(c) { return c.name === countryName; });
@@ -1577,8 +1777,8 @@
                 document.getElementById("cur_taluk-update").innerHTML = '<option value="">Select Taluk</option>';
                 document.getElementById("cur_panchayat-update").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_village-update").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_update").style.display = 'none';
-                document.getElementById("cur_village_others_input_update").value = '';
+                document.getElementById("cur_village_others_input_manager").style.display = 'none';
+                document.getElementById("cur_village_others_input_manager").value = '';
             }
 
             if (!state_id) return;
@@ -1605,8 +1805,8 @@
                 document.getElementById("cur_taluk-update").innerHTML = '<option value="">Select Taluk</option>';
                 document.getElementById("cur_panchayat-update").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_village-update").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_update").style.display = 'none';
-                document.getElementById("cur_village_others_input_update").value = '';
+                document.getElementById("cur_village_others_input_manager").style.display = 'none';
+                document.getElementById("cur_village_others_input_manager").value = '';
             }
 
             if (!district_name) return;
@@ -1661,8 +1861,8 @@
             if (!selectPanchayat) {
                 document.getElementById("cur_panchayat-update").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_village-update").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_update").style.display = 'none';
-                document.getElementById("cur_village_others_input_update").value = '';
+                document.getElementById("cur_village_others_input_manager").style.display = 'none';
+                document.getElementById("cur_village_others_input_manager").value = '';
             }
 
             if (!taluk_name) return;
@@ -1734,19 +1934,19 @@
 
                      if(selectedVillage) {
                          villageSelect.value = selectedVillage;
-                         if (villageSelect.value !== selectedVillage) {
+                         if (villageSelect.value !== selectedVillage && selectedVillage !== "") {
                              villageSelect.value = 'Others';
-                             toggleVillageOthersCurrentUpdate(villageSelect, selectedVillage);
+                             toggleVillageOthersCurrentManager(villageSelect, selectedVillage);
                          } else {
-                             toggleVillageOthersCurrentUpdate(villageSelect);
+                             toggleVillageOthersCurrentManager(villageSelect);
                          }
                      }
                 }
             });
         }
 
-        function toggleVillageOthersCurrentUpdate(selectEl, manualValue = '') {
-            const othersInput = document.getElementById('cur_village_others_input_update');
+        function toggleVillageOthersCurrentManager(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('cur_village_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 othersInput.setAttribute('required', 'required');
@@ -1765,25 +1965,33 @@
 
 
         $(document).ready(function() {
-            // loadPanchayatVillageData(); // Removed
-            
             // Initial Village Load (Native)
             let p1 = document.getElementById('panchayat-dropdown-update');
             if(p1 && p1.value) setDropdownVillageUpdate(p1, '<?= isset($manager)?$manager->Village:'' ?>');
             
-            // Initial Village Load (Current)
-            let p2 = document.getElementById('cur_panchayat-update');
-            if(p2 && p2.value) setDropdownVillageCurrentUpdate(p2, '<?= isset($manager)?$manager->Curvillage:'' ?>');
+            // Toggle blocks (without clearing dropdowns on initial load)
+            toggleCurrentAddressTypeUpdate(true);
+
+            // If it's Tamil Nadu, trigger the full cascading load for Current Address
+            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
+            if (curType === 'TamilNadu') {
+                const curState = document.getElementById('cur_state-update');
+                if (curState && curState.value) {
+                    setDropdowndistrictsCurrentUpdate(
+                        curState, 
+                        '<?= $manager->Curdistrict ?>', 
+                        '<?= $manager->Curtaluk ?>', 
+                        '<?= $manager->Curpanchayat ?>', 
+                        '<?= $manager->Curvillage ?>'
+                    );
+                }
+            } else if (curType === 'OtherState' || curType === 'NRI') {
+                if ('<?= $manager->Curnricountry ?>') {
+                    loadNRIStatesUpdate('<?= $manager->Curnricountry ?>', '<?= $manager->Curnristate ?>', '<?= $manager->Curnricity ?>');
+                }
+            }
 
             renderEducationTagsUpdate();
-            if (document.getElementById('cur_address_india-update') && document.getElementById('cur_address_india-update').checked) {
-                var stateId = document.getElementById('cur_state-update').value;
-                if (stateId) {
-                    setDropdowndistrictsCurrentUpdate(document.getElementById('cur_state-update'), '<?= $manager->Curdistrict ?>', '<?= $manager->Curtaluk ?>', '<?= $manager->Curpanchayat ?>', '<?= $manager->Curvillage ?>');
-                }
-            } else if (document.getElementById('cur_address_nri-update') && document.getElementById('cur_address_nri-update').checked) {
-                loadCountriesDataUpdate();
-            }
         });
 
         function handleProfessionChangeUpdate(select) {

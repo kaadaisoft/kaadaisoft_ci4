@@ -280,7 +280,7 @@
                                 ?>
                                     <tr class="table-transparent"><td style="font-size:20px;" class="fw-bold text-center" colspan="10"><?= $value['eventname'] ?></td></tr>
                                     <tr style="font-size:18px;" class="ps-gray fw-bold">
-                                        <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class="text-center">Actions</th>
+                                        <th>Sno</th><th>EventName</th><th>Total Amount</th><th>Paid Amount</th><th>Pending Amount</th><th>Bank</th><th>Payment Date</th><th>Year</th><th>Dues</th><th>status</th><th class="text-center">Actions</th>
                                     </tr>
                                 <?php endif; ?>
                                     <tr>
@@ -289,6 +289,15 @@
                                         <td><?= $value['Taxamount'] ?> Rs</td>
                                         <td><?= ($value['Collectedamount'] ? $value['Collectedamount']." Rs" : '-') ?></td>
                                         <td><?= ($value['balanceamount'] ? $value['balanceamount']." Rs" : '-') ?></td>
+                                        <td>
+                                            <?php 
+                                                $bank = $value['bankname'] ?: $value['banknameforcheckque'] ?: '-';
+                                                echo $bank;
+                                                if ($bank == "Other Bank" && !empty($value['other_bank_name'])) {
+                                                    echo " (" . $value['other_bank_name'] . ")";
+                                                }
+                                            ?>
+                                        </td>
                                         <td><?= $value['paymentdate'] ?></td>
                                         <td><?= $value['year'] ?></td>
                                         <td><?= $value['dues'] ?></td>

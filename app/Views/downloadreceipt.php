@@ -139,10 +139,14 @@
                 <td class="separator">:</td>
                 <td class="value">
                     <?php
-                    if($receipt->bankname == "" && $receipt->banknameforcheckque == ""){
+                    $display_bank = $receipt->bankname ?: $receipt->banknameforcheckque;
+                    if ($display_bank == "") {
                         echo "-";
                     } else {
-                        echo $receipt->bankname ?: $receipt->banknameforcheckque;
+                        echo $display_bank;
+                        if ($display_bank == "Other Bank" && !empty($receipt->other_bank_name)) {
+                            echo " (" . $receipt->other_bank_name . ")";
+                        }
                     }
                     ?>
                 </td>

@@ -658,38 +658,38 @@ public function change_password() {
         }
         
         date_default_timezone_set('Asia/Kolkata');
-        $id = $this->request->getPost('membershipid-update');
+        $id = $this->request->getPost('membershipid-update') ?: $this->request->getPost('membershipid');
         $data = [];
         $path = $this->request->getPost("path") ?? "manager";
         $reason = $this->request->getPost("reason") ?? "updatemanager";
         
         // Basic Profile Info
-        $data["Name"] = $this->request->getPost("name-update");
-        $data["Aadharnumber"] = $this->request->getPost("aadharno-update");
-        $data["Phonenumber"] = $this->request->getPost("phoneno-update");
-        $data["Email"] = $this->request->getPost("email-update");
-        $data["Whatsappnumber"] = $this->request->getPost("whatsappno-update");
-        $data["Dob"] = $this->request->getPost("dob-update");
-        $data["Gender"] = $this->request->getPost("gender-update");
-        $data["Bloodgroup"] = $this->request->getPost("bloodgroup-update");
-        $data["Married"] = $this->request->getPost("married-update");
+        $data["Name"] = $this->request->getPost("name-update") ?: $this->request->getPost("name");
+        $data["Aadharnumber"] = $this->request->getPost("aadharno-update") ?: $this->request->getPost("aadharno");
+        $data["Phonenumber"] = $this->request->getPost("phoneno-update") ?: $this->request->getPost("phoneno");
+        $data["Email"] = $this->request->getPost("email-update") ?: $this->request->getPost("email");
+        $data["Whatsappnumber"] = $this->request->getPost("whatsappno-update") ?: $this->request->getPost("whatsappno");
+        $data["Dob"] = $this->request->getPost("dob-update") ?: $this->request->getPost("dob");
+        $data["Gender"] = $this->request->getPost("gender-update") ?: $this->request->getPost("gender");
+        $data["Bloodgroup"] = $this->request->getPost("bloodgroup-update") ?: $this->request->getPost("bloodgroup");
+        $data["Married"] = $this->request->getPost("married-update") ?: $this->request->getPost("married");
         
         // Native Address & Geography
-        $state_id = $this->request->getPost("state-update");
+        $state_id = $this->request->getPost("state-update") ?: $this->request->getPost("state");
         $data["state_id"] = $state_id;
         if($state_id) {
              $st = $this->db->query("SELECT state_title FROM states WHERE state_id = ?", [$state_id])->getRow();
              $data["State"] = $st ? $st->state_title : "";
         }
         
-        $data["District"] = $this->request->getPost("district-update");
-        $data["Taluk"] = $this->request->getPost("taluk-update");
-        $data["Panchayat"] = $this->request->getPost("panchayat-update");
-        $data["Village"] = $this->request->getPost("village-update");
-        $data["Street"] = $this->request->getPost("street-update");
-        $data["Doornumber"] = $this->request->getPost("doorno-update");
-        $data["Pincode"] = $this->request->getPost("pincode-update");
-        $data["Existfamilyid"] = $this->request->getPost("existfamilyid-update");
+        $data["District"] = $this->request->getPost("district-update") ?: $this->request->getPost("district");
+        $data["Taluk"] = $this->request->getPost("taluk-update") ?: $this->request->getPost("taluk");
+        $data["Panchayat"] = $this->request->getPost("panchayat-update") ?: $this->request->getPost("panchayat");
+        $data["Village"] = $this->request->getPost("village-update") ?: $this->request->getPost("village");
+        $data["Street"] = $this->request->getPost("street-update") ?: $this->request->getPost("street");
+        $data["Doornumber"] = $this->request->getPost("doorno-update") ?: $this->request->getPost("doorno");
+        $data["Pincode"] = $this->request->getPost("pincode-update") ?: $this->request->getPost("pincode");
+        $data["Existfamilyid"] = $this->request->getPost("existfamilyid-update") ?: $this->request->getPost("existfamilyid");
 
         $coord_row = $this->membersModel->getCoordinatorByLocation(
             $data["Village"],
@@ -707,39 +707,41 @@ public function change_password() {
         }
 
         // Additional Profile Details
-        $data["Valuvu"] = $this->request->getPost("valuvu-update");
-        $data["Thottam"] = $this->request->getPost("thottam-update");
-        $data["Kulam"] = $this->request->getPost("kulam-update");
-        $data["Profession"] = $this->request->getPost("profession-update");
-        $data["Business"] = $this->request->getPost("business-update");
-        $data["BusinessWebsite"] = $this->request->getPost("business_website-update");
+        $data["Valuvu"] = $this->request->getPost("valuvu-update") ?: $this->request->getPost("valuvu");
+        $data["Thottam"] = $this->request->getPost("thottam-update") ?: $this->request->getPost("thottam");
+        $data["Kulam"] = $this->request->getPost("kulam-update") ?: $this->request->getPost("kulam");
+        $data["Profession"] = $this->request->getPost("profession-update") ?: $this->request->getPost("profession");
+        $data["Business"] = $this->request->getPost("business-update") ?: $this->request->getPost("business");
+        $data["BusinessWebsite"] = $this->request->getPost("business_website-update") ?: $this->request->getPost("business_website");
         
-        $education = $this->request->getPost("education-update");
+        $education = $this->request->getPost("education-update") ?: $this->request->getPost("education");
         $data["Education"] = is_array($education) ? implode(', ', $education) : $education;
-        $data["is_dead"] = $this->request->getPost("is_dead-update");
+        $data["is_dead"] = $this->request->getPost("is_dead-update") ?: $this->request->getPost("is_dead");
 
         // Current Address
-        $data["Curaddresstype"] = $this->request->getPost("cur_address_type-update");
-        $data["Curstate"] = $this->request->getPost("cur_state-update");
-        $data["Curdistrict"] = $this->request->getPost("cur_district-update");
-        $data["Curtaluk"] = $this->request->getPost("cur_taluk-update");
-        $data["Curpanchayat"] = $this->request->getPost("cur_panchayat-update");
-        $data["Curvillage"] = $this->request->getPost("cur_village-update");
-        $data["Curstreet"] = $this->request->getPost("cur_street-update");
-        $data["Curdoorno"] = $this->request->getPost("cur_doorno-update");
-        $data["Curpincode"] = $this->request->getPost("cur_pincode-update");
+        $data["Curaddresstype"] = $this->request->getPost("cur_address_type-update") ?: $this->request->getPost("cur_address_type");
+        $data["Curstate"] = $this->request->getPost("cur_state-update") ?: $this->request->getPost("cur_state");
+        $data["Curdistrict"] = $this->request->getPost("cur_district-update") ?: $this->request->getPost("cur_district");
+        $data["Curtaluk"] = $this->request->getPost("cur_taluk-update") ?: $this->request->getPost("cur_taluk");
+        $data["Curpanchayat"] = $this->request->getPost("cur_panchayat-update") ?: $this->request->getPost("cur_panchayat");
+        $data["Curvillage"] = $this->request->getPost("cur_village-update") ?: $this->request->getPost("cur_village");
+        $data["Curstreet"] = $this->request->getPost("cur_street-update") ?: $this->request->getPost("cur_street");
+        $data["Curdoorno"] = $this->request->getPost("cur_doorno-update") ?: $this->request->getPost("cur_doorno");
+        $data["Curpincode"] = $this->request->getPost("cur_pincode-update") ?: $this->request->getPost("cur_pincode");
 
         // NRI Fields
-        $data["Curnricountry"] = $this->request->getPost("cur_nri_country-update");
-        $data["Curnristate"] = $this->request->getPost("cur_nri_state-update");
-        $data["Curnricity"] = $this->request->getPost("cur_nri_city-update");
-        $data["Curnrizip"] = $this->request->getPost("cur_nri_zip-update");
-        $data["Curnrifulladdress"] = $this->request->getPost("cur_nri_fulladdress-update");
+        $data["Curnricountry"] = $this->request->getPost("cur_nri_country-update") ?: $this->request->getPost("cur_nri_country");
+        $data["Curnristate"] = $this->request->getPost("cur_nri_state-update") ?: $this->request->getPost("cur_nri_state");
+        $data["Curnricity"] = $this->request->getPost("cur_nri_city-update") ?: $this->request->getPost("cur_nri_city");
+        $data["Curnrizip"] = $this->request->getPost("cur_nri_zip-update") ?: $this->request->getPost("cur_nri_zip");
+        $data["Curnrifulladdress"] = $this->request->getPost("cur_nri_fulladdress-update") ?: $this->request->getPost("cur_nri_fulladdress");
 
         // Role & Transfer Logic
-        $data["MemberRole"] = ($this->request->getPost('relationship-update') === "Other") ? $this->request->getPost('custom_relationship-update') : $this->request->getPost('relationship-update');
+        $relationship = $this->request->getPost('relationship-update') ?: $this->request->getPost('relationship');
+        $custom_rel = $this->request->getPost('custom_relationship-update') ?: $this->request->getPost('custom_relationship');
+        $data["MemberRole"] = ($relationship === "Other") ? $custom_rel : $relationship;
 
-        $upcoming_head_id = $this->request->getPost("upcoming_head-update");
+        $upcoming_head_id = $this->request->getPost("upcoming_head-update") ?: $this->request->getPost("upcoming_head");
         if (!empty($upcoming_head_id)) {
             // Trigger automatic relationship mapping for other members
             $old_head_new_role = $this->membersModel->autoUpdateFamilyRoles($id, $upcoming_head_id);

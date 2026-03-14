@@ -59,7 +59,7 @@
 <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;" class="topmenu-wrapper m-0 py-3 px-4 shadow-sm">
     <div class="flex-grow-1 d-none d-md-block"></div>
     <div id="commonsearch" style="width:30%;display:flex;align-items:center;justify-content:space-between;" class="rounded-3 py-2 px-2 shadow-sm border border-secondary">
-        <input onkeyup="commonSearch(this)" type="text" style="outline-style:none;" class="w-100 ps-3 border-0" placeholder="Search...">
+        <input onkeyup="commonSearch(this)" type="text" style="outline-style:none;" class="w-100 ps-3 border-0" placeholder="Search ...">
         <span style="cursor:pointer;" class="pe-3">
             <i class="fa-solid fa-magnifying-glass search-icon-color"></i>
         </span>

@@ -312,7 +312,9 @@
 
             <div class="col-md-12 py-2">
             <label class="container-fluid d-flex flex-column" for="payamount">Pay: <br>
-            <input readonly class="container-fluid border rounded" type="number" id="pay" name="paidamount" onkeyup="calculateBalance(this,'balance')" required>
+            <input readonly class="container-fluid border rounded" type="text" id="pay" name="paidamount" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 0 && this.value[0] === '0') this.value = this.value.replace(/^0+/, ''); if(this.value.length > 10) this.value = this.value.substring(0, 10);" 
+                   onkeyup="calculateBalance(this,'balance')" required>
             <small id="payalert" class="fw-normal" style="color:red;"></small>
             </label>
             </div><!-----------------3---------------->
@@ -363,7 +365,7 @@
               </div><!-----------------1---------------->
 
               <div>
-              <label for="checkque">Checkque:</label>&nbsp;<input onclick="getPaymentmethod(this)" name="paymenttype" type="radio" value="checkque" required>
+              <label for="checkque">Cheque:</label>&nbsp;<input onclick="getPaymentmethod(this)" name="paymenttype" type="radio" value="checkque" required>
              </div><!-----------------2---------------->
 
              <div>
@@ -594,7 +596,12 @@ const BankList = [
     "WOORI BANK",
     "YES BANK LTD",
     "ZILA SAHKARI BANK LTD GHAZIABAD",
-    "IDFC First Bank"
+    "IDFC First Bank",
+    "Equitas Small Finance Bank",
+    "AU Small Finance Bank",
+    "Ujjivan Small Finance Bank",
+    "Bandhan Bank",
+    "Other Bank"
 ];
 
      /* Single Scroll Logic - Using CSS Flex */
@@ -681,15 +688,21 @@ const BankList = [
          
          document.getElementById("getpaymentdetail").innerHTML = `<div><label>
          Choose bank: <br>
-         <select class='container-fluid border rounded' name="bankname" id="banklist" required>  
+         <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="bankname" id="banklist" required>  
          <option value="">Choose bank</option>
          ${choosebank} 
          </select>
          </label></div>
+         <div id="other_bank_div" style="display:none;" class='pt-2'>
+         <label>
+         Other Bank Name:
+         <input name='other_bank_name' id="other_bank_name" class="border rounded" type="text">
+         </label>
+         </div>
          <div class='pt-2'>
          <label>
          Transaction Id:
-         <input name='transactionid' class="border rounded" type="text" required>
+         <input name='transactionid' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
          </label>
          </div>
          `;
@@ -697,15 +710,21 @@ const BankList = [
       else if(paymenttype == "checkque"){
         document.getElementById("getpaymentdetail").innerHTML = `<div><label>
          Choose bank: <br>
-         <select class='container-fluid border rounded' name="banknameforcheckque" id="banklist" required>  
+         <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="banknameforcheckque" id="banklist" required>  
          <option value="">Choose bank</option>
          ${choosebank} 
          </select>
          </label></div>
+         <div id="other_bank_div" style="display:none;" class='pt-2'>
+         <label>
+         Other Bank Name:
+         <input name='other_bank_name' id="other_bank_name" class="border rounded" type="text">
+         </label>
+         </div>
          <div class='pt-2'>
          <label> 
          Checkque No: 
-         <input name='checkqueno' class="border rounded" type="text" required>
+         <input name='checkqueno' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
          </label>
          </div>`;
       }
@@ -715,7 +734,7 @@ const BankList = [
          <img class="p-2 border rounded" style="width:250px;height:250px;" src="assets/otherdocuments/qrscan.png"> <br/>
          <label>
          Enter Transaction Id: 
-         <input name='upitransactionid' class="border rounded" type="text" required>
+         <input name='upitransactionid' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
          </label>
          </div>`;
       }
@@ -817,6 +836,21 @@ const BankList = [
          getTaxamountbysearch(eventid,memberid);
     }
 
+    function checkOtherBank(select) {
+        let otherBankDiv = document.getElementById("other_bank_div");
+        let otherBankInput = document.getElementById("other_bank_name");
+        if(select.value == "Other Bank") {
+            otherBankDiv.style.display = "block";
+            otherBankInput.setAttribute("required", "required");
+        } else {
+            if(otherBankDiv) otherBankDiv.style.display = "none";
+            if(otherBankInput) {
+                otherBankInput.removeAttribute("required");
+                otherBankInput.value = "";
+            }
+        }
+    }
+
     function getTaxamount(event,memberid) {
        let eventid = event.value;
        console.log(event.value,memberid);
@@ -878,34 +912,28 @@ const BankList = [
     }
 
     function calculateBalance(amount,id){
-
-       let validreg = /^([0-9])+$/;
        let currentpay = amount.value;
-       let validate;
-       console.log(currentpay.length)
-       if(currentpay.length > 0){
-       validate = currentpay.match(validreg);
+       
+       if(currentpay.length === 0){
+           document.getElementById("payalert").innerHTML = "";
+           let taxAmountField = document.getElementById("taxamount");
+           let prevPaidField = document.getElementById("prevpaid");
+           if(taxAmountField && prevPaidField) {
+               document.getElementById(id).value = Number(taxAmountField.value) - Number(prevPaidField.value);
+           }
+           return;
        }
-       if(!validate){
-         document.getElementById("payalert").innerHTML = "Only use Numbers.don't use special characters. ";
-       }       
-       else{
+       
        document.getElementById("payalert").innerHTML = "";
-       let tax = document.getElementById("taxamount").value;
-       let prevpaid = document.getElementById("prevpaid").value;
-       let max = tax.length;
-       let pay = document.getElementById("pay");
-       pay.setAttribute("maxlength",max);
-       console.log(prevpaid)
-       if(Number(currentpay) <= 0){
-           document.getElementById("payalert").innerHTML = "Please enter an amount greater than 0. ";
-           document.getElementById("savereceipt").setAttribute("disabled",true);
-           document.getElementById("savereceipt").style.opacity = "0.4";
-           // Also uncheck the confirmation if it was checked
-           let confirmCheck = document.querySelector('input[type="checkbox"][onchange="enablesubmitbutton(this)"]');
-           if(confirmCheck) confirmCheck.checked = false;
-       }
-       else if(Number(tax) < (Number(prevpaid) + Number(currentpay)) ) {
+       let taxamount_el = document.getElementById("taxamount");
+       let prevpaid_el = document.getElementById("prevpaid");
+       
+       if(!taxamount_el || !prevpaid_el) return;
+       
+       let tax = taxamount_el.value;
+       let prevpaid = prevpaid_el.value;
+       
+       if(Number(tax) < (Number(prevpaid) + Number(currentpay)) ) {
           amount.value = '';
           document.getElementById("payalert").innerHTML = "Total paid amount cannot exceed Tax amount. ";
           document.getElementById(id).value = tax - prevpaid;
@@ -914,7 +942,6 @@ const BankList = [
        
        let balance = tax - prevpaid - currentpay;
        document.getElementById(id).value = balance;
-       }
     }  
 
 /*     let paymentform = document.forms["paymentform"];

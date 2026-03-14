@@ -319,7 +319,9 @@
 
             <div class="col-md-12 py-2">
             <label class="container-fluid d-flex flex-column" for="payamount">Pay: <br>
-            <input class="container-fluid border rounded" type="text" id="pay" name="paidamount" onkeyup="calculateBalance(this,'balance')" required>
+            <input class="container-fluid border rounded" type="text" id="pay" name="paidamount" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 0 && this.value[0] === '0') this.value = this.value.replace(/^0+/, ''); if(this.value.length > 10) this.value = this.value.substring(0, 10);" 
+                   onkeyup="calculateBalance(this,'balance')" required>
             <small id="payalert" class="fw-normal" style="color:red;"></small>
             </label>
             </div><!-----------------3---------------->
@@ -872,42 +874,36 @@ const BankList = [
     }
 
     function calculateBalance(amount,id){
-       let validreg = /^([0-9])+$/;
        let currentpay = amount.value;
-       console.log(currentpay)
-       let validate;
-       console.log(currentpay.length)
-       if(currentpay.length > 0){
-       validate = currentpay.match(validreg);
+       
+       if(currentpay.length === 0){
+           document.getElementById("payalert").innerHTML = "";
+           let taxAmountField = document.getElementById("taxamount");
+           let prevPaidField = document.getElementById("prevpaid");
+           if(taxAmountField && prevPaidField) {
+               document.getElementById(id).value = Number(taxAmountField.value) - Number(prevPaidField.value);
+           }
+           return;
        }
-       if(!validate){
-         document.getElementById("payalert").innerHTML = "Only use Numbers.don't use special characters. ";
-       }       
-       else{
+       
        document.getElementById("payalert").innerHTML = "";
-       let tax = document.getElementById("taxamount").value;
-       let prevpaid = document.getElementById("prevpaid").value;
-       let max = tax.length;
-       let pay = document.getElementById("pay");
-       pay.setAttribute("maxlength",max);
-       if(Number(currentpay) <= 0){
-           document.getElementById("payalert").innerHTML = "Please enter an amount greater than 0. ";
-           document.getElementById("savereceipt").setAttribute("disabled",true);
-           document.getElementById("savereceipt").style.opacity = "0.4";
-           // Also uncheck the confirmation if it was checked
-           let confirmCheck = document.querySelector('input[type="checkbox"][onchange="enablesubmitbutton(this)"]');
-           if(confirmCheck) confirmCheck.checked = false;
-       }
-       else if(Number(tax) < (Number(prevpaid) + Number(currentpay)) ) {
+       let taxamount_el = document.getElementById("taxamount");
+       let prevpaid_el = document.getElementById("prevpaid");
+       
+       if(!taxamount_el || !prevpaid_el) return;
+       
+       let tax = taxamount_el.value;
+       let prevpaid = prevpaid_el.value;
+       
+       if(Number(tax) < (Number(prevpaid) + Number(currentpay)) ) {
           amount.value = '';
           document.getElementById("payalert").innerHTML = "Total paid amount cannot exceed Tax amount. ";
           document.getElementById(id).value = tax - prevpaid;
           return;
        }
-
+       
        let balance = tax - prevpaid - currentpay;
        document.getElementById(id).value = balance;
-       }
     }  
   </script>
 
