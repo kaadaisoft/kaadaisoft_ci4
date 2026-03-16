@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events List</title>
-</head>
-<body>
-
 <?php if (isset($events) && is_array($events) && count($events) > 0): ?>
     <?php 
     $i = isset($sno) ? $sno : 0;
@@ -51,6 +42,15 @@
         </td>
     </tr>
     <?php $i++; endforeach; ?>
+<?php elseif (isset($events) && is_string($events)): ?>
+    <tr>
+        <td colspan="6" class="text-center py-5">
+            <div class="text-muted">
+                <i class="fa-solid fa-magnifying-glass fs-2 mb-3 d-block opacity-25"></i>
+                <?= $events ?>
+            </div>
+        </td>
+    </tr>
 <?php else: ?>
     <tr>
         <td colspan="6" class="text-center py-5">
@@ -61,7 +61,3 @@
         </td>
     </tr>
 <?php endif; ?>
-
-
-</body>
-</html>

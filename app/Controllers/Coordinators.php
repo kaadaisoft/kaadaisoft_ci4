@@ -136,33 +136,24 @@ class Coordinators extends BaseController{
        $searchfields = $this->request->getGet('searchfields');
        if($this->request->isAJAX()){
            if ($searchfields == "") {
-               $counts = $this->session->get('coordscounts');
-               $coordinators = $this->coordinatorsModel->getCoordinators($counts); // Original code passed $counts to getCoordinators?
-               // CoordinatorsModel::getCoordinators() in my conversion (step 39) takes NO arguments?
-               // Wait, original CoordinatorsModel line 29: getCoordinators($counts) called.
-               // My conversion step 39: public function getCoordinators()... I might have missed the argument.
-               // Step 39 code: public function getCoordinators() { $query = ...; return $query->getResult(); }
-               // It doesn't use $counts or limit.
-               // This is a discrepancy. I should fix CoordinatorsModel later or adapt here.
-               // For now I will proceed, but pagination won't work correctly if model doesn't support it.
-               // I'll update CoordinatorsModel::getCoordinators($counts) if needed.
-               // Actually, line 85 also calls getCoordinators($counts).
-               
-               $data = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>$counts));
-               echo $data;
+               $counts = $this->session->get('coordscounts') ?? 0;
+               $coordinators = $this->coordinatorsModel->getCoordinators($counts);
+               $html = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>$counts));
+               $total = $this->coordinatorsModel->getTotalCoordinators();
+               echo json_encode(["html" => $html, "total" => $total]);
            } 
-           else{
-           $coordinators = $this->coordinatorsModel->getCoordinatorsSearchfields($searchfields);
-           $counts = count($coordinators);
-           if($counts == 0){
-               $data = view('coordinatorslist',array("coordinators"=>"No search results"));
-               echo $data;
+           else {
+               $coordinators = $this->coordinatorsModel->getCoordinatorsSearchfields($searchfields);
+               $counts = count($coordinators);
+               $html = "";
+               if($counts == 0){
+                   $html = view('coordinatorslist',array("coordinators"=>[]));
+               }
+               else{
+                   $html = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>0));
+               }
+               echo json_encode(["html" => $html, "total" => $counts]);
            }
-           else{
-           $data = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>0));
-           echo $data;
-           }
-       }
        }
     }
 
@@ -214,6 +205,11 @@ class Coordinators extends BaseController{
            $this->session->set('coordscounts',$counts);  
        }
        $coordinators = $this->coordinatorsModel->getCoordinators($counts);
+       
+       if($this->request->isAJAX()) {
+           return view('coordinatorslist', array("coordinators"=>$coordinators,"sno"=>$counts));
+       }
+       
        return view('coordinators',array("coordinators"=>$coordinators,"newcounts"=>$totalcoordinators,"initialindex"=>$initialindex,"sno"=>$counts));
     }
 

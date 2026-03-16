@@ -44,7 +44,7 @@
         background: #0f172a !important;
       }
       .main-body-row { 
-        margin-top: 130px !important; /* Adjust for stacked logo and search bar on mobile */
+        margin-top: 200px !important; /* Adjust for stacked logo and search bar on mobile */
         flex-direction: column; 
         overflow: auto; 
       }

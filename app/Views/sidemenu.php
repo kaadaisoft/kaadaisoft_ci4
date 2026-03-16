@@ -122,12 +122,25 @@
 <span class="icon icon-dash"><i class="fa-solid fa-chart-simple"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Dashboard</span></a></li>
 
 <li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item">
-  <a href="<?=base_url('view-manager-data')?>" style="outline:none;border:none;" class="text-decoration-none"><span class="icon icon-managers"><i class="fa-solid fa-user-tie"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Managers</span></a></li>
+  <a href="<?=base_url('view-manager-data')?>" style="outline:none;border:none;" class="text-decoration-none">
+    <span class="icon icon-managers"><i class="fa-solid fa-user-tie"></i></span>&nbsp;&nbsp;
+    <span class="fw-semibold"><?= (session()->get('role') == 1) ? 'My Details' : 'Managers' ?></span>
+  </a>
+</li>
 
 <li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item">
-  <a href="<?php if(session()->get('role') == 2) {echo base_url('view-coordinator-data');} else{echo base_url('coordinators');}?>" style="outline:none;border:none;" class="text-decoration-none"><span class="icon icon-coords"><i class="fa-sharp fa-solid fa-cart-shopping"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Coordinators</span></a></li>
+  <a href="<?php if(session()->get('role') == 2) {echo base_url('view-coordinator-data');} else{echo base_url('coordinators');}?>" style="outline:none;border:none;" class="text-decoration-none">
+    <span class="icon icon-coords"><i class="fa-sharp fa-solid fa-cart-shopping"></i></span>&nbsp;&nbsp;
+    <span class="fw-semibold"><?= (session()->get('role') == 2) ? 'My Details' : 'Coordinators' ?></span>
+  </a>
+</li>
 
-<li class="nav-item"><a href="<?php if(session()->get('role') == 3) {echo base_url('view-member-data');} else{echo base_url('members');}?>" class="text-decoration-none"><span class="icon icon-members"><i class="fa-solid fa-user-group"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Members</span></a></li>
+<li class="nav-item">
+  <a href="<?php if(session()->get('role') == 3) {echo base_url('view-member-data');} else{echo base_url('members');}?>" class="text-decoration-none">
+    <span class="icon icon-members"><i class="fa-solid fa-user-group"></i></span>&nbsp;&nbsp;
+    <span class="fw-semibold"><?= (session()->get('role') == 3) ? 'My Details' : 'Members' ?></span>
+  </a>
+</li>
 
 <li class="nav-item"><a href="<?=base_url("events")?>" class="text-decoration-none"><span class="icon icon-events"><i class="fa-solid fa-list"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Events</span></a></li>
 

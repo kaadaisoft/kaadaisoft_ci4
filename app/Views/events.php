@@ -259,6 +259,61 @@
         background-color:#6495ED;
       }
 
+      /* Premium Pagination Styling */
+      .pagination-wrapper {
+        margin-top: 2rem;
+        padding-bottom: 2rem;
+      }
+      .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .pagination-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #3b82f6;
+        transform: translateY(-1px);
+      }
+      .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      }
+      .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+      }
+      .pagination-ellipsis {
+        color: #94a3b8;
+        padding: 0 4px;
+      }
+      .pagination-info {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-top: 1rem;
+        text-align: center;
+      }
+
       #events-form div > input{
          border-radius:50px;
          border:1px solid rgb(208, 205, 205);
@@ -700,10 +755,14 @@
                   <div class="small text-muted mb-4 px-2">Total Events: <strong><?php echo count($events)?></strong></div>
               </div> <!----------------table-end------->
 
-              <div class='d-flex justify-content-center container-fluid page mb-5'> <!-----------------pagination---------------------->
-                  <div id="eventsPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center">
+              <div class="pagination-wrapper">
+                  <div id="pagination-container" class="pagination-container">
+                      <!-- Pagination buttons rendered by JS -->
                   </div>
-              </div><!--------------pagination-end--------------------->
+                  <div id="pagination-info" class="pagination-info">
+                      <!-- Showing X to Y of Z entries -->
+                  </div>
+              </div>
           </div><!-----------main-content-area-end------------------------>
       </div><!--------------main-body-row-end------------------->
 </div><!--------------layout-container-end------------------->
@@ -920,92 +979,89 @@ function renderEvents(data, sNo) {
 
 renderEvents(eventsData.slice(0 ,3), 0);
 
-<?php 
-          if(isset($events) ): ?> 
-            <?php if(count($events) > 0): ?>
-            let eventsCount = <?php echo json_encode(count($events)); ?>;
-            let countsperpage = 3;
-            let noofpages = Math.ceil(eventsCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let initialindex = 0;
-            let lastindex = 5; 
-            let pages = totalpagesarr.slice(initialindex, lastindex);
-            let paginationHtml = `<button disabled onclick='changeEventsPagesetup(0)' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></button>`;
-            
-            for(let i = 0;pages.length > i; i++) {
-              let count = countsperpage * pages[i];
-              let pageno = pages[i] + 1;
-              if(pageno == 5){
-                paginationHtml += `<button style='width:35px;height:35px;border: none;' onclick='changeEventsPagesetup(${pages[i]})' class='${i==0 ? 'active-page' : ''} active text-decoration-none bg-white d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;}
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayEvents(${count},${i})' class='${i==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
+    const ITEMS_PER_PAGE = 3;
+    let currentTotalCount = <?= count($events) ?>;
+    let currentActivePage = 1;
 
-            paginationHtml += "<span>...</span>";
-            let totalcount = (totalpages - lastindex);
-            let newindex = initialindex+lastindex;
-            let validNext = totalpages - initialindex; 
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeEventsPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeEventsPagesetup(${newindex})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-            <?php else: ?>
-              let paginationHtml = "";
-              paginationHtml += "<span>No pages available</span>";
-            <?php endif; ?>
-          
-        <?php endif; ?>
-    function setUpPagination(html) {
-      document.getElementById("eventsPagination").innerHTML = html;
-    }  
+    $(document).ready(function() {
+      renderPagination(currentTotalCount, currentActivePage);
+      // Load first page via AJAX for consistency, or keep the initial renderEvents call
+      // renderEvents(eventsData.slice(0, 3), 0);
+    });
 
-    setUpPagination(paginationHtml);
+    function renderPagination(totalCount, activePage) {
+      const container = document.getElementById('pagination-container');
+      const info = document.getElementById('pagination-info');
+      if (!container) return;
 
-    function setPaginationEmpty(){
-       if(eventsData.length == 0){
-        let paginationHtml = "";
-        paginationHtml += "<span>No pages available</span>";
-        setUpPagination(paginationHtml);
-       }
+      if (totalCount <= 0) {
+        container.innerHTML = '';
+        info.innerHTML = '<div class="mt-5 text-muted">No Record Found</div>';
+        return;
+      }
+
+      const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+      let html = '';
+
+      // Previous Button
+      html += `<button onclick="goToPage(${activePage - 1})" class="pagination-btn ${activePage === 1 ? 'disabled' : ''}" ${activePage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+               </button>`;
+
+      let startPage = Math.max(1, activePage - 2);
+      let endPage = Math.min(totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+
+      if (startPage > 1) {
+        html += `<button onclick="goToPage(1)" class="pagination-btn">1</button>`;
+        if (startPage > 2) html += `<span class="pagination-ellipsis">...</span>`;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="goToPage(${i})" class="pagination-btn ${i === activePage ? 'active' : ''}">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<span class="pagination-ellipsis">...</span>`;
+        html += `<button onclick="goToPage(${totalPages})" class="pagination-btn">${totalPages}</button>`;
+      }
+
+      // Next Button
+      html += `<button onclick="goToPage(${activePage + 1})" class="pagination-btn ${activePage === totalPages ? 'disabled' : ''}" ${activePage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+               </button>`;
+
+      container.innerHTML = html;
+
+      const start = (activePage - 1) * ITEMS_PER_PAGE + 1;
+      const end = Math.min(activePage * ITEMS_PER_PAGE, totalCount);
+      info.innerHTML = `Showing <span class="fw-bold text-dark">${start}</span> to <span class="fw-bold text-dark">${end}</span> of <span class="fw-bold text-dark">${totalCount}</span> entries`;
     }
 
-    function changeEventsPagesetup(nextStagedNo) {
-            let countsperpage = 3;
-            let prevlist = "";
-            let noofpages = Math.ceil(eventsCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let start = nextStagedNo > noofpages ? 0 : nextStagedNo;
-            let lastindex = nextStagedNo + 5;
-            let pages = totalpagesarr.slice(nextStagedNo, lastindex);
-            prevlist = start < 5 ? 0 : nextStagedNo - 5;
-            let validPrev = totalpages - nextStagedNo;
-            let paginationHtml =  `<button ${validPrev <= 0 ? 'disabled' : ''} onclick='changeEventsPagesetup(${prevlist})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'> </i></button>`;
-
-            for(let j = 0;pages.length > j; j++) {
-              let count = countsperpage * pages[j];
-              let pageno = pages[j] + 1;
-  
-              if(pageno == 5 || pageno - start == 5){
-                paginationHtml += pageno == totalpages ? `<button style='width:35px;height:35px;border: none;' onclick='displayEvents(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>` : `<button onclick='changeEventsPagesetup(${pageno - 1})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='${j==0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`; }
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayEvents(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
-
-            paginationHtml += "<span>...</span>";
-            let totalcount = totalpages - lastindex;
-            let newindex = start + lastindex; 
-            let validNext = totalpages - start;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeEventsPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeEventsPagesetup(${totalpages - start <= lastindex ? totalcount : newindex})'  style='cursor:pointer;border: none;' class='text-decoration-none text-dark bg-white'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`; 
-            setUpPagination(paginationHtml);
-            let itemsPerPage = 3;
-            let itemStart = nextStagedNo * itemsPerPage;
-            let itemEnd = itemStart + itemsPerPage;
-            renderEvents(eventsData.slice(itemStart, itemEnd), itemStart);
-          }
+    function goToPage(page) {
+      if (page < 1) return;
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      
+      $.ajax({
+        type: "get",
+        url: "<?= base_url('events/displayEvents') ?>",
+        data: { "count": offset },
+        success: function (result) {
+          document.getElementById('ps-events').innerHTML = result;
+          currentActivePage = page;
+          renderPagination(currentTotalCount, currentActivePage);
+          // Smooth scroll to table
+          document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
+        error: function (error) {
+          console.error(error);
+          psShowToast('error', 'Error loading data. Please try again.');
+        }
+      });
+    }
 
 
 // Mobile Menu Functions
@@ -1093,6 +1149,15 @@ $.ajax({
             data: { "searchfields": searchfields },
             success: (result) => {
                 document.getElementById('ps-events').innerHTML = result;
+                // If search is cleared, restore pagination. If search is active, pagination is tricky here 
+                // because backend searchevents doesn't return count.
+                // For now, let's just hide pagination during search or refresh count if possible.
+                if (searchfields === "") {
+                    renderPagination(currentTotalCount, 1);
+                } else {
+                    document.getElementById("pagination-container").innerHTML = "";
+                    document.getElementById("pagination-info").innerHTML = "<span class='text-muted'>Search results displayed</span>";
+                }
             },
             error: (error) => {
                 document.getElementById('ps-events').innerHTML = "<tr><td colspan='6' class='text-center text-danger py-4'>Error fetching search results</td></tr>";
@@ -1100,24 +1165,7 @@ $.ajax({
         });
     }
 
-    function displayEvents(counts,index){
-        const itemsPerPage = 3;
-        const start = counts;
-        const end = counts + itemsPerPage;
-         activepage = document.querySelectorAll(".active");
-         let l = activepage.length;
-         for(let i=0; i < l ; i++){
-          if(i == index ){
-               activepage[i].classList.add("active-page");
-          }
-          else{
-            if(activepage[i].classList.contains("active-page")){
-               activepage[i].classList.remove("active-page")
-            }
-          }   
-         } 
-      renderEvents(eventsData.slice(start, end), start);
-    }
+    // Removed displayEvents as it's replaced by goToPage
 
     window.addEventListener("resize", () => {
        let addEventsForm = document.getElementById("add-events-form");

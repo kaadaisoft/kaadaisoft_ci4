@@ -951,7 +951,7 @@
             
             <div class="card shadow-sm rounded border-0 mb-5">
                 <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex align-items-center">
-                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user text-primary me-2"></i>Member Details</h4> 
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user text-primary me-2"></i><?= (session()->get('role') == 3) ? 'My Details' : 'Member Details' ?></h4> 
                     <?php 
                         $any_family_pending = false;
                         if(isset($family_members)) {
@@ -1052,7 +1052,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0 rounded mb-4">
                         <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
-                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i><?= (session()->get('role') == 3) ? 'My Family Members' : 'Family Members' ?></h4>
                             <div class="btn-group" role="group">
                                 <button type="button" id="tableViewBtn" class="btn btn-primary active" onclick="switchView('table')"><i class="fa-solid fa-table me-1"></i> Table View</button>
                                 <button type="button" id="treeViewBtn" class="btn btn-outline-primary" onclick="switchView('tree')"><i class="fa-solid fa-tree me-1"></i> Tree View</button>
@@ -1074,65 +1074,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="family_members_body">
-                                        <?php 
-                                            $sno = 1;
-                                            $role_counts = [];
-                                            foreach($family_members as $fm) {
-                                                $role = $fm->MemberRole;
-                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                            }
-                                            $role_counters = [];
-                                            
-                                            foreach($family_members as $fm): 
-                                                $dob = new DateTime($fm->Dob);
-                                                $now = new DateTime();
-                                                $age = $now->diff($dob)->y;
-                                                
-                                                $role = $fm->MemberRole;
-                                                $display_role = $role;
-                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                                    $display_role .= '_' . $role_counters[$role];
-                                                }
-                                        ?>
-                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= (!(isset($fm->is_dead) && $fm->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
-                                                <td class="fw-bold text-muted"><?= $sno++ ?></td>
-                                                <td>
-                                                    <div class="fw-bold text-dark"><?= $fm->Name ?></div>
-                                                    <div class="badge-membership mt-1 d-inline-block"><?= $fm->Familymembershipid ?></div>
-                                                    <?php if(isset($fm->pending_status) && $fm->pending_status == 'Pending'): ?>
-                                                        <span class="badge bg-warning text-dark ms-2 px-2 py-1" style="font-size: 0.75em; border-radius: 4px;">In Review</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
-                                                <td>
-                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
-                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
-                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
-                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
-                                                    <?php endif; ?>
-                                                    <?= $fm->Gender ?>
-                                                </td>
-                                                <td class="fw-medium"><?= $age ?></td>
-                                                <?php if($member->MemberRole == 'Head'): ?>
-                                                    <td onclick="event.stopPropagation();">
-                                                        <div class="d-flex justify-content-center align-items-center">
-                                                            <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                                                <button onclick="showupdatemembermodal('<?=trim($fm->Familymembershipid)?>')" class='btn-action-premium btn-edit-premium'>
-                                                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                                </button>
-                                                            <?php else: ?>
-                                                                <button class='btn-action-premium' disabled>
-                                                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                                </button>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                    </td>
-                                                <?php endif; ?>
-                                            </tr>
-                                        <?php endforeach; ?>
+                                        <!-- Rendered via JS -->
                                     </tbody>
                                 </table>
+                            </div>
+                            <!-- Family Pagination Strip -->
+                            <div class='d-flex justify-content-center container-fluid mt-3'>
+                                <div id="familyPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center"></div>
                             </div>
                         </div>
                         
@@ -1584,6 +1532,152 @@ unset($_SESSION["altercoordsindex"]);
                        
 let unselectedmembers = [];
 let resultbox = document.getElementById("searchmemberdata");
+
+let familyMembersData = [];
+<?php 
+    if (isset($family_members) && !empty($family_members)):
+        $fm_array = [];
+        $role_counts = [];
+        foreach($family_members as $fm) {
+            $role = $fm->MemberRole;
+            $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+        }
+        $role_counters = [];
+        foreach($family_members as $fm) {
+            $dob = new DateTime($fm->Dob);
+            $now = new DateTime();
+            $age = $now->diff($dob)->y;
+            
+            $role = $fm->MemberRole;
+            $display_role = $role;
+            if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                $display_role .= '_' . $role_counters[$role];
+            }
+            
+            $fm_array[] = [
+                'id' => trim($fm->Familymembershipid),
+                'name' => $fm->Name,
+                'role' => $display_role,
+                'gender' => $fm->Gender,
+                'age' => $age,
+                'is_dead' => (isset($fm->is_dead) && $fm->is_dead == 1) ? 1 : 0,
+                'pending' => (isset($fm->pending_status) && $fm->pending_status == 'Pending') ? 1 : 0
+            ];
+        }
+?>
+    familyMembersData = <?= json_encode($fm_array) ?> || [];
+<?php endif; ?>
+
+const isHead = <?= isset($member) && $member->MemberRole == 'Head' ? 'true' : 'false' ?>;
+
+// Family Members Pagination State
+const ITEMS_PER_PAGE = 10;
+let currentFamilyActivePage = 1;
+
+function renderFamilyMembers(data, sNo) {
+    let html = "";
+    let i = sNo + 1;
+
+    data.forEach(value => {
+        let deadClass = value.is_dead == 1 ? 'dead-member-row bg-light' : '';
+        let clickAttr = (value.is_dead != 1 && isHead) ? `onclick="showupdatemembermodal('${value.id}')" style="cursor:pointer;"` : '';
+        let genderIcon = value.gender.toLowerCase() === 'male' ? '<i class="fa-solid fa-mars text-primary me-1"></i>' : 
+                         (value.gender.toLowerCase() === 'female' ? '<i class="fa-solid fa-venus text-danger me-1"></i>' : '');
+        
+        let pendingBadge = value.pending == 1 ? `<span class="badge bg-warning text-dark ms-2 px-2 py-1" style="font-size: 0.75em; border-radius: 4px;">In Review</span>` : '';
+
+        let actionHtml = '';
+        if (isHead) {
+            let actionBtn = value.is_dead != 1 ? 
+                `<button onclick="showupdatemembermodal('${value.id}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>` : 
+                `<button class='btn btn-sm btn-outline-secondary rounded-circle' disabled style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>`;
+            
+            actionHtml = `
+                <td onclick="event.stopPropagation();">
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                        ${actionBtn}
+                    </div>
+                </td>
+            `;
+        }
+
+        html += `
+            <tr class="${deadClass}" ${clickAttr}>
+                <td class="fw-bold text-muted">${i}</td>
+                <td>
+                    <div class="fw-bold text-dark">${value.name}</div>
+                    <div class="badge-membership mt-1 d-inline-block">${value.id}</div>
+                    ${pendingBadge}
+                </td>
+                <td><span class="badge bg-light text-dark border px-2 py-1 rounded">${value.role}</span></td>
+                <td>${genderIcon} ${value.gender}</td>
+                <td class="fw-medium">${value.age}</td>
+                ${actionHtml}
+            </tr>
+        `;
+        i++;
+    });
+
+    const bodyEl = document.getElementById("family_members_body");
+    if (bodyEl) bodyEl.innerHTML = html;
+}
+
+function renderFamilyPagination(totalItems, currentPage) {
+  if (!totalItems || totalItems <= 0) {
+    const el = document.getElementById("familyPagination");
+    if(el) el.innerHTML = "";
+    return;
+  }
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
+
+  // Prev Button
+  html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+              onclick="goToFamilyPage(${currentPage - 1})" 
+              ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-left"></i>
+           </button>`;
+
+  // Page Numbers
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                  onclick="goToFamilyPage(${i})">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span class="pagination-ellipsis">...</span>`;
+    }
+  }
+
+  // Next Button
+  html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+              onclick="goToFamilyPage(${currentPage + 1})"
+              ${currentPage === totalPages ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-right"></i>
+           </button>`;
+
+  html += `</div>`;
+  html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+  
+  const pgEl = document.getElementById("familyPagination");
+  if(pgEl) pgEl.innerHTML = html;
+}
+
+function goToFamilyPage(page) {
+    if (!familyMembersData || familyMembersData.length === 0) return;
+    const totalPages = Math.ceil(familyMembersData.length / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    currentFamilyActivePage = page;
+    
+    let offset = (page - 1) * ITEMS_PER_PAGE;
+    renderFamilyMembers(familyMembersData.slice(offset, offset + ITEMS_PER_PAGE), offset);
+    renderFamilyPagination(familyMembersData.length, currentFamilyActivePage);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    goToFamilyPage(1);
+});
 
 // Mobile Menu Functions
 function openMobileMenu() {

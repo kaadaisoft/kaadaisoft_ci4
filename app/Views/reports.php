@@ -276,6 +276,61 @@
       border-bottom: 1px solid #f1f5f9;
       text-align: center;
     }
+
+    /* Premium Pagination Styling */
+    .pagination-wrapper {
+      margin-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .pagination-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .pagination-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      color: #3b82f6;
+      transform: translateY(-1px);
+    }
+    .pagination-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+    .pagination-ellipsis {
+      color: #94a3b8;
+      padding: 0 4px;
+    }
+    .pagination-info {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 1rem;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -419,104 +474,14 @@
 
           </div> <!----------------table-end------->
 
-          <div id='data-container' class='d-flex justify-content-center container-fluid page'>
-            <!-----------------pagination---------------------->
-
-            <div class="col-md-6 py-2 d-flex justify-content-around align-items-center">
-
-              <?php
-
-              if (isset($counts)) {
-                if ($counts > 0) {
-                  $countsperpage = 8;
-                  $noofpages = ceil($counts / $countsperpage) - 1;
-                  $totalpagesarr = createarr($noofpages);
-                  $totalpages = count($totalpagesarr);
-                  $initialindex = 0;
-                  $lastindex = 5;
-                  $pages = array_slice($totalpagesarr, $initialindex, $lastindex);
-                  echo "<a href='changeReportspagesetup?initialindex=0' style='cursor:pointer;' class='text-dark text-decoration-none text-dark'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-                  $j = 0;
-                  // foreach ($pages as $key => $value) {
-                  //   $count = $countsperpage * $value;
-                  //   $pageno = $value + 1;
-              
-                  //   echo "<button onclick='displayEvents($count,$j)' class='".($j==0 ? 'active-page' : '')." active text-decoration-none p-2 px-3 rounded-circle'>$pageno</button>";
-                  //   ++$j;
-                  // }
-                  foreach ($pages as $key => $value) {
-                    $count = $countsperpage * $value;
-                    $pageno = $value + 1;
-
-                    if ($pageno == 5) {
-                      echo "<a href='changeReportspagesetup?initialindex=" . ($pageno - 1) . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='" . ($j == 0 ? 'active-page' : '') . " active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
-                    } else {
-                      echo "<button style='width:35px;height:35px;'onclick='displayReports($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>";
-                    }
-                    ++$j;
-                  }
-                  echo "<span>...</span>";
-                  $totalcount = ($totalpages - $lastindex);
-                  echo "<a href='changeReportspagesetup?initialindex=$totalcount' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-
-                  $newindex = $initialindex + $lastindex;
-                  echo "<a href='changeReportspagesetup?initialindex=$newindex' style='cursor:pointer;' class='text-dark text-decoration-none text-dark'><i class='fa-solid fa-arrow-right-long'></i></a>";
-
-                } else {
-                  echo "<script>
-             document.getElementById('data-container').style.padding='100px';
-
-            </script>";
-                  echo "<div class='mt-5'>No Record Found</div>";
-                }
-              }
-
-              if (isset($initialindex) && isset($newcounts)) {
-                // echo $lastindex;
-                $countsperpage = 8;
-                $noofpages = ceil($newcounts / $countsperpage) - 1;
-                $totalpagesarr = createarr($noofpages);
-                $totalpages = count($totalpagesarr);
-                $lastindex = 5;
-                // echo $totalpages;
-                $start = $initialindex;
-                $pages = array_slice($totalpagesarr, $start, $lastindex);
-                // echo var_dump($pages);
-                // $start == 0 ? $prevlist = 0 : $prevlist = $start - $lastindex;
-                $start == 0 ? $prevlist = 0 : (($start - $lastindex) < 0 ? $prevlist = 0 : $prevlist = $start - $lastindex);
-                echo "<a href='changeReportspagesetup?initialindex=$prevlist' style='cursor:pointer;' class='text-dark text-decoration-none'><i id='arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-                $j = 0;
-
-                foreach ($pages as $key => $value) {
-                  $count = $countsperpage * $value;
-                  $pageno = $value + 1;
-
-                  if ($pageno == 5 || $pageno - $start == 5) {
-                    echo $pageno == $totalpages ? "<button style='width:35px;height:35px;'onclick='displayReports($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>" : "<a href='changeReportspagesetup?initialindex=" . ($pageno - 1) . "' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='" . ($j == 0 ? 'active-page' : '') . " active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
-                  } else {
-                    echo "<button style='width:35px;height:35px;'onclick='displayReports($count,$j)' class='" . ($j == 0 ? 'active-page' : '') . " active rounded-circle'>$pageno</button>";
-                  }
-                  ++$j;
-                }
-
-                echo "<span>...</span>";
-                $totalcount = ($totalpages - $lastindex);
-                echo "<a href='changeReportspagesetup?initialindex=$totalcount' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-
-                $newindex = $start + $lastindex;
-                echo "<a href='changeReportspagesetup?initialindex=" . ($totalpages - $start <= $lastindex ? $totalcount : $newindex) . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id='arrow' class='fa-solid fa-arrow-right-long'></i></a>";
-              }
-
-              function createarr($noofpages)
-              {
-                return range(0, $noofpages);
-              }
-
-
-              ?>
-
+          <div class="pagination-wrapper">
+            <div id="pagination-container" class="pagination-container">
+              <!-- Pagination buttons will be rendered here by JavaScript -->
             </div>
-          </div><!--------------pagination-end--------------------->
+            <div id="pagination-info" class="pagination-info">
+              <!-- Showing X to Y of Z entries -->
+            </div>
+          </div>
 
         </div><!-----------main-dashboard-end------------------------>
 
@@ -620,67 +585,114 @@
     //  setheight.style.height = a - b+"px";
 
 
-    function commonSearch(reports) {
+    const ITEMS_PER_PAGE = 10;
+    let currentTotalCount = <?= $counts ?? 0 ?>;
+    let currentActivePage = 1;
 
+    // Initialize pagination on load
+    $(document).ready(function() {
+      renderPagination(currentTotalCount, currentActivePage);
+    });
+
+    function renderPagination(totalCount, activePage) {
+      const container = document.getElementById('pagination-container');
+      const info = document.getElementById('pagination-info');
+      if (!container || totalCount <= 0) {
+        if (container) container.innerHTML = '';
+        if (info) info.innerHTML = totalCount === 0 ? '<div class="mt-5 text-muted">No Record Found</div>' : '';
+        return;
+      }
+
+      const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+      let html = '';
+
+      // Previous Button
+      html += `<button onclick="goToPage(${activePage - 1})" class="pagination-btn ${activePage === 1 ? 'disabled' : ''}" ${activePage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+               </button>`;
+
+      // Page Numbers logic
+      let startPage = Math.max(1, activePage - 2);
+      let endPage = Math.min(totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+
+      if (startPage > 1) {
+        html += `<button onclick="goToPage(1)" class="pagination-btn">1</button>`;
+        if (startPage > 2) html += `<span class="pagination-ellipsis">...</span>`;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="goToPage(${i})" class="pagination-btn ${i === activePage ? 'active' : ''}">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<span class="pagination-ellipsis">...</span>`;
+        html += `<button onclick="goToPage(${totalPages})" class="pagination-btn">${totalPages}</button>`;
+      }
+
+      // Next Button
+      html += `<button onclick="goToPage(${activePage + 1})" class="pagination-btn ${activePage === totalPages ? 'disabled' : ''}" ${activePage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+               </button>`;
+
+      container.innerHTML = html;
+
+      // Info text
+      const start = (activePage - 1) * ITEMS_PER_PAGE + 1;
+      const end = Math.min(activePage * ITEMS_PER_PAGE, totalCount);
+      info.innerHTML = `Showing <span class="fw-bold text-dark">${start}</span> to <span class="fw-bold text-dark">${end}</span> of <span class="fw-bold text-dark">${totalCount}</span> entries`;
+    }
+
+    function goToPage(page) {
+      if (page < 1) return;
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      
+      $.ajax({
+        type: "get",
+        url: "reports/displayReports",
+        data: { "count": offset },
+        success: function (result) {
+          document.getElementById('ps-reports').innerHTML = result;
+          currentActivePage = page;
+          renderPagination(currentTotalCount, currentActivePage);
+          // Smooth scroll to top of table
+          document.getElementById('main-reports').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
+        error: function (err) {
+          console.error(err);
+          document.getElementById('ps-reports').innerHTML = "<tr><td colspan='7'>Error fetching data</td></tr>";
+        }
+      });
+    }
+
+    // Update commonSearch to reset pagination
+    const originalCommonSearch = commonSearch;
+    commonSearch = function(reports) {
       let searchfields = reports.value;
-
       $.ajax({
         type: "get",
         url: "reports/searchReports",
         data: { "searchfields": searchfields },
         success: (result) => {
           document.getElementById('ps-reports').innerHTML = result;
+          // Count rows to approximate total count for search (if backend doesn't return total)
+          // Ideally backend should return total count.
+          // Since it doesn't, we'll hide pagination for search results if they are limited,
+          // or at least reset it to 1 page if we only have the result.
+          // But looking at searchReports, it returns all matching results.
+          let rowCount = $('#ps-reports tr').length;
+          currentActivePage = 1;
+          currentTotalCount = rowCount; 
+          renderPagination(currentTotalCount, currentActivePage);
         },
         error: (error) => {
-          document.getElementById('ps-reports').innerHTML = error;
+          document.getElementById('ps-reports').innerHTML = "Error searching";
         }
       })
     };
-
-
-    function changeReportsPagesetup(initialIndex, lastindex) {
-      $.ajax({
-        type: "get",
-        url: "displayReports",
-        data: { "initialindex": initialIndex, "lastindex": lastindex },
-        success: function (result) {
-          document.getElementById('ps-reports').innerHTML = result;
-        },
-        error: function (err) {
-          document.getElementById('ps-reports').innerHTML = err;
-        }
-      })
-    }
-
-    function displayReports(counts, index) {
-      activepage = document.querySelectorAll(".active");
-      let l = activepage.length;
-      for (let i = 0; i < l; i++) {
-        if (i == index) {
-          activepage[i].classList.add("active-page")
-        }
-        else {
-          if (activepage[i].classList.contains("active-page")) {
-            activepage[i].classList.remove("active-page")
-          }
-        }
-      }
-
-      $.ajax({
-        type: "get",
-        url: "reports/displayReports",
-        data: { "count": counts },
-        success: function (result) {
-          console.log("hi");
-          document.getElementById('ps-reports').innerHTML = result;
-
-        },
-        error: function (err) {
-          console.log(err)
-          document.getElementById('ps-reports').innerHTML = "Error feching reports";
-        }
-      })
-    }
 
     function getEventsbyYear(yeardata) {
 

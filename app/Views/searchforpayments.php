@@ -14,8 +14,8 @@ if (isset($members) && isset($sno)) {
             <td>$value[Taluk]</td>
             <td>
                 <div class='d-flex justify-content-center align-items-center gap-2'>
-                    <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-action-premium btn-pay-premium'><i class='fa-solid fa-indian-rupee-sign'></i>Pay Now</a>
-                    <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-action-premium'><i class='fa-solid fa-receipt'></i>Receipts</a>
+                    <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-pay-modern'>Pay Now</a>
+                    <a href='payment-receipt-list?memberid=$value[Familymembershipid]' class='btn-view-modern'>View Receipts</a>
                 </div>
             </td>
         </tr>";

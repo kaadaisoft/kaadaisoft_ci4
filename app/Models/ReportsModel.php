@@ -36,7 +36,7 @@ class ReportsModel extends Model
         // So `getreports` MUST support offset.
         // I will add offset support to `getreports`.
         
-        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 8";
+        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10";
         if ($counts > 0) {
             $sql .= " OFFSET $counts";
         }
@@ -46,7 +46,7 @@ class ReportsModel extends Model
 
     public function getReportswithlimit($counts)
     {
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 8 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10 OFFSET $counts");
         return $query->getResultArray();
     }
 
@@ -111,7 +111,7 @@ class ReportsModel extends Model
 
         $builder->where('km.MemberRole', 'Head');
         $builder->groupBy('km.Familymembershipid');
-        $builder->limit(8);
+        $builder->limit(10);
         return $builder->get()->getResultArray();
     }
 
@@ -147,7 +147,7 @@ class ReportsModel extends Model
          
          $builder->where('km.MemberRole', 'Head');
          $builder->groupBy('km.Familymembershipid');
-         $builder->limit(8, $counts); // limit 8 offset $counts
+         $builder->limit(10, $counts); // limit 10 offset $counts
          return $builder->get()->getResultArray();
     }
     

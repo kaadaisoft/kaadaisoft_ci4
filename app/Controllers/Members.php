@@ -154,12 +154,18 @@ class Members extends BaseController
 
     public function displaymembers()
     {
-        $counts = $this->request->getGet('count');
+        $counts = $this->request->getGet('count') ?: 0;
+        $searchfields = $this->request->getGet('searchfields');
         $this->session->set('memberscounts', $counts);
+        
         if ($this->request->isAJAX()) {
-            $members = $this->membersModel->getMembers($counts);
-            $data = view('memberslist', array("members" => $members, "sno" => $counts));
-            echo $data;
+            if ($searchfields && !empty(array_filter($searchfields))) {
+                $members = $this->membersModel->getMembersSearchfieldsPaginated($searchfields, $counts);
+            } else {
+                $members = $this->membersModel->getMembers($counts);
+            }
+            
+            echo view('memberslist', array("members" => $members, "sno" => $counts));
         }
     }
 

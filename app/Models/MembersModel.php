@@ -27,12 +27,15 @@ class MembersModel extends Model
     public function getMembers($counts)
     {
         $session = session();
+        $limit = 10;
+        $offset = (int)$counts;
+        
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC LIMIT $limit OFFSET $offset");
             return $query->getResult();
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC LIMIT $limit OFFSET $offset");
         return $query->getResult();
     }
 
@@ -384,6 +387,48 @@ class MembersModel extends Model
                     ->orWhere('Coordinator_Two_id', $coord_id)
                     ->groupEnd();
         }
+
+        return $builder->get()->getResult();
+    }
+
+    public function getMembersSearchfieldsPaginated($searchfields, $offset = 0, $limit = 10)
+    {
+        $builder = $this->db->table('kaadaimembers');
+        $builder->where('Role', 3);
+        $builder->where('isShow', 1);
+        $builder->where('MemberRole', 'Head');
+
+        if (is_array($searchfields)) {
+            if (!empty($searchfields['state_id'])) $builder->where('state_id', $searchfields['state_id']);
+            if (!empty($searchfields['district'])) $builder->where('District', $searchfields['district']);
+            if (!empty($searchfields['taluk'])) $builder->where('Taluk', $searchfields['taluk']);
+            if (!empty($searchfields['panchayat'])) $builder->where('Panchayat', $searchfields['panchayat']);
+            if (!empty($searchfields['bloodgroup'])) $builder->where('Bloodgroup', $searchfields['bloodgroup']);
+            if (!empty($searchfields['gender'])) $builder->where('Gender', $searchfields['gender']);
+            if (!empty($searchfields['occupation'])) $builder->where('Profession', $searchfields['occupation']);
+            if (!empty($searchfields['search'])) {
+                $term = $searchfields['search'];
+                $builder->groupStart();
+                $builder->like('Name', $term);
+                $builder->orLike('Email', $term);
+                $builder->orLike('Familymembershipid', $term);
+                $builder->orLike('Phonenumber', $term);
+                $builder->orLike('Aadharnumber', $term);
+                $builder->orLike('District', $term);
+                $builder->groupEnd();
+            }
+        }
+
+        if (session()->get('role') == 2) {
+            $coord_id = session()->get("Kaadaisoft_userId");
+            $builder->groupStart()
+                    ->where('Coordinator_id', $coord_id)
+                    ->orWhere('Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+        }
+
+        $builder->orderBy('updated_at', 'DESC');
+        $builder->limit($limit, $offset);
 
         return $builder->get()->getResult();
     }

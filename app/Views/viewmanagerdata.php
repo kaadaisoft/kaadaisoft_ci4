@@ -443,10 +443,51 @@
       transition: all 0.2s ease;
     }
     .custom-table-premium tbody tr:hover {
-      background-color: #f8fafc;
+      background: #f8fafc;
       transform: scale(1.002);
       box-shadow: inset 4px 0 0 #3b82f6;
     }
+
+      /* Premium Pagination Styles */
+      .pagination-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+      .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        transform: translateY(-1px);
+      }
+      .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      }
+      .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f1f5f9;
+      }
+      .pagination-ellipsis {
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0 4px;
+      }
 
     @media (max-width: 576px) {
         .card-header.d-flex {
@@ -518,7 +559,7 @@
             
             <div class="card shadow-sm rounded border-0 mb-5">
                 <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
-                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i>Manager Details</h4> 
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i><?= (session()->get('role') == 1) ? 'My Details' : 'Manager Details' ?></h4> 
                 </div>
                 <div class="card-body px-4 py-4">
                     <div class="row">
@@ -568,7 +609,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0 rounded mb-4">
                         <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
-                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i><?= (session()->get('role') == 1) ? 'My Family Members' : 'Family Members' ?></h4>
                             <div class="btn-group" role="group">
                                 <button type="button" id="tableViewBtn" class="btn btn-primary active" onclick="switchView('table')"><i class="fa-solid fa-table me-1"></i> Table View</button>
                                 <button type="button" id="treeViewBtn" class="btn btn-outline-primary" onclick="switchView('tree')"><i class="fa-solid fa-tree me-1"></i> Tree View</button>
@@ -588,51 +629,12 @@
                                         </tr>
                                     </thead>
                                     <tbody id="family_members_body">
-                                        <?php 
-                                            $sno = 1;
-                                            $role_counts = [];
-                                            foreach($family_members as $fm) {
-                                                $role = $fm->MemberRole;
-                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                            }
-                                            $role_counters = [];
-                                            
-                                            foreach($family_members as $fm): 
-                                                $dob = new DateTime($fm->Dob);
-                                                $now = new DateTime();
-                                                $age = $now->diff($dob)->y;
-                                                
-                                                $role = $fm->MemberRole;
-                                                $display_role = $role;
-                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                                    $display_role .= '_' . $role_counters[$role];
-                                                }
-                                        ?>
-                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= !(isset($fm->is_dead) && $fm->is_dead == 1) ? "onclick=\"showupdatemanagermodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
-                                                <td class="fw-bold text-muted"><?= $sno++ ?></td>
-                                                <td class="fw-bold text-dark"><?= $fm->Name ?></td>
-                                                <td><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
-                                                <td>
-                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
-                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
-                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
-                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
-                                                    <?php endif; ?>
-                                                    <?= $fm->Gender ?>
-                                                </td>
-                                                <td class="fw-medium"><?= $age ?></td>
-                                                <td onclick="event.stopPropagation();">
-                                                    <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                                        <button onclick="showupdatemanagermodal('<?=trim($fm->Familymembershipid)?>')" class='btn-action-premium btn-edit-premium'><i class="fa-solid fa-pen-to-square"></i>Edit</button>
-                                                    <?php else: ?>
-                                                        <button class='btn-action-premium' disabled><i class="fa-solid fa-pen-to-square"></i>Edit</button>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
+                                        <!-- Rendered via JS -->
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class='d-flex justify-content-center container-fluid mt-3'>
+                                <div id="familyPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center"></div>
                             </div>
                         </div>
                         
@@ -841,6 +843,152 @@
 </div>
 
 <script>
+      let familyMembersData = [];
+      <?php 
+          if (isset($family_members) && !empty($family_members)):
+              $fm_array = [];
+              $role_counts = [];
+              foreach($family_members as $fm) {
+                  $role = $fm->MemberRole;
+                  $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+              }
+              $role_counters = [];
+              foreach($family_members as $fm) {
+                  $dob = new DateTime($fm->Dob);
+                  $now = new DateTime();
+                  $age = $now->diff($dob)->y;
+                  
+                  $role = $fm->MemberRole;
+                  $display_role = $role;
+                  if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                      $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                      $display_role .= '_' . $role_counters[$role];
+                  }
+                  
+                  $fm_array[] = [
+                      'id' => trim($fm->Familymembershipid),
+                      'name' => $fm->Name,
+                      'role' => $display_role,
+                      'gender' => $fm->Gender,
+                      'age' => $age,
+                      'is_dead' => (isset($fm->is_dead) && $fm->is_dead == 1) ? 1 : 0
+                  ];
+              }
+      ?>
+          familyMembersData = <?= json_encode($fm_array) ?> || [];
+      <?php endif; ?>
+
+      const ITEMS_PER_PAGE = 10;
+      let currentFamilyActivePage = 1;
+
+      function renderFamilyMembers(data, sNo) {
+          let html = "";
+          let i = sNo + 1;
+
+          data.forEach(value => {
+              let deadClass = value.is_dead == 1 ? 'dead-member-row bg-light' : '';
+              let clickAttr = (value.is_dead != 1) ? `onclick="showupdatemanagermodal('${value.id}')" style="cursor:pointer;"` : '';
+              let genderIcon = value.gender.toLowerCase() === 'male' ? '<i class="fa-solid fa-mars text-primary me-1"></i>' : 
+                               (value.gender.toLowerCase() === 'female' ? '<i class="fa-solid fa-venus text-danger me-1"></i>' : '');
+              
+              let actionBtn = value.is_dead != 1 ? 
+                  `<button onclick="showupdatemanagermodal('${value.id}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>` : 
+                  `<button class='btn btn-sm btn-outline-secondary rounded-circle' disabled style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>`;
+
+              html += `
+                  <tr class="${deadClass}" ${clickAttr}>
+                      <td class="fw-bold text-muted">${i}</td>
+                      <td class="fw-bold text-dark">${value.name}</td>
+                      <td><span class="badge bg-light text-dark border px-2 py-1 rounded">${value.role}</span></td>
+                      <td>${genderIcon} ${value.gender}</td>
+                      <td class="fw-medium">${value.age}</td>
+                      <td onclick="event.stopPropagation();">
+                          <div class="d-flex justify-content-center align-items-center gap-2">
+                              ${actionBtn}
+                          </div>
+                      </td>
+                  </tr>
+              `;
+              i++;
+          });
+
+          const bodyEl = document.getElementById("family_members_body");
+          if (bodyEl) bodyEl.innerHTML = html;
+      }
+
+      function renderFamilyPagination(totalItems, currentPage, fullData) {
+        if (!totalItems || totalItems <= 0) {
+          const el = document.getElementById("familyPagination");
+          if(el) el.innerHTML = "";
+          return;
+        }
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+        let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
+
+        html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                    onclick="goToFamilyPage(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fa-solid fa-chevron-left"></i>
+                 </button>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+          if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                        onclick="goToFamilyPage(${i})">${i}</button>`;
+          } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="pagination-ellipsis">...</span>`;
+          }
+        }
+
+        html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                    onclick="goToFamilyPage(${currentPage + 1})"
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fa-solid fa-chevron-right"></i>
+                 </button>`;
+
+        html += `</div>`;
+        html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+        
+        const pgEl = document.getElementById("familyPagination");
+        if(pgEl) pgEl.innerHTML = html;
+      }
+
+      function goToFamilyPage(page) {
+          if (!familyMembersData || familyMembersData.length === 0) return;
+          
+          let searchTerm = "";
+          let searchInput = document.getElementById("commonsearch");
+          if(searchInput) searchTerm = searchInput.value.toLowerCase().trim();
+          
+          let displayData = familyMembersData;
+          if (searchTerm !== "") {
+              displayData = familyMembersData.filter(item => {
+                  return item.name.toLowerCase().includes(searchTerm) || 
+                         item.role.toLowerCase().includes(searchTerm);
+              });
+          }
+
+          const totalPages = Math.ceil(displayData.length / ITEMS_PER_PAGE);
+          if (totalPages === 0) {
+              renderFamilyMembers([], 0);
+              renderFamilyPagination(0, 1, displayData);
+              return;
+          }
+          
+          if (page < 1) page = 1;
+          if (page > totalPages) page = totalPages;
+          currentFamilyActivePage = page;
+          
+          let offset = (page - 1) * ITEMS_PER_PAGE;
+          renderFamilyMembers(displayData.slice(offset, offset + ITEMS_PER_PAGE), offset);
+          renderFamilyPagination(displayData.length, currentFamilyActivePage, displayData);
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+          goToFamilyPage(1);
+      });
+
       function viewMemberdocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
           document.getElementById("showdocuments").innerHTML = `
           <div class="col-md-4 text-center">
@@ -959,20 +1107,9 @@
           }
       });
       function commonSearch(input) {
-          let filter = input.value.toLowerCase();
-          let tableBody = document.getElementById("family_members_body");
-          let tr = tableBody.getElementsByTagName("tr");
-
-          for (let i = 0; i < tr.length; i++) {
-              let tdName = tr[i].getElementsByTagName("td")[1]; // Modified to index 1 as Name is second column
-              if (tdName) {
-                  let txtValue = tdName.textContent || tdName.innerText;
-                  if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                      tr[i].style.display = "";
-                  } else {
-                      tr[i].style.display = "none";
-                  }
-              }
+          if(familyMembersData && familyMembersData.length > 0) {
+             currentFamilyActivePage = 1;
+             goToFamilyPage(1);
           }
       }
 

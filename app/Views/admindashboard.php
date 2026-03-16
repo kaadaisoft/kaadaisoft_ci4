@@ -38,7 +38,7 @@
         width: 100% !important;
       }
       .main-body-row { 
-        margin-top: 130px !important; /* Adjust for stacked top bar elements */
+        margin-top: 200px !important; /* Adjust for stacked top bar elements */
         flex-direction: column; 
         overflow: auto; 
       }
@@ -616,6 +616,47 @@
         }
       }
 
+      /* Premium Pagination Styles */
+      .pagination-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+      .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        transform: translateY(-1px);
+      }
+      .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      }
+      .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f1f5f9;
+      }
+      .pagination-ellipsis {
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0 4px;
+      }
+
     </style>
 </head>
 <body>
@@ -712,6 +753,7 @@
                 </tfoot>
             </table>
         </div>
+        <div id="pendingPagination" class="d-flex justify-content-center mt-3 mb-4"></div>
     </div>
 </div>
 
@@ -823,25 +865,16 @@
     });
 
     let globalEventParticipation = [];
+    let pendingItemsPerPage = 10;
+    let currentPendingPage = 1;
 
     function renderPendingTable(data) {
         let rows_html = '';
         let total_pending = 0;
 
-        // Filter out entries where calculated pending is 0 if needed, or keep all as per original logic? 
-        // Original logic kept 0 pending rows but showed "0". 
-        // Let's stick to original behavior: show all rows.
-
-        data.forEach(function(participation, index) {
+        data.forEach(function(participation) {
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
-            let pending_display = (pending === 0) ? "0" : pending;
-            rows_html += `<tr onclick="handleRowClick(${index})" style="cursor: pointer;">
-                <td>${index + 1}</td>
-                <td>${participation.eventname}</td>
-                <td>${participation.Taxamount}</td>
-                <td>${pending_display}</td>
-            </tr>`;
             if (pending > 0) total_pending += pending;
         });
 
@@ -849,15 +882,92 @@
             document.getElementById("nomemberresult").innerHTML = `<tr><td class="text-center" colspan="4">No records found</td></tr>`;
             document.getElementById("showparticipation").innerHTML = '';
             document.getElementById("total_pending").innerText = "0.00";
-        } else {
-            document.getElementById("nomemberresult").innerHTML = `<tr><th>SNo</th><th>Event Name</th><th>Tax Amount</th><th>Balance Amount</th></tr>`;
-            document.getElementById("showparticipation").innerHTML = rows_html;
-            document.getElementById("total_pending").innerText = total_pending.toFixed(2);
+            document.getElementById("pendingPagination").innerHTML = "";
+            return;
         }
+
+        let totalPages = Math.ceil(data.length / pendingItemsPerPage);
+        if (currentPendingPage > totalPages) currentPendingPage = totalPages;
+        if (currentPendingPage < 1) currentPendingPage = 1;
+
+        let startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
+        let endIndex = startIndex + pendingItemsPerPage;
+        let paginatedItems = data.slice(startIndex, endIndex);
+
+        paginatedItems.forEach(function(participation, index) {
+            let originalIndex = data.indexOf(participation);
+            let pending = parseFloat(participation.balanceamount);
+            if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
+            let pending_display = (pending === 0) ? "0" : pending;
+            rows_html += `<tr onclick="handleRowClick('${participation.Id}')" style="cursor: pointer;">
+                <td>${startIndex + index + 1}</td>
+                <td>${participation.eventname}</td>
+                <td>${participation.Taxamount}</td>
+                <td>${pending_display}</td>
+            </tr>`;
+        });
+
+        document.getElementById("nomemberresult").innerHTML = `<tr><th>SNo</th><th>Event Name</th><th>Tax Amount</th><th>Balance Amount</th></tr>`;
+        document.getElementById("showparticipation").innerHTML = rows_html;
+        document.getElementById("total_pending").innerText = total_pending.toFixed(2);
+        
+        renderPendingPagination(data.length, currentPendingPage, data);
+    }
+
+    function renderPendingPagination(totalItems, currentPage, fullData) {
+      if (!totalItems || totalItems <= 0) {
+        document.getElementById("pendingPagination").innerHTML = "";
+        return;
+      }
+      const totalPages = Math.ceil(totalItems / pendingItemsPerPage);
+
+      let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2">`;
+
+      html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                  onclick="goToPendingPage(${currentPage - 1})" 
+                  ${currentPage === 1 ? 'disabled' : ''}>
+                  <i class="fa-solid fa-chevron-left"></i>
+               </button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+          html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                      onclick="goToPendingPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          html += `<span class="pagination-ellipsis">...</span>`;
+        }
+      }
+
+      html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                  onclick="goToPendingPage(${currentPage + 1})"
+                  ${currentPage === totalPages ? 'disabled' : ''}>
+                  <i class="fa-solid fa-chevron-right"></i>
+               </button>`;
+
+      html += `</div>`;
+      html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+      
+      document.getElementById("pendingPagination").innerHTML = html;
+    }
+
+    function goToPendingPage(page) {
+        currentPendingPage = page;
+        let searchTerm = "";
+        let searchInput = document.getElementById("commonsearch");
+        if(searchInput) searchTerm = searchInput.value.toLowerCase().trim();
+        
+        let displayData = globalEventParticipation;
+        if (searchTerm !== "") {
+            displayData = globalEventParticipation.filter(item => {
+                return item.eventname.toLowerCase().includes(searchTerm);
+            });
+        }
+        renderPendingTable(displayData);
     }
 
     function commonSearch(input) {
         let searchTerm = input.value.toLowerCase().trim();
+        currentPendingPage = 1;
         if (searchTerm === "") {
             renderPendingTable(globalEventParticipation);
             return;
@@ -869,19 +979,19 @@
         renderPendingTable(filteredData);
     }
 
-    function handleRowClick(index) {
-        let participation = globalEventParticipation[index];
+    function handleRowClick(participationId) {
+        let participation = globalEventParticipation.find(p => p.Id === participationId);
+        if(!participation) return;
+        
         let pending = parseFloat(participation.balanceamount);
         if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
 
         if (pending === 0) {
-            // Show receipt
             let memberid = "<?= session()->get('Kaadaisoft_userId'); ?>";
             let eventid = participation.Id;
             let dues = participation.dues;
             viewReceipt(`paymentreceiptpdf?memberid=${memberid}&dues=${dues}&eventid=${eventid}`);
         } else {
-            // Redirect to gopayment page
             window.location.href = `gopaymentpage?memberid=<?= session()->get('Kaadaisoft_userId'); ?>&eventid=${participation.Id}`;
         }
     }

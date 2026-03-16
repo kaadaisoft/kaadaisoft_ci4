@@ -68,7 +68,7 @@ class Events extends BaseController {
         
         if($this->request->isAJAX()){
             $events = $this->eventsModel->getEvents($counts); // Paginated
-            echo view('eventslist', ["events" => $events, "sno" => $counts]);
+            return view('eventslist', ["events" => $events, "sno" => $counts]);
         }
     }
 

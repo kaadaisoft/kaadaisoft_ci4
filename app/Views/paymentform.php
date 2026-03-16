@@ -384,7 +384,7 @@
 
       <div class="row pt-2 px-3">
         <div class="col-md-6 mb-3">
-            <label class="form-label" for="receivedby"><i class="fas fa-user-check me-2 text-primary"></i>Person Received the Money</label>
+            <label class="form-label" for="receivedby"><i class="fas fa-user-check me-2 text-primary"></i><span id="receivedby_label">Person Received the Money</span></label>
             <input type="text" name="receivedby" id="receivedby" class="form-control border rounded-pill py-3 px-4" placeholder="Enter name of receiver" required>
         </div>
       </div>
@@ -683,9 +683,10 @@ const BankList = [
 
   function getPaymentmethod(data){
       let paymenttype = data.value;
+      let receivedLabel = document.getElementById("receivedby_label");
 
       if(paymenttype == "bank"){
-         
+         if(receivedLabel) receivedLabel.innerText = "Person recorded the payment";
          document.getElementById("getpaymentdetail").innerHTML = `<div><label>
          Choose bank: <br>
          <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="bankname" id="banklist" required>  
@@ -708,6 +709,7 @@ const BankList = [
          `;
       }
       else if(paymenttype == "checkque"){
+        if(receivedLabel) receivedLabel.innerText = "Person received the cheque";
         document.getElementById("getpaymentdetail").innerHTML = `<div><label>
          Choose bank: <br>
          <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="banknameforcheckque" id="banklist" required>  
@@ -729,6 +731,7 @@ const BankList = [
          </div>`;
       }
       else if(paymenttype == "upi") {
+        if(receivedLabel) receivedLabel.innerText = "Person recorded the transaction after payment is confirmed";
         document.getElementById("getpaymentdetail").innerHTML = `
         <div class="d-flex flex-column align-items-center">
          <img class="p-2 border rounded" style="width:250px;height:250px;" src="assets/otherdocuments/qrscan.png"> <br/>
@@ -739,6 +742,7 @@ const BankList = [
          </div>`;
       }
       else if(paymenttype == "cash"){
+        if(receivedLabel) receivedLabel.innerText = "Person Received the Money";
         document.getElementById("getpaymentdetail").innerHTML = `
         <div>
          <label>

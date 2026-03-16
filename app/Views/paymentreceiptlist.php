@@ -226,7 +226,7 @@
           flex-wrap: wrap; 
       }
       .main-body-row { 
-          margin-top: 130px !important; /* Adjust for stacked top bar elements */
+          margin-top: 200px !important; /* Adjust for stacked top bar elements */
           flex-direction: column; 
           overflow: auto; 
       }
@@ -428,20 +428,20 @@
             let printWindow = window.open('', '', 'height=1000, width=1000');
             printWindow.document.open();
             
-            let htmlContent = `<html><head><title>Print Receipt</title>
-                <style>
-                    body { font-family: sans-serif; padding: 20px; }
-                    .heading-kaadaisoft { color: #007bff; font-weight: 800; font-size: 32px; text-align: center; }
-                    .receipt-title { font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }
-                    table { width: 100%; border-collapse: collapse; border: 2px solid grey; border-radius: 15px; padding: 20px; }
-                    td { padding: 10px; }
-                </style></head><body>
-                <table>
-                <tr><td colspan='3' style='text-align:center;'><div class='heading-kaadaisoft'>Poondurai Kadai Kulam</div><div class='receipt-title'>Receipt</div></td></tr>
-                <tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td></td><td style='font-weight:bold; text-align: right;'>${receiptId}</td></tr>
-                <tr><td style='font-weight:bold;'>${paymentDate}</td></tr>
-                ${divContents}
-                </table></body></html>`;
+            let htmlContent = "<html><head><title>Print Receipt</title>" +
+                "<style>" +
+                "body { font-family: sans-serif; padding: 20px; }" +
+                ".heading-kaadaisoft { color: #007bff; font-weight: 800; font-size: 32px; text-align: center; }" +
+                ".receipt-title { font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }" +
+                "table { width: 100%; border-collapse: collapse; border: 2px solid grey; border-radius: 15px; padding: 20px; }" +
+                "td { padding: 10px; }" +
+                "</style></head><" + "body>" +
+                "<table>" +
+                "<tr><td colspan='3' style='text-align:center;'><div class='heading-kaadaisoft'>Poondurai Kadai Kulam</div><div class='receipt-title'>Receipt</div></td></tr>" +
+                "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td></td><td style='font-weight:bold; text-align: right;'>" + receiptId + "</td></tr>" +
+                "<tr><td style='font-weight:bold;'>" + paymentDate + "</td></tr>" +
+                divContents +
+                "</table></" + "body></" + "html>";
 
             printWindow.document.write(htmlContent);
             printWindow.document.close();

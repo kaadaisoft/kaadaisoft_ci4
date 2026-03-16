@@ -17,10 +17,10 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
             return $query->getResultArray();
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
         return $query->getResultArray();
     }
 

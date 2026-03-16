@@ -94,14 +94,25 @@
             <div class="dropdown ms-4 pl-3 border-start border-secondary top-menu-dropdown">
                 <button style="outline-style:none;" class="drop-down-toggle border-0 d-flex align-items-center bg-transparent shadow-none ms-2" data-bs-toggle="dropdown">
                     <span class="profile-circle rounded-circle"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;
-                    <span id="ps-name-line" class="profile-text">
+                    <span id="ps-name-line" class="profile-text d-flex flex-column text-start">
+                        <span class="lh-1">
                         <?php
                         $name = session()->get('Kaadaisoft_userName');
                         if ($name) {
                             echo htmlspecialchars($name);
                         } else {
                             echo "Manager";
-                        } ?></span>&nbsp;&nbsp;
+                        } ?>
+                        </span>
+                        <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">
+                            <?php 
+                            $role_id = session()->get('role');
+                            if ($role_id == 1) echo "Manager";
+                            elseif ($role_id == 2) echo "Coordinator";
+                            else echo "Member";
+                            ?>
+                        </span>
+                    </span>&nbsp;&nbsp;
                     <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3 mt-2">

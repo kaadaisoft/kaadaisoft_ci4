@@ -642,6 +642,42 @@
       .custom-table tbody tr:last-child td {
         border-bottom: none !important;
       }
+      
+      /* Premium Pagination UI */
+      .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        transition: all 0.2s ease;
+        padding: 0 12px;
+      }
+      .pagination-btn:hover:not(:disabled) {
+        background: #f1f5f9;
+        color: #0f172a;
+        transform: translateY(-1px);
+      }
+      .pagination-btn.active {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+      }
+      .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .pagination-ellipsis {
+        padding: 0 8px;
+        color: #94a3b8;
+        font-weight: 500;
+      }
     </style>
 </head>
 <body>
@@ -680,7 +716,7 @@
         </div>
          
         <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
-        <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;">Total Coordinators: <span class="badge bg-primary rounded-pill"><?php echo count($coordinators)?></span></div>
+        <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;">Total Coordinators: <span id="total-coords-count" class="badge bg-primary rounded-pill"><?= $newcounts ?? $counts ?? 0 ?></span></div>
         <div class="table-container-premium">
             <table class="custom-table-premium">
                 <thead>
@@ -689,7 +725,11 @@
                 </tr>
                 </thead>
                 <tbody id="ps-coords">
-    
+                   <?php if(isset($coordinators) && count($coordinators) > 0): ?>
+                       <?= view('coordinatorslist', ['coordinators' => $coordinators, 'sno' => $sno ?? 0]) ?>
+                   <?php else: ?>
+                       <tr><td colspan='9' class='text-center'>No results found</td></tr>
+                   <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -824,123 +864,105 @@ unset($_SESSION["altercoordsindex"]);
 
 let unselectedmembers = [];
 let resultbox = document.getElementById("searchmemberdata");
-let coordData = [];
-<?php if (isset($coordinators) && !empty($coordinators)): ?>
-    coordData = <?php echo json_encode($coordinators); ?> || []; 
-<?php endif; ?>
 
-function renderCoordinators(data, sNo) {
-    let html = "";
-    let i = sNo + 1;
+// Premium Pagination State
+const ITEMS_PER_PAGE = 10;
+let currentTotalCount = <?= isset($counts) ? $counts : 0 ?>;
+let currentActivePage = <?= isset($initialindex) ? ($initialindex + 1) : 1 ?>;
+let currentSearchQuery = "";
 
-    data.forEach(value => {
-        html += `
-            <tr style="cursor: pointer;" onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')">
-               <td class='ps-4'>${i}</td>
-                    <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td class='fw-bold text-dark'>${value.Name}</td>
-                    <td>${value.Phonenumber}</td>
-                    <td>${value.District}</td>
-                    <td>${value.Taluk}</td>
-                    <td>${value.Panchayat}</td>
-                    <td class='${value.VillageNames ? '' : 'text-center'}'>
-                        ${value.VillageNames ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' + value.VillageNames + '</span>' : '-'}
-                    </td>
-                    <td onclick="event.stopPropagation();">
-                        <div class="d-flex justify-content-center align-items-center gap-2">
-                            <button onclick="showupdatecoordsmodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update</span></button>
-                            <button onclick="viewCoordinatordata('view-coordinator-data?coord_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary rounded-circle' style='width:32px;height:32px;padding:0;' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
-                        </div>
-                    </td>
-            </tr>`
-         i++;
-         });
-            
+// Render initial pagination on load
+document.addEventListener("DOMContentLoaded", function() {
+    renderPagination(currentTotalCount, currentActivePage);
+});
 
-    document.getElementById("ps-coords").innerHTML = html;
+function renderPagination(totalItems, currentPage) {
+  if (!totalItems || totalItems <= 0) {
+    document.getElementById("coordsPagination").innerHTML = "";
+    return;
+  }
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
+
+  // Prev Button
+  html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+              onclick="goToPage(${currentPage - 1})" 
+              ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-left"></i>
+           </button>`;
+
+  // Page Numbers
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                  onclick="goToPage(${i})">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span class="pagination-ellipsis">...</span>`;
+    }
+  }
+
+  // Next Button
+  html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+              onclick="goToPage(${currentPage + 1})"
+              ${currentPage === totalPages ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-right"></i>
+           </button>`;
+
+  html += `</div>`;
+  html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+  
+  document.getElementById("coordsPagination").innerHTML = html;
 }
 
-renderCoordinators(coordData.slice(0 ,10), 0);
-// <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="deletecoord('${value.Familymembershipid}','${value.Name}','${value.Taluk}')" style='width:30px;height:30px;outline:none;border:none;color:red;' class='trashcoord table-btn shadow-sm rounded-circle'><i class='fa-solid fa-trash-can'></i><span class='trashtooltip'>Trash</span></button>
-<?php 
-          if(isset($coordinators) ): ?> 
-            <?php if(count($coordinators) > 0): ?>
-            let coordCount = <?php echo json_encode(count($coordinators)); ?>;
-            let countsperpage = 10;
-            let noofpages = Math.ceil(coordCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let initialindex = 0;
-            let lastindex = 5; 
-            let pages = totalpagesarr.slice(initialindex, lastindex);
-            let paginationHtml = `<button disabled onclick='changeMembersPagesetup(0)' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></button>`;
-            
-            for(let i = 0;pages.length > i; i++) {
-              let count = countsperpage * pages[i];
-              let pageno = pages[i] + 1;
-              if(pageno == 5){
-                paginationHtml += `<button style='width:35px;height:35px;border: none;' onclick='changeMembersPagesetup(${pages[i]})' class='${i==0 ? 'active-page' : ''} active text-decoration-none bg-white d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;}
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayCoordinators(${count},${i})' class='${i==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
+function goToPage(page) {
+   const totalPages = Math.ceil(currentTotalCount / ITEMS_PER_PAGE);
+   if (page < 1 || page > totalPages) return;
+   currentActivePage = page;
+   
+   let offset = (page - 1);
+   
+   if (currentSearchQuery !== "") {
+       // Optional: implement paginated search if backend supports it. For now, backend search is list-all or list matching.
+       // We'll just call search again if it doesn't support pagination
+   }
+   
+   $.ajax({
+      type: "get",
+      url: "coordinators/changecoordinatorspagesetup",
+      data: { "initialindex": offset },
+      success: function(result) {
+          document.getElementById('ps-coords').innerHTML = result;
+          renderPagination(currentTotalCount, currentActivePage);
+      },
+      error: function(err) {
+          console.error("Error loading data.");
+      }
+   });
+}
 
-            paginationHtml += "<span>...</span>";
-            let totalcount = (totalpages - lastindex);
-            let newindex = initialindex+lastindex;
-            let validNext = totalpages - initialindex; 
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${newindex})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-            <?php else: ?>
-              let paginationHtml = "";
-              paginationHtml += "<span>No pages available</span>";
-            <?php endif; ?>
-          
-        <?php endif; ?>
-    function setUpPagination(html) {
-      document.getElementById("coordsPagination").innerHTML = html;
-    }  
+function commonSearch(coords) {
+   let searchfields = coords.value;
+   currentSearchQuery = searchfields;
+   currentActivePage = 1;
 
-    setUpPagination(paginationHtml);
-
-    function changeMembersPagesetup(nextStagedNo) {
-            let countsperpage = 10;
-            let prevlist = "";
-            let noofpages = Math.ceil(membersCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let start = nextStagedNo > noofpages ? 0 : nextStagedNo;
-            let lastindex = nextStagedNo + 5;
-            let pages = totalpagesarr.slice(nextStagedNo, lastindex);
-            prevlist = start < 5 ? 0 : nextStagedNo - 5;
-            let validPrev = totalpages - nextStagedNo;
-            let paginationHtml =  `<button ${validPrev <= 0 ? 'disabled' : ''} onclick='changeMembersPagesetup(${prevlist})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'> </i></button>`;
-
-            for(let j = 0;pages.length > j; j++) {
-              let count = countsperpage * pages[j];
-              let pageno = pages[j] + 1;
-  
-              if(pageno == 5 || pageno - start == 5){
-                paginationHtml += pageno == totalpages ? `<button style='width:35px;height:35px;border: none;' onclick='displayCoordinators(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>` : `<button onclick='changeMembersPagesetup(${pageno - 1})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='${j==0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`; }
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayCoordinators(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
-
-            paginationHtml += "<span>...</span>";
-            let totalcount = totalpages - lastindex;
-            let newindex = start + lastindex; 
-            let validNext = totalpages - start;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalpages - start <= lastindex ? totalcount : newindex})'  style='cursor:pointer;border: none;' class='text-decoration-none text-dark bg-white'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`; 
-            setUpPagination(paginationHtml);
-            let itemsPerPage = 10;
-            let itemStart = nextStagedNo * itemsPerPage;
-            let itemEnd = itemStart + itemsPerPage;
-            renderCoordinators(coordData.slice(itemStart, itemEnd), itemStart);
-          }
-
+   $.ajax({
+      type: "get",
+      url: "coordinators/searchcoordinators",
+      data: { "searchfields": searchfields },
+      dataType: "json",
+      success: (result) => {
+          document.getElementById('ps-coords').innerHTML = result.html;
+          currentTotalCount = result.total;
+          const totalBadge = document.getElementById('total-coords-count');
+          if (totalBadge) totalBadge.innerText = currentTotalCount;
+          renderPagination(currentTotalCount, currentActivePage);
+      },
+      error: (error) => {
+          document.getElementById('ps-coords').innerHTML = "<tr><td colspan='9' class='text-center'>Error fetching data</td></tr>";
+      }
+   });
+}
 
 // Mobile Menu Functions
 function openMobileMenu() {
@@ -1071,21 +1093,7 @@ function setDropdownpanchayat(taluk){
   
    
    
-        function commonSearch(coords){
-             
-            let searchfields = coords.value;
-    
-            $.ajax({
-              type:"get",
-              url:"coordinators/searchcoordinators",
-              data:{"searchfields":searchfields},
-              success:(result)=>{
-                document.getElementById('ps-coords').innerHTML = result;
-              },
-              error:(error)=>{
-                document.getElementById('ps-coords').innerHTML = "Error fetching data";
-              }
-           })};                                
+
 
    function displayCoordinators(counts,index){
         const itemsPerPage = 10;
@@ -1201,20 +1209,7 @@ function setDropdownpanchayat(taluk){
           } 
      }
 
-     function changecoordinatorsPagesetup(initialIndex){
-      
-      $.ajax({
-        type:"get",
-        url:"coordinators/changecoordinatorspagesetup",
-        data:{"initialindex":initialIndex},
-        success:function(result){
-            document.getElementById('ps-coords').innerHTML = result;
-        },
-        error:function(err){
-            document.getElementById('ps-coords').innerHTML = err;
-        }
-      });
-    }
+
 
     window.addEventListener("resize",()=>{
        document.getElementById("menu-bar").style.height = window.innerHeight+"px"; 
