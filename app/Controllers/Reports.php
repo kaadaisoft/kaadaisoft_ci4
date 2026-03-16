@@ -161,7 +161,7 @@ class Reports extends BaseController{
               window.alert('No pages are available to show.')
                 </script>";
         } 
-        $counts = $initialindex * 8;
+        $counts = $initialindex * 10;
         $this->session->set('reportscounts',$counts);
         $totalreports = $this->reportsModel->getTotalreports();
         $eventyears = $this->reportsModel->getEventyears();
@@ -191,7 +191,7 @@ class Reports extends BaseController{
               window.alert('No pages are available to show.')
                 </script>";
         } 
-        $counts = $initialindex * 8;
+        $counts = $initialindex * 10;
         $this->session->set('filterreportscounts',$counts);
         $eventname = $this->session->get("eventname");
         $status = $this->session->get("status");

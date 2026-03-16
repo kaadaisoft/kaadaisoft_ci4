@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Members list</title>
-</head>
-<body>
-    <?php if(isset($members) && isset($sno)): $i=$sno + 1;?>
+<?php if(isset($members) && isset($sno)): $i=$sno + 1;?>
                 
                 <?php foreach ($members as $key => $value): ?>
                     
@@ -32,5 +24,3 @@
                 <td colspan='7' class='text-center'>No search results</td>
                 <tr>
             <?php endif; ?>
-</body>
-</html>

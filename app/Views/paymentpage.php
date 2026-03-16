@@ -491,6 +491,61 @@
         box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
         color: #fff;
       }
+
+      /* Premium Pagination Styling */
+      .pagination-wrapper {
+        margin-top: 2rem;
+        padding-bottom: 2rem;
+      }
+      .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .pagination-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #3b82f6;
+        transform: translateY(-1px);
+      }
+      .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      }
+      .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+      }
+      .pagination-ellipsis {
+        color: #94a3b8;
+        padding: 0 4px;
+      }
+      .pagination-info {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-top: 1rem;
+        text-align: center;
+      }
   </style>
 </head>
 
@@ -897,59 +952,14 @@
             </div>
           </div>
 
-          <div class='d-flex justify-content-center container-fluid'>
-            <!-----------------pagination---------------------->
-
-            <div class="col-md-6 py-2 d-flex justify-content-around align-items-center">
-
-              <?php
-              $total_records = isset($newcounts) ? $newcounts : (isset($counts) ? $counts : 0);
-              $current_offset = isset($sno) ? $sno : 0;
-              $current_page_index = isset($initialindex) ? $initialindex : floor($current_offset / 5);
-
-              if ($total_records > 0) {
-                $limit = 5;
-                $total_pages = ceil($total_records / $limit);
-                $total_pages_array = range(0, $total_pages - 1);
-                
-                $start_index = $current_page_index;
-                $display_limit = 5;
-                $pages_to_show = array_slice($total_pages_array, $start_index, $display_limit);
-
-                // Back Arrow
-                $prev_index = ($start_index - $display_limit) < 0 ? 0 : ($start_index - $display_limit);
-                echo "<a href='changepaymentpagepagesetup?initialindex=$prev_index' style='cursor:pointer;' class='text-dark text-decoration-none'><i id='arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-
-                $j = 0;
-                foreach ($pages_to_show as $value) {
-                  $offset = $value * $limit;
-                  $pageno = $value + 1;
-                  $active_class = ($value == $current_page_index) ? 'active-page text-white' : '';
-
-                  // Every 5th page or the last page of the slice can be a full reload link for better SEO/UX
-                  if (($pageno % 5 == 0 && $pageno != $total_pages) || ($j == 4 && $pageno < $total_pages)) {
-                     echo "<a style='width:35px;height:35px;' href='changepaymentpagepagesetup?initialindex=$value' class='$active_class active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$pageno</a>";
-                  } else {
-                     echo "<button style='width:35px;height:35px;' onclick='displayPayers($offset,$j)' class='$active_class active rounded-circle'>$pageno</button>";
-                  }
-                  $j++;
-                }
-
-                if ($total_pages > ($start_index + $display_limit)) {
-                  echo "<span>...</span>";
-                  $last_page_val = $total_pages - 1;
-                  echo "<a href='changepaymentpagepagesetup?initialindex=$last_page_val' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;' class='text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$total_pages</a>";
-                }
-
-                // Next Arrow
-                $next_index = ($start_index + $display_limit) >= $total_pages ? $start_index : ($start_index + $display_limit);
-                echo "<a href='changepaymentpagepagesetup?initialindex=$next_index' style='cursor:pointer;' class='text-dark text-decoration-none'><i id='arrow' class='fa-solid fa-arrow-right-long'></i></a>";
-              }
-
-              function createarr($noofpages) { return range(0, $noofpages); }
-              ?>
+          <div class="pagination-wrapper">
+            <div id="pagination-container" class="pagination-container">
+              <!-- Pagination buttons rendered by JS -->
             </div>
-          </div><!--------------pagination-end--------------------->
+            <div id="pagination-info" class="pagination-info">
+              <!-- Showing X to Y of Z entries -->
+            </div>
+          </div>
         <div style="height: 100px;"></div> <!-- Bottom Spacer -->
         </div>
       </div><!-----------main-dashboard-end------------------------>
@@ -1027,30 +1037,79 @@
       window.location.reload();
     }
 
-    function displayPayers(counts, index) {
+    const ITEMS_PER_PAGE = 10;
+    let currentTotalCount = <?= $newcounts ?? $counts ?? 0 ?>;
+    let currentActivePage = <?= ($initialindex ?? 0) + 1 ?>;
 
-      activepage = document.querySelectorAll(".active");
-      let l = activepage.length;
-      for (let i = 0; i < l; i++) {
-        if (i == index) {
-          activepage[i].classList.add("active-page");
-        }
-        else {
-          if (activepage[i].classList.contains("active-page")) {
-            activepage[i].classList.remove("active-page")
-          }
-        }
+    $(document).ready(function() {
+      renderPagination(currentTotalCount, currentActivePage);
+    });
+
+    function renderPagination(totalCount, activePage) {
+      const container = document.getElementById('pagination-container');
+      const info = document.getElementById('pagination-info');
+      if (!container || totalCount <= 0) {
+        if (container) container.innerHTML = '';
+        if (info) info.innerHTML = totalCount === 0 ? '<div class="mt-5 text-muted">No Record Found</div>' : '';
+        return;
       }
 
+      const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+      let html = '';
+
+      html += `<button onclick="goToPage(${activePage - 1})" class="pagination-btn ${activePage === 1 ? 'disabled' : ''}" ${activePage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+               </button>`;
+
+      let startPage = Math.max(1, activePage - 2);
+      let endPage = Math.min(totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+
+      if (startPage > 1) {
+        html += `<button onclick="goToPage(1)" class="pagination-btn">1</button>`;
+        if (startPage > 2) html += `<span class="pagination-ellipsis">...</span>`;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="goToPage(${i})" class="pagination-btn ${i === activePage ? 'active' : ''}">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<span class="pagination-ellipsis">...</span>`;
+        html += `<button onclick="goToPage(${totalPages})" class="pagination-btn">${totalPages}</button>`;
+      }
+
+      html += `<button onclick="goToPage(${activePage + 1})" class="pagination-btn ${activePage === totalPages ? 'disabled' : ''}" ${activePage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+               </button>`;
+
+      container.innerHTML = html;
+
+      const start = (activePage - 1) * ITEMS_PER_PAGE + 1;
+      const end = Math.min(activePage * ITEMS_PER_PAGE, totalCount);
+      info.innerHTML = `Showing <span class="fw-bold text-dark">${start}</span> to <span class="fw-bold text-dark">${end}</span> of <span class="fw-bold text-dark">${totalCount}</span> entries`;
+    }
+
+    function goToPage(page) {
+      if (page < 1) return;
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      
       $.ajax({
         type: "get",
         url: "payments/display-payers",
-        data: { "count": counts },
+        data: { "count": offset },
         success: function (result) {
           document.getElementById('filteredmembers').innerHTML = result;
+          currentActivePage = page;
+          renderPagination(currentTotalCount, currentActivePage);
+          document.getElementById('paymentdetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
         error: function (error) {
-          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>Error loading members data. Please try again.</td></tr>";
+          console.error(error);
+          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>Error loading data.</td></tr>";
         }
       });
     }
@@ -1247,18 +1306,20 @@
      }   */
 
     function commonSearch(members) {
-
       let searchfields = members.value;
-
       $.ajax({
         type: "get",
         url: "payments/search-members",
         data: { "searchfields": searchfields },
         success: (result) => {
           document.getElementById('filteredmembers').innerHTML = result;
+          let rowCount = $('#filteredmembers tr').length;
+          currentActivePage = 1;
+          currentTotalCount = rowCount; 
+          renderPagination(currentTotalCount, currentActivePage);
         },
         error: (error) => {
-          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>No results found or error occurred.</td></tr>";
+          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>No results found.</td></tr>";
         }
       })
     };

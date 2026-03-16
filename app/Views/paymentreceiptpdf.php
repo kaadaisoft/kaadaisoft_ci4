@@ -44,7 +44,7 @@
         background: #0f172a !important;
       }
       .main-body-row { 
-        margin-top: 130px !important; /* Adjust for stacked logo and search bar on mobile */
+        margin-top: 200px !important; /* Adjust for stacked logo and search bar on mobile */
         flex-direction: column; 
         overflow: auto; 
       }
@@ -349,11 +349,20 @@
                       <td>:</td>
                       <td class="fw-bold">
                         <?php
-                        if ($receipt->bankname == "" && $receipt->banknameforcheckque == "") {
+                        $display_bank = "";
+                        if ($receipt->bankname != "") {
+                            $display_bank = $receipt->bankname;
+                        } elseif ($receipt->banknameforcheckque != "") {
+                            $display_bank = $receipt->banknameforcheckque;
+                        }
+
+                        if ($display_bank == "") {
                           echo "-";
                         } else {
-                          echo "$receipt->bankname" ? "$receipt->bankname" : "$receipt->banknameforcheckque";
-
+                          echo $display_bank;
+                          if ($display_bank == "Other Bank" && !empty($receipt->other_bank_name)) {
+                              echo " (" . $receipt->other_bank_name . ")";
+                          }
                         }
                         ?>
                       </td>

@@ -844,7 +844,7 @@
                                     <div class="col-md-3">
                                         <label for="taluks-dropdown">Taluk <span class="text-danger">*</span></label>
                                         <select id="taluks-dropdown"
-                                            onchange="toggleTalukOthersFamily(this); setDropdownpanchayat(this); validateInputfield(this)"
+                                            onchange="toggleTalukOthersMember(this); setDropdownpanchayat(this); validateInputfield(this)"
                                             class="form-select form-select-sm" name="taluk">
                                             <option value="">Select Taluk</option>
                                             <?php if (isset($taluks)):
@@ -853,7 +853,7 @@
                                                         <?= $t->taluk_name ?></option>
                                                 <?php endforeach; endif; ?>
                                         </select>
-                                        <input type="text" id="taluk_others_input_family" name="taluk_others" 
+                                        <input type="text" id="taluk_others_input_member" name="taluk_others" 
                                             class="form-control form-control-sm mt-2" 
                                             placeholder="Enter taluk name" 
                                             style="display:none;" 
@@ -864,7 +864,7 @@
                                     <div class="col-md-3">
                                         <label for="panchayat-dropdown">Panchayat <span
                                                 class="text-danger">*</span></label>
-                                        <select id="panchayat-dropdown" onchange="togglePanchayatOthersFamily(this); setDropdownVillage(this); validateInputfield(this)"
+                                        <select id="panchayat-dropdown" onchange="togglePanchayatOthersMember(this); setDropdownVillage(this); validateInputfield(this)"
                                             class="form-select form-select-sm" name="panchayat">
                                             <option value="">Select Panchayat</option>
                                             <?php if (isset($panchayats)):
@@ -873,7 +873,7 @@
                                                         <?= $p->panchayat_name ?></option>
                                                 <?php endforeach; endif; ?>
                                         </select>
-                                        <input type="text" id="panchayat_others_input_family" name="panchayat_others" 
+                                        <input type="text" id="panchayat_others_input_member" name="panchayat_others" 
                                             class="form-control form-control-sm mt-2" 
                                             placeholder="Enter panchayat name" 
                                             style="display:none;" 
@@ -884,11 +884,11 @@
                                     <div class="col-md-3">
                                         <label for="villagefield">Village Name <span
                                                 class="text-danger">*</span></label>
-                                        <select id="villagefield" onchange="toggleVillageOthersFamily(this); validateInputfield(this)"
+                                        <select id="villagefield" onchange="toggleVillageOthersMember(this); validateInputfield(this)"
                                             class="form-select form-select-sm" name="village">
                                             <option value="<?= isset($member) ? $member->Village : '' ?>"><?= (isset($member) && $member->Village) ? $member->Village : 'Select Village' ?></option>
                                         </select>
-                                        <input type="text" id="village_others_input_family" name="village_others" 
+                                        <input type="text" id="village_others_input_member" name="village_others" 
                                             class="form-control form-control-sm mt-2" 
                                             placeholder="Enter village name" 
                                             style="display:none;" 
@@ -933,13 +933,15 @@
                                         <span class="text-danger">*</span>
                                     </h5>
 
-                                    <button type="button" id="btn_same_as_native"
-                                        class="btn btn-success btn-sm disabled" disabled onclick="copyNativeAddress()" style="display: none;">
-                                        Same as Native Address
-                                    </button>
+                                    <div id="same_as_native_container" style="display: none;">
+                                        <button type="button" id="btn_same_as_native"
+                                            class="btn btn-success btn-sm" onclick="copyNativeAddress()">
+                                            Same as Native Address
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <!-- India / NRI toggle -->
+                                <!-- TN / Other / NRI toggle -->
                                 <div class="mb-3">
                                     <label class="d-block">Current Address Type <span
                                             class="text-danger">*</span></label>
@@ -966,7 +968,6 @@
                                 <!-- INDIA CURRENT ADDRESS BLOCK -->
                                 <div id="cur_india_block" style="display:none;">
                                     <div class="row g-3">
-                                        <!-- use your existing India current address fields -->
                                         <div class="col-md-3" id="cur_state_container" style="display: none;">
                                             <label for="cur_states_dropdown">State <span
                                                     class="text-danger">*</span></label>
@@ -999,11 +1000,11 @@
                                             <label for="cur_taluks_dropdown">Taluk <span
                                                     class="text-danger">*</span></label>
                                             <select id="cur_taluks_dropdown"
-                                                onchange="toggleTalukOthersCurrentFamily(this); setDropdownpanchayatCurrent(this); validateInputfield(this)"
+                                                onchange="toggleTalukOthersCurrentMember(this); setDropdownpanchayatCurrent(this); validateInputfield(this)"
                                                 class="form-select form-select-sm" name="cur_taluk">
                                                 <option value="">Select Taluk</option>
                                             </select>
-                                            <input type="text" id="cur_taluk_others_input_family" name="cur_taluk_others" 
+                                            <input type="text" id="cur_taluk_others_input_member" name="cur_taluk_others" 
                                                 class="form-control form-control-sm mt-2" 
                                                 placeholder="Enter taluk name" 
                                                 style="display:none;" 
@@ -1014,11 +1015,11 @@
                                         <div class="col-md-3">
                                             <label for="cur_panchayat_dropdown">Panchayat <span
                                                     class="text-danger">*</span></label>
-                                            <select id="cur_panchayat_dropdown" onchange="togglePanchayatOthersCurrentFamily(this); setDropdownVillageCurrent(this); validateInputfield(this)"
+                                            <select id="cur_panchayat_dropdown" onchange="togglePanchayatOthersCurrentMember(this); setDropdownVillageCurrent(this); validateInputfield(this)"
                                                 class="form-select form-select-sm" name="cur_panchayat">
                                                 <option value="">Select Panchayat</option>
                                             </select>
-                                            <input type="text" id="cur_panchayat_others_input_family" name="cur_panchayat_others" 
+                                            <input type="text" id="cur_panchayat_others_input_member" name="cur_panchayat_others" 
                                                 class="form-control form-control-sm mt-2" 
                                                 placeholder="Enter panchayat name" 
                                                 style="display:none;" 
@@ -1029,11 +1030,11 @@
                                             <div class="col-md-3">
                                                 <label for="cur_villagefield">Village Name <span
                                                         class="text-danger">*</span></label>
-                                                <select id="cur_villagefield" onchange="toggleVillageOthersCurrentFamily(this); validateInputfield(this)"
+                                                <select id="cur_villagefield" onchange="toggleVillageOthersCurrentMember(this); validateInputfield(this)"
                                                     class="form-select form-select-sm" name="cur_village">
                                                     <option value="">Select Village</option>
                                                 </select>
-                                                <input type="text" id="cur_village_others_input_family" name="cur_village_others" 
+                                                <input type="text" id="cur_village_others_input_member" name="cur_village_others" 
                                                     class="form-control form-control-sm mt-2" 
                                                     placeholder="Enter village name" 
                                                     style="display:none;" 
@@ -1069,7 +1070,7 @@
                                 </div>
 
                                 <!-- NRI CURRENT ADDRESS BLOCK -->
-                                <div id="cur_nri_block" style="display:none;">
+                                <div id="cur_nri_block" style="display:<?= (isset($member) && ($member->Curaddresstype == 'NRI' || $member->Curaddresstype == 'OtherState')) ? 'block' : 'none' ?>;">
                                     <div class="row g-3" id="cur_nri_row">
                                         <div class="col-md-3" id="cur_nri_country_container">
                                             <label for="cur_nri_country">Country <span
@@ -1104,15 +1105,14 @@
                                         <div class="col-md-3">
                                             <label for="cur_nri_zip">Zip / Postal Code <span
                                                     class="text-danger">*</span></label>
-                                            <input id="cur_nri_zip" name="cur_nri_zip"
-                                                class="form-control form-control-sm" type="text"
-                                                oninput="this.value = this.value.replace(/[^a-zA-Z0-9 -]/g, '').slice(0, 12)"
-                                                onkeyup="validateInputfield(this)">
+                                            <input id="cur_nri_zip" name="cur_nri_zip" class="form-control form-control-sm"
+                                                type="text" onkeyup="validateInputfield(this)"
+                                                oninput="this.value = this.value.replace(/[^a-zA-Z0-9 -]/g, '').slice(0, 12)">
                                             <small id="cur_nri_ziperror" class="text-danger"></small>
                                         </div>
                                         <div class="col-md-12">
-                                            <label for="cur_nri_fulladdress">Full Address (House no, street, area)
-                                                <span class="text-danger">*</span></label>
+                                            <label for="cur_nri_fulladdress">Full Address <span
+                                                    class="text-danger">*</span></label>
                                             <textarea id="cur_nri_fulladdress" name="cur_nri_fulladdress"
                                                 class="form-control form-control-sm" rows="3"
                                                 onkeyup="validateInputfield(this)"></textarea>
@@ -1120,7 +1120,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
@@ -1389,10 +1388,11 @@
                 document.getElementById("cur_taluks_dropdown").innerHTML = '<option value="">Select Taluk</option>';
                 document.getElementById("cur_panchayat_dropdown").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_villagefield").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_family").style.display = 'none';
-                document.getElementById("cur_village_others_input_family").value = '';
+                document.getElementById("cur_village_others_input_member").style.display = 'none';
+                document.getElementById("cur_village_others_input_member").value = '';
             }
 
+            if (!state_id) return;
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
@@ -1419,8 +1419,8 @@
                 document.getElementById("cur_taluks_dropdown").innerHTML = '<option value="">Select Taluk</option>';
                 document.getElementById("cur_panchayat_dropdown").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_villagefield").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_family").style.display = 'none';
-                document.getElementById("cur_village_others_input_family").value = '';
+                document.getElementById("cur_village_others_input_member").style.display = 'none';
+                document.getElementById("cur_village_others_input_member").value = '';
             }
 
             if (!district_name) return;
@@ -1431,7 +1431,7 @@
                     talukDropdown.value = selectTaluk;
                     setDropdownpanchayatCurrent(talukDropdown, selectPanchayat, selectVillage);
                 }
-                toggleTalukOthersCurrentFamily(talukDropdown);
+                toggleTalukOthersCurrentMember(talukDropdown);
                 return;
             }
             $.ajax({
@@ -1446,7 +1446,7 @@
                         talukDropdown.value = selectTaluk;
                         setDropdownpanchayatCurrent(talukDropdown, selectPanchayat, selectVillage);
                     }
-                    toggleTalukOthersCurrentFamily(talukDropdown);
+                    toggleTalukOthersCurrentMember(talukDropdown);
                 },
                 error: function () {
                     document.getElementById("cur_taluks_dropdown").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
@@ -1454,8 +1454,8 @@
             });
         }
 
-        function toggleTalukOthersCurrentFamily(selectEl) {
-            const othersInput = document.getElementById('cur_taluk_others_input_family');
+        function toggleTalukOthersCurrentMember(selectEl) {
+            const othersInput = document.getElementById('cur_taluk_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
@@ -1475,8 +1475,8 @@
             if (!selectPanchayat) {
                 document.getElementById("cur_panchayat_dropdown").innerHTML = '<option value="">Select Panchayat</option>';
                 document.getElementById("cur_villagefield").innerHTML = '<option value="">Select Village</option>';
-                document.getElementById("cur_village_others_input_family").style.display = 'none';
-                document.getElementById("cur_village_others_input_family").value = '';
+                document.getElementById("cur_village_others_input_member").style.display = 'none';
+                document.getElementById("cur_village_others_input_member").value = '';
             }
 
             if (!taluk_name) return;
@@ -1487,7 +1487,7 @@
                     panchayatDropdown.value = selectPanchayat;
                     setDropdownVillageCurrent(panchayatDropdown, selectVillage);
                 }
-                togglePanchayatOthersCurrentFamily(panchayatDropdown);
+                togglePanchayatOthersCurrentMember(panchayatDropdown);
                 return;
             }
 
@@ -1503,7 +1503,7 @@
                         panchayatDropdown.value = selectPanchayat;
                         setDropdownVillageCurrent(panchayatDropdown, selectVillage);
                     }
-                    togglePanchayatOthersCurrentFamily(panchayatDropdown);
+                    togglePanchayatOthersCurrentMember(panchayatDropdown);
                 },
                 error: function () {
                     document.getElementById("cur_panchayat_dropdown").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
@@ -1511,8 +1511,8 @@
             });
         }
 
-        function togglePanchayatOthersCurrentFamily(selectEl) {
-            const othersInput = document.getElementById('cur_panchayat_others_input_family');
+        function togglePanchayatOthersCurrentMember(selectEl) {
+            const othersInput = document.getElementById('cur_panchayat_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
@@ -1528,8 +1528,8 @@
         function setDropdownVillageCurrent(panchayat, selectVillage = null) {
             let panchayat_name = panchayat.value;
 
-            document.getElementById("cur_village_others_input_family").style.display = 'none';
-            document.getElementById("cur_village_others_input_family").value = '';
+            document.getElementById("cur_village_others_input_member").style.display = 'none';
+            document.getElementById("cur_village_others_input_member").value = '';
 
             $.ajax({
                 type: "get",
@@ -1539,10 +1539,8 @@
                     document.getElementById("cur_villagefield").innerHTML = result;
                     if (selectVillage) {
                         document.getElementById("cur_villagefield").value = selectVillage;
-                         // Handle 'Other' case if selectedVillage is not in list? 
-                         // For now assuming it matches.
                          if (selectVillage === "Other") {
-                             toggleVillageOthersCurrentFamily(document.getElementById("cur_villagefield"));
+                             toggleVillageOthersCurrentMember(document.getElementById("cur_villagefield"));
                          }
                     }
                 },
@@ -2267,16 +2265,16 @@
                     if (n_taluk.value === 'Others') {
                         c_taluk.innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                         c_taluk.value = 'Others';
-                        toggleTalukOthersCurrentFamily(c_taluk);
-                        document.getElementById('cur_taluk_others_input_family').value = document.getElementById('taluk_others_input_family').value;
+                        toggleTalukOthersCurrentMember(c_taluk);
+                        document.getElementById('cur_taluk_others_input_member').value = document.getElementById('taluk_others_input_member').value;
                         validateInputfield(c_taluk);
 
                         // 4. Panchayat (Must be Others too if Taluk is Others)
                         c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                         c_panchayat.value = n_panchayat.value; // Likely 'Others'
-                        togglePanchayatOthersCurrentFamily(c_panchayat);
+                        togglePanchayatOthersCurrentMember(c_panchayat);
                         if (n_panchayat.value === 'Others') {
-                            document.getElementById('cur_panchayat_others_input_family').value = document.getElementById('panchayat_others_input_family').value;
+                            document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
                         }
                         validateInputfield(c_panchayat);
 
@@ -2284,12 +2282,12 @@
                         let vName = n_village.value;
                         let vManual = '';
                         if (vName === 'Others') {
-                            vManual = document.getElementById('village_others_input_family').value;
+                            vManual = document.getElementById('village_others_input_member').value;
                         }
                         setDropdownVillageCurrent(c_panchayat, vName);
                         setTimeout(() => {
                             if (vName === 'Others') {
-                                document.getElementById('cur_village_others_input_family').value = vManual;
+                                document.getElementById('cur_village_others_input_member').value = vManual;
                             }
                             validateInputfield(c_village);
                         }, 500);
@@ -2302,9 +2300,9 @@
                                 c_taluk.innerHTML = resultTaluk;
                                 c_taluk.innerHTML += '<option value="Others">Others</option>';
                                 c_taluk.value = n_taluk.value;
-                                toggleTalukOthersCurrentFamily(c_taluk);
+                                toggleTalukOthersCurrentMember(c_taluk);
                                 if (n_taluk.value === 'Others') {
-                                    document.getElementById('cur_taluk_others_input_family').value = document.getElementById('taluk_others_input_family').value;
+                                    document.getElementById('cur_taluk_others_input_member').value = document.getElementById('taluk_others_input_member').value;
                                 }
                                 validateInputfield(c_taluk);
 
@@ -2312,20 +2310,20 @@
                                 if (n_panchayat.value === 'Others') {
                                     c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                                     c_panchayat.value = 'Others';
-                                    togglePanchayatOthersCurrentFamily(c_panchayat);
-                                    document.getElementById('cur_panchayat_others_input_family').value = document.getElementById('panchayat_others_input_family').value;
+                                    togglePanchayatOthersCurrentMember(c_panchayat);
+                                    document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
                                     validateInputfield(c_panchayat);
                                     
                                     // 5. Village
                                     let vName = n_village.value;
                                     let vManual = '';
                                     if (vName === 'Others') {
-                                        vManual = document.getElementById('village_others_input_family').value;
+                                        vManual = document.getElementById('village_others_input_member').value;
                                     }
                                     setDropdownVillageCurrent(c_panchayat, vName);
                                     setTimeout(() => {
                                         if (vName === 'Others') {
-                                            document.getElementById('cur_village_others_input_family').value = vManual;
+                                            document.getElementById('cur_village_others_input_member').value = vManual;
                                         }
                                         validateInputfield(c_village);
                                     }, 500);
@@ -2338,9 +2336,9 @@
                                             c_panchayat.innerHTML = resultPanchayat;
                                             c_panchayat.innerHTML += '<option value="Others">Others</option>';
                                             c_panchayat.value = n_panchayat.value;
-                                            togglePanchayatOthersCurrentFamily(c_panchayat);
+                                            togglePanchayatOthersCurrentMember(c_panchayat);
                                             if (n_panchayat.value === 'Others') {
-                                                document.getElementById('cur_panchayat_others_input_family').value = document.getElementById('panchayat_others_input_family').value;
+                                                document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
                                             }
                                             validateInputfield(c_panchayat);
 
@@ -2348,12 +2346,12 @@
                                             let vName = n_village.value;
                                             let vManual = '';
                                             if (vName === 'Others') {
-                                                vManual = document.getElementById('village_others_input_family').value;
+                                                vManual = document.getElementById('village_others_input_member').value;
                                             }
                                             setDropdownVillageCurrent(c_panchayat, vName);
                                             setTimeout(() => {
                                                 if (vName === 'Others') {
-                                                    document.getElementById('cur_village_others_input_family').value = vManual;
+                                                    document.getElementById('cur_village_others_input_member').value = vManual;
                                                 }
                                                 validateInputfield(c_village);
                                             }, 500);
@@ -2602,6 +2600,9 @@
                     sameBtn.style.display = 'none';
                 }
 
+                // Clear any existing NRI data before setting India defaults
+                clearCurrentNriAddress();
+
                 // Set Country to India and Load States
                 let countrySelect = document.getElementById("cur_nri_country");
                 if (countrySelect) {
@@ -2621,6 +2622,9 @@
                     sameBtn.style.display = 'none';
                 }
 
+                // Clear NRI data for a fresh NRI form
+                clearCurrentNriAddress();
+                
                 clearCurrentIndiaAddress();
             }
         }
@@ -2664,6 +2668,8 @@
                 }
             }
 
+            toggleCurrentAddressType();
+
             // Initially populate if already selected
             const p1 = document.getElementById('panchayat-dropdown');
             if(p1 && p1.value) setDropdownVillage(p1, '<?= isset($member)?$member->Village:'' ?>');
@@ -2705,17 +2711,17 @@
                     }
                     
                     // Trigger toggle to show/hide the manual input correctly
-                    toggleVillageOthersFamily(villageSelect, selectedVillage);
+                    toggleVillageOthersMember(villageSelect, selectedVillage);
                 },
                 error: function() {
                     villageSelect.innerHTML = '<option value="">Select Village</option><option value="Others">Others</option>';
-                    toggleVillageOthersFamily(villageSelect);
+                    toggleVillageOthersMember(villageSelect);
                 }
             });
         }
 
-        function toggleVillageOthersFamily(selectEl, manualValue = '') {
-            const othersInput = document.getElementById('village_others_input_family');
+        function toggleVillageOthersMember(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('village_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 othersInput.setAttribute('required', 'required');
@@ -2765,17 +2771,17 @@
                     }
                     
                     // Trigger toggle to show/hide the manual input correctly
-                    toggleVillageOthersCurrentFamily(villageSelect, selectedVillage);
+                    toggleVillageOthersCurrentMember(villageSelect, selectedVillage);
                 },
                 error: function() {
                     villageSelect.innerHTML = '<option value="">Select Village</option><option value="Others">Others</option>';
-                    toggleVillageOthersCurrentFamily(villageSelect); 
+                    toggleVillageOthersCurrentMember(villageSelect); 
                 }
             });
         }
 
-        function toggleVillageOthersCurrentFamily(selectEl, manualValue = '') {
-            const othersInput = document.getElementById('cur_village_others_input_family');
+        function toggleVillageOthersCurrentMember(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('cur_village_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 othersInput.setAttribute('required', 'required');

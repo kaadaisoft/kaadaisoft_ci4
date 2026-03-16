@@ -256,6 +256,47 @@
     .btn-approve-premium:hover { background: #16a34a; }
     .btn-reject-premium { background: #fef2f2; color: #dc2626; }
     .btn-reject-premium:hover { background: #dc2626; }
+
+    /* Premium Pagination Styles */
+    .pagination-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        transform: translateY(-1px);
+    }
+    .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f1f5f9;
+    }
+    .pagination-ellipsis {
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0 4px;
+    }
     </style>
 </head>
 
@@ -301,44 +342,13 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php if (!empty($requests)): ?>
-                                <?php foreach ($requests as $index => $req): ?>
-                                    <tr onclick='viewRequest(<?= json_encode($req) ?>)'>
-                                        <td class="fw-bold text-muted"><?= $index + 1 ?></td>
-                                        <td class="fw-semibold text-primary"><?= $req->MemberName ?></td>
-                                        <td><span class="badge bg-light text-dark border"><?= $req->Familymembershipid ?></span></td>
-                                        <td class="text-secondary"><?= date('d-M-Y H:i', strtotime($req->created_at)) ?></td>
-                                        <td class="text-center" onclick="event.stopPropagation();">
-                                            <button class="btn-action-premium btn-view-premium"
-                                                onclick='viewRequest(<?= json_encode($req) ?>)' title="View Diff">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </button>
-                                            <form action="<?= base_url('approve-member-update') ?>" method="POST"
-                                                class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
-                                                <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit" class="btn-action-premium btn-approve-premium" title="Approve">
-                                                    <i class="fa-solid fa-check"></i>
-                                                </button>
-                                            </form>
-                                            <form action="<?= base_url('reject-member-update') ?>" method="POST"
-                                                class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
-                                                <input type="hidden" name="request_id" value="<?= $req->id ?>">
-                                                <button type="submit" class="btn-action-premium btn-reject-premium" title="Reject">
-                                                    <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">No pending update requests found.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
+                        <tbody id="requests_body">
+                            <!-- JS Rendered -->
                         </tbody>
                     </table>
+                </div>
+                <div class='d-flex justify-content-center container-fluid mt-3'>
+                    <div id="requestsPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center"></div>
                 </div>
             </div>
         </div>
@@ -455,6 +465,126 @@
 
 
     <script>
+        let requestsData = [];
+        <?php if (!empty($requests)): ?>
+            requestsData = <?= json_encode($requests) ?> || [];
+        <?php endif; ?>
+
+        const reqItemsPerPage = 10;
+        let currentReqPage = 1;
+
+        function formatDate(dateStr) {
+            let options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+            let d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            return d.toLocaleDateString('en-GB', options).replace(',', '');
+        }
+
+        function renderRequests(data, startIndex) {
+            let html = "";
+            let i = startIndex + 1;
+
+            if (data.length === 0) {
+                document.getElementById("requests_body").innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">No pending update requests found.</td></tr>`;
+                return;
+            }
+
+            data.forEach(req => {
+                let encodedReq = JSON.stringify(req).replace(/'/g, "&#39;");
+                let dateDisplay = formatDate(req.created_at);
+                
+                html += `
+                    <tr onclick='viewRequest(${encodedReq})'>
+                        <td class="fw-bold text-muted">${i}</td>
+                        <td class="fw-semibold text-primary">${req.MemberName}</td>
+                        <td><span class="badge bg-light text-dark border">${req.Familymembershipid}</span></td>
+                        <td class="text-secondary">${dateDisplay}</td>
+                        <td class="text-center" onclick="event.stopPropagation();">
+                            <button class="btn-action-premium btn-view-premium"
+                                onclick='viewRequest(${encodedReq})' title="View Diff">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <form action="<?= base_url('approve-member-update') ?>" method="POST"
+                                class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
+                                <input type="hidden" name="request_id" value="${req.id}">
+                                <button type="submit" class="btn-action-premium btn-approve-premium" title="Approve">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </form>
+                            <form action="<?= base_url('reject-member-update') ?>" method="POST"
+                                class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
+                                <input type="hidden" name="request_id" value="${req.id}">
+                                <button type="submit" class="btn-action-premium btn-reject-premium" title="Reject">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+                i++;
+            });
+
+            document.getElementById("requests_body").innerHTML = html;
+        }
+
+        function renderReqPagination(totalItems, currentPage) {
+            let html = "";
+            let pgCon = document.getElementById("requestsPagination");
+            if (!totalItems || totalItems <= 0) {
+                if (pgCon) pgCon.innerHTML = "";
+                return;
+            }
+            
+            const totalPages = Math.ceil(totalItems / reqItemsPerPage);
+            
+            html += `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
+
+            html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                        onclick="goToReqPage(${currentPage - 1})" 
+                        ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fa-solid fa-chevron-left"></i>
+                     </button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                                onclick="goToReqPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+
+            html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                        onclick="goToReqPage(${currentPage + 1})"
+                        ${currentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fa-solid fa-chevron-right"></i>
+                     </button>`;
+
+            html += `</div>`;
+            html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+            
+            if (pgCon) pgCon.innerHTML = html;
+        }
+
+        function goToReqPage(page) {
+            if (!requestsData || requestsData.length === 0) return;
+            
+            const totalPages = Math.ceil(requestsData.length / reqItemsPerPage);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentReqPage = page;
+            
+            let offset = (page - 1) * reqItemsPerPage;
+            renderRequests(requestsData.slice(offset, offset + reqItemsPerPage), offset);
+            renderReqPagination(requestsData.length, currentReqPage);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                goToReqPage(1);
+            }, 100);
+        });
+
         function viewRequest(req) {
             $('#modal_member_name').text(req.MemberName);
             $('#modal_member_id').text(req.Familymembershipid);

@@ -36,7 +36,7 @@ class ReportsModel extends Model
         // So `getreports` MUST support offset.
         // I will add offset support to `getreports`.
         
-        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 8";
+        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10";
         if ($counts > 0) {
             $sql .= " OFFSET $counts";
         }
@@ -46,7 +46,7 @@ class ReportsModel extends Model
 
     public function getReportswithlimit($counts)
     {
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 8 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10 OFFSET $counts");
         return $query->getResultArray();
     }
 
@@ -98,98 +98,56 @@ class ReportsModel extends Model
 
     public function getMembersHistory($eventid, $status)
     {
-        // $eventid is required.
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
-        $escapedEventId = $this->db->escape($eventid);
+        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+        $escapedEventId = (int)$eventid;
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
-        if ($status == 'All') {
-            $builder->limit(8);
-            return $builder->get()->getResultArray();
+        if ($status == 'Paid') {
+            $builder->where("km.Familymembershipid IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
         } else if ($status == 'Pending') {
-            // (pr.Familymembershipid IS NULL OR pr.status = '$status')
-            $builder->groupStart()
-                    ->where('pr.Familymembershipid IS NULL')
-                    ->orWhere('pr.status', $status)
-                    ->groupEnd();
-            $builder->limit(8);
-            return $builder->get()->getResultArray();
-        } else {
-            // Published/Paid
-            $builder->where('pr.status', $status);
-            $builder->limit(8);
-            return $builder->get()->getResultArray();
+            $builder->where("km.Familymembershipid NOT IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
         }
+
+        $builder->where('km.MemberRole', 'Head');
+        $builder->groupBy('km.Familymembershipid');
+        $builder->limit(10);
+        return $builder->get()->getResultArray();
     }
 
     public function getTotalmembershistory($eventid, $status)
     {
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Name, km.Role, pr.paymentdate, pr.paidamount, pr.Mobile, pr.Taxamount, pr.balanceamount, pr.paymentdate');
-        $escapedEventId = $this->db->escape($eventid);
+        $builder->select('km.Familymembershipid');
+        $escapedEventId = (int)$eventid;
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
-        if ($status == "Pending") {
-            $builder->groupStart()
-                    ->where('pr.Familymembershipid IS NULL')
-                    ->orWhere('pr.status', $status)
-                    ->groupEnd();
-        } elseif ($status == "Paid") {
-             $builder->where('pr.status', $status);
-        } else {
-             // "All" or other? Original logic for 'else' was: WHERE pr.Familymembershipid IS NULL (Wait, original lines 101-104: WHERE pr.Familymembershipid IS NULL).
-             // But line 91 status == "Pending" handles IS NULL OR status=Pending.
-             // Line 101 status is not Pending or Paid. Typically this means "Unpaid" strictly? 
-             // Original: "WHERE pr.Familymembershipid IS NULL" means never paid anything.
-             // I'll stick to original logic order.
-             $builder->where('pr.Familymembershipid IS NULL');
+        if ($status == 'Paid') {
+            $builder->where("km.Familymembershipid IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
+        } else if ($status == 'Pending') {
+            $builder->where("km.Familymembershipid NOT IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
         }
-        
+
+        $builder->where('km.MemberRole', 'Head');
+        $builder->groupBy('km.Familymembershipid');
         return $builder->get()->getResultArray();
     }
     
     public function getFilteredeventreports($eventname, $status, $counts) {
-         // This method was commented out in my reading of ReportsModel but Controller `Reports.php` line 189 calls `getFilteredeventreports`.
-         // I MUST implement it.
-         // Wait, line 133 in ReportsModel was commented.
-         // Controller calls it.
-         // $eventname is likely $eventid here? Controller passes $eventname ($this->session->userdata("eventname")) which was set to $eventid in `reportFilterlist`.
-         // So $eventname is ID.
-         // Wait, query in commented code: `SELECT * FROM $eventname ...`
-         // It implies dynamic table name? Or maybe `eventname` variable holds table name?
-         // In `paymentreceipts` join queries, `pr.eventname` is a column.
-         // But `reportFilterlist` (controller line 338) sets `eventname` = `eventid`.
-         // So it passes ID.
-         // But `getFilteredeventreports` original commented code used `FROM $eventname`.
-         // This suggests originally events might have been separate tables?
-         // HISTORY: The active code `getMembersHistory` joins `kaadaimembers` and `paymentreceipts`. 
-         // `getFilteredeventreports` seems to be legacy or incorrect in the commented block.
-         // BUT `Reports.php` calls it!
-         // `Reports.php` line 189: `$reports = $this->ReportsModel->getFilteredeventreports($eventname,$status,$counts);`
-         // If I don't implement it, it will crash.
-         // I should implement it using `getMembersHistory` logic with Offset.
-         
-         // Re-implement getFilteredeventreports using logic similar to getMembersHistory but with OFFSET.
-         
          $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.Mobile, pr.Taxamount, pr.paidamount, pr.balanceamount AS balancemount, pr.paymentdate');
-         $escapedEventId = $this->db->escape($eventname);
+         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+         $escapedEventId = (int)$eventname;
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
-         if ($status == 'All') {
-            // No status filter
+         if ($status == 'Paid') {
+            $builder->where("km.Familymembershipid IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
          } else if ($status == 'Pending') {
-            $builder->groupStart()
-                    ->where('pr.Familymembershipid IS NULL')
-                    ->orWhere('pr.status', $status)
-                    ->groupEnd();
-         } else {
-             // Paid
-             $builder->where('pr.status', $status);
+            $builder->where("km.Familymembershipid NOT IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
          }
          
-         $builder->limit(8, $counts); // limit 8 offset $counts
+         $builder->where('km.MemberRole', 'Head');
+         $builder->groupBy('km.Familymembershipid');
+         $builder->limit(10, $counts); // limit 10 offset $counts
          return $builder->get()->getResultArray();
     }
     
@@ -201,11 +159,10 @@ class ReportsModel extends Model
     }
     
     public function getFilteredReportsSearchfields($searchfields, $eventname, $status) {
-         // Controller line 107 calls this.
-         // Implement search with event filter.
          $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
-         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = '$eventname'", 'left');
+         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+         $escapedEventId = (int)$eventname;
+         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
          
          $builder->groupStart()
                 ->like('km.Name', $searchfields)
@@ -214,15 +171,14 @@ class ReportsModel extends Model
                 ->orLike('km.Phonenumber', $searchfields)
                 ->groupEnd();
 
-         if ($status == 'Pending') {
-             $builder->groupStart()
-                     ->where('pr.Familymembershipid IS NULL')
-                     ->orWhere('pr.status', 'Pending') 
-                     ->groupEnd();
-         } elseif ($status == 'Paid') {
-             $builder->where('pr.status', 'Paid');
+         if ($status == 'Paid') {
+            $builder->where("km.Familymembershipid IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
+         } elseif ($status == 'Pending') {
+            $builder->where("km.Familymembershipid NOT IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
          }
          
+         $builder->where('km.MemberRole', 'Head');
+         $builder->groupBy('km.Familymembershipid');
          return $builder->get()->getResultArray();
     }
     
@@ -236,10 +192,10 @@ class ReportsModel extends Model
         if (empty($eventid)) {
             return [];
         }
-        $escapedEventId = $this->db->escape($eventid);
+        $escapedEventId = (int)$eventid;
         
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, pr.paymentdate, pr.paidamount, pr.Mobile, pr.MemberTaluk, pr.eventid, pr.eventname, pr.balanceamount');
+        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Taluk, km.Panchayat, km.Village, MAX(pr.Taxamount) AS EventMoney, SUM(pr.paidamount) AS PaidCash, MIN(pr.balanceamount) AS Pending, MAX(pr.paymentdate) AS LastPaidDate');
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if (!empty($talukname)) {
@@ -252,17 +208,14 @@ class ReportsModel extends Model
             $builder->where('km.Village', $villagename);
         }
 
-        if (strtolower($status) != 'all') {
-            if (strtolower($status) == 'paid') {
-                $builder->where('pr.status', 'Paid');
-            } else {
-                $builder->groupStart()
-                        ->where('pr.Familymembershipid IS NULL')
-                        ->orWhere('pr.status', $status)
-                        ->groupEnd();
-            }
+        if (strtolower($status) == 'paid') {
+            $builder->where("km.Familymembershipid IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
+        } else if (strtolower($status) == 'pending') {
+            $builder->where("km.Familymembershipid NOT IN (SELECT Familymembershipid FROM paymentreceipts WHERE eventid = $escapedEventId AND status = 'Paid')");
         }
         
+        $builder->where('km.MemberRole', 'Head');
+        $builder->groupBy('km.Familymembershipid');
         return $builder->get()->getResultArray();
     }
 

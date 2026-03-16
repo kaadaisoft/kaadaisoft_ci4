@@ -167,6 +167,73 @@
          background-color: #6495ED;
       }
 
+    /* Premium Pagination Styling */
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        padding: 15px 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-top: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .pagination-info {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    #membersPagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .page-btn {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #475569;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: #f8faff;
+        transform: translateY(-2px);
+    }
+
+    .page-btn.active {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff !important;
+        border: none;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-ellipsis {
+        color: #94a3b8;
+        padding: 0 4px;
+        font-weight: bold;
+    }
+
       #members-form div>input,
       select {
          border-radius: 50px;
@@ -572,7 +639,7 @@
               flex-direction: column;
           }
           .main-body-row { 
-              margin-top: 130px !important; /* Adjust for stacked top bar elements */
+              margin-top: 200px !important; /* Adjust for stacked top bar elements */
               flex-direction: column; 
               overflow: auto; 
           }
@@ -715,6 +782,19 @@
                       </div>
 
                       <div class="row mb-3">
+                         <!-- Specific Search (Name, ID, Mobile, Email, Aadhar) -->
+                         <div class="col-md-12 mb-3">
+                            <label class="small fw-bold mb-1 text-muted" for="advanced-search-input">Specific Search (Name, Membership ID, Mobile, Email, Aadhar):</label>
+                            <div class="input-group input-group-sm shadow-sm border rounded" style="background: white;">
+                               <span class="input-group-text bg-white border-0"><i class="fas fa-search text-warning"></i></span>
+                               <input type="text" id="advanced-search-input" onkeyup="commonSearch(this)" 
+                                  class="form-control border-0" placeholder="Type Name, Email, Mobile, Aadhar or Membership ID...">
+                            </div>
+                            <small class="text-muted mt-1 d-block"><i class="fas fa-info-circle me-1"></i>Search by Name, Email, Mobile, Aadhar Card, or Membership ID directly.</small>
+                         </div>
+                      </div>
+
+                      <div class="row mb-3">
                          <!-- Blood Group -->
                          <div class="col-md-4">
                             <label class="small fw-bold mb-1 text-muted" for="bloodgroup-dropdown">Blood Group:</label>
@@ -848,12 +928,10 @@
 
 
             <div class="container-fluid pt-3 px-0 px-md-4 memberpadd"><!----------------table-------->
-               <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;" id="memberTotalCountHolder">Total Members: <span class="badge bg-primary rounded-pill"><?php echo count($members) ?></span></div>
+            <div class="mb-2 fw-bold" style="color: #444; font-size: 1.1rem;" id="memberTotalCountHolder">Total Members: <span class="badge bg-primary rounded-pill"><?php echo $counts ?></span></div>
                <div class="table-responsive">
                   <table class="table custom-table">
-                     <thead <?php if (count($members) == 0) {
-                        echo "hidden";
-                     } ?>>
+                     <thead>
                         <tr>
                            <th>S.No</th>
                            <th>User ID</th>
@@ -873,12 +951,15 @@
 
             </div> <!----------------table-end------->
 
-            <div class='d-flex justify-content-center container-fluid'>
+            <div class='container-fluid px-0 px-md-4 mb-4'>
                <!-----------------pagination---------------------->
-
-               <div id="membersPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center">
-
-
+               <div class="pagination-container">
+                  <div class="pagination-info" id="paginationInfo">
+                     Showing 0 to 0 of 0 entries
+                  </div>
+                  <div id="membersPagination">
+                     <!-- Pagination buttons will be injected here -->
+                  </div>
                </div>
             </div><!--------------pagination-end--------------------->
 
@@ -1222,126 +1303,108 @@
       reg_form_section.style.height = `${reg_form_height}px`;
       let showaddmember = document.getElementById("members-modal-hide");
       let showupdatemember = document.getElementById("updatemember-modal-hide");
-      let membersData = [];
-      <?php if (isset($members) && !empty($members)): ?>
-         membersData = <?php echo json_encode($members); ?> || [];
-      <?php endif; ?>
-
-      function renderMembers(data, sNo) {
-         let html = "";
-         let i = sNo + 1;
-
-         data.forEach(value => {
-            html += `
-            <tr style="cursor: pointer;" onclick="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')">
-                    <td class='ps-4'>${i}</td>
-                    <td class='text-primary fw-bold'>${value.Familymembershipid}</td>
-                    <td class='fw-bold text-dark'>${value.Name}</td>
-                    <td>${value.Phonenumber}</td>
-                    <td>${value.District}</td>
-                    <td>${value.Taluk}</td>
-                    <td>${value.Panchayat}</td>
-                    <td onclick="event.stopPropagation();">
-                        <div class="d-flex justify-content-center align-items-center gap-2">
-                            <button ${value.MemberRole != 'Head' ? 'hidden' : ''} onclick="showupdatemembermodal('${value.Familymembershipid}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i><span class='updatetooltip'>Update Details</span></button>
-                            <button data-bs-toggle='modal' data-bs-target='#deletemodal' onclick="showRejectMemberModal('${value.Id}','${value.Name}','${value.Taluk}')" class='btn btn-sm btn-outline-danger shadow-sm rounded-circle trashcoord' style='width:32px;height:32px;padding:0;'><i class='fa-solid fa-user-xmark'></i><span class='trashtooltip'>Reject</span></button>
-                            <button onclick ="viewMemberdata('view-member-data?member_id=${value.Familymembershipid}')" class='btn btn-sm btn-outline-secondary shadow-sm rounded-circle' style='width:32px;height:32px;padding:0;' data-bs-toggle='tooltip' title='View Details'><i class='fa-sharp fa-solid fa-eye'></i></button>
-                        </div>
-                    </td>
-            </tr>
-        `;
-            i++;
-         });
-
-         document.getElementById("ps-members").innerHTML = html;
-      }
-
-      renderMembers(membersData.slice(0, 10), 0);
-
-      function initPagination() {
-          let membersCount = membersData.length;
-          let countsperpage = 10;
-          let noofpages = Math.ceil(membersCount / countsperpage);
-          let totalpagesarr = Array.from({ length: noofpages }, (_, i) => i);
-          let totalpages = totalpagesarr.length;
-          let initialindex = 0;
-          let lastindex = 5;
-          let pages = totalpagesarr.slice(initialindex, lastindex);
+      function renderPagination(totalCount, activeOffset) {
+          const itemsPerPage = 10;
+          const totalPages = Math.ceil(totalCount / itemsPerPage);
+          const activePage = Math.floor(activeOffset / itemsPerPage);
           let paginationHtml = "";
 
-          if (membersCount > 0) {
-              paginationHtml = `<button disabled onclick='changeMembersPagesetup(0)' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></button>`;
+          if (totalPages <= 1) {
+              document.getElementById("membersPagination").innerHTML = "";
+              const startEntry = totalCount === 0 ? 0 : 1;
+              const endEntry = totalCount;
+              document.getElementById("paginationInfo").innerHTML = `Showing ${startEntry} to ${endEntry} of ${totalCount} entries`;
+              return;
+          }
 
-              for (let i = 0; pages.length > i; i++) {
-                  let count = countsperpage * pages[i];
-                  let pageno = pages[i] + 1;
-                  if (pageno == 5) {
-                      paginationHtml += `<button style='width:35px;height:35px;border: none;' onclick='changeMembersPagesetup(${pages[i]})' class='${i == 0 ? 'active-page' : ''} active text-decoration-none bg-white d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;
-                  }
-                  else {
-                      paginationHtml += `<button style='width:35px;height:35px;' onclick='displayMembers(${count},${i})' class='${i == 0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
+          // Previous Button
+          paginationHtml += `<button class="page-btn" ${activePage === 0 ? "disabled" : ""} onclick="goToPage(${(activePage - 1) * itemsPerPage})"><i class="fa-solid fa-chevron-left"></i></button>`;
+
+          let startPage = Math.max(0, activePage - 2);
+          let endPage = Math.min(totalPages, startPage + 5);
+          
+          if (endPage - startPage < 5) {
+              startPage = Math.max(0, endPage - 5);
+          }
+
+          if (startPage > 0) {
+              paginationHtml += `<button class="page-btn" onclick="goToPage(0)">1</button>`;
+              if (startPage > 1) paginationHtml += `<span class="page-ellipsis">...</span>`;
+          }
+
+          for (let i = startPage; i < endPage; i++) {
+              const offset = i * itemsPerPage;
+              paginationHtml += `<button class="page-btn ${i === activePage ? "active" : ""}" onclick="goToPage(${offset})">${i + 1}</button>`;
+          }
+
+          if (endPage < totalPages) {
+              if (endPage < totalPages - 1) paginationHtml += `<span class="page-ellipsis">...</span>`;
+              paginationHtml += `<button class="page-btn" onclick="goToPage(${(totalPages - 1) * itemsPerPage})">${totalPages}</button>`;
+          }
+
+          // Next Button
+          paginationHtml += `<button class="page-btn" ${activePage >= totalPages - 1 ? "disabled" : ""} onclick="goToPage(${(activePage + 1) * itemsPerPage})"><i class="fa-solid fa-chevron-right"></i></button>`;
+
+          document.getElementById("membersPagination").innerHTML = paginationHtml;
+          
+          const startEntry = totalCount === 0 ? 0 : activeOffset + 1;
+          const endEntry = Math.min(activeOffset + itemsPerPage, totalCount);
+          document.getElementById("paginationInfo").innerHTML = `Showing ${startEntry} to ${endEntry} of ${totalCount} entries`;
+      }
+
+      function goToPage(offset) {
+          let searchInput = document.getElementById("advanced-search-input");
+          let globalInput = document.querySelector("#commonsearch input");
+          let search = (searchInput && searchInput.value.trim() !== "") ? searchInput.value : (globalInput ? globalInput.value : "");
+
+          let state = document.getElementById("states-dropdown").value;
+          let district = document.getElementById("districts-dropdown").value;
+          let taluk = document.getElementById("taluks-dropdown").value;
+          let panchayat = document.getElementById("panchayat-dropdown").value;
+          let bloodgroup = document.getElementById("bloodgroup-dropdown").value;
+          let gender = document.getElementById("gender-dropdown").value;
+          let occupation = document.getElementById("occupation-dropdown").value;
+
+          let searchfields = {
+             "search": search,
+             "state_id": state,
+             "district": district,
+             "taluk": taluk,
+             "panchayat": panchayat,
+             "bloodgroup": bloodgroup,
+             "gender": gender,
+             "occupation": occupation
+          };
+
+          $.ajax({
+              type: "get",
+              url: "<?= base_url('members/displaymembers'); ?>",
+              data: { 
+                  count: offset,
+                  searchfields: searchfields
+              },
+              success: function(result) {
+                  document.getElementById("ps-members").innerHTML = result;
+                  renderPagination(totalMembersCount, offset);
+                  
+                  // Scroll to table top
+                  if(offset > 0) {
+                      $('html, body').animate({
+                          scrollTop: $(".custom-table").offset().top - 100
+                      }, 200);
                   }
               }
-
-              paginationHtml += "<span>...</span>";
-              let totalcount = (totalpages - lastindex);
-              let newindex = initialindex + lastindex;
-              let validNext = totalpages - initialindex;
-              paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-
-              paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${newindex})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-          } else {
-              paginationHtml = "<span>No pages available</span>";
-          }
-          setUpPagination(paginationHtml);
-          renderMembers(membersData.slice(0, 10), 0);
-          document.getElementById('memberTotalCountHolder').innerHTML = `Total Members: <span class="badge bg-primary rounded-pill">${membersCount}</span>`;
+          });
       }
 
-      function setUpPagination(html) {
-         document.getElementById("membersPagination").innerHTML = html;
-      }
+      // Total members count passed from PHP
+      let totalMembersCount = <?php echo (int)($counts ?? 0); ?>;
 
-      initPagination();
-
-      function changeMembersPagesetup(nextStagedNo) {
-         let membersCount = membersData.length;
-         let countsperpage = 10;
-         let prevlist = "";
-         let noofpages = Math.ceil(membersCount / countsperpage);
-         let totalpagesarr = Array.from({ length: noofpages }, (_, i) => i);
-         let totalpages = totalpagesarr.length;
-         let start = nextStagedNo > noofpages ? 0 : nextStagedNo;
-         let lastindex = nextStagedNo + 5;
-         let pages = totalpagesarr.slice(nextStagedNo, lastindex);
-         prevlist = start < 5 ? 0 : nextStagedNo - 5;
-         let validPrev = totalpages - nextStagedNo;
-         let paginationHtml = `<button ${validPrev <= 0 ? 'disabled' : ''} onclick='changeMembersPagesetup(${prevlist})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'> </i></button>`;
-
-         for (let j = 0; pages.length > j; j++) {
-            let count = countsperpage * pages[j];
-            let pageno = pages[j] + 1;
-
-            if (pageno == 5 || pageno - start == 5) {
-               paginationHtml += pageno == totalpages ? `<button style='width:35px;height:35px;border: none;' onclick='displayMembers(${count},${j})' class='${j == 0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>` : `<button onclick='changeMembersPagesetup(${pageno - 1})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='${j == 0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;
-            }
-            else {
-               paginationHtml += `<button style='width:35px;height:35px;' onclick='displayMembers(${count},${j})' class='${j == 0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-            }
-         }
-
-         paginationHtml += "<span>...</span>";
-         let totalcount = totalpages - lastindex;
-         let newindex = start + lastindex;
-         let validNext = totalpages - start;
-         paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-         paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalpages - start <= lastindex ? totalcount : newindex})'  style='cursor:pointer;border: none;' class='text-decoration-none text-dark bg-white'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-         setUpPagination(paginationHtml);
-         let itemsPerPage = 10;
-         let itemStart = nextStagedNo * itemsPerPage;
-         let itemEnd = itemStart + itemsPerPage;
-         renderMembers(membersData.slice(itemStart, itemEnd), itemStart);
-      }
+      // Initial load
+      $(document).ready(function() {
+          renderPagination(totalMembersCount, 0);
+          goToPage(0);
+      });
 
 
 
@@ -1485,9 +1548,13 @@
          if (searchInput) {
              search = searchInput.value;
          } else {
-             let inputEl = document.querySelector("#commonsearch input");
-             if (inputEl) {
-                 search = inputEl.value;
+             let advInput = document.getElementById("advanced-search-input");
+             let globalInput = document.querySelector("#commonsearch input");
+             
+             if (advInput && advInput.value.trim() !== "") {
+                 search = advInput.value;
+             } else if (globalInput) {
+                 search = globalInput.value;
              }
          }
 
@@ -1516,8 +1583,13 @@
             data: { "searchfields": searchfields },
             dataType: "json",
             success: (result) => {
-               membersData = result.members || [];
-               initPagination();
+               // Update total count
+               let totalCount = result.total || 0;
+               totalMembersCount = totalCount;
+               document.getElementById('memberTotalCountHolder').innerHTML = `Total Members: <span class="badge bg-primary rounded-pill">${totalCount}</span>`;
+               
+               // Load first page via AJAX fragment
+               goToPage(0);
             },
             error: (error) => {
                document.getElementById('ps-members').innerHTML = "<tr><td colspan='8'>Error fetching data</td></tr>";
@@ -1525,24 +1597,6 @@
          })
       }
 
-      function displayMembers(counts, index) {
-         const itemsPerPage = 10;
-         const start = counts;
-         const end = counts + itemsPerPage;
-         activepage = document.querySelectorAll(".active");
-         let l = activepage.length;
-         for (let i = 0; i < l; i++) {
-            if (i == index) {
-               activepage[i].classList.add("active-page");
-            }
-            else {
-               if (activepage[i].classList.contains("active-page")) {
-                  activepage[i].classList.remove("active-page")
-               }
-            }
-         }
-         renderMembers(membersData.slice(start, end), start);
-      }
 
       /*     function changemembersPagesetup(initialIndex,lastindex){
             console.log(initialIndex);
@@ -2372,8 +2426,9 @@
                dataType: "json",
                data: { searchfields: searchfields },
                success: function (result) {
-                  membersData = result.members || [];
-                  initPagination();
+                  let totalCount = result.total || 0;
+                  document.getElementById('memberTotalCountHolder').innerHTML = `Total Members: <span class="badge bg-primary rounded-pill">${totalCount}</span>`;
+                  goToPage(0);
                },
                error: function (xhr, status, err) {
                   console.log("searchmembers error:", xhr.status, status, err, xhr.responseText);

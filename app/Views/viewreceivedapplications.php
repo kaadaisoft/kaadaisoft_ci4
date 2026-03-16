@@ -574,6 +574,47 @@
       background: #94a3b8;
     }
 
+    /* Premium Pagination Styles */
+    .pagination-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        transform: translateY(-1px);
+    }
+    .pagination-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f1f5f9;
+    }
+    .pagination-ellipsis {
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0 4px;
+    }
+
     @media screen and (max-width: 768px) {
       .top-navbar-row { height: auto; flex-direction: column; }
       .main-body-row { flex-direction: column; }
@@ -828,13 +869,22 @@ let applicationsData = [];
     applicationsData = <?php echo json_encode($applications); ?> || [];
 <?php endif; ?>
 
-function renderApplications(data, sNo) {
+const appItemsPerPage = 10;
+let currentAppPage = 1;
+
+function renderApplications(data, startIndex) {
     let html = "";
-    let i = sNo + 1;
+    let i = startIndex + 1;
+
+    if (!data || data.length === 0) {
+        document.getElementById("applications").innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">No applications found.</td></tr>`;
+        return;
+    }
 
     data.forEach(value => {
+        let encodedValue = JSON.stringify(value).replace(/'/g, "&#39;");
         html += `
-            <tr onclick='viewApplications(${JSON.stringify(value)})' data-bs-toggle="modal" data-bs-target="#viewapplication">
+            <tr onclick='viewApplications(${encodedValue})' data-bs-toggle="modal" data-bs-target="#viewapplication">
                 <td class="fw-bold text-muted">${i}</td>
                 <td class="fw-semibold text-primary">${value.Name}</td>
                 <td class="text-secondary">${value.Phonenumber}</td>
@@ -856,125 +906,90 @@ function renderApplications(data, sNo) {
     document.getElementById("applications").innerHTML = html;
 }
 
-renderApplications(applicationsData.slice(0 ,10), 0);
+function renderAppPagination(totalItems, currentPage) {
+    let html = "";
+    let pgCon = document.getElementById("applicationPagination");
+    if (!totalItems || totalItems <= 0) {
+        if (pgCon) pgCon.innerHTML = "";
+        return;
+    }
+    
+    const totalPages = Math.ceil(totalItems / appItemsPerPage);
+    
+    html += `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
 
-<?php 
-          if(isset($pendingcounts) ): ?> 
-            <?php if($pendingcounts > 0): ?>
-            let pendingApplicationsCount = <?php echo json_encode($pendingcounts); ?>;
-            let countsperpage = 10;
-            let noofpages = Math.ceil(pendingApplicationsCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let initialindex = 0;
-            let lastindex = 5; 
-            let pages = totalpagesarr.slice(initialindex, lastindex);
-            let paginationHtml = `<button disabled onclick='changeApplicationsPagesetup(0)' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></button>`;
-            
-            for(let i = 0;pages.length > i; i++) {
-              let count = countsperpage * pages[i];
-              let pageno = pages[i] + 1;
-              if(pageno == 5){
-                paginationHtml += `<button style='width:35px;height:35px;border: none;' onclick='changeApplicationsPagesetup(${pages[i]})' class='${i==0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;}
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayApplications(${count},${i})' class='${i==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
+    html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                onclick="goToAppPage(${currentPage - 1})" 
+                ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="fa-solid fa-chevron-left"></i>
+             </button>`;
 
-            paginationHtml += "<span>...</span>";
-            let totalcount = (totalpages - lastindex);
-            let newindex = initialindex+lastindex;
-            let validNext = totalpages - initialindex; 
-            paginationHtml += `<button ${validNext < 5 ? 'disable' : ''} onclick='changeApplicationsPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            
-            paginationHtml += `<button ${validNext < 5 ? 'disable' : ''} onclick='changeApplicationsPagesetup(${newindex})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-            <?php else: ?>
-              let paginationHtml = "";
-              paginationHtml += "<span>No pages available</span>";
-            <?php endif; ?>
-          
-        <?php endif; ?>
-    function setUpPagination(html) {
-      document.getElementById("applicationPagination").innerHTML = html;
-    }  
-
-    setUpPagination(paginationHtml);
-
-    function changeApplicationsPagesetup(nextStagedNo) {
-            let countsperpage = 10;
-            let prevlist = "";
-            let noofpages = Math.ceil(pendingApplicationsCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let start = nextStagedNo > noofpages ? 0 : nextStagedNo;
-            let lastindex = nextStagedNo + 5;
-            let pages = totalpagesarr.slice(nextStagedNo, lastindex);
-            prevlist = start < 5 ? 0 : nextStagedNo - 5;
-            let validPrev = totalpages - nextStagedNo;
-            let paginationHtml =  `<button ${validPrev <= 0 ? 'disabled' : ''} onclick='changeApplicationsPagesetup(${prevlist})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'> </i></button>`;
-
-            for(let j = 0;pages.length > j; j++) {
-              let count = countsperpage * pages[j];
-              let pageno = pages[j] + 1;
-  
-              if(pageno == 5 || pageno - start == 5){
-                paginationHtml += pageno == totalpages ? `<button style='width:35px;height:35px;border: none;' onclick='displayApplications(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>` : `<button onclick='changeApplicationsPagesetup(${pageno - 1})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='${j==0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`; }
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayApplications(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
-
-            paginationHtml += "<span>...</span>";
-            let totalcount = totalpages - lastindex;
-            let newindex = start + lastindex; 
-            let validNext = totalpages - start;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeApplicationsPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeApplicationsPagesetup(${totalpages - start <= lastindex ? totalcount : newindex})'  style='cursor:pointer;border: none;' class='text-decoration-none text-dark bg-white'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`; 
-            setUpPagination(paginationHtml);
-            let itemsPerPage = 10;
-            let itemStart = nextStagedNo * itemsPerPage;
-            let itemEnd = itemStart + itemsPerPage;
-            renderApplications(applicationsData.slice(itemStart, itemEnd), itemStart);
-          }
-
-    function commonSearch(searchField){
-      let searchValue = searchField.value;
-       let html = "";
-       let i = 1;
-       if(!searchValue) {
-        renderApplications(applicationsData.slice(0 ,10), 0);
-       }
-
-    let data = applicationsData.filter((data, index)=> {
-        if(data.Name.toLowerCase().includes(searchValue.toLowerCase()) || data.Phonenumber.toLowerCase().includes(searchValue.toLowerCase()) || data.Aadharnumber.toLowerCase().includes(searchValue.toLowerCase()) || data.District.toLowerCase().includes(searchValue.toLowerCase()) || data.State.toLowerCase().includes(searchValue.toLowerCase())){
-            return data;
+    for (let i = 1; i <= totalPages; i++) {
+        if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                        onclick="goToAppPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="pagination-ellipsis">...</span>`;
         }
-    });
+    }
 
-    data.forEach(value => {
-        html += `
-            <tr onclick='viewApplications(${JSON.stringify(value)})' data-bs-toggle="modal" data-bs-target="#viewapplication">
-                <td class="fw-bold text-muted">${i}</td>
-                <td class="fw-semibold text-primary">${value.Name}</td>
-                <td class="text-secondary">${value.Phonenumber}</td>
-                <td class="text-secondary">${value.Aadharnumber}</td>
-                <td><span class="badge bg-light text-dark border">${value.District}</span></td>
-                <td><span class="badge bg-info text-dark">${value.State}</span></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button class="btn-view-premium">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-        i++;
-    });
+    html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                onclick="goToAppPage(${currentPage + 1})"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="fa-solid fa-chevron-right"></i>
+             </button>`;
 
-    document.getElementById("applications").innerHTML = html;
-      
-    }    
+    html += `</div>`;
+    html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+    
+    if (pgCon) pgCon.innerHTML = html;
+}
+
+function goToAppPage(page) {
+    if (!applicationsData || applicationsData.length === 0) return;
+    
+    let searchTerm = "";
+    let searchInput = document.getElementById("commonsearch");
+    if (searchInput) searchTerm = searchInput.value.toLowerCase().trim();
+    
+    let displayData = applicationsData;
+    if (searchTerm !== "") {
+        displayData = applicationsData.filter(data => {
+            return data.Name.toLowerCase().includes(searchTerm) || 
+                   data.Phonenumber.toLowerCase().includes(searchTerm) || 
+                   data.Aadharnumber.toLowerCase().includes(searchTerm) || 
+                   data.District.toLowerCase().includes(searchTerm) || 
+                   data.State.toLowerCase().includes(searchTerm);
+        });
+    }
+
+    const totalPages = Math.ceil(displayData.length / appItemsPerPage);
+    
+    if (totalPages === 0) {
+        renderApplications([], 0);
+        renderAppPagination(0, 1);
+        return;
+    }
+    
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentAppPage = page;
+    
+    let offset = (page - 1) * appItemsPerPage;
+    renderApplications(displayData.slice(offset, offset + appItemsPerPage), offset);
+    renderAppPagination(displayData.length, currentAppPage);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    goToAppPage(1);
+});
+
+function commonSearch(searchField) {
+    if(applicationsData && applicationsData.length > 0) {
+        currentAppPage = 1;
+        goToAppPage(1);
+    }
+}    
 
 // Mobile Menu Functions
     function openMobileMenu() {

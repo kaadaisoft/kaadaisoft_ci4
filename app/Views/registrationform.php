@@ -2393,8 +2393,8 @@
 
         function clearCurrentNriAddress() {
             $('#cur_nri_country').val('');
-            $('#cur_nri_state').val('');
-            $('#cur_nri_city').val('');
+            $('#cur_nri_state').val('').html('<option value="">Select State</option>');
+            $('#cur_nri_city').val('').html('<option value="">Select City</option>');
             $('#cur_nri_zip').val('');
             $('#cur_nri_fulladdress').val('');
 
@@ -2454,6 +2454,9 @@
                     sameBtn.classList.add('disabled');
                 }
 
+                // Clear any existing NRI data before setting India defaults
+                clearCurrentNriAddress();
+
                 // Set Country to India and Load States
                 let countrySelect = document.getElementById("cur_nri_country");
                 if (countrySelect) {
@@ -2472,6 +2475,10 @@
                     sameBtn.disabled = true;
                     sameBtn.classList.add('disabled');
                 }
+
+                // Clear NRI data for a fresh NRI form
+                clearCurrentNriAddress();
+                
                 clearCurrentIndiaAddress();
             }
         }

@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinators list</title>
-</head>
-<body>
-
-
 <?php if(isset($coordinators) && isset($sno)):?>
-    
      <?php $j = $sno+1; foreach ($coordinators as $key => $coordinator):?> 
-                
                  <tr style="cursor: pointer;" onclick="viewCoordinatordata('view-coordinator-data?coord_id=<?=$coordinator->Familymembershipid?>')">
                     <td class='ps-4'><?=$j?></td>
                     <td class='text-primary fw-bold'><?=$coordinator->Familymembershipid?></td>
@@ -34,8 +22,6 @@
                   <?php endforeach;?>
                 <?php else:?>
                   <tr>
-                      <td colspan='7' class='text-center'>No results</td>
-                  <tr>
+                      <td colspan='9' class='text-center'>No results</td>
+                  </tr>
                 <?php endif;?>
-</body>
-</html>

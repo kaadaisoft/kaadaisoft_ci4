@@ -154,12 +154,18 @@ class Members extends BaseController
 
     public function displaymembers()
     {
-        $counts = $this->request->getGet('count');
+        $counts = $this->request->getGet('count') ?: 0;
+        $searchfields = $this->request->getGet('searchfields');
         $this->session->set('memberscounts', $counts);
+        
         if ($this->request->isAJAX()) {
-            $members = $this->membersModel->getMembers($counts);
-            $data = view('memberslist', array("members" => $members, "sno" => $counts));
-            echo $data;
+            if ($searchfields && !empty(array_filter($searchfields))) {
+                $members = $this->membersModel->getMembersSearchfieldsPaginated($searchfields, $counts);
+            } else {
+                $members = $this->membersModel->getMembers($counts);
+            }
+            
+            echo view('memberslist', array("members" => $members, "sno" => $counts));
         }
     }
 
@@ -491,7 +497,7 @@ class Members extends BaseController
         $data = [];
         $documents = [];
         
-        $Familymembershipid = trim($this->request->getPost("membershipid" . $suffix));
+        $Familymembershipid = trim($this->request->getPost("membershipid" . $suffix) ?: $this->request->getPost("membershipid"));
         
         // Check if member is already dead
         $currentMember = $this->membersModel->getMemberdata($Familymembershipid);
@@ -500,10 +506,10 @@ class Members extends BaseController
             return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
         }
 
-        $data["Name"] = trim($this->request->getPost("name" . $suffix));
-        $data["Aadharnumber"] = trim($this->request->getPost("aadharno" . $suffix));
-        $data["Phonenumber"] = trim($this->request->getPost("phoneno" . $suffix));
-        $state_id = $this->request->getPost("state" . $suffix);
+        $data["Name"] = trim($this->request->getPost("name" . $suffix) ?: $this->request->getPost("name"));
+        $data["Aadharnumber"] = trim($this->request->getPost("aadharno" . $suffix) ?: $this->request->getPost("aadharno"));
+        $data["Phonenumber"] = trim($this->request->getPost("phoneno" . $suffix) ?: $this->request->getPost("phoneno"));
+        $state_id = $this->request->getPost("state" . $suffix) ?: $this->request->getPost("state");
         $data["state_id"] = $state_id;
         
         $getstatename = null;
@@ -513,29 +519,29 @@ class Members extends BaseController
         }
         $data["State"] = $getstatename ? $getstatename->state_title : ($currentMember ? $currentMember->State : "");
         
-        $data["District"] = $this->request->getPost("district" . $suffix);
-        $data["Taluk"] = $this->request->getPost("taluk" . $suffix);
-        $data["Panchayat"] = $this->request->getPost("panchayat" . $suffix);
+        $data["District"] = $this->request->getPost("district" . $suffix) ?: $this->request->getPost("district");
+        $data["Taluk"] = $this->request->getPost("taluk" . $suffix) ?: $this->request->getPost("taluk");
+        $data["Panchayat"] = $this->request->getPost("panchayat" . $suffix) ?: $this->request->getPost("panchayat");
         
         // Robust Village selection
-        $val = $this->request->getPost("village" . $suffix);
+        $val = $this->request->getPost("village" . $suffix) ?: $this->request->getPost("village");
         if (empty($val)) {
-             // Try common variations if main suffix fails
              $val = $this->request->getPost("village-member") ?: $this->request->getPost("village-coord");
         }
         
         // If "Others" was used, check the manual input fields
         if ($val === "Others" || $val === "other" || empty($val)) {
              $other_val = $this->request->getPost("village_others_member") ?: $this->request->getPost("village_others_coord");
+             if (empty($other_val)) $other_val = $this->request->getPost("village_others");
              if (!empty($other_val)) $val = $other_val;
         }
         
         $data["Village"] = trim($val);
 
-        $data["Street"] = $this->request->getPost("street" . $suffix);
-        $data["Doornumber"] = $this->request->getPost("doorno" . $suffix);
-        $data["Pincode"] = $this->request->getPost("pincode" . $suffix);
-        $data["Existfamilyid"] = trim($this->request->getPost("existfamilyid" . $suffix));
+        $data["Street"] = $this->request->getPost("street" . $suffix) ?: $this->request->getPost("street");
+        $data["Doornumber"] = $this->request->getPost("doorno" . $suffix) ?: $this->request->getPost("doorno");
+        $data["Pincode"] = $this->request->getPost("pincode" . $suffix) ?: $this->request->getPost("pincode");
+        $data["Existfamilyid"] = trim($this->request->getPost("existfamilyid" . $suffix) ?: $this->request->getPost("existfamilyid"));
         
         $coord_row = $this->membersModel->getCoordinatorByLocation(
              $data["Village"],
@@ -565,58 +571,61 @@ class Members extends BaseController
 
         
         // Detailed fields added to match add_family_member
-        $data["Dob"] = $this->request->getPost("dob" . $suffix);
-        $data["Gender"] = $this->request->getPost("gender" . $suffix);
-        $data["Bloodgroup"] = $this->request->getPost("bloodgroup" . $suffix);
-        $data["Email"] = trim($this->request->getPost("email" . $suffix));
-        $data["Whatsappnumber"] = trim($this->request->getPost("whatsappno" . $suffix));
-        $data["Married"] = $this->request->getPost("married" . $suffix);
-        $data["Valuvu"] = $this->request->getPost("valuvu" . $suffix);
-        $data["Thottam"] = $this->request->getPost("thottam" . $suffix);
-        $data["Kulam"] = $this->request->getPost("kulam" . $suffix);
-        $data["Profession"] = $this->request->getPost("profession" . $suffix);
-        $data["Business"] = $this->request->getPost("business" . $suffix);
-        $data["BusinessWebsite"] = $this->request->getPost("business_website" . $suffix);
+        $data["Dob"] = $this->request->getPost("dob" . $suffix) ?: $this->request->getPost("dob");
+        $data["Gender"] = $this->request->getPost("gender" . $suffix) ?: $this->request->getPost("gender");
+        $data["Bloodgroup"] = $this->request->getPost("bloodgroup" . $suffix) ?: $this->request->getPost("bloodgroup");
+        $data["Email"] = trim($this->request->getPost("email" . $suffix) ?: $this->request->getPost("email"));
+        $data["Whatsappnumber"] = trim($this->request->getPost("whatsappno" . $suffix) ?: $this->request->getPost("whatsappno"));
+        $data["Married"] = $this->request->getPost("married" . $suffix) ?: $this->request->getPost("married");
+        $data["Valuvu"] = $this->request->getPost("valuvu" . $suffix) ?: $this->request->getPost("valuvu");
+        $data["Thottam"] = $this->request->getPost("thottam" . $suffix) ?: $this->request->getPost("thottam");
+        $data["Kulam"] = $this->request->getPost("kulam" . $suffix) ?: $this->request->getPost("kulam");
+        $data["Profession"] = $this->request->getPost("profession" . $suffix) ?: $this->request->getPost("profession");
+        $data["Business"] = $this->request->getPost("business" . $suffix) ?: $this->request->getPost("business");
+        $data["BusinessWebsite"] = $this->request->getPost("business_website" . $suffix) ?: $this->request->getPost("business_website");
         
         // Education fix: check both -update and -coord suffixes as JS might mismatch
-        $education = $this->request->getPost("education" . $suffix) ?: $this->request->getPost("education-update");
+        $education = $this->request->getPost("education" . $suffix) ?: $this->request->getPost("education");
         
         $data["Education"] = is_array($education) ? implode(', ', $education) : trim((string)$education);
 
-        $data["is_dead"] = $this->request->getPost("is_dead" . $suffix);
+        $data["is_dead"] = $this->request->getPost("is_dead" . $suffix) ?: $this->request->getPost("is_dead");
 
-        $data["Curaddresstype"] = $this->request->getPost("cur_address_type" . $suffix);
-        $data["Curstate"] = $this->request->getPost("cur_state" . $suffix);
-        $data["Curdistrict"] = $this->request->getPost("cur_district" . $suffix);
-        $data["Curtaluk"] = $this->request->getPost("cur_taluk" . $suffix);
-        $data["Curpanchayat"] = $this->request->getPost("cur_panchayat" . $suffix);
+        $data["Curaddresstype"] = $this->request->getPost("cur_address_type" . $suffix) ?: $this->request->getPost("cur_address_type");
+        $data["Curstate"] = $this->request->getPost("cur_state" . $suffix) ?: $this->request->getPost("cur_state");
+        $data["Curdistrict"] = $this->request->getPost("cur_district" . $suffix) ?: $this->request->getPost("cur_district");
+        $data["Curtaluk"] = $this->request->getPost("cur_taluk" . $suffix) ?: $this->request->getPost("cur_taluk");
+        $data["Curpanchayat"] = $this->request->getPost("cur_panchayat" . $suffix) ?: $this->request->getPost("cur_panchayat");
         
-        $cur_village_val = $this->request->getPost("cur_village" . $suffix);
+        $cur_village_val = $this->request->getPost("cur_village" . $suffix) ?: $this->request->getPost("cur_village");
         if (empty($cur_village_val)) {
              $cur_village_val = $this->request->getPost("cur_village-member") ?: $this->request->getPost("cur_village-coord");
         }
         
         if ($cur_village_val === "Others" || $cur_village_val === "other" || empty($cur_village_val)) {
              $cur_other_val = $this->request->getPost("cur_village_others_member") ?: $this->request->getPost("cur_village_others_coord");
+             if (empty($cur_other_val)) $cur_other_val = $this->request->getPost("cur_village_others");
              if (!empty($cur_other_val)) $cur_village_val = $cur_other_val;
         }
 
         $data["Curvillage"] = trim($cur_village_val);
 
-        $data["Curstreet"] = $this->request->getPost("cur_street" . $suffix);
-        $data["Curdoorno"] = $this->request->getPost("cur_doorno" . $suffix);
-        $data["Curpincode"] = $this->request->getPost("cur_pincode" . $suffix);
+        $data["Curstreet"] = $this->request->getPost("cur_street" . $suffix) ?: $this->request->getPost("cur_street");
+        $data["Curdoorno"] = $this->request->getPost("cur_doorno" . $suffix) ?: $this->request->getPost("cur_doorno");
+        $data["Curpincode"] = $this->request->getPost("cur_pincode" . $suffix) ?: $this->request->getPost("cur_pincode");
 
-        $data["Curnricountry"] = $this->request->getPost("cur_nri_country" . $suffix);
-        $data["Curnristate"] = $this->request->getPost("cur_nri_state" . $suffix);
-        $data["Curnricity"] = $this->request->getPost("cur_nri_city" . $suffix);
-        $data["Curnrizip"] = $this->request->getPost("cur_nri_zip" . $suffix);
-        $data["Curnrifulladdress"] = $this->request->getPost("cur_nri_fulladdress" . $suffix);
+        $data["Curnricountry"] = $this->request->getPost("cur_nri_country" . $suffix) ?: $this->request->getPost("cur_nri_country");
+        $data["Curnristate"] = $this->request->getPost("cur_nri_state" . $suffix) ?: $this->request->getPost("cur_nri_state");
+        $data["Curnricity"] = $this->request->getPost("cur_nri_city" . $suffix) ?: $this->request->getPost("cur_nri_city");
+        $data["Curnrizip"] = $this->request->getPost("cur_nri_zip" . $suffix) ?: $this->request->getPost("cur_nri_zip");
+        $data["Curnrifulladdress"] = $this->request->getPost("cur_nri_fulladdress" . $suffix) ?: $this->request->getPost("cur_nri_fulladdress");
 
-        $data["MemberRole"] = ($this->request->getPost('relationship' . $suffix) === "Other") ? $this->request->getPost('custom_relationship' . $suffix) : $this->request->getPost('relationship' . $suffix);
+        $relationship = $this->request->getPost('relationship' . $suffix) ?: $this->request->getPost('relationship');
+        $custom_rel = $this->request->getPost('custom_relationship' . $suffix) ?: $this->request->getPost('custom_relationship');
+        $data["MemberRole"] = ($relationship === "Other") ? $custom_rel : $relationship;
 
         // Handle Head Transfer Logic
-        $upcoming_head_id = $this->request->getPost("upcoming_head" . $suffix);
+        $upcoming_head_id = $this->request->getPost("upcoming_head" . $suffix) ?: $this->request->getPost("upcoming_head");
         if (!empty($upcoming_head_id)) {
             // Trigger automatic relationship mapping for other family members
             $familyIdToFix = ($currentMember && $currentMember->Existfamilyid) ? $currentMember->Existfamilyid : $currentMember->Familymembershipid;

@@ -133,6 +133,8 @@ $routes->get('members/topmenu', 'Members::topmenu');
 $routes->get('members/pslogo', 'Members::pslogo');
 $routes->get('members/topsubmenu', 'Members::topsubmenu');
 $routes->get('members/searchmembers', 'Members::searchmembers');
+$routes->get('members/displaymembers', 'Members::displaymembers');
+
 
 $routes->get('members/searchmembers', 'Members::searchmembers');
 $routes->post('members/send-registration-otp', 'Members::send_registration_otp');
@@ -152,6 +154,7 @@ $routes->get('events/movetotrash', 'Events::movetotrash'); // For AJAX trash cal
 $routes->get('events/sidemenu', 'Events::sidemenu');
 $routes->get('events/topmenu', 'Events::topmenu');
 $routes->get('events/pslogo', 'Events::pslogo');
+$routes->get('events/displayEvents', 'Events::displayEvents');
 
 // Reports Routes
 $routes->get('reports', 'Reports::index');

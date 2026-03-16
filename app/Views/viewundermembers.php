@@ -405,7 +405,7 @@
           padding: 5px 0 !important;
       }
       .main-body-row { 
-          margin-top: 130px !important; /* Adjust for stacked top bar elements */
+          margin-top: 200px !important; /* Adjust for stacked top bar elements */
           flex-direction: column; 
           overflow: auto; 
       }

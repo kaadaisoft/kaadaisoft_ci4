@@ -908,6 +908,42 @@
       .card-body { padding: 15px !important; }
       #ps-logo { padding-top: 10px !important; padding-bottom: 10px !important; }
     }
+
+    /* Premium Pagination UI */
+    .pagination-btn {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      transition: all 0.2s ease;
+      padding: 0 12px;
+    }
+    .pagination-btn:hover:not(:disabled) {
+      background: #f1f5f9;
+      color: #0f172a;
+      transform: translateY(-1px);
+    }
+    .pagination-btn.active {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+    }
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .pagination-ellipsis {
+      padding: 0 8px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
     </style>
 </head>
 <body>
@@ -934,7 +970,7 @@
             
             <div class="card shadow-sm rounded border-0 mb-5">
                 <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex align-items-center">
-                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i><?=$coordinator->Role == 2 ? "Coordinator Details:" : "Member Details"?></h4> 
+                    <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-user-tie text-primary me-2"></i><?= (session()->get('role') == 2) ? 'My Details' : ($coordinator->Role == 2 ? 'Coordinator Details:' : 'Member Details') ?></h4> 
                 </div>
                 <div class="card-body px-4 py-4">
                     <div class="row">
@@ -999,7 +1035,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0 rounded mb-4">
                         <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
-                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i>Family Members</h4>
+                            <h4 style="font-weight:600; color: #2c3e50; margin:0;"><i class="fa-solid fa-users text-primary me-2"></i><?= (session()->get('role') == 2) ? 'My Family Members' : 'Family Members' ?></h4>
                             <div class="btn-group" role="group">
                                 <button type="button" id="tableViewBtn" class="btn btn-primary active" onclick="switchView('table')"><i class="fa-solid fa-table me-1"></i> Table View</button>
                                 <button type="button" id="treeViewBtn" class="btn btn-outline-primary" onclick="switchView('tree')"><i class="fa-solid fa-tree me-1"></i> Tree View</button>
@@ -1019,60 +1055,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="family_members_body">
-                                        <?php 
-                                            $sno = 1;
-                                            $role_counts = [];
-                                            foreach($family_members as $fm) {
-                                                $role = $fm->MemberRole;
-                                                $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
-                                            }
-                                            $role_counters = [];
-                                            
-                                            foreach($family_members as $fm): 
-                                                $dob = new DateTime($fm->Dob);
-                                                $now = new DateTime();
-                                                $age = $now->diff($dob)->y;
-                                                
-                                                $role = $fm->MemberRole;
-                                                $display_role = $role;
-                                                if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
-                                                    $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
-                                                    $display_role .= '_' . $role_counters[$role];
-                                                }
-                                        ?>
-                                            <tr class="<?= (isset($fm->is_dead) && $fm->is_dead == 1) ? 'dead-member-row bg-light' : '' ?>" <?= !(isset($fm->is_dead) && $fm->is_dead == 1) ? "onclick=\"showupdatecoordsmodal('".trim($fm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
-                                                <td class="fw-bold text-muted"><?= $sno++ ?></td>
-                                                <td>
-                                                    <div class="fw-bold text-dark"><?= $fm->Name ?></div>
-                                                    <div class="badge-membership mt-1 d-inline-block"><?= $fm->Familymembershipid ?></div>
-                                                </td>
-                                                <td><span class="badge bg-light text-dark border px-2 py-1 rounded"><?= $display_role ?></span></td>
-                                                <td>
-                                                    <?php if(strtolower($fm->Gender) == 'male'): ?>
-                                                        <i class="fa-solid fa-mars text-primary me-1"></i>
-                                                    <?php elseif(strtolower($fm->Gender) == 'female'): ?>
-                                                        <i class="fa-solid fa-venus text-danger me-1"></i>
-                                                    <?php endif; ?>
-                                                    <?= $fm->Gender ?>
-                                                </td>
-                                                <td class="fw-medium"><?= $age ?></td>
-                                                <td onclick="event.stopPropagation();">
-                                                    <div class="d-flex justify-content-center align-items-center">
-                                                        <?php if(!(isset($fm->is_dead) && $fm->is_dead == 1)): ?>
-                                                            <button onclick="showupdatecoordsmodal('<?=trim($fm->Familymembershipid)?>')" class='btn-action-premium btn-edit-premium'>
-                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                            </button>
-                                                        <?php else: ?>
-                                                            <button class='btn-action-premium' disabled>
-                                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
+                                        <!-- Rendered via JS -->
                                     </tbody>
                                 </table>
+                            </div>
+                            <!-- Family Pagination Strip -->
+                            <div class='d-flex justify-content-center container-fluid mt-3'>
+                                <div id="familyPagination" class="col-md-6 py-2 d-flex justify-content-around align-items-center"></div>
                             </div>
                         </div>
                         
@@ -1476,6 +1465,41 @@ let membersData = [];
     membersData = <?php echo json_encode($members); ?> || [];
 <?php endif; ?>
 
+let familyMembersData = [];
+<?php 
+    if (isset($family_members) && !empty($family_members)):
+        $fm_array = [];
+        $role_counts = [];
+        foreach($family_members as $fm) {
+            $role = $fm->MemberRole;
+            $role_counts[$role] = ($role_counts[$role] ?? 0) + 1;
+        }
+        $role_counters = [];
+        foreach($family_members as $fm) {
+            $dob = new DateTime($fm->Dob);
+            $now = new DateTime();
+            $age = $now->diff($dob)->y;
+            
+            $role = $fm->MemberRole;
+            $display_role = $role;
+            if (isset($role_counts[$role]) && $role_counts[$role] > 1) {
+                $role_counters[$role] = ($role_counters[$role] ?? 0) + 1;
+                $display_role .= '_' . $role_counters[$role];
+            }
+            
+            $fm_array[] = [
+                'id' => trim($fm->Familymembershipid),
+                'name' => $fm->Name,
+                'role' => $display_role,
+                'gender' => $fm->Gender,
+                'age' => $age,
+                'is_dead' => (isset($fm->is_dead) && $fm->is_dead == 1) ? 1 : 0
+            ];
+        }
+?>
+    familyMembersData = <?= json_encode($fm_array) ?> || [];
+<?php endif; ?>
+
 function renderMembers(data, sNo) {
     let html = "";
     let i = sNo + 1;
@@ -1511,88 +1535,159 @@ function renderMembers(data, sNo) {
     document.getElementById("ps-members").innerHTML = html;
 }
 
-renderMembers(membersData.slice(0 ,10), 0);
+const ITEMS_PER_PAGE = 10;
+let currentTotalCount = membersData.length;
+let currentActivePage = 1;
 
-<?php 
-          if(isset($members) ): ?> 
-            <?php if(count($members) > 0): ?>
-            let membersCount = <?php echo json_encode(count($members)); ?>;
-            console.log(membersCount)
-            let countsperpage = 10;
-            let noofpages = Math.ceil(membersCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let initialindex = 0;
-            let lastindex = 5; 
-            let pages = totalpagesarr.slice(initialindex, lastindex);
-            let paginationHtml = `<button disabled onclick='changeMembersPagesetup(0)' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id = 'arrow' class='fa-solid fa-arrow-left-long'></i></button>`;
-            
-            for(let i = 0;pages.length > i; i++) {
-              let count = countsperpage * pages[i];
-              let pageno = pages[i] + 1;
-              console.log(pageno)
-              if(pageno == 5){
-                paginationHtml += `<button style='width:35px;height:35px;border: none;' onclick='changeMembersPagesetup(${pages[i]})' class='${i==0 ? 'active-page' : ''} active text-decoration-none bg-white d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`;}
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayMembers(${count},${i})' class='${i==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
+document.addEventListener("DOMContentLoaded", function() {
+    goToPage(currentActivePage);
+});
 
-            paginationHtml += "<span>...</span>";
-            let totalcount = (totalpages - lastindex);
-            let newindex = initialindex+lastindex;
-            let validNext = totalpages - initialindex; 
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${newindex})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`;
-            <?php else: ?>
-              let paginationHtml = "";
-              paginationHtml += "<span>No pages available</span>";
-            <?php endif; ?>
-          
-        <?php endif; ?>
-    function setUpPagination(html) {
-      document.getElementById("membersPagination").innerHTML = html;
-    }  
+function renderPagination(totalItems, currentPage) {
+  if (!totalItems || totalItems <= 0) {
+    document.getElementById("membersPagination").innerHTML = "";
+    return;
+  }
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-    setUpPagination(paginationHtml);
+  let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
 
-    function changeMembersPagesetup(nextStagedNo) {
-            let countsperpage = 10;
-            let prevlist = "";
-            let noofpages = Math.ceil(membersCount / countsperpage);
-            let totalpagesarr = Array.from({length: noofpages}, (_, i) => i);
-            let totalpages = totalpagesarr.length;
-            let start = nextStagedNo > noofpages ? 0 : nextStagedNo;
-            let lastindex = nextStagedNo + 5;
-            let pages = totalpagesarr.slice(nextStagedNo, lastindex);
-            prevlist = start < 5 ? 0 : nextStagedNo - 5;
-            let validPrev = totalpages - nextStagedNo;
-            let paginationHtml =  `<button ${validPrev <= 0 ? 'disabled' : ''} onclick='changeMembersPagesetup(${prevlist})' style='cursor:pointer;border: none;' class='bg-white text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'> </i></button>`;
+  // Prev Button
+  html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+              onclick="goToPage(${currentPage - 1})" 
+              ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-left"></i>
+           </button>`;
 
-            for(let j = 0;pages.length > j; j++) {
-              let count = countsperpage * pages[j];
-              let pageno = pages[j] + 1;
+  // Page Numbers
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                  onclick="goToPage(${i})">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span class="pagination-ellipsis">...</span>`;
+    }
+  }
+
+  // Next Button
+  html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+              onclick="goToPage(${currentPage + 1})"
+              ${currentPage === totalPages ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-right"></i>
+           </button>`;
+
+  html += `</div>`;
+  html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
   
-              if(pageno == 5 || pageno - start == 5){
-                paginationHtml += pageno == totalpages ? `<button style='width:35px;height:35px;border: none;' onclick='displayMembers(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>` : `<button onclick='changeMembersPagesetup(${pageno - 1})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='${j==0 ? 'active-page' : ''} active text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${pageno}</button>`; }
-              else{
-                paginationHtml += `<button style='width:35px;height:35px;' onclick='displayMembers(${count},${j})' class='${j==0 ? 'active-page' : ''} active rounded-circle'>${pageno}</button>`;
-              }
-            }
+  document.getElementById("membersPagination").innerHTML = html;
+}
 
-            paginationHtml += "<span>...</span>";
-            let totalcount = totalpages - lastindex;
-            let newindex = start + lastindex; 
-            let validNext = totalpages - start;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalcount})' style='cursor:pointer;width:35px;height:35px;box-sizing:border-box;border: none;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>${totalpages}</button>`;
-            paginationHtml += `<button ${validNext < 5 ? 'disabled' : ''} onclick='changeMembersPagesetup(${totalpages - start <= lastindex ? totalcount : newindex})'  style='cursor:pointer;border: none;' class='text-decoration-none text-dark bg-white'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></button>`; 
-            setUpPagination(paginationHtml);
-            let itemsPerPage = 10;
-            let itemStart = nextStagedNo * itemsPerPage;
-            let itemEnd = itemStart + itemsPerPage;
-            renderMembers(membersData.slice(itemStart, itemEnd), itemStart);
-          }
+function goToPage(page) {
+    const totalPages = Math.ceil(currentTotalCount / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    currentActivePage = page;
+    
+    let offset = (page - 1) * ITEMS_PER_PAGE;
+    renderMembers(membersData.slice(offset, offset + ITEMS_PER_PAGE), offset);
+    renderPagination(currentTotalCount, currentActivePage);
+}
+
+// Family Members Pagination State
+let currentFamilyActivePage = 1;
+
+function renderFamilyMembers(data, sNo) {
+    let html = "";
+    let i = sNo + 1;
+
+    data.forEach(value => {
+        let deadClass = value.is_dead == 1 ? 'dead-member-row bg-light' : '';
+        let clickAttr = value.is_dead != 1 ? `onclick="showupdatecoordsmodal('${value.id}')" style="cursor:pointer;"` : '';
+        let genderIcon = value.gender.toLowerCase() === 'male' ? '<i class="fa-solid fa-mars text-primary me-1"></i>' : 
+                         (value.gender.toLowerCase() === 'female' ? '<i class="fa-solid fa-venus text-danger me-1"></i>' : '');
+        
+        let actionBtn = value.is_dead != 1 ? 
+            `<button onclick="showupdatecoordsmodal('${value.id}')" class='btn btn-sm btn-outline-primary rounded-circle updatecoord' style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>` : 
+            `<button class='btn btn-sm btn-outline-secondary rounded-circle' disabled style='width:32px;height:32px;padding:0;'><i class='fa-regular fa-pen-to-square'></i></button>`;
+
+        html += `
+            <tr class="${deadClass}" ${clickAttr}>
+                <td class="fw-bold text-muted">${i}</td>
+                <td>
+                    <div class="fw-bold text-dark">${value.name}</div>
+                    <div class="badge-membership mt-1 d-inline-block">${value.id}</div>
+                </td>
+                <td><span class="badge bg-light text-dark border px-2 py-1 rounded">${value.role}</span></td>
+                <td>${genderIcon} ${value.gender}</td>
+                <td class="fw-medium">${value.age}</td>
+                <td onclick="event.stopPropagation();">
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                        ${actionBtn}
+                    </div>
+                </td>
+            </tr>
+        `;
+        i++;
+    });
+
+    const bodyEl = document.getElementById("family_members_body");
+    if (bodyEl) bodyEl.innerHTML = html;
+}
+
+function renderFamilyPagination(totalItems, currentPage) {
+  if (!totalItems || totalItems <= 0) {
+    const el = document.getElementById("familyPagination");
+    if(el) el.innerHTML = "";
+    return;
+  }
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  let html = `<div class="d-flex flex-column align-items-center"><div class="d-flex justify-content-center align-items-center gap-2 mt-2">`;
+
+  // Prev Button
+  html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+              onclick="goToFamilyPage(${currentPage - 1})" 
+              ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-left"></i>
+           </button>`;
+
+  // Page Numbers
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                  onclick="goToFamilyPage(${i})">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span class="pagination-ellipsis">...</span>`;
+    }
+  }
+
+  // Next Button
+  html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+              onclick="goToFamilyPage(${currentPage + 1})"
+              ${currentPage === totalPages ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-right"></i>
+           </button>`;
+
+  html += `</div>`;
+  html += `<div class="text-center mt-2 text-muted small">Showing page ${currentPage} of ${totalPages}</div></div>`;
+  
+  const pgEl = document.getElementById("familyPagination");
+  if(pgEl) pgEl.innerHTML = html;
+}
+
+function goToFamilyPage(page) {
+    if (!familyMembersData || familyMembersData.length === 0) return;
+    const totalPages = Math.ceil(familyMembersData.length / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    currentFamilyActivePage = page;
+    
+    let offset = (page - 1) * ITEMS_PER_PAGE;
+    renderFamilyMembers(familyMembersData.slice(offset, offset + ITEMS_PER_PAGE), offset);
+    renderFamilyPagination(familyMembersData.length, currentFamilyActivePage);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    goToFamilyPage(1);
+});
 
 // Mobile Menu Functions
 function openMobileMenu() {

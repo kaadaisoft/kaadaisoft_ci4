@@ -17,10 +17,10 @@ class PaymentsModel extends Model
         $session = session();
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
-            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
             return $query->getResultArray();
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 5 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
         return $query->getResultArray();
     }
 
@@ -322,7 +322,7 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
 
-    public function saveTaxreport($eventid, $eventname, $fromdate, $todate, $taxamount, $year, $memberid, $membermobile, $membertaluk, $name, $paymenttype, $paidamount, $bankname, $transactionid, $banknameforcheckque, $checkqueno, $upitranscationid, $cashtype, $balanceamount, $paymentdate, $wheretopay, $receivedby = null)
+    public function saveTaxreport($eventid, $eventname, $fromdate, $todate, $taxamount, $year, $memberid, $membermobile, $membertaluk, $name, $paymenttype, $paidamount, $bankname, $transactionid, $banknameforcheckque, $checkqueno, $upitranscationid, $cashtype, $balanceamount, $paymentdate, $wheretopay, $receivedby = null, $other_bank_name = null)
     {
 
         $duecount = $this->db->query("SELECT count(Familymembershipid) AS dues FROM paymentreceipts WHERE eventid = $eventid AND Familymembershipid = '$memberid'");
@@ -342,7 +342,7 @@ class PaymentsModel extends Model
 
         $updatereport = $this->db->query("UPDATE paymentreceipts SET status = null WHERE Familymembershipid = '$memberid' AND eventid = $eventid AND status = 'Pending'");
 
-        $savereceipt = $this->db->query("INSERT INTO paymentreceipts (eventid,eventname,fromdate,todate,year,Familymembershipid,Membername,Mobile,MemberTaluk,Taxamount,paymentdate,dues,paidamount,Collectedamount,balanceamount,paymenttype,bankname,transactionid,banknameforcheckque,checkqueno,upitransactionid,wheretopay,status,receivedby) VALUES($eventid,'$eventname','$fromdate','$todate',$year,'$memberid','$name',$membermobile,'$membertaluk',$taxamount,'$paymentdate',$currentdue,$paidamount,$collectedamount,$balanceamount,'$paymenttype','$bankname','$transactionid','$banknameforcheckque','$checkqueno','$upitranscationid','$wheretopay','$status','$receivedby')");
+        $savereceipt = $this->db->query("INSERT INTO paymentreceipts (eventid,eventname,fromdate,todate,year,Familymembershipid,Membername,Mobile,MemberTaluk,Taxamount,paymentdate,dues,paidamount,Collectedamount,balanceamount,paymenttype,bankname,transactionid,banknameforcheckque,checkqueno,upitransactionid,wheretopay,status,receivedby,other_bank_name) VALUES($eventid,'$eventname','$fromdate','$todate',$year,'$memberid','$name',$membermobile,'$membertaluk',$taxamount,'$paymentdate',$currentdue,$paidamount,$collectedamount,$balanceamount,'$paymenttype','$bankname','$transactionid','$banknameforcheckque','$checkqueno','$upitranscationid','$wheretopay','$status','$receivedby','$other_bank_name')");
         if ($updatereport && $savereceipt) {
             return $currentdue;
         } else {

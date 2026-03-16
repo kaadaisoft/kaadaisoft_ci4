@@ -294,7 +294,7 @@ class Payments extends BaseController {
         if($initialindex < 0){
            $initialindex = 0;
         } 
-        $counts = $initialindex * 5;
+        $counts = $initialindex * 10;
         $this->session->set('paymentpagecounts',$counts);
         $totalpayers = $this->paymentsModel->getTotalmembers();
         if($counts > $totalpayers){
@@ -559,51 +559,52 @@ class Payments extends BaseController {
         if(!$this->session->has('Kaadaisoft_userId')){
             return redirect()->to('/');
         }
-         $path = $this->request->getPost("path");   
-         $eventid = $this->request->getPost("eventid");   
-         $memberid = $this->request->getPost("memberid");
-         $membertaluk = $this->request->getPost("membertaluk");
-         $membermobile = $this->request->getPost("membermobile"); 
-         $name = $this->request->getPost("membername");
-         $paidamount = $this->request->getPost("paidamount");
-         $paymenttype = $this->request->getPost("paymenttype");
-         $bankname = $this->request->getPost("bankname");
-         $transactionid = $this->request->getPost("transactionid");
-         $banknameforcheckque = $this->request->getPost("banknameforcheckque");
-         $checkqueno = $this->request->getPost("checkqueno");
-         $upitranscationid = $this->request->getPost("upitransactionid");
-         $cashtype = $this->request->getPost("cashtype");
-         $balanceamount = $this->request->getPost("balanceamount");
-         $paymentdate = $this->request->getPost("paymentdate");
-         $wheretopay = $this->request->getPost("where");
-         $receivedby = $this->request->getPost("receivedby");
+          $path = $this->request->getPost("path");   
+          $eventid = $this->request->getPost("eventid");   
+          $memberid = $this->request->getPost("memberid");
+          $membertaluk = $this->request->getPost("membertaluk");
+          $membermobile = $this->request->getPost("membermobile"); 
+          $name = $this->request->getPost("membername");
+          $paidamount = $this->request->getPost("paidamount");
+          $paymenttype = $this->request->getPost("paymenttype");
+          $bankname = $this->request->getPost("bankname");
+          $transactionid = $this->request->getPost("transactionid");
+          $banknameforcheckque = $this->request->getPost("banknameforcheckque");
+          $other_bank_name = $this->request->getPost("other_bank_name");
+          $checkqueno = $this->request->getPost("checkqueno");
+          $upitranscationid = $this->request->getPost("upitransactionid");
+          $cashtype = $this->request->getPost("cashtype");
+          $balanceamount = $this->request->getPost("balanceamount");
+          $paymentdate = $this->request->getPost("paymentdate");
+          $wheretopay = $this->request->getPost("where");
+          $receivedby = $this->request->getPost("receivedby");
 
-         // Check if already paid
-         $paydetails = $this->paymentsModel->getPaydetails($memberid, $eventid);
-         $current_paid = $paydetails->paidamount ?? 0;
-         $eventdata = $this->paymentsModel->getEventdata($eventid);
-         $tax_amount = $eventdata->TaxAmount;
+          // Check if already paid
+          $paydetails = $this->paymentsModel->getPaydetails($memberid, $eventid);
+          $current_paid = $paydetails->paidamount ?? 0;
+          $eventdata = $this->paymentsModel->getEventdata($eventid);
+          $tax_amount = $eventdata->TaxAmount;
 
-         if (($tax_amount - $current_paid) <= 0) {
-            $this->session->setFlashdata('error', 'You have already fully paid for this event.');
-            return redirect()->back()->withInput();
-         }
+          if (($tax_amount - $current_paid) <= 0) {
+             $this->session->setFlashdata('error', 'You have already fully paid for this event.');
+             return redirect()->back()->withInput();
+          }
 
-         if ($paidamount <= 0) {
-            $this->session->setFlashdata('error', 'Paid amount must be greater than zero.');
-            return redirect()->back()->withInput();
-         }
+          if ($paidamount <= 0) {
+             $this->session->setFlashdata('error', 'Paid amount must be greater than zero.');
+             return redirect()->back()->withInput();
+          }
 
-         $geteventdata = $this->paymentsModel->getEventdata($eventid);
-         $eventname = $geteventdata->EventName;
-         $fromdate = $geteventdata->From_date;
-         $todate = $geteventdata->To_date;
-         $taxamount = $geteventdata->TaxAmount;
-         $year = $geteventdata->Year;
+          $geteventdata = $this->paymentsModel->getEventdata($eventid);
+          $eventname = $geteventdata->EventName;
+          $fromdate = $geteventdata->From_date;
+          $todate = $geteventdata->To_date;
+          $taxamount = $geteventdata->TaxAmount;
+          $year = $geteventdata->Year;
 
-         $savereceipt = $this->paymentsModel->saveTaxreport($eventid,$eventname,$fromdate,$todate,$taxamount,$year,$memberid,$membermobile,$membertaluk,$name,$paymenttype,$paidamount,$bankname,$transactionid,$banknameforcheckque,$checkqueno,$upitranscationid,$cashtype,$balanceamount,$paymentdate,$wheretopay,$receivedby);
+          $savereceipt = $this->paymentsModel->saveTaxreport($eventid,$eventname,$fromdate,$todate,$taxamount,$year,$memberid,$membermobile,$membertaluk,$name,$paymenttype,$paidamount,$bankname,$transactionid,$banknameforcheckque,$checkqueno,$upitranscationid,$cashtype,$balanceamount,$paymentdate,$wheretopay,$receivedby, $other_bank_name);
 
-         if($path == "paymentform"){
+          if($path == "paymentform"){
             $userdata = array("userreceiptid"=>$memberid,"userdue"=>$savereceipt,"usereventid"=>$eventid);
             $this->session->set("userreceiptid",$memberid);
             $this->session->set("userdue",$savereceipt);
@@ -612,14 +613,14 @@ class Payments extends BaseController {
             return redirect()->to("paymentreceiptpdf"); // Route? "Payments/paymentReceiptpdf"?
             // Original `redirect("paymentreceiptpdf")`.
             // Check Routes later. Assuming routed.
-         }
-         else{
+          }
+          else{
             $this->session->set("paymentsuccessstatus","Receipt added successfully");
             $this->session->set("userreceiptid",$memberid);
             $this->session->set("userdue",$savereceipt);
             $this->session->set("usereventid",$eventid);
             return redirect()->to("filteredusers");
-         }
+          }
     }          
     
    

@@ -488,6 +488,61 @@
       color: white;
       transform: translateY(-2px);
     }
+
+    /* Premium Pagination Styling */
+    .pagination-wrapper {
+      margin-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .pagination-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .pagination-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      color: #3b82f6;
+      transform: translateY(-1px);
+    }
+    .pagination-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+    .pagination-ellipsis {
+      color: #94a3b8;
+      padding: 0 4px;
+    }
+    .pagination-info {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 1rem;
+      text-align: center;
+    }
     </style>
 </head>
 <body>
@@ -702,55 +757,14 @@
                 ?>
           </div> 
 
-          <div class='d-flex justify-content-center container-fluid'> <!-----------------pagination---------------------->
-            <div class="col-md-6 d-flex justify-content-around align-items-center">
-              <?php 
-              $displayCounts = $newcounts ?? $counts ?? 0;
-              $currentIndex = $initialindex ?? 0;
-              $countsperpage = 5;
-
-              if ($displayCounts > 0) {
-                  $totalpages = ceil($displayCounts / $countsperpage);
-                  $lastindex = 5;
-                  
-                  // Calculate range of pages to show
-                  $startPage = floor($currentIndex / $lastindex) * $lastindex;
-                  $endPage = min($startPage + $lastindex, $totalpages);
-
-                  // Back Arrow
-                  $prevIndex = max(0, $startPage - $lastindex);
-                  echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$prevIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;' class='text-dark text-decoration-none'><i id= 'arrow' class='fa-solid fa-arrow-left-long'></i></a>";
-
-                  // Page Buttons
-                  for ($p = $startPage; $p < $endPage; $p++) {
-                      $pageno = $p + 1;
-                      $count_offset = $p * $countsperpage;
-                      $activeClass = ($p == $currentIndex) ? 'active-page' : '';
-                      
-                      $js_index = $p - $startPage;
-                       echo "<button style='width:35px;height:35px;' onclick='displayFiltermembers($count_offset, $js_index, \"" . $filterlist['talukname'] . "\", \"" . $filterlist['eventid'] . "\", \"" . $filterlist['paymentstatus'] . "\", \"" . ($filterlist['panchayatname'] ?? '') . "\", \"" . ($filterlist['villagename'] ?? '') . "\")' class='$activeClass pagination-link rounded-circle'>$pageno</button>";
-                  }
-
-                  // Last Page Skip
-                  if ($totalpages > $endPage) {
-                      echo "<span>...</span>";
-                      $lastPageIndex = $totalpages - 1;
-                      echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$lastPageIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "' style='cursor:pointer;width:35px;height:35px;' class='active-page text-white text-decoration-none d-flex align-items-center justify-content-center ps-gray rounded-circle'>$totalpages</a>";
-                  }
-
-                  // Forward Arrow
-                  $nextIndex = $endPage;
-                  if ($nextIndex < $totalpages) {
-                      echo "<a href='".base_url('change-filtered-users-page-setup')."?initialindex=$nextIndex&stateid=".$filterlist['stateid']."&districtname=".$filterlist['districtname']."&talukname=". $filterlist['talukname'] . "&panchayatname=". ($filterlist['panchayatname'] ?? '') . "&villagename=". ($filterlist['villagename'] ?? '') . "&eventid=" . $filterlist['eventid'] . "&status=" . $filterlist['paymentstatus'] . "'  style='cursor:pointer;' class='text-decoration-none text-dark'><i id= 'arrow' class='fa-solid fa-arrow-right-long'></i></a>"; 
-                  }
-              }
-
-              function createarr($noofpages){
-                return range(0,$noofpages);
-              }
-              ?>
+          <div class="pagination-wrapper">
+            <div id="pagination-container" class="pagination-container">
+              <!-- Pagination buttons rendered by JS -->
             </div>
-          </div><!--------------pagination-end--------------------->
+            <div id="pagination-info" class="pagination-info">
+              <!-- Showing X to Y of Z entries -->
+            </div>
+          </div>
 
          
           </div>
@@ -906,31 +920,97 @@
         statusforpaid = status.value;
     } 
 
-    function displayFiltermembers(counts,index,talukname,eventid,status,panchayatname='',villagename=''){
-         let activepage = document.querySelectorAll(".pagination-link");
-         let l = activepage.length;
-         for(let i=0; i < l ; i++){
-          if( i == index ){
-              activepage[i].classList.add("active-page")
-          }
-          else{
-            if(activepage[i].classList.contains("active-page")){
-               activepage[i].classList.remove("active-page")
-            }
-          }   
-         } 
+    const ITEMS_PER_PAGE = 5;
+    let currentTotalCount = <?= $newcounts ?? $counts ?? 0 ?>;
+    let currentActivePage = <?= ($initialindex ?? 0) + 1 ?>;
+
+    // Filter params needed for AJAX
+    const filterParams = {
+        talukname: "<?= $filterlist['talukname'] ?? '' ?>",
+        eventid: "<?= $filterlist['eventid'] ?? '' ?>",
+        status: "<?= $filterlist['paymentstatus'] ?? '' ?>",
+        panchayatname: "<?= $filterlist['panchayatname'] ?? '' ?>",
+        villagename: "<?= $filterlist['villagename'] ?? '' ?>"
+    };
+
+    $(document).ready(function() {
+      renderPagination(currentTotalCount, currentActivePage);
+    });
+
+    function renderPagination(totalCount, activePage) {
+      const container = document.getElementById('pagination-container');
+      const info = document.getElementById('pagination-info');
+      if (!container || totalCount <= 0) {
+        if (container) container.innerHTML = '';
+        if (info) info.innerHTML = totalCount === 0 ? '<div class="mt-5 text-muted">No Record Found</div>' : '';
+        return;
+      }
+
+      const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+      let html = '';
+
+      html += `<button onclick="goToPage(${activePage - 1})" class="pagination-btn ${activePage === 1 ? 'disabled' : ''}" ${activePage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+               </button>`;
+
+      let startPage = Math.max(1, activePage - 2);
+      let endPage = Math.min(totalPages, startPage + 4);
+      
+      if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+      }
+
+      if (startPage > 1) {
+        html += `<button onclick="goToPage(1)" class="pagination-btn">1</button>`;
+        if (startPage > 2) html += `<span class="pagination-ellipsis">...</span>`;
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="goToPage(${i})" class="pagination-btn ${i === activePage ? 'active' : ''}">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<span class="pagination-ellipsis">...</span>`;
+        html += `<button onclick="goToPage(${totalPages})" class="pagination-btn">${totalPages}</button>`;
+      }
+
+      html += `<button onclick="goToPage(${activePage + 1})" class="pagination-btn ${activePage === totalPages ? 'disabled' : ''}" ${activePage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+               </button>`;
+
+      container.innerHTML = html;
+
+      const start = (activePage - 1) * ITEMS_PER_PAGE + 1;
+      const end = Math.min(activePage * ITEMS_PER_PAGE, totalCount);
+      info.innerHTML = `Showing <span class="fw-bold text-dark">${start}</span> to <span class="fw-bold text-dark">${end}</span> of <span class="fw-bold text-dark">${totalCount}</span> entries`;
+    }
+
+    function goToPage(page) {
+      if (page < 1) return;
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      
       $.ajax({
-        type:"post",
-        url:"<?= base_url('payments-filter/display-filter-members') ?>",
-        data:{"count":counts,"talukname":talukname,"eventid":eventid,"status":status,"panchayatname":panchayatname,"villagename":villagename},
-        success:function(result){
-            document.getElementById('filteredmembers').innerHTML = result;
+        type: "post",
+        url: "<?= base_url('payments-filter/display-filter-members') ?>",
+        data: {
+            "count": offset,
+            "talukname": filterParams.talukname,
+            "eventid": filterParams.eventid,
+            "status": filterParams.status,
+            "panchayatname": filterParams.panchayatname,
+            "villagename": filterParams.villagename
         },
-        error:function(err){
-          console.log(err)
-          // document.getElementById('ps-members').innerHTML = err;
+        success: function (result) {
+          document.getElementById('filteredmembers').innerHTML = result;
+          currentActivePage = page;
+          renderPagination(currentTotalCount, currentActivePage);
+          document.getElementById('paymentdetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
+        error: function (error) {
+          console.error(error);
+          document.getElementById('filteredmembers').innerHTML = "<tr><td colspan='8' class='text-center text-danger'>Error loading data.</td></tr>";
         }
-      })
+      });
     }
 
     function applyFilter(){
