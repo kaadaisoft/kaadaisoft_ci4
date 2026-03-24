@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paymentform</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -244,166 +246,190 @@
          
          <div id="mobile-paymentform" class='container-fluid mt-3 px-4' style='max-width: 1200px; margin: 0 auto;'> <!--------------payment-form-start------->
             <?php if(isset($memberdetail)):?>
-            <form method="POST" autocomplete="off" action="<?=base_url("payments/save-tax-receipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border py-4 rounded-3 d-flex flex-column">
+        <form method="POST" autocomplete="off" action="<?=base_url("payments/save-tax-receipt")?>" id="paymentform" name="paymentform" class="bg-white container-fluid border-0 shadow py-4 px-4 rounded-3 d-flex flex-column">
 
-                <h3 class='text-center ps-logo-text'>Payment Details</h3>
-                <input id="path" name="path" hidden class="container-fluid border rounded" type="text" readonly value="paymentform">
-                <input id="memberid" name="memberid" hidden class="container-fluid border rounded" type="text" readonly value="<?=$memberdetail->Familymembershipid?>">
-                <input id="membername" name="membername" hidden class="container-fluid border rounded" type="text" readonly value="<?=$memberdetail->Name?>">
-                <input name="membertaluk" hidden class="container-fluid border rounded" type="text" readonly value="<?=$memberdetail->Taluk?>">
-                <input name="membermobile" hidden class="container-fluid border rounded" type="text" readonly value="<?=$memberdetail->Phonenumber?>">
-
-              <div class="row"><!--------------row-start--------------->
-              <div class="col-md-4"><!--------------col-1------------------------>
-              <div class='col-md-12 d-flex py-2'>
-              
-              <table class="table table-borderless">
-                  <tr>
-                  <th><label for="name">Name:</label></th><td style="font-weight:500;"><?=$memberdetail->Name?></td>
-                  </tr>
-                  <tr>
-                    <th><label for="userid">Familymembership Id:</label></th><td class="fw-bold text-primary"><span><?=$memberdetail->Familymembershipid?></span> </td>
-                  </tr>
-                  <tr>
-                    <th> <label for="address">Address:</label></th>
-                    <td><?php 
-                        echo 
-                        "<address>
-                         Ph: $memberdetail->Phonenumber, 
-                         D/No: $memberdetail->Doornumber,
-                         $memberdetail->Street,
-                         $memberdetail->Village,
-                         $memberdetail->Panchayat,
-                         $memberdetail->Taluk,
-                         $memberdetail->District,
-                         $memberdetail->State - $memberdetail->Pincode
-                         </address>";
-                         ?></td>
-                  </tr>
-                
-              </table>
-              </div><!-----------------1---------------->
-
-              </div><!-------------col-1-end-------------------->
-
-            <div class="col-md-4 py-2"><!----------------col-2-start--------------->
-            <div class="col-md-12 py-2">
-            <label class="container-fluid" for="aadhar">Choose Event Year:<br>
-            <select onchange="getEvents(this,'<?=$memberdetail->Familymembershipid?>')" class='container-fluid border rounded' name='eventyear' id='eventnames'>
-            <option value="">Choose Year</option>
-            <option value="">Search Event</option>
-            <?php if(isset($eventyears))
-            foreach ($eventyears as $key => $value) {
-                $selected = (isset($preselected_year) && $preselected_year == $value['Year']) ? 'selected' : '';
-                echo "<option value='$value[Year]' $selected>$value[Year]</option>";
-            }
-            ?>
-            </select>
-            </label>
-            </div><!-----------------1---------------->
-            <div id ="showevents" class="col-md-12 py-2">
-            <input hidden class='container-fluid border rounded' name="eventid" id='eventid' required>
-            <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose events: <br>
-            <input onkeyup="searchEvents(this)" class='container-fluid border rounded' id='eventname' required>
-            <div id="eventsearchresult" style="visibility:hidden;overflow-x:auto;position:absolute;box-sizing:border-box;" class="d-flex flex-column py-2 ps-3 mt-2 rounded-3 border shadow-sm bg-white">
+            <div class="text-center mb-4 pb-3 border-bottom">
+                <h3 class='ps-logo-text fw-bold'><i class="fas fa-file-invoice-dollar me-2"></i> Payment Details</h3>
             </div>
-            </label>
-            </div><!-----------------2------------------>
-
-            <div class="col-md-12 py-2">
-            <label class="container-fluid d-flex flex-column" for="payamount">Pay: <br>
-            <input readonly class="container-fluid border rounded" type="text" id="pay" name="paidamount" 
-                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 0 && this.value[0] === '0') this.value = this.value.replace(/^0+/, ''); if(this.value.length > 10) this.value = this.value.substring(0, 10);" 
-                   onkeyup="calculateBalance(this,'balance')" required>
-            <small id="payalert" class="fw-normal" style="color:red;"></small>
-            </label>
-            </div><!-----------------3---------------->
-
-            <div class="d-flex py-2 container-fluid"><!-----------------3------------------>
-            <label for="paymentdate">Payment Date:&nbsp;&nbsp;</label>
-            <input name="paymentdate" hidden class="container-fluid border rounded" type="text" readonly value="<?php echo date("Y-m-d");?>">
-            <span class="fw-bold"><?php echo date("Y/m/d");?></span>
             
-             </div><!------------------3-end------------------------->
-             
+            <input id="path" name="path" hidden type="text" readonly value="paymentform">
+            <input id="memberid" name="memberid" hidden type="text" readonly value="<?=$memberdetail->Familymembershipid?>">
+            <input id="membername" name="membername" hidden type="text" readonly value="<?=$memberdetail->Name?>">
+            <input name="membertaluk" hidden type="text" readonly value="<?=$memberdetail->Taluk?>">
+            <input name="membermobile" hidden type="text" readonly value="<?=$memberdetail->Phonenumber?>">
 
-              </div><!-----------------col-2-end------------------->
+          <div class="row g-4 mb-4"><!--------------row-start--------------->
+          
+          <div class="col-md-4"><!--------------col-1------------------------>
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                  <div class="card-body">
+                      <h5 class="card-title text-primary mb-3 border-bottom pb-2"><i class="fas fa-user-circle me-2"></i>Member Info</h5>
+                      <table class="table table-borderless table-sm mb-0">
+                          <tr>
+                            <th class="text-muted w-25"><label>Name:</label></th>
+                            <td class="fw-bold text-dark"><?=$memberdetail->Name?></td>
+                          </tr>
+                          <tr>
+                            <th class="text-muted"><label>ID:</label></th>
+                            <td class="fw-bold text-primary"><?=$memberdetail->Familymembershipid?></td>
+                          </tr>
+                          <tr>
+                            <th class="text-muted align-top"><label>Address:</label></th>
+                            <td class="text-secondary small">
+                                <address class="mb-0 lh-sm">
+                                 <i class="fas fa-phone-alt me-1 text-muted"></i> <?=$memberdetail->Phonenumber?><br>
+                                 <i class="fas fa-map-marker-alt me-1 text-muted"></i> <?=$memberdetail->Doornumber?>, <?=$memberdetail->Street?>,<br>
+                                 <?=$memberdetail->Village?>, <?=$memberdetail->Panchayat?>,<br>
+                                 <?=$memberdetail->Taluk?>, <?=$memberdetail->District?>,<br>
+                                 <?=$memberdetail->State?> - <?=$memberdetail->Pincode?>
+                                </address>
+                            </td>
+                          </tr>
+                      </table>
+                  </div>
+              </div>
+          </div><!-------------col-1-end-------------------->
 
-              <div id="taxdetails" class="col-md-4 py-2"><!-----------------col-3-start------------------->
+          <div class="col-md-4"><!----------------col-2-start--------------->
+              <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                      <h5 class="card-title text-primary mb-3 border-bottom pb-2"><i class="fas fa-calendar-check me-2"></i>Event Info</h5>
+                      <div class="mb-3">
+                          <label class="form-label fw-bold small text-muted">Event Year</label>
+                          <select onchange="getEvents(this,'<?=$memberdetail->Familymembershipid?>')" class='form-select form-select-sm shadow-sm' name='eventyear' id='eventnames'>
+                              <option value="">Choose Year</option>
+                              <?php if(isset($eventyears))
+                              foreach ($eventyears as $key => $value) {
+                                  $selected = (isset($preselected_year) && $preselected_year == $value['Year']) ? 'selected' : '';
+                                  echo "<option value='$value[Year]' $selected>$value[Year]</option>";
+                              }
+                              ?>
+                          </select>
+                      </div>
+                      <div id="showevents" class="mb-3 position-relative">
+                          <input hidden name="eventid" id='eventid' required>
+                          <label id="eventnamelabel" class="form-label fw-bold small text-muted w-100">Event
+                              <input onkeyup="searchEvents(this)" class='form-control form-control-sm shadow-sm' id='eventname' placeholder="Search Event..." required>
+                              <div id="eventsearchresult" style="visibility:hidden; max-height: 200px; overflow-y: auto; z-index: 1000;" class="position-absolute w-100 mt-1 rounded-3 border shadow bg-white">
+                              </div>
+                          </label>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label class="form-label fw-bold small text-muted w-100">Pay Amount <span class="text-danger">*</span>
+                              <div class="input-group input-group-sm shadow-sm">
+                                  <span class="input-group-text bg-white text-muted">₹</span>
+                                  <input class="form-control" type="text" id="pay" name="paidamount" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 0 && this.value[0] === '0') this.value = this.value.replace(/^0+/, ''); if(this.value.length > 10) this.value = this.value.substring(0, 10);" onkeyup="calculateBalance(this,'balance')" required>
+                              </div>
+                              <small id="payalert" class="fw-normal text-danger d-block mt-1"></small>
+                          </label>
+                      </div>
+                      
+                      <div class="d-flex align-items-center bg-light p-2 rounded-3 border">
+                          <i class="far fa-calendar-alt text-primary me-2"></i>
+                          <span class="text-muted small me-2">Date:</span>
+                          <input name="paymentdate" hidden type="text" readonly value="<?php echo date("Y-m-d");?>">
+                          <span class="fw-bold text-dark"><?php echo date("d M Y");?></span>
+                      </div>
+                  </div>
+              </div>
+          </div><!-----------------col-2-end------------------->
 
-              <div class="col-md-12 py-2">
-              <label class="container-fluid" for="taxamount">Total Amount: <br>
-              <input readonly class="border rounded container-fluid">
-              </label>
-               </div><!-----------------1---------------->
+          <div id="taxdetails" class="col-md-4"><!-----------------col-3-start------------------->
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                  <div class="card-body">
+                      <h5 class="card-title text-primary mb-3 border-bottom pb-2"><i class="fas fa-rupee-sign me-2"></i>Summary</h5>
+                      
+                      <div class="mb-3">
+                          <label class="form-label fw-bold small text-muted">Total Amount</label>
+                          <div class="input-group input-group-sm shadow-sm">
+                              <span class="input-group-text bg-white text-muted">₹</span>
+                              <input readonly class="form-control bg-white" id="taxamount" value="">
+                          </div>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label class="form-label fw-bold small text-muted">Already Paid</label>
+                          <div class="input-group input-group-sm shadow-sm">
+                              <span class="input-group-text bg-white text-success">₹</span>
+                              <input id="prevpaid" name="prevpaid" readonly class="form-control bg-white text-success fw-bold" type="text">
+                          </div>
+                      </div>
+                      
+                      <div class="mb-1">
+                          <label class="form-label fw-bold small text-muted">Balance Amount</label>
+                          <div class="input-group input-group-sm shadow-sm">
+                              <span class="input-group-text bg-white text-danger">₹</span>
+                              <input id="balance" name="balanceamount" readonly class="form-control bg-white text-danger fw-bold" type="text">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div><!-----------------col-3-end------------------->
 
+          </div><!-------------row-end---------------------->
+         
+          <div class="card border-0 shadow-sm mb-4"><!------------payment-type------------>
+              <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                  <h5 class="text-primary fw-bold mb-0"><i class="fas fa-wallet me-2"></i>Payment Method</h5>
+              </div>
+              <div class="card-body">
+                  <div class="row g-3">
+                      <div class="col-12">
+                          <div class="d-flex flex-wrap gap-3 p-3 bg-light rounded-3 border">
+                              <div class="form-check form-check-inline me-4">
+                                  <input class="form-check-input" type="radio" name="paymenttype" id="payBank" value="bank" onclick="getPaymentmethod(this)" required>
+                                  <label class="form-check-label fw-bold" style="cursor:pointer;" for="payBank"><i class="fas fa-university text-primary me-1"></i> Bank</label>
+                              </div>
+                              <div class="form-check form-check-inline me-4">
+                                  <input class="form-check-input" type="radio" name="paymenttype" id="payCheque" value="checkque" onclick="getPaymentmethod(this)" required>
+                                  <label class="form-check-label fw-bold" style="cursor:pointer;" for="payCheque"><i class="fas fa-money-check text-info me-1"></i> Cheque</label>
+                              </div>
+                              <div class="form-check form-check-inline me-4">
+                                  <input class="form-check-input" type="radio" name="paymenttype" id="payUpi" value="upi" onclick="getPaymentmethod(this)" required>
+                                  <label class="form-check-label fw-bold" style="cursor:pointer;" for="payUpi"><i class="fas fa-qrcode text-success me-1"></i> UPI</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                  <input class="form-check-input" type="radio" name="paymenttype" id="payCash" value="cash" onclick="getPaymentmethod(this)" required>
+                                  <label class="form-check-label fw-bold" style="cursor:pointer;" for="payCash"><i class="fas fa-money-bill-wave text-success me-1"></i> Cash</label>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <div id="getpaymentdetail" class="mt-3">
+                      <!-- Payment method specific details will load here -->
+                  </div>
+                  
+              </div>
+          </div><!------------payment-type------------>  
 
-              <div class="col-md-12 py-2">
-              <label class="container-fluid" for="balanceamount">Paid Amount:
-              <input id="prevpaid" name="paidamount" readonly class="container-fluid border rounded" type="number">
-              </label>
-              </div><!-----------------2---------------->
+          <div class="card border-0 shadow-sm mb-4">
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col-md-7 mb-3 mb-md-0">
+                          <label class="form-label fw-bold text-dark" for="receivedby"><i class="fas fa-user-check me-2 text-primary"></i><span id="receivedby_label">Person Received the Money</span> <span class="text-danger">*</span></label>
+                          <input type="text" name="receivedby" id="receivedby" class="form-control form-control-lg border rounded-3 shadow-sm bg-light" placeholder="Enter name of receiver" required>
+                      </div>
+                      <div class="col-md-5 d-flex align-items-center justify-content-md-end">
+                          <div class="form-check mt-md-4">
+                              <input class="form-check-input shadow-sm" style="width: 1.5rem; height: 1.5rem;" type="checkbox" id="checkpaymentdetails" onchange="enablesubmitbutton(this)">
+                              <label class="form-check-label ms-2 pt-1 fw-bold text-success" style="cursor:pointer;" for="checkpaymentdetails">
+                                  Confirm Details
+                              </label>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-              <div class="col-md-12 py-2">
-              <label class="container-fluid" for="balanceamount">Balance Amount:
-              <input id="balance" name="balanceamount" readonly class="container-fluid border rounded" type="text">
-              </label>
-              </div><!-----------------3---------------->
-             
+          <div class="text-center mb-5">
+              <button id="savereceipt" name="savereceipt" type="submit" disabled class="btn btn-primary btn-lg px-5 py-2 rounded-pill shadow fw-bold w-100" style="opacity:0.6; max-width: 300px; transition: opacity 0.3s;"><i class="fas fa-check-circle me-2"></i> Save Receipt</button>
+          </div>
 
-              </div><!-----------------col-3-end------------------->
+          <div style="height: 100px;"></div> <!-- Bottom Spacer -->
 
-              </div><!-------------row-end---------------------->
-             
-              <div class="row"><!------------payment-type------------>
-              <div class="container-fluid">
-              <label class="container-fluid" for="payment">Payment Type:</label>
-              <div class="d-flex justify-content-around">
-
-              <div>
-              <label for="bank">Bank:</label>&nbsp;<input onclick="getPaymentmethod(this)"  name="paymenttype" type="radio" value="bank" required>
-              </div><!-----------------1---------------->
-
-              <div>
-              <label for="checkque">Cheque:</label>&nbsp;<input onclick="getPaymentmethod(this)" name="paymenttype" type="radio" value="checkque" required>
-             </div><!-----------------2---------------->
-
-             <div>
-             <label for="upi">UPI:</label>&nbsp;<input onclick="getPaymentmethod(this)" name="paymenttype" type="radio" value="upi" required>
-             </div><!-----------------3---------------->
-
-             <div>
-             <label for="cash">Cash:</label>&nbsp;<input onclick="getPaymentmethod(this)" name="paymenttype" type="radio" value="cash" required>
-             </div><!-----------------4---------------->
-
-      </div>
-
-      <div id="getpaymentdetail" class="container-fluid py-2">
-
-      </div>
-
-      <div class="row pt-2 px-3">
-        <div class="col-md-6 mb-3">
-            <label class="form-label" for="receivedby"><i class="fas fa-user-check me-2 text-primary"></i><span id="receivedby_label">Person Received the Money</span></label>
-            <input type="text" name="receivedby" id="receivedby" class="form-control border rounded-pill py-3 px-4" placeholder="Enter name of receiver" required>
-        </div>
-      </div>
-
-      <div class="container-fluid">
-      <div class="d-flex mt-3">
-      <input type="checkbox" onchange="enablesubmitbutton(this)">&nbsp;&nbsp;<label for="checkpaymentdetails">Above details are correct.</label> 
-      </div>
-      </div>
-      </div>
-      </div><!------------payment-type------------>  
-
-      <div class="text-center mt-3 pb-5">
-      <button id="savereceipt" name="savereceipt" style="opacity:0.4;" type="submit" disabled class="rounded-3 px-3 py-1">Save Receipt</button>
-      </div>
-      
-      <div style="height: 100px;"></div> <!-- Bottom Spacer -->
-
-            </form>
+        </form>
             
           <?php endif; ?>  
          </div><!------------payment-form-end----------------------------->
@@ -687,74 +713,75 @@ const BankList = [
 
       if(paymenttype == "bank"){
          if(receivedLabel) receivedLabel.innerText = "Person recorded the payment";
-         document.getElementById("getpaymentdetail").innerHTML = `<div><label>
-         Choose bank: <br>
-         <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="bankname" id="banklist" required>  
+         document.getElementById("getpaymentdetail").innerHTML = `<div class="mb-3"><label class="form-label fw-bold small text-muted">
+         Choose bank: <span class="text-danger">*</span></label>
+         <select onchange="checkOtherBank(this)" class='form-select shadow-sm' name="bankname" id="banklist" required>  
          <option value="">Choose bank</option>
          ${choosebank} 
          </select>
-         </label></div>
-         <div id="other_bank_div" style="display:none;" class='pt-2'>
-         <label>
-         Other Bank Name:
-         <input name='other_bank_name' id="other_bank_name" class="border rounded" type="text">
-         </label>
          </div>
-         <div class='pt-2'>
-         <label>
-         Transaction Id:
-         <input name='transactionid' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
-         </label>
+         <div id="other_bank_div" style="display:none;" class='mb-3'>
+         <label class="form-label fw-bold small text-muted">
+         Other Bank Name: <span class="text-danger">*</span></label>
+         <input name='other_bank_name' id="other_bank_name" class="form-control shadow-sm" type="text">
+         </div>
+         <div class='mb-3'>
+         <label class="form-label fw-bold small text-muted">
+         Transaction Id: <span class="text-danger">*</span></label>
+         <input name='transactionid' class="form-control shadow-sm" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" placeholder="Enter Transaction ID" required>
          </div>
          `;
       }
       else if(paymenttype == "checkque"){
         if(receivedLabel) receivedLabel.innerText = "Person received the cheque";
-        document.getElementById("getpaymentdetail").innerHTML = `<div><label>
-         Choose bank: <br>
-         <select onchange="checkOtherBank(this)" class='container-fluid border rounded' name="banknameforcheckque" id="banklist" required>  
+        document.getElementById("getpaymentdetail").innerHTML = `<div class="mb-3"><label class="form-label fw-bold small text-muted">
+         Choose bank: <span class="text-danger">*</span></label>
+         <select onchange="checkOtherBank(this)" class='form-select shadow-sm' name="banknameforcheckque" id="banklist" required>  
          <option value="">Choose bank</option>
          ${choosebank} 
          </select>
-         </label></div>
-         <div id="other_bank_div" style="display:none;" class='pt-2'>
-         <label>
-         Other Bank Name:
-         <input name='other_bank_name' id="other_bank_name" class="border rounded" type="text">
-         </label>
          </div>
-         <div class='pt-2'>
-         <label> 
-         Checkque No: 
-         <input name='checkqueno' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
-         </label>
+         <div id="other_bank_div" style="display:none;" class='mb-3'>
+         <label class="form-label fw-bold small text-muted">
+         Other Bank Name: <span class="text-danger">*</span></label>
+         <input name='other_bank_name' id="other_bank_name" class="form-control shadow-sm" type="text">
+         </div>
+         <div class='mb-3'>
+         <label class="form-label fw-bold small text-muted"> 
+         Cheque No: <span class="text-danger">*</span></label>
+         <input name='checkqueno' class="form-control shadow-sm" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" placeholder="Enter Cheque Number" required>
          </div>`;
       }
       else if(paymenttype == "upi") {
         if(receivedLabel) receivedLabel.innerText = "Person recorded the transaction after payment is confirmed";
         document.getElementById("getpaymentdetail").innerHTML = `
-        <div class="d-flex flex-column align-items-center">
-         <img class="p-2 border rounded" style="width:250px;height:250px;" src="assets/otherdocuments/qrscan.png"> <br/>
-         <label>
-         Enter Transaction Id: 
-         <input name='upitransactionid' class="border rounded" type="text" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
+        <div class="d-flex flex-column align-items-center mb-3">
+         <div class="qr-poster-container text-center mb-4">
+             <img class="img-fluid p-2 border rounded shadow-sm bg-white" style="max-width:320px; height:auto; transition: transform 0.3s ease-in-out;" src="<?= base_url('assets/otherdocuments/qrscan.jpeg') ?>" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+             <div class="mt-3">
+                 <small class="text-muted d-block mb-1">UPI ID:</small>
+                 <strong class="text-primary fs-5">KADAIKULANARPANIMANDRAM@iob</strong>
+             </div>
+         </div>
+         <label class="w-100 text-center">
+             <span class="d-block mb-2 fw-bold text-dark">Enter Transaction Id:</span>
+             <input name='upitransactionid' class="form-control border rounded-pill py-2 px-4 shadow-sm mx-auto" style="max-width:300px;" type="text" placeholder="TXN12345678" pattern="[a-zA-Z0-9]+" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" title="Only alphanumeric characters are allowed" required>
          </label>
-         </div>`;
+        </div>`;
       }
       else if(paymenttype == "cash"){
         if(receivedLabel) receivedLabel.innerText = "Person Received the Money";
         document.getElementById("getpaymentdetail").innerHTML = `
-        <div>
-         <label>
-         Where to pay: <br>
-         <select name='where' class="container-fluid border rounded" type="text" required>
-           <option value=''>Choose Where</option>
-           <option value='InHome'>InHome</option>
-           <option value='InTemple'>InTemple</option>
-           <option value='coordinator'>Coordinator</option>
-           <option value='manager'>Manager</option>
+        <div class="mb-3">
+         <label class="form-label fw-bold small text-muted">
+         Where to pay: <span class="text-danger">*</span></label>
+         <select name='where' class="form-select shadow-sm" required>
+            <option value=''>Choose Where</option>
+            <option value='InHome'>InHome</option>
+            <option value='InTemple'>InTemple</option>
+            <option value='coordinator'>Coordinator</option>
+            <option value='manager'>Manager</option>
          </select>
-         </label>
          </div>`;
       }
       }
@@ -786,11 +813,11 @@ const BankList = [
     function getEvents(years,memberid){
       let year = years.value;
       if(year == ""){
-        document.getElementById("showevents").innerHTML = `<input hidden class='container-fluid border rounded' name="eventid" id='eventid' required>
-            <label id="eventnamelabel" class="container-fluid" for="aadhar">Choose events: <br>
-            <input onkeyup="searchEvents(this)" class='container-fluid border rounded' id='eventname' required>
-            <div id="eventsearchresult" style="width:${eventsearchbarwidth}px;visibility:hidden;overflow-x:auto;position:absolute;box-sizing:border-box;" class="d-flex flex-column py-2 ps-3 mt-2 rounded-3 border shadow-sm bg-white">
-            </div>
+        document.getElementById("showevents").innerHTML = `<input hidden name="eventid" id='eventid' required>
+            <label id="eventnamelabel" class="form-label fw-bold small text-muted w-100">Event
+                <input onkeyup="searchEvents(this)" class='form-control form-control-sm shadow-sm' id='eventname' placeholder="Search Event..." required>
+                <div id="eventsearchresult" style="width:${eventsearchbarwidth}px;visibility:hidden; max-height: 200px; overflow-y: auto; z-index: 1000;" class="position-absolute w-100 mt-1 rounded-3 border shadow bg-white">
+                </div>
             </label>`;
       }
       else{

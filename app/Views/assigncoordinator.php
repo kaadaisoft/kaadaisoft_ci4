@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign coordinators</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -444,7 +446,7 @@
          
          <div id="searchmember" class="col-md-3 position-relative"><!----------member-search-start------->
             <label class="container-fluid pb-1" for="membername">Search Member
-            <input onkeyup="getMemberdata(this)" type="text" name="membername" class="border w-100" id="membername" required>
+            <input onfocus="getMemberdata(this)" onkeyup="getMemberdata(this)" type="text" name="membername" class="border w-100" id="membername" required>
             <input hidden type="text" name="memberid" class="border w-100" id="memberid" required>
             <input hidden type="text" name="taluks" class="border w-100" id="taluksarray">
             <input hidden type="text" name="assignerid" value="<?=session()->get("Kaadaisoft_userId")?>" class="border w-100" id="assignerid" required>
@@ -513,13 +515,22 @@
          </div>
          </div><!-------------------assign-coord-filter-end----------------->
 
-         <div class="mt-4"><!-------------status-filter-start------------->      
-         <div class="assign-card mb-4" style="border-top-color: #28a745;">
-         <div class="assign-card-header">
-            <h4 style="color: #28a745;"><i class="fa-solid fa-arrows-rotate me-2"></i>Reassign Coordinator</h4>
-         </div>
-         <div class="assign-card-body">
-         <form id="statusfilter" class="row assigncoordfilter" Autocomplete="off">
+          <div class="mt-4"><!-------------status-filter-start------------->      
+          <div class="assign-card mb-4" style="border-top-color: #dc3545;">
+          <div class="assign-card-header">
+             <h4 style="color: #dc3545;"><i class="fa-solid fa-user-gear me-2"></i>Reassign Coordinator</h4>
+          </div>
+          <div class="assign-card-body">
+          <form id="statusfilter" class="row assigncoordfilter" Autocomplete="off" action="<?=base_url("reassignCoordinatorProcess")?>" method="POST">
+          
+          <div id="searchcoord" class="col-md-3 position-relative"><!----------coordinator-search-start------->
+             <label class="container-fluid pb-1" for="coordinatorname">Search Coordinator
+             <input onfocus="getCoordinatordata(this)" onkeyup="getCoordinatordata(this)" type="text" name="coordinatorname" class="border w-100" id="coordinatorname" required>
+             <input hidden type="text" name="coordinatorid" class="border w-100" id="coordinatorid" required>
+             </label>
+             <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:9999;" id="searchcoordinatordata" class="bg-white border list-unstyled rounded-3 px-1 py-2">
+             </ul>
+           </div><!---------------coordinator-search-end---------------->
          
          <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateidremove">State:<br>
@@ -572,11 +583,44 @@
             </div>
             </label>
             </div>     <!------------select-villages-end----------->
-            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-success text-white w-100">Status</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-success text-white w-100">Reassign</button></div>
            </form>
           </div>
          </div>
          </div><!-------------------status-filter-end----------------->
+ 
+          <div class="mt-4"><!-------------remove-coordinator-section-start------------->
+          <div class="assign-card mb-4" style="border-top-color: #6c757d;">
+          <div class="assign-card-header">
+             <h4 style="color: #6c757d;"><i class="fa-solid fa-user-slash me-2"></i>Remove Coordinator</h4>
+          </div>
+          <div class="assign-card-body">
+          <div class="row assigncoordfilter">
+          
+          <div id="searchcoordremoval" class="col-md-4 position-relative"><!----------coordinator-search-start------->
+             <label class="container-fluid pb-1" for="coordinatornameremoval">Search Coordinator
+             <input onfocus="getCoordinatordataForRemoval(this)" onkeyup="getCoordinatordataForRemoval(this)" type="text" name="coordinatornameremoval" class="border w-100" id="coordinatornameremoval" required>
+             <input hidden type="text" name="coordinatoridremoval" class="border w-100" id="coordinatoridremoval" required>
+             </label>
+             <ul style="display:none;position:absolute;max-height:350px;overflow:auto;z-index:9999;" id="searchcoordinatordataporemoval" class="bg-white border list-unstyled rounded-3 px-1 py-2">
+             </ul>
+           </div><!---------------coordinator-search-end---------------->
+
+           <div class="col-md-2 d-flex align-items-end mb-3">
+               <button type="button" onclick="getCoordinatorStatus()" class="btn btn-secondary text-white w-100">Status</button>
+           </div>
+          </div>
+
+          <div id="coordinatorstatusdisplay" class="mt-3" style="display:none;">
+              <h5 class="border-bottom pb-2">Current Assignments</h5>
+              <div id="assignmentlist" class="table-responsive">
+                  <!-- Data will be populated here via JS -->
+              </div>
+          </div>
+
+          </div>
+          </div>
+          </div><!-------------------remove-coordinator-section-end----------------->
 
          <div class="mt-4"><!-------------add-village-filter-start------------->      
          <div class="assign-card mb-4" style="border-top-color: #17a2b8;">
@@ -1017,6 +1061,125 @@ function closeMobileMenu() {
       });
     }
 
+    function getCoordinatordata(data) {
+      let coordBox = document.getElementById("searchcoordinatordata");
+      let memberdata = data.value;
+      $.ajax({
+        type:"get",
+        url:"<?= base_url('AdminDashboard/getCoordinatorsforassign') ?>",
+        data:{"searchfields":memberdata},
+        success:function(result) {
+            coordBox.style.display = "block";
+            coordBox.innerHTML = result;
+        },
+        error:function(error){
+            coordBox.innerHTML = "Error fetching coordinators";
+        }
+      });
+    }
+
+    function reassignForcoordinator(member) {
+      document.getElementById("coordinatorname").value = member.Name;
+      document.getElementById("coordinatorid").value = member.Familymembershipid;
+      document.getElementById("searchcoordinatordata").style.display = "none";
+    }
+
+    function getCoordinatordataForRemoval(data) {
+      let coordBox = document.getElementById("searchcoordinatordataporemoval");
+      let memberdata = data.value;
+      $.ajax({
+        type:"get",
+        url:"<?= base_url('AdminDashboard/getCoordinatorsforassign') ?>",
+        data:{"searchfields":memberdata},
+        success:function(result) {
+            // Modifyonclick attribute in the result HTML to call reassignForcoordinatorRemoval
+            let customResult = result.replaceAll('reassignForcoordinator(', 'reassignForcoordinatorRemoval(');
+            coordBox.style.display = "block";
+            coordBox.innerHTML = customResult;
+        },
+        error:function(error){
+            coordBox.innerHTML = "Error fetching coordinators";
+        }
+      });
+    }
+
+    function reassignForcoordinatorRemoval(member) {
+      document.getElementById("coordinatornameremoval").value = member.Name;
+      document.getElementById("coordinatoridremoval").value = member.Familymembershipid;
+      document.getElementById("searchcoordinatordataporemoval").style.display = "none";
+    }
+
+    function getCoordinatorStatus() {
+        let coordid = document.getElementById("coordinatoridremoval").value;
+        if(!coordid) {
+            alert("Please select a coordinator first.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url('AdminDashboard/getCoordinatorAssignments') ?>",
+            data: { "memberid": coordid },
+            dataType: 'JSON',
+            success: function(response) {
+                document.getElementById("coordinatorstatusdisplay").style.display = "block";
+                let listArea = document.getElementById("assignmentlist");
+                if(response.length === 0) {
+                    listArea.innerHTML = "<p class='text-muted'>No current assignments found for this coordinator.</p>";
+                } else {
+                    let html = `<table class="table table-sm align-middle">
+                        <thead><tr><th>District</th><th>Taluk</th><th>Panchayat</th><th>Village</th><th>Action</th></tr></thead>
+                        <tbody>`;
+                    response.forEach((item, index) => {
+                        let villageObj = JSON.stringify(item);
+                        html += `<tr>
+                            <td>${item.district_name}</td>
+                            <td>${item.taluk_name}</td>
+                            <td>${item.panchayat_name}</td>
+                            <td>${item.village_name}</td>
+                            <td><button type="button" class="btn btn-sm btn-danger" onclick='removeAssignment(${villageObj}, this)'>Remove</button></td>
+                        </tr>`;
+                    });
+                    html += `</tbody></table>`;
+                    listArea.innerHTML = html;
+                }
+            },
+            error: function() {
+                alert("Error fetching coordinator assignments.");
+            }
+        });
+    }
+
+    function removeAssignment(villageData, btn) {
+        if(!confirm(`Are you sure you want to remove this coordinator from ${villageData.village_name}?`)) return;
+        
+        let coordid = document.getElementById("coordinatoridremoval").value;
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url('AdminDashboard/reassignCoordinator') ?>",
+            data: {
+                "memberid": coordid,
+                "village": villageData.village_name,
+                "panchayat": villageData.panchayat_name,
+                "taluk": villageData.taluk_name,
+                "district": villageData.district_name
+            },
+            success: function(result) {
+                if(result) {
+                    btn.closest('tr').remove();
+                    if(document.querySelectorAll('#assignmentlist tbody tr').length === 0) {
+                        document.getElementById("assignmentlist").innerHTML = "<p class='text-muted'>All assignments removed.</p>";
+                    }
+                } else {
+                    alert("Unexpected error please try again.");
+                }
+            },
+            error: function() {
+                alert("Error removing assignment.");
+            }
+        });
+    }
+
     function assignForcoordinator(member) {
     let membername = document.getElementById("membername");
     let memberid = document.getElementById("memberid");
@@ -1164,33 +1327,46 @@ function closeMobileMenu() {
      showTaluksforremove(selectedtaluksforremove);
     }
 
-     document.getElementById("statusfilter").addEventListener("submit",(event)=>{
-            event.preventDefault();
-      $.ajax({
-      type:"post",
-      url:"<?= base_url('AdminDashboard/getOverallstatus') ?>",
-      data:{"taluksforremove":JSON.stringify(selectedtaluksforremove)},
-      dataType: 'json',
-      success:(result)=>{
-        coordinatordata = [result]; // Result is now parsed by jQuery due to dataType: 'json'
-        let finaldata = coordinatordata[0]["coordinatordata"];
-        let reassignmodal = document.getElementById("reassignmodal");
-               let reassignmodalshow = new bootstrap.Modal(reassignmodal);
-               reassignmodalshow.show();
-               document.getElementById("reassignlist").innerHTML = finaldata.map((data,index)=>{
-                if(!data) return `<p class="text-danger">Village data not found or not assigned.</p>`;
-                let villageHierarchy = JSON.stringify({village: data.village_name, panchayat: data.panchayat_name, taluk: data.taluk_name, district: data.district_name});
-                return `<table class="table table-borderless mt-2">
-               <tr><th>Village Name:</th><td>${data.village_name}</td></tr>
-               <tr><th>Current coordinator:</th><td><address>${data.Name}, D/No:${data.Doornumber}, ${data.Street}, ${data.Village}, ${data.Panchayat}, ${data.Taluk}, ${data.District} - ${data.Pincode}, ${data.State}</address></td></tr>
-               <tr><td><button type="button" data-bs-toggle='modal' data-bs-target='#reassign-alert' onclick='setreassignConfirmalert("${data.Name}","${data.Familymembershipid}",${villageHierarchy},"reassign-btn${index}")' class="btn btn-danger">Reassign</button></td><td id="reassign-btn${index}"></td></tr>
-               </table>`;}).join("");
-      },
-      error:(error)=>{
-           console.error("Error getOverallstatus", error);
-      }
-    }); 
-    }) 
+      document.getElementById("statusfilter").addEventListener("submit",(event)=>{
+             event.preventDefault();
+             let coordid = document.getElementById("coordinatorid").value;
+             let coordname = document.getElementById("coordinatorname").value;
+             let villages = JSON.stringify(selectedtaluksforremove);
+             
+             if(!coordid || selectedtaluksforremove.length === 0) {
+                 alert("Please select a coordinator and at least one village.");
+                 return;
+             }
+
+             document.getElementById("reassign-confirm-alert").innerHTML = `<p>Are you sure you want to reassign <span class="text-success">${coordname}</span> as coordinator for the selected village(s)? <br><b>Note:</b> They will be removed from all their current assignments.</p>
+             <div><button class='btn btn-success' data-bs-dismiss="modal" onclick='processFullReassignment("${coordid}")'>Confirm Reassign</button>&nbsp;&nbsp;<button class='btn btn-danger' data-bs-dismiss="modal">Cancel</button></div>`;
+             
+             let reassign_alert_modal = new bootstrap.Modal(document.getElementById("reassign-alert"));
+             reassign_alert_modal.show();
+     }) 
+
+     function processFullReassignment(memberid) {
+         let villages = JSON.stringify(selectedtaluksforremove);
+         $.ajax({
+             type: "POST",
+             url: "<?= base_url('AdminDashboard/reassignCoordinatorProcess') ?>",
+             data: {
+                 "memberid": memberid,
+                 "villages": villages
+             },
+             success: function(result) {
+                 if(result.trim() === "success") {
+                     alert("Coordinator reassigned successfully.");
+                     window.location.reload();
+                 } else {
+                     alert("Error during reassignment: " + result);
+                 }
+             },
+             error: function(err) {
+                 alert("Server error during reassignment.");
+             }
+         });
+     }
 
   function setreassignConfirmalert(coordname,memeberid,villageData,id) {
       document.getElementById("reassign-confirm-alert").innerHTML = `<p>Are you sure remove <span class="text-success">${coordname}</span> from coordinator role for <span class="text-danger">${villageData.village}</span> village.</p>
@@ -1211,7 +1387,7 @@ function closeMobileMenu() {
       success: function(result) {
         let reassign_table = document.getElementById(id);
         if(result) {
-          reassign_table.innerHTML += `&nbsp;<span class='text-success fw-bold rounded'>Successfully reassigned.</span>`; 
+          reassign_table.innerHTML += `&nbsp;<span class='text-success fw-bold rounded'>Successfully removed.</span>`; 
         }
         else{
           reassign_table.innerHTML += `&nbsp;<span class='text-danger rounded'>Unexpected error please try again.</span>`; 
@@ -1245,8 +1421,13 @@ function closeMobileMenu() {
     }
     
     // Member search result box
-    if(event.target !== resultbox){
+    if(event.target !== resultbox && event.target !== document.getElementById("membername")){
         resultbox.style.display = "none";
+    }
+
+    let coordBoxRemoval = document.getElementById("searchcoordinatordataporemoval");
+    if(event.target !== coordBoxRemoval && event.target !== document.getElementById("coordinatornameremoval")){
+        if(coordBoxRemoval) coordBoxRemoval.style.display = "none";
     }
   } 
 

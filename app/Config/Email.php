@@ -43,8 +43,9 @@ class Email extends BaseConfig
 
     public function __construct()
     {
-        $this->SMTPUser = getenv('email.SMTPUser') ?: 'soft@kaadaikulam.org';
-        $this->SMTPPass = getenv('email.SMTPPass') ?: '1W-L=0$E%Dr6';
+        parent::__construct();
+        $this->SMTPUser = env('email.SMTPUser', 'noreply@kaadaikulam.org');
+        $this->SMTPPass = env('email.SMTPPass', '~M;ac%*0nI@;');
         $this->fromEmail = $this->SMTPUser;
     }
 

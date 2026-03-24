@@ -400,7 +400,7 @@ class Payments extends BaseController {
             $year = $this->request->getGet("year");
             $events = $this->paymentsModel->getEventslist();
             echo "
-            <label id='eventslist' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+            <label id='eventnamelabel' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
                       <select class='form-select' name='eventid' id='eventid' required>
                       <option value=''>Choose Event</option>";
             foreach ($events as $key => $value) {
@@ -416,7 +416,7 @@ class Payments extends BaseController {
             $year = $this->request->getGet("year");
             $events = $this->paymentsModel->getEventswithyear($year);
             echo "
-            <label id='eventslist' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
+            <label id='eventnamelabel' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
                       <select class='form-select' name='eventid' id='eventid' required>
                       <option value=''>Choose Event</option>";
                       
@@ -476,8 +476,8 @@ class Payments extends BaseController {
         $eventsdetail = $this->paymentsModel->getEventsdetails($year);
         $memberdetail = $this->paymentsModel->getMemberforPayment($memberid);
         echo "
-         <label id='eventnamelabel' class='form-label'><i class='fas fa-calendar-check me-2 text-warning'></i>Event</label>
-                       <select onchange='getTaxamount(this,`$memberdetail->Familymembershipid`)' class='form-select' name='eventid' id='eventnames' required>
+         <label id='eventnamelabel' class='form-label fw-bold small text-muted w-100'>Event</label>
+                       <select onchange='getTaxamount(this,`$memberdetail->Familymembershipid`)' class='form-select form-select-sm shadow-sm' name='eventid' id='eventid' required>
                        <option value=''>Choose event</option>";
                       
          foreach ($eventsdetail as $key => $value) {
@@ -533,24 +533,36 @@ class Payments extends BaseController {
                 $paidamount = 0;
             }
 
-            echo "<div class='col-md-12'>
-                    <label class='container-fluid' for='taxamount'>Tax Amount: <br>
-                    <input readonly value='".$eventdata->TaxAmount ."' id='taxamount' name='eventamount' class='border rounded container-fluid'>
-                    </label>
-                    </div>
+            echo '<div class="card h-100 border-0 shadow-sm bg-light">
+                      <div class="card-body">
+                          <h5 class="card-title text-primary mb-3 border-bottom pb-2"><i class="fas fa-rupee-sign me-2"></i>Summary</h5>
+                          
+                          <div class="mb-3">
+                              <label class="form-label fw-bold small text-muted">Total Amount</label>
+                              <div class="input-group input-group-sm shadow-sm">
+                                  <span class="input-group-text bg-white text-muted">₹</span>
+                                  <input readonly value="'.$eventdata->TaxAmount.'" id="taxamount" name="eventamount" class="form-control bg-white">
+                              </div>
+                          </div>
 
+                          <div class="mb-3">
+                              <label class="form-label fw-bold small text-muted">Already Paid</label>
+                              <div class="input-group input-group-sm shadow-sm">
+                                  <span class="input-group-text bg-white text-success">₹</span>
+                                  <input value="'.$paidamount.'" id="prevpaid" name="prevpaid" readonly class="form-control bg-white text-success fw-bold" type="text">
+                              </div>
+                          </div>
+                          
+                          <div class="mb-1">
+                              <label class="form-label fw-bold small text-muted">Balance Amount</label>
+                              <div class="input-group input-group-sm shadow-sm">
+                                  <span class="input-group-text bg-white text-danger">₹</span>
+                                  <input id="balance" value="'.$balanceamount.'" name="balanceamount" readonly class="form-control bg-white text-danger fw-bold" type="text">
+                              </div>
+                          </div>
+                      </div>
+                  </div>'; 
 
-                <div class='col-md-12'>
-                    <label class='container-fluid' for='balanceamount'>Paid Amount:
-                    <input value='$paidamount' id='prevpaid' name='prevpaid' readonly class='container-fluid border rounded' type='text'>
-                    </label>
-                </div>
-                
-                <div class='col-md-12 py-2'>
-                <label class='container-fluid' for='balanceamount'>Balance Amount:
-                  <input id='balance' value='$balanceamount' name='balanceamount' readonly class='container-fluid border rounded' type='text'>
-                </label>
-                </div>"; 
             
         }
     }

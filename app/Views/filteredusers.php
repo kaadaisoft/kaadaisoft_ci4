@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paymentforevent</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -571,7 +573,7 @@
          <div class="pt-2 px-3 pb-4"><!----------filter-start------------>
          <div class="d-flex justify-content-between align-items-center">
          <span class="text-secondary fs-4 fw-bold">Payment Status Filter</span>
-         <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id ='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
+                   <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&year=<?=$filterlist['eventyear']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id ='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
          </div> 
          <form id="filter-form-height" class="row filter-card-premium" method="post" action="<?=base_url('get-filtered-users')?>">
          <div class="col-md-3 mb-3"><!------------state-choose------------>
@@ -920,7 +922,7 @@
         statusforpaid = status.value;
     } 
 
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 10;
     let currentTotalCount = <?= $newcounts ?? $counts ?? 0 ?>;
     let currentActivePage = <?= ($initialindex ?? 0) + 1 ?>;
 

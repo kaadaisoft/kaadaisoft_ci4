@@ -15,28 +15,13 @@ class ReportsModel extends Model
 
     public function getTotalreports()
     {
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND MemberRole = 'Head' AND Approvedstatus = 'Verified'");
         return count($query->getResultArray());
     }
 
     public function getreports($counts = 0)
     {
-        // Original getreports() line 11 did not take arguments in one version, but line 56 in controller calls it with counts.
-        // Line 13 original: "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 8"
-        // Wait, line 56 in controller: $reports = $this->ReportsModel->getreports($counts);
-        // But original model definition line 11: public function getreports() { ... } (No args).
-        // This implies the controller passed an arg that was ignored, or the model I see is different?
-        // Ah, likely ignored or I should add limit/offset if the intention was pagination.
-        // However, `getReportswithlimit` exists (line 17).
-        // I'll stick to original behavior (LIMIT 8 fixed) unless I see pagination logic relying on it.
-        // Controller line 56 seems to pass $counts which is session data `reportscounts`.
-        // If the original ignored it, it returned first 8.
-        // But `displayReports` calls `getReportswithlimit`.
-        // `changeReportspagesetup` calls `getreports($counts)`.
-        // So `getreports` MUST support offset.
-        // I will add offset support to `getreports`.
-        
-        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10";
+        $sql = "SELECT * FROM kaadaimembers WHERE isShow = 1 AND MemberRole = 'Head' AND Approvedstatus = 'Verified' LIMIT 10";
         if ($counts > 0) {
             $sql .= " OFFSET $counts";
         }
@@ -46,14 +31,14 @@ class ReportsModel extends Model
 
     public function getReportswithlimit($counts)
     {
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 LIMIT 10 OFFSET $counts");
+        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND MemberRole = 'Head' AND Approvedstatus = 'Verified' LIMIT 10 OFFSET $counts");
         return $query->getResultArray();
     }
 
     public function getReportsSearchfields($searchfields)
     {
         // Safe binding
-        $sql = "SELECT * FROM kaadaimembers WHERE Name LIKE ? OR Familymembershipid LIKE ? OR Taluk LIKE ? OR Phonenumber LIKE ? OR Aadharnumber LIKE ? OR Role LIKE ?";
+        $sql = "SELECT * FROM kaadaimembers WHERE (Name LIKE ? OR Familymembershipid LIKE ? OR Taluk LIKE ? OR Phonenumber LIKE ? OR Aadharnumber LIKE ? OR Role LIKE ?) AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
         $like = "%$searchfields%";
         $query = $this->db->query($sql, [$like, $like, $like, $like, $like, $like]);
         return $query->getResultArray();
@@ -110,6 +95,8 @@ class ReportsModel extends Model
         }
 
         $builder->where('km.MemberRole', 'Head');
+        $builder->where('km.isShow', 1);
+        $builder->where('km.Approvedstatus', 'Verified');
         $builder->groupBy('km.Familymembershipid');
         $builder->limit(10);
         return $builder->get()->getResultArray();
@@ -129,6 +116,8 @@ class ReportsModel extends Model
         }
 
         $builder->where('km.MemberRole', 'Head');
+        $builder->where('km.isShow', 1);
+        $builder->where('km.Approvedstatus', 'Verified');
         $builder->groupBy('km.Familymembershipid');
         return $builder->get()->getResultArray();
     }
@@ -146,6 +135,8 @@ class ReportsModel extends Model
          }
          
          $builder->where('km.MemberRole', 'Head');
+         $builder->where('km.isShow', 1);
+         $builder->where('km.Approvedstatus', 'Verified');
          $builder->groupBy('km.Familymembershipid');
          $builder->limit(10, $counts); // limit 10 offset $counts
          return $builder->get()->getResultArray();
@@ -178,6 +169,8 @@ class ReportsModel extends Model
          }
          
          $builder->where('km.MemberRole', 'Head');
+         $builder->where('km.isShow', 1);
+         $builder->where('km.Approvedstatus', 'Verified');
          $builder->groupBy('km.Familymembershipid');
          return $builder->get()->getResultArray();
     }
@@ -194,8 +187,16 @@ class ReportsModel extends Model
         }
         $escapedEventId = (int)$eventid;
         
+        // Fetch event details for default tax amount
+        $event = $this->db->table('eventlist')->where('Id', $escapedEventId)->get()->getRow();
+        $defaultTax = $event ? $event->TaxAmount : 0;
+        
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Taluk, km.Panchayat, km.Village, MAX(pr.Taxamount) AS EventMoney, SUM(pr.paidamount) AS PaidCash, MIN(pr.balanceamount) AS Pending, MAX(pr.paymentdate) AS LastPaidDate');
+        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Taluk, km.Panchayat, km.Village, 
+            COALESCE(MAX(pr.Taxamount), $defaultTax) AS EventMoney, 
+            COALESCE(SUM(pr.paidamount), 0) AS PaidCash, 
+            COALESCE(MIN(pr.balanceamount), $defaultTax) AS Pending, 
+            MAX(pr.paymentdate) AS LastPaidDate");
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if (!empty($talukname)) {
@@ -215,6 +216,8 @@ class ReportsModel extends Model
         }
         
         $builder->where('km.MemberRole', 'Head');
+        $builder->where('km.isShow', 1);
+        $builder->where('km.Approvedstatus', 'Verified');
         $builder->groupBy('km.Familymembershipid');
         return $builder->get()->getResultArray();
     }

@@ -125,12 +125,31 @@ class AdminDashboard extends BaseController {
             $searchfields = $this->request->getGet("searchfields");
             $membersdata = $this->adminDashboardModel->getMembersSearchfields($searchfields);
             $count = count($membersdata);
-            if($searchfields == "" || $count == 0){
+            if($count == 0){
                 echo "<li>No search results</li>";
             }
             else{
             foreach ($membersdata as $key => $value){
               echo "<li class='assignmember p-2 fw-bold' onclick='assignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>".($value->Role == 'coordinator' ? 'C' : 'M')."</span>&nbsp;".($value->Role == 'coordinator' ? "<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>" : '')."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
+            }
+            }
+        }
+    }
+
+    public function getCoordinatorsforassign(){
+        if(!$this->session->get('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $searchfields = $this->request->getGet("searchfields");
+            $membersdata = $this->adminDashboardModel->getCoordinatorsSearchfields($searchfields);
+            $count = count($membersdata);
+            if($count == 0){
+                echo "<li>No search results</li>";
+            }
+            else{
+            foreach ($membersdata as $key => $value){
+              echo "<li class='assignmember p-2 fw-bold' onclick='reassignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>C</span>&nbsp;"."<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>"."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
             }
             }
         }
@@ -307,7 +326,37 @@ class AdminDashboard extends BaseController {
                 return true;
             } 
         } 
+    }
 
+    public function reassignCoordinatorProcess() {
+        if(!$this->session->get('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $memberid = $this->request->getPost("memberid");
+            $villages_json = $this->request->getPost("villages");
+            $villages = json_decode($villages_json, true);
+            $assignerid = $this->session->get("Kaadaisoft_userId");
+            $assignername = $this->session->get("Kaadaisoft_userName");
+
+            $result = $this->adminDashboardModel->bulkReassignCoordinator($memberid, $villages, $assignerid, $assignername);
+            if($result) {
+                echo "success";
+            } else {
+                echo "error";
+            }
+        }
+    }
+
+    public function getCoordinatorAssignments() {
+        if(!$this->session->get('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $memberid = $this->request->getPost("memberid");
+            $assignments = $this->adminDashboardModel->getCoordinatorAssignments($memberid);
+            echo json_encode($assignments);
+        }
     }
 
     public function addVillage() {
@@ -774,12 +823,12 @@ public function change_password() {
         $updated = $this->membersModel->processMemberupdate($id, $data, $path, $reason);
         
         if ($updated === 'no_changes') {
-            $this->session->set('managersuccessstatus', "No changes were made to the details.");
+            // $this->session->set('managersuccessstatus', "No changes were made to the details.");
             return redirect()->back();
         }
 
         if($updated) {
-             $this->session->set('managersuccessstatus', "Manager $id updated successfully.");
+             $this->session->set('managersuccessstatus', "Your data is updated successfully.");
         } else {
              if(!$this->session->getFlashdata('managererrorstatus')){
                  $this->session->set('managererrorstatus', "Failed to update manager $id.");

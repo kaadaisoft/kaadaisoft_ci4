@@ -106,7 +106,18 @@
         <div class="bg-custom-header py-3 px-4 border-bottom shadow-sm">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 text-dark font-weight-bold">
-                    <i class="fa-solid fa-user-gear me-2"></i>Update Member Details: <small class="text-primary"><?= $member->Familymembershipid ?></small>
+                    <?php 
+                        $is_self = ($member->Familymembershipid == session()->get('Kaadaisoft_userId'));
+                        $is_head = ($member->MemberRole == 'Head');
+                        if ($is_self) {
+                            $icon = 'fa-user-gear';
+                            $title = 'Update My Details';
+                        } else {
+                            $icon = $is_head ? 'fa-user-gear' : 'fa-users';
+                            $title = $is_head ? 'Update Member Details' : 'Update Family Member Details';
+                        }
+                    ?>
+                    <i class="fa-solid <?= $icon ?> me-2"></i><?= $title ?>: <small class="text-primary"><?= $member->Familymembershipid ?></small>
                     <?php if(isset($pending_update) && !empty($pending_update)): ?>
                         <span class="badge bg-warning text-dark fs-6 ms-2 px-3 py-1" style="border-radius:50px; font-weight:500;">
                             <i class="fa-solid fa-clock-rotate-left"></i> In Review
@@ -656,6 +667,7 @@
                                 <?php if (isset($taluks)): foreach ($taluks as $t): ?>
                                     <option value="<?= $t->taluk_name ?>" <?= ($member->Taluk == $t->taluk_name) ? 'selected' : '' ?>><?= $t->taluk_name ?></option>
                                 <?php endforeach; endif; ?>
+                                <option value="Others" <?= (isset($member->Taluk) && !empty($member->Taluk) && !in_array($member->Taluk, array_column($taluks ?? [], 'taluk_name')) && $member->Taluk !== '') ? 'selected' : '' ?>>Others</option>
                             </select>
                             <input type="text" id="taluk_others_input_member" name="taluk_others_update" 
                                 class="form-control mt-2" 
@@ -672,6 +684,7 @@
                                 <?php if (isset($panchayats)): foreach ($panchayats as $p): ?>
                                     <option value="<?= $p->panchayat_name ?>" <?= ($member->Panchayat == $p->panchayat_name) ? 'selected' : '' ?>><?= $p->panchayat_name ?></option>
                                 <?php endforeach; endif; ?>
+                                <option value="Others" <?= (isset($member->Panchayat) && !empty($member->Panchayat) && !in_array($member->Panchayat, array_column($panchayats ?? [], 'panchayat_name')) && $member->Panchayat !== '') ? 'selected' : '' ?>>Others</option>
                             </select>
                             <input type="text" id="panchayat_others_input_member" name="panchayat_others_update" 
                                 class="form-control mt-2" 
@@ -685,6 +698,7 @@
                             <label for="village-member">Village</label>
                             <select id="village-member" onchange="toggleVillageOthersMember(this); validateMemberInput(this)" class="form-select" name="village-update">
                                 <option value="<?= $member->Village ?>"><?= $member->Village ?: 'Select Village' ?></option>
+                                <option value="Others">Others</option>
                             </select>
                             <input type="text" id="village_others_input_member" name="village_others_update" 
                                 class="form-control mt-2" 
@@ -962,34 +976,47 @@
             toggleUpcomingHeadMember();
         }
 
-        function setDropdowndistrictsMember(state) {
+        function setDropdowndistrictsMember(state, selectDistrict = null, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let state_id = state.value;
 
             // Clear dependent dropdowns
-            document.getElementById("taluks-dropdown-member").innerHTML = '<option value="">Select Taluk</option>';
-            document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_member").style.display = 'none';
-            document.getElementById("village_others_input_member").value = '';
+            if (!selectDistrict) {
+                document.getElementById("taluks-dropdown-member").innerHTML = '<option value="">Select Taluk</option>';
+                document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!state_id) return;
 
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
                 data: { "state_id": state_id },
                 success: (result) => {
-                    document.getElementById("districts-dropdown-member").innerHTML = result;
+                    let dropdown = document.getElementById("districts-dropdown-member");
+                    dropdown.innerHTML = result;
+                    if (selectDistrict) {
+                        dropdown.value = selectDistrict;
+                        setDropdowntaluksMember(dropdown, selectTaluk, selectPanchayat, selectVillage);
+                    }
                 }
             });
         }
 
-        function setDropdowntaluksMember(district) {
+        function setDropdowntaluksMember(district, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let district_name = district.value;
 
             // Clear dependent dropdowns
-            document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_member").style.display = 'none';
-            document.getElementById("village_others_input_member").value = '';
+            if (!selectTaluk) {
+                document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!district_name) return;
 
             $.ajax({
                 type: "get",
@@ -999,20 +1026,33 @@
                     let dropdown = document.getElementById("taluks-dropdown-member");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    toggleTalukOthersMember(dropdown);
+                    if (selectTaluk) {
+                        dropdown.value = selectTaluk;
+                        if (dropdown.value !== selectTaluk && selectTaluk !== "") {
+                            dropdown.value = 'Others';
+                            toggleTalukOthersMember(dropdown, selectTaluk);
+                        } else {
+                            toggleTalukOthersMember(dropdown);
+                        }
+                        setDropdownpanchayatMember(dropdown, selectPanchayat, selectVillage);
+                    } else {
+                        toggleTalukOthersMember(dropdown);
+                    }
                 },
                 error: (err) => {
                     document.getElementById("taluks-dropdown-member").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                    toggleTalukOthersMember(document.getElementById("taluks-dropdown-member"));
                 }
             });
         }
 
-        function toggleTalukOthersMember(selectEl) {
+        function toggleTalukOthersMember(selectEl, manualValue = '') {
             const othersInput = document.getElementById('taluk_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'taluk-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -1021,13 +1061,34 @@
             }
         }
 
-        function setDropdownpanchayatMember(taluk) {
+        function setDropdownpanchayatMember(taluk, selectPanchayat = null, selectVillage = null) {
             let taluk_name = taluk.value;
 
             // Clear dependent dropdowns
-            document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_member").style.display = 'none';
-            document.getElementById("village_others_input_member").value = '';
+            if (!selectPanchayat) {
+                document.getElementById("village-member").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!taluk_name) return;
+            if (taluk_name === 'Others') {
+                let dropdown = document.getElementById("panchayat-dropdown-member");
+                dropdown.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                if (selectPanchayat) {
+                    dropdown.value = selectPanchayat;
+                    if (dropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                        dropdown.value = 'Others';
+                        togglePanchayatOthersMember(dropdown, selectPanchayat);
+                    } else {
+                        togglePanchayatOthersMember(dropdown);
+                    }
+                    setDropdownVillageMember(dropdown, selectVillage);
+                } else {
+                    togglePanchayatOthersMember(dropdown);
+                }
+                return;
+            }
 
             $.ajax({
                 type: "get",
@@ -1037,20 +1098,33 @@
                     let dropdown = document.getElementById("panchayat-dropdown-member");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    togglePanchayatOthersMember(dropdown);
+                    if (selectPanchayat) {
+                        dropdown.value = selectPanchayat;
+                        if (dropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                            dropdown.value = 'Others';
+                            togglePanchayatOthersMember(dropdown, selectPanchayat);
+                        } else {
+                            togglePanchayatOthersMember(dropdown);
+                        }
+                        setDropdownVillageMember(dropdown, selectVillage);
+                    } else {
+                        togglePanchayatOthersMember(dropdown);
+                    }
                 },
                 error: (err) => {
                     document.getElementById("panchayat-dropdown-member").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                    togglePanchayatOthersMember(document.getElementById("panchayat-dropdown-member"));
                 }
             });
         }
 
-        function togglePanchayatOthersMember(selectEl) {
+        function togglePanchayatOthersMember(selectEl, manualValue = '') {
             const othersInput = document.getElementById('panchayat_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'panchayat-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -1327,8 +1401,32 @@
             }
         }
 
+        let originalFormDataUpdateMember = "";
+        setTimeout(function() {
+            const form = document.forms['memberregistration-update'];
+            if(form) {
+                originalFormDataUpdateMember = new URLSearchParams(new FormData(form)).toString();
+                const checkbox = document.getElementById("correctdetails-member");
+                
+                form.addEventListener('change', function() {
+                    if(checkbox) activateMemberButton(checkbox);
+                });
+                form.addEventListener('input', function() {
+                    if(checkbox) activateMemberButton(checkbox);
+                });
+            }
+        }, 800);
+
+        function checkFormChangedMember() {
+            const form = document.forms['memberregistration-update'];
+            if(!form) return false;
+            const currentFormData = new URLSearchParams(new FormData(form)).toString();
+            return currentFormData !== originalFormDataUpdateMember;
+        }
+
         function activateMemberButton(checkbox) {
-            document.getElementById("membersubmitbutton").disabled = !checkbox.checked;
+            const isChanged = checkFormChangedMember();
+            document.getElementById("membersubmitbutton").disabled = !(checkbox.checked && isChanged);
         }
 
         var originalEmailMember = "<?= $member->Email ?>";
@@ -2046,6 +2144,42 @@
                 }
             });
         }
+
+        $(document).ready(function() {
+            // Initial Cascading Load (Native)
+            let s1 = document.getElementById('states-dropdown-member');
+            if (s1 && s1.value) {
+                setDropdowndistrictsMember(
+                    s1, 
+                    '<?= $member->District ?>', 
+                    '<?= $member->Taluk ?>', 
+                    '<?= $member->Panchayat ?>', 
+                    '<?= $member->Village ?>'
+                );
+            }
+
+            // Set Current Address Blocks
+            toggleCurrentAddressTypeMember(true);
+
+            // Cascade load for Current Address
+            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
+            if (curType === 'TamilNadu') {
+                const curState = document.getElementById('cur_state-member');
+                if (curState && curState.value) {
+                    setDropdowndistrictsCurrentMember(
+                        curState, 
+                        '<?= $member->Curdistrict ?>', 
+                        '<?= $member->Curtaluk ?>', 
+                        '<?= $member->Curpanchayat ?>', 
+                        '<?= $member->Curvillage ?>'
+                    );
+                }
+            } else if (curType === 'OtherState' || curType === 'NRI') {
+                if ('<?= $member->Curnricountry ?>' && typeof loadNRIStatesMember === 'function') {
+                    loadNRIStatesMember('<?= $member->Curnricountry ?>', '<?= $member->Curnristate ?>', '<?= $member->Curnricity ?>');
+                }
+            }
+        });
     </script>
 
 

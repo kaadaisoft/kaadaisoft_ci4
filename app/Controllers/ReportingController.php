@@ -5,6 +5,7 @@ use App\Models\ExportModel;
 use App\Models\Bulk_upload_model;
 use App\Models\PaymentsModel;
 use App\Models\ReportsModel;
+use App\Models\EventsModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use CodeIgniter\Controller;
@@ -15,6 +16,7 @@ class ReportingController extends BaseController
     protected $bulkUploadModel;
     protected $paymentsModel;
     protected $reportsModel;
+    protected $eventsModel;
     protected $session;
     protected $db;
 
@@ -24,6 +26,7 @@ class ReportingController extends BaseController
         $this->bulkUploadModel = new Bulk_upload_model();
         $this->paymentsModel = new PaymentsModel();
         $this->reportsModel = new ReportsModel();
+        $this->eventsModel = new EventsModel();
         $this->session = session();
         $this->db = \Config\Database::connect();
     }
@@ -39,7 +42,7 @@ class ReportingController extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $spreadsheet->getProperties()->setCreator('Kaadaisoft')
+        $spreadsheet->getProperties()->setCreator('Poondurai Kaadai Kulam')
             ->setTitle('Total Report Export');
 
         $data = $this->exportModel->get_data();
@@ -160,24 +163,30 @@ class ReportingController extends BaseController
         $eventid       = $this->request->getGet('eventid');
 
         $status = ucfirst(strtolower($status));
+        $ev_id = $event ?: $eventid;
+        $eventname = 'All';
+        if ($ev_id && $ev_id != 'All') {
+            $ev_data = $this->eventsModel->getEventdata($ev_id);
+            if ($ev_data) $eventname = $ev_data->EventName;
+        }
 
         if (!empty($talukname) && !empty($eventid) && $status) {
             $filteredusers = $this->reportsModel->getMembersHistoryForDownload($eventid, $status, $talukname, $panchayatname, $villagename);
-            $heading = ucfirst($talukname) . (!empty($panchayatname) ? ' - ' . ucfirst($panchayatname) : '') . (!empty($villagename) ? ' - ' . ucfirst($villagename) : '') . " - " . ucfirst($status);
+            $heading = ucfirst($talukname) . (!empty($panchayatname) ? ' - ' . ucfirst($panchayatname) : '') . (!empty($villagename) ? ' - ' . ucfirst($villagename) : '') . " - Event Name : " . $eventname . " - Status : " . ucfirst($status);
             $safeTaluk = preg_replace('/[^A-Za-z0-9]/', '', $talukname);
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
             $filename = "{$safeTaluk}-{$safeStatus}-report-" . date('Y-m-d') . ".xlsx";
         } else {
             $filteredusers = $this->reportsModel->getMembersHistoryForDownload($event ?: $eventid, $status);
-            $heading = "Year: " . ($year ?: 'All') . " - Event ID: " . ($event ?: $eventid ?: 'All') . " - " . ucfirst($status);
+            $heading = "Year: " . ($year ?: 'All') . " - Event Name : " . $eventname . " - Status : " . ucfirst($status);
             $safeYear = preg_replace('/[^A-Za-z0-9]/', '', $year ?: 'All');
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
             $filename = "Report-Year{$safeYear}-Status-{$safeStatus}-" . date('Y-m-d') . ".xlsx";
         }
 
         if (empty($filteredusers)) {
-             echo "No data found for the selected filters.";
-             return;
+             session()->setFlashdata('validationmessage', 'No data found for the selected filters.');
+             return redirect()->back();
         }
 
         $spreadsheet = new Spreadsheet();
@@ -262,7 +271,7 @@ class ReportingController extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $spreadsheet->getProperties()->setCreator('Kaadaisoft')
+        $spreadsheet->getProperties()->setCreator('Poondurai Kaadai Kulam')
             ->setTitle('Filtered Members Export');
 
         $headers = [

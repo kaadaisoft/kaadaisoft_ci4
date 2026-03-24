@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment Receipt</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap');
         

@@ -136,23 +136,35 @@
                 </div>
                 <div class="modal-body">
                     <input type="text" id="userId" name="userId" hidden value="<?= session()->get('Kaadaisoft_userId') ?>">
+                    
                     <div class="mb-3">
-                        <div>
-                            <label for="current_password" style="width:fit-content;" class="form-label">Current Password</label>
-                            <span style="width:fit-content;cursor: pointer;" onclick="togglePasswordIcon()" class="float-end" id="togglePassword">
-                                <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                        <label for="current_password" class="form-label">Current Password</label>
+                        <div class="position-relative">
+                            <input type="password" id="current_password" class="form-control" name="current_password" required>
+                            <span class="position-absolute end-0 top-50 translate-middle-y pe-3" style="cursor: pointer;" onclick="var p=document.getElementById('current_password'); p.type=p.type==='password'?'text':'password'; var i=this.querySelector('i'); i.classList.toggle('fa-eye'); i.classList.toggle('fa-eye-slash');">
+                                <i class="fa-solid fa-eye-slash text-secondary"></i>
                             </span>
                         </div>
-                        <input type="password" id="current_password" class="form-control" name="current_password" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="new_password" class="form-label">New Password</label>
-                        <input type="password" class="form-control" name="new_password" minlength="8" maxlength="12" pattern=".{8,,12}" title="Password must be minimum 8 characters" required>
+                        <div class="position-relative">
+                            <input type="password" id="new_password" class="form-control" name="new_password" minlength="8" maxlength="12" pattern=".{8,12}" title="Password must be minimum 8 characters" required>
+                            <span class="position-absolute end-0 top-50 translate-middle-y pe-3" style="cursor: pointer;" onclick="var p=document.getElementById('new_password'); p.type=p.type==='password'?'text':'password'; var i=this.querySelector('i'); i.classList.toggle('fa-eye'); i.classList.toggle('fa-eye-slash');">
+                                <i class="fa-solid fa-eye-slash text-secondary"></i>
+                            </span>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" name="confirm_password" minlength="8" maxlength="12" pattern=".{8,12}" title="Password must be minimum 8 characters" required>
+                        <div class="position-relative">
+                            <input type="password" id="confirm_password" class="form-control" name="confirm_password" minlength="8" maxlength="12" pattern=".{8,12}" title="Password must be minimum 8 characters" required>
+                            <span class="position-absolute end-0 top-50 translate-middle-y pe-3" style="cursor: pointer;" onclick="var p=document.getElementById('confirm_password'); p.type=p.type==='password'?'text':'password'; var i=this.querySelector('i'); i.classList.toggle('fa-eye'); i.classList.toggle('fa-eye-slash');">
+                                <i class="fa-solid fa-eye-slash text-secondary"></i>
+                            </span>
+                        </div>
                     </div>
 
                 </div>
@@ -163,6 +175,3 @@
         </form>
     </div>
 </div>
-
-
- 

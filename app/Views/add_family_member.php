@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Registration Form</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -129,6 +131,41 @@
         .mb-2 span {
             color: #000000 !important;
             font-weight: 600;
+        }
+
+        .btn-copy-address {
+            background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%);
+            color: white !important;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-copy-address:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3);
+            filter: brightness(1.1);
+        }
+        .btn-copy-address:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .btn-copy-address:disabled {
+            background: #cbd5e1;
+            color: #94a3b8 !important;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-copy-address i {
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -935,8 +972,8 @@
 
                                     <div id="same_as_native_container" style="display: none;">
                                         <button type="button" id="btn_same_as_native"
-                                            class="btn btn-success btn-sm" onclick="copyNativeAddress()">
-                                            Same as Native Address
+                                            class="btn-copy-address" onclick="copyNativeAddress()">
+                                            <i class="bi bi-arrow-repeat"></i> Same as Native Address
                                         </button>
                                     </div>
                                 </div>
@@ -1259,22 +1296,31 @@
                 document.getElementById("custom_relationship").value = "";
             }
         }
-        function setDropdowndistricts(state) {
+        function setDropdowndistricts(state, selectDistrict = null, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let state_id = state.value;
 
             // Clear dependent dropdowns
-            document.getElementById("taluks-dropdown").innerHTML = '<option value="">Select Taluk</option>';
-            document.getElementById("panchayat-dropdown").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_family").style.display = 'none';
-            document.getElementById("village_others_input_family").value = '';
+            if (!selectDistrict) {
+                document.getElementById("taluks-dropdown").innerHTML = '<option value="">Select Taluk</option>';
+                document.getElementById("panchayat-dropdown").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!state_id) return;
 
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
                 data: { "state_id": state_id },
                 success: (result) => {
-                    document.getElementById("districts-dropdown").innerHTML = result;
+                    let districtDropdown = document.getElementById("districts-dropdown");
+                    districtDropdown.innerHTML = result;
+                    if (selectDistrict) {
+                        districtDropdown.value = selectDistrict;
+                        setDropdowntaluks(districtDropdown, selectTaluk, selectPanchayat, selectVillage);
+                    }
                 },
                 error: (error) => {
                     console.log(error.responseText)
@@ -1283,14 +1329,18 @@
             });
         }
 
-        function setDropdowntaluks(district) {
+        function setDropdowntaluks(district, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let district_name = district.value;
 
             // Clear dependent dropdowns
-            document.getElementById("panchayat-dropdown").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_family").style.display = 'none';
-            document.getElementById("village_others_input_family").value = '';
+            if (!selectTaluk) {
+                document.getElementById("panchayat-dropdown").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!district_name) return;
 
             $.ajax({
                 type: "get",
@@ -1300,20 +1350,34 @@
                     let dropdown = document.getElementById("taluks-dropdown");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    toggleTalukOthersFamily(dropdown);
+                    
+                    if (selectTaluk) {
+                        dropdown.value = selectTaluk;
+                        if (dropdown.value !== selectTaluk && selectTaluk !== "") {
+                            dropdown.value = 'Others';
+                            toggleTalukOthersMember(dropdown, selectTaluk);
+                        } else {
+                            toggleTalukOthersMember(dropdown);
+                        }
+                        setDropdownpanchayat(dropdown, selectPanchayat, selectVillage);
+                    } else {
+                        toggleTalukOthersMember(dropdown);
+                    }
                 },
                 error: () => {
                     document.getElementById("taluks-dropdown").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                    toggleTalukOthersMember(document.getElementById("taluks-dropdown"));
                 }
             });
         }
 
-        function toggleTalukOthersFamily(selectEl) {
-            const othersInput = document.getElementById('taluk_others_input_family');
+        function toggleTalukOthersMember(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('taluk_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'taluk');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -1322,13 +1386,17 @@
             }
         }
 
-        function setDropdownpanchayat(taluk) {
+        function setDropdownpanchayat(taluk, selectPanchayat = null, selectVillage = null) {
             let taluk_name = taluk.value;
 
             // Clear dependent dropdowns
-            document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_family").style.display = 'none';
-            document.getElementById("village_others_input_family").value = '';
+            if (!selectPanchayat) {
+                document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!taluk_name) return;
 
             $.ajax({
                 type: "get",
@@ -1338,20 +1406,34 @@
                     let dropdown = document.getElementById("panchayat-dropdown");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    togglePanchayatOthersFamily(dropdown);
+                    
+                    if (selectPanchayat) {
+                        dropdown.value = selectPanchayat;
+                        if (dropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                            dropdown.value = 'Others';
+                            togglePanchayatOthersMember(dropdown, selectPanchayat);
+                        } else {
+                            togglePanchayatOthersMember(dropdown);
+                        }
+                        setDropdownVillage(dropdown, selectVillage);
+                    } else {
+                        togglePanchayatOthersMember(dropdown);
+                    }
                 },
                 error: () => {
                     document.getElementById("panchayat-dropdown").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                    togglePanchayatOthersMember(document.getElementById("panchayat-dropdown"));
                 }
             });
         }
 
-        function togglePanchayatOthersFamily(selectEl) {
-            const othersInput = document.getElementById('panchayat_others_input_family');
+        function togglePanchayatOthersMember(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('panchayat_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'panchayat');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -1360,23 +1442,55 @@
             }
         }
 
-        function setDropdownVillage(panchayat) {
+        function setDropdownVillage(panchayat, selectedVillage = null) {
             let panchayat_name = panchayat.value;
 
-            document.getElementById("village_others_input_family").style.display = 'none';
-            document.getElementById("village_others_input_family").value = '';
+            if (!selectedVillage) {
+                document.getElementById("village_others_input_member").style.display = 'none';
+                document.getElementById("village_others_input_member").value = '';
+            }
+
+            if (!panchayat_name) return;
 
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getVillagesfordropdown') ?>",
                 data: { "panchayat_name": panchayat_name },
                 success: (result) => {
-                    document.getElementById("villagefield").innerHTML = result;
+                    let villageDropdown = document.getElementById("villagefield");
+                    villageDropdown.innerHTML = result;
+                    villageDropdown.innerHTML += '<option value="Others">Others</option>';
+                    if (selectedVillage) {
+                        villageDropdown.value = selectedVillage;
+                        if (villageDropdown.value !== selectedVillage && selectedVillage !== "") {
+                            villageDropdown.value = 'Others';
+                            toggleVillageOthersMember(villageDropdown, selectedVillage);
+                        } else {
+                            toggleVillageOthersMember(villageDropdown);
+                        }
+                    } else {
+                        toggleVillageOthersMember(villageDropdown);
+                    }
                 },
                 error: () => {
-                    document.getElementById("villagefield").innerHTML = "";
+                    document.getElementById("villagefield").innerHTML = '<option value="">Select Village</option><option value="Others">Others</option>';
                 }
             });
+        }
+
+        function toggleVillageOthersMember(selectEl, manualValue = '') {
+            const othersInput = document.getElementById('village_others_input_member');
+            if (selectEl.value === 'Others') {
+                othersInput.style.display = 'block';
+                selectEl.removeAttribute('name'); 
+                othersInput.setAttribute('name', 'village');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
+            } else {
+                othersInput.style.display = 'none';
+                othersInput.value = '';
+                othersInput.setAttribute('name', 'village_others');
+                selectEl.setAttribute('name', 'village'); 
+            }
         }
 
         function setDropdowndistrictsCurrent(state, selectDistrict = null, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
@@ -2573,6 +2687,8 @@
                 if (sameBtn) {
                     sameBtn.disabled = false;
                     sameBtn.classList.remove('disabled');
+                    // show container
+                    document.getElementById('same_as_native_container').style.display = 'inline-block';
                     sameBtn.style.display = 'inline-block';
                 }
                 
@@ -2597,6 +2713,7 @@
                 if (sameBtn) {
                     sameBtn.disabled = true;
                     sameBtn.classList.add('disabled');
+                    document.getElementById('same_as_native_container').style.display = 'none';
                     sameBtn.style.display = 'none';
                 }
 
@@ -2619,6 +2736,7 @@
                 if (sameBtn) {
                     sameBtn.disabled = true;
                     sameBtn.classList.add('disabled');
+                    document.getElementById('same_as_native_container').style.display = 'none';
                     sameBtn.style.display = 'none';
                 }
 
@@ -2660,9 +2778,15 @@
             let stateSelect = document.getElementById("states-dropdown");
             if (stateSelect) {
                 for (let i = 0; i < stateSelect.options.length; i++) {
-                    if (stateSelect.options[i].text === "Tamil Nadu") {
+                    if (stateSelect.options[i].text.trim() === "Tamil Nadu") {
                         stateSelect.selectedIndex = i;
-                        setDropdowndistricts(stateSelect);
+                        setDropdowndistricts(
+                            stateSelect, 
+                            "<?= isset($member) ? $member->District : '' ?>",
+                            "<?= isset($member) ? $member->Taluk : '' ?>",
+                            "<?= isset($member) ? $member->Panchayat : '' ?>",
+                            "<?= isset($member) ? $member->Village : '' ?>"
+                        );
                         break;
                     }
                 }
