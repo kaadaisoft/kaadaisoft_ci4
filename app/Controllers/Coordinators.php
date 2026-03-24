@@ -451,12 +451,16 @@ class Coordinators extends BaseController{
             }
     
             if ($updateCoordinator === 'no_changes') {
-                $this->session->set("coordsuccessstatus", "No changes were made to the details.");
+                // $this->session->set("coordsuccessstatus", "No changes were made to the details.");
                 return redirect()->back();
             }
     
           if($updateCoordinator === null || $updateCoordinator === true) { // processCoordinatorupdate might return void/null in original logic
-            $this->session->set("coordsuccessstatus","The Coordinator '$data[Name]' data is updated.");
+            if ($Familymembershipid == $this->session->get('Kaadaisoft_userId')) {
+                $this->session->set("coordsuccessstatus", "Your data is updated successfully.");
+            } else {
+                $this->session->set("coordsuccessstatus", "The Coordinator $Familymembershipid details updated successfully.");
+            }
             if($this->session->get('role') == 2){
                 return redirect()->to("viewCoordinatordata?coord_id=" . $Familymembershipid);
             }

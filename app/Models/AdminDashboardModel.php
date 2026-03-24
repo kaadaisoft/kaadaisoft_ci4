@@ -66,39 +66,28 @@ class AdminDashboardModel extends Model {
     $coordinatorRow = $getCoordinatorid->getRow();
     $coordid        = $coordinatorRow ? $coordinatorRow->Coordinator_id : null;
     $coordid_two    = $coordinatorRow ? $coordinatorRow->Coordinator_Two_id : null;
+        // ================== FAMILY ID LOGIC ==================
+        $membershipid = '';
+        
+        if (!empty($existfamilyid)) {
+            // Option A: Adding to an existing family
+            // Use the prefix from existfamilyid (e.g. NMK from NMK00004)
+            $prefix = substr(trim($existfamilyid), 0, 3); 
+        } else {
+            // Option B: New Head of Family
+            // Use current district code
+            $prefix = $districtcode;
+        }
 
-    // ================== FAMILY ID LOGIC ==================
-     if (!empty($existfamilyid)) {
-
-        // Use the prefix from existfamilyid (e.g. NMK from NMK00004)
-        $prefix = substr($existfamilyid, 0, 3); 
-
-        // Get Max Global ID Number for this prefix pattern (3 letters + digits)
+        // Get Max Numeric ID for THIS prefix (District-wise sequence)
         $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num 
                                        FROM kaadaimembers 
-                                       WHERE Familymembershipid REGEXP '^[A-Z]{3}[0-9]+$'");
-        
+                                       WHERE Familymembershipid LIKE '$prefix%'");
         $max_row = $max_query->getRow();
         $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
-        
-        // Generate new ID with prefix + 5 digit number
-        $membershipid = $prefix . sprintf('%05d', $next_num);
 
-    } else {
-        // No existing family ID - old sequential logic
-        // This part also seems weak ("Verified" count + 1), but I will stick to fixing the family member part first as requested.
-        // Actually, for consistency, main members should probably also use the max+1 logic, but let's strictly fix the "family member" issue (_01) first to avoid breaking other flows.
-        
-        $getmembers = $this->db->query("
-            SELECT Id 
-            FROM kaadaimembers 
-            WHERE Approvedstatus = 'Verified'
-        ");
-        $totalmembersverified = $getmembers->getNumRows() + 1;
-        $newid        = str_pad($totalmembersverified, 5, "0", STR_PAD_LEFT);
-        $membershipid = $districtcode . $newid;
-    }
-    // ================== FAMILY ID LOGIC END ==================
+        $membershipid = $prefix . sprintf('%05d', $next_num);
+        // ================== FAMILY ID LOGIC END ====================
 
     // Update member
     $query = $this->db->query("
@@ -133,7 +122,12 @@ public function rejectMember($applicationid, $rejectreason){
 
 
    public function getMembersSearchfields($searchfields){
-      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadharnumber = '$searchfields' OR District = '$searchfields' HAVING(isShow = 1 AND Role <> 1 AND Approvedstatus = 'verified')");
+      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadharnumber = '$searchfields' OR District = '$searchfields') HAVING(isShow = 1 AND Role <> 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
+      return $query->getResult();
+   }
+
+   public function getCoordinatorsSearchfields($searchfields){
+      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadharnumber = '$searchfields' OR District = '$searchfields') HAVING(isShow = 1 AND Role = 2 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
       return $query->getResult();
    }
 
@@ -348,6 +342,62 @@ public function rejectMember($applicationid, $rejectreason){
          }
   }
 
+   public function bulkReassignCoordinator($memberid, $villages, $assignerid, $assignername) {
+       try {
+           $this->db->transStart();
+
+           // 1. Remove coordinator from ALL current assignments (Both slots)
+           $this->db->query("UPDATE village_table SET Coordinator_id = NULL, Assigner_id = NULL, Assigner_name = NULL WHERE Coordinator_id = " . $this->db->escape($memberid));
+           $this->db->query("UPDATE village_table SET Coordinator_Two_id = NULL, Assigner_Two_id = NULL, Assigner_Two_name = NULL WHERE Coordinator_Two_id = " . $this->db->escape($memberid));
+           
+           // 2. Clear coordinator reference for members previously under them
+           $this->db->query("UPDATE kaadaimembers SET Coordinator_id = NULL WHERE Coordinator_id = " . $this->db->escape($memberid));
+           $this->db->query("UPDATE kaadaimembers SET Coordinator_Two_id = NULL WHERE Coordinator_Two_id = " . $this->db->escape($memberid));
+
+           // 3. Mark villages as unassigned if both slots are now empty
+           $this->db->query("UPDATE village_table SET isAssigned = 0 WHERE Coordinator_id IS NULL AND Coordinator_Two_id IS NULL");
+
+           // 4. Assign to NEW villages
+           foreach($villages as $village_data) {
+               $v_name = $village_data['village'];
+               $p_name = $village_data['panchayat'];
+               $t_name = $village_data['taluk'];
+               $d_name = $village_data['district'];
+
+               $check = $this->db->query("SELECT Coordinator_id, Coordinator_Two_id FROM village_table 
+                                         WHERE village_name = " . $this->db->escape($v_name) . "
+                                         AND panchayat_name = " . $this->db->escape($p_name) . "
+                                         AND taluk_name = " . $this->db->escape($t_name) . "
+                                         AND district_name = " . $this->db->escape($d_name))->getRow();
+               
+               if (!$check) continue;
+
+               if (empty($check->Coordinator_id)) {
+                   $this->db->query("UPDATE village_table SET isAssigned = 1, Coordinator_id = '$memberid', Assigner_id = '$assignerid', Assigner_name = '$assignername' WHERE village_name = " . $this->db->escape($v_name) . " AND panchayat_name = " . $this->db->escape($p_name) . " AND taluk_name = " . $this->db->escape($t_name) . " AND district_name = " . $this->db->escape($d_name));
+                   $this->db->query("UPDATE kaadaimembers SET Coordinator_id = '$memberid' WHERE Village = " . $this->db->escape($v_name) . " AND District = " . $this->db->escape($d_name));
+               } else if (empty($check->Coordinator_Two_id) && $check->Coordinator_id != $memberid) {
+                   $this->db->query("UPDATE village_table SET isAssigned = 1, Coordinator_Two_id = '$memberid', Assigner_Two_id = '$assignerid', Assigner_Two_name = '$assignername' WHERE village_name = " . $this->db->escape($v_name) . " AND panchayat_name = " . $this->db->escape($p_name) . " AND taluk_name = " . $this->db->escape($t_name) . " AND district_name = " . $this->db->escape($d_name));
+                   $this->db->query("UPDATE kaadaimembers SET Coordinator_Two_id = '$memberid' WHERE Village = " . $this->db->escape($v_name) . " AND District = " . $this->db->escape($d_name));
+               }
+           }
+
+           // 5. Update the coordinator's area count and ensure role is set to 2 (Coordinator)
+           $new_count = count($villages);
+           $this->db->query("UPDATE kaadaimembers SET Role = 2, Assigned_areas_count = $new_count WHERE Familymembershipid = '$memberid'");
+
+           $this->db->transComplete();
+           return $this->db->transStatus();
+       } catch (\Exception $e) {
+           return false;
+       }
+   }
+
+   public function getCoordinatorAssignments($memberid) {
+       $query = $this->db->query("SELECT village_name, panchayat_name, taluk_name, district_name FROM village_table 
+                                 WHERE Coordinator_id = '$memberid' OR Coordinator_Two_id = '$memberid'");
+       return $query->getResultArray();
+   }
+
   public function addVillageData($state_id, $district, $taluk, $panchayat, $village) {
       $query = $this->db->query("SELECT * FROM village_table WHERE village_name = " . $this->db->escape($village) . " 
                                  AND panchayat_name = " . $this->db->escape($panchayat) . "
@@ -432,12 +482,19 @@ public function rejectMember($applicationid, $rejectreason){
     $getstate = $getstatequery->getRow();
     $state = $getstate ? $getstate->state_title : '';
 
-   $getmembers = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Verified'");
-   $totalmembersverified = count($getmembers->getResultArray()) + 1;
-   $newid = str_pad($totalmembersverified,5,"0",STR_PAD_LEFT);
-   $membershipid = $districtcode.$newid;
+   $approved_status = (session()->get('role') == 1) ? 'Verified' : 'Pending';
+   $membershipid = NULL; // Use NULL for pending members
 
-    $approved_status = (session()->get('role') == 1) ? 'Verified' : 'Pending';
+   if ($approved_status == 'Verified') {
+       // Get Max Numeric ID for THIS prefix (District-wise sequence)
+       $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num 
+                                      FROM kaadaimembers 
+                                      WHERE Familymembershipid LIKE '$districtcode%'");
+       $max_row = $max_query->getRow();
+       $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
+       
+       $membershipid = $districtcode . sprintf('%05d', $next_num);
+   }
     $current_user_id = session()->get('Kaadaisoft_userId');
 
     $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Aadharnumber, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id, Id_who_assign_coord) 

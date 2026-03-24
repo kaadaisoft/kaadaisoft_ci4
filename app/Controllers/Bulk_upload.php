@@ -145,7 +145,9 @@ class Bulk_upload extends BaseController {
         $data = [];
         $errors = [];
         $processed_mobiles = [];
-        $totalmembersverified = 0;
+        
+        // Initialize prefix counters array to track sequence numbers for each district separately
+        $prefix_counters = [];
 
         // Load the spreadsheet
         try {
@@ -278,16 +280,21 @@ class Bulk_upload extends BaseController {
                 $coordid = $coordinatorRow ? $coordinatorRow->Coordinator_id : null;
                 $coordid_two = $coordinatorRow ? $coordinatorRow->Coordinator_Two_id : null;
 
-                if($totalmembersverified < 1 && $approvedstatus == 'Verified'){
-                    $getmembers = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Verified'");
-                    $totalmembersverified = count($getmembers->getResultArray()) + 1;  
+                if ($approvedstatus == 'Verified' && !empty($districtcode)) {
+                    if (!isset($prefix_counters[$districtcode])) {
+                         // Fetch the current max sequence for this specific prefix/district from database
+                         $max_q = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num 
+                                                   FROM kaadaimembers 
+                                                   WHERE Familymembershipid LIKE '$districtcode%'");
+                         $max_r = $max_q->getRow();
+                         $prefix_counters[$districtcode] = ($max_r && $max_r->max_num) ? (int)$max_r->max_num : 0;
                     }
-                elseif($totalmembersverified >= 1 && $approvedstatus == 'Verified'){
-                        ++$totalmembersverified;
-                    }
-
-                $newid = $approvedstatus == 'Verified' ? $districtcode . str_pad($totalmembersverified, 5, "0", STR_PAD_LEFT) : NULL;
-                $familyMembershipId = $newid;
+                    
+                    $prefix_counters[$districtcode]++;
+                    $familyMembershipId = $districtcode . str_pad($prefix_counters[$districtcode], 5, "0", STR_PAD_LEFT);
+                } else {
+                    $familyMembershipId = NULL;
+                }
             } else {
                  // Fallback if district code not found (though headers checked, data integrity might be issue)
                  // Just continue, familyMembershipId null

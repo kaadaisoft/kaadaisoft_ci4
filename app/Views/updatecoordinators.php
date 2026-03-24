@@ -96,7 +96,18 @@
         <div class="bg-custom-header py-3 px-4 border-bottom shadow-sm">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 text-dark font-weight-bold">
-                    <i class="fa-solid fa-user-gear me-2"></i>Update Coordinator Details: <small class="text-primary"><?= $coordinator->Familymembershipid ?></small>
+                    <?php 
+                        $is_self = ($coordinator->Familymembershipid == session()->get('Kaadaisoft_userId'));
+                        $is_head = ($coordinator->MemberRole == 'Head');
+                        if ($is_self) {
+                            $icon = 'fa-user-gear';
+                            $title = 'Update My Details';
+                        } else {
+                            $icon = $is_head ? 'fa-user-gear' : 'fa-users';
+                            $title = $is_head ? 'Update Coordinator Details' : 'Update Family Member Details';
+                        }
+                    ?>
+                    <i class="fa-solid <?= $icon ?> me-2"></i><?= $title ?>: <small class="text-primary"><?= $coordinator->Familymembershipid ?></small>
                 </h4>
                 <button onclick="hideupdatecoordsform()" class="btn btn-close"></button>
             </div>
@@ -522,6 +533,7 @@
                                 <?php if (isset($taluks)): foreach ($taluks as $t): ?>
                                     <option value="<?= $t->taluk_name ?>" <?= ($coordinator->Taluk == $t->taluk_name) ? 'selected' : '' ?>><?= $t->taluk_name ?></option>
                                 <?php endforeach; endif; ?>
+                                <option value="Others" <?= (isset($coordinator->Taluk) && !empty($coordinator->Taluk) && !in_array($coordinator->Taluk, array_column($taluks ?? [], 'taluk_name')) && $coordinator->Taluk !== '') ? 'selected' : '' ?>>Others</option>
                             </select>
                             <input type="text" id="taluk_others_input_coord" name="taluk_others_coord" 
                                 class="form-control mt-2" 
@@ -538,6 +550,7 @@
                                 <?php if (isset($panchayats)): foreach ($panchayats as $p): ?>
                                     <option value="<?= $p->panchayat_name ?>" <?= ($coordinator->Panchayat == $p->panchayat_name) ? 'selected' : '' ?>><?= $p->panchayat_name ?></option>
                                 <?php endforeach; endif; ?>
+                                <option value="Others" <?= (isset($coordinator->Panchayat) && !empty($coordinator->Panchayat) && !in_array($coordinator->Panchayat, array_column($panchayats ?? [], 'panchayat_name')) && $coordinator->Panchayat !== '') ? 'selected' : '' ?>>Others</option>
                             </select>
                             <input type="text" id="panchayat_others_input_coord" name="panchayat_others_coord" 
                                 class="form-control mt-2" 
@@ -551,6 +564,7 @@
                             <label for="village-coord">Village</label>
                             <select id="village-coord" onchange="toggleVillageOthersCoord(this); validateCoordInput(this)" class="form-select" name="village-coord">
                                 <option value="<?= $coordinator->Village ?>"><?= $coordinator->Village ?: 'Select Village' ?></option>
+                                <option value="Others">Others</option>
                             </select>
                            <input type="text" id="village_others_input_coord" name="village_others_coord" 
                                 class="form-control mt-2" 
@@ -923,34 +937,47 @@
             toggleUpcomingHeadCoord();
         }
 
-        function setDropdowndistrictsCoord(state) {
+        function setDropdowndistrictsCoord(state, selectDistrict = null, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let state_id = state.value;
 
             // Clear dependent dropdowns
-            document.getElementById("taluks-dropdown-coord").innerHTML = '<option value="">Select Taluk</option>';
-            document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_coord").style.display = 'none';
-            document.getElementById("village_others_input_coord").value = '';
+            if (!selectDistrict) {
+                document.getElementById("taluks-dropdown-coord").innerHTML = '<option value="">Select Taluk</option>';
+                document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_coord").style.display = 'none';
+                document.getElementById("village_others_input_coord").value = '';
+            }
+
+            if (!state_id) return;
 
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
                 data: { "state_id": state_id },
                 success: (result) => {
-                    document.getElementById("districts-dropdown-coord").innerHTML = result;
+                    let dropdown = document.getElementById("districts-dropdown-coord");
+                    dropdown.innerHTML = result;
+                    if (selectDistrict) {
+                        dropdown.value = selectDistrict;
+                        setDropdowntaluksCoord(dropdown, selectTaluk, selectPanchayat, selectVillage);
+                    }
                 }
             });
         }
 
-        function setDropdowntaluksCoord(district) {
+        function setDropdowntaluksCoord(district, selectTaluk = null, selectPanchayat = null, selectVillage = null) {
             let district_name = district.value;
 
             // Clear dependent dropdowns
-            document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option>';
-            document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_coord").style.display = 'none';
-            document.getElementById("village_others_input_coord").value = '';
+            if (!selectTaluk) {
+                document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option>';
+                document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_coord").style.display = 'none';
+                document.getElementById("village_others_input_coord").value = '';
+            }
+
+            if (!district_name) return;
 
             $.ajax({
                 type: "get",
@@ -960,20 +987,33 @@
                     let dropdown = document.getElementById("taluks-dropdown-coord");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    toggleTalukOthersCoord(dropdown);
+                    if (selectTaluk) {
+                        dropdown.value = selectTaluk;
+                        if (dropdown.value !== selectTaluk && selectTaluk !== "") {
+                            dropdown.value = 'Others';
+                            toggleTalukOthersCoord(dropdown, selectTaluk);
+                        } else {
+                            toggleTalukOthersCoord(dropdown);
+                        }
+                        setDropdownpanchayatCoord(dropdown, selectPanchayat, selectVillage);
+                    } else {
+                        toggleTalukOthersCoord(dropdown);
+                    }
                 },
                 error: (err) => {
                     document.getElementById("taluks-dropdown-coord").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                    toggleTalukOthersCoord(document.getElementById("taluks-dropdown-coord"));
                 }
             });
         }
 
-        function toggleTalukOthersCoord(selectEl) {
+        function toggleTalukOthersCoord(selectEl, manualValue = '') {
             const othersInput = document.getElementById('taluk_others_input_coord');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'taluk-coord');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -982,13 +1022,34 @@
             }
         }
 
-        function setDropdownpanchayatCoord(taluk) {
+        function setDropdownpanchayatCoord(taluk, selectPanchayat = null, selectVillage = null) {
             let taluk_name = taluk.value;
 
             // Clear dependent dropdowns
-            document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
-            document.getElementById("village_others_input_coord").style.display = 'none';
-            document.getElementById("village_others_input_coord").value = '';
+            if (!selectPanchayat) {
+                document.getElementById("village-coord").innerHTML = '<option value="">Select Village</option>';
+                document.getElementById("village_others_input_coord").style.display = 'none';
+                document.getElementById("village_others_input_coord").value = '';
+            }
+
+            if (!taluk_name) return;
+            if (taluk_name === 'Others') {
+                let dropdown = document.getElementById("panchayat-dropdown-coord");
+                dropdown.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                if (selectPanchayat) {
+                    dropdown.value = selectPanchayat;
+                    if (dropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                        dropdown.value = 'Others';
+                        togglePanchayatOthersCoord(dropdown, selectPanchayat);
+                    } else {
+                        togglePanchayatOthersCoord(dropdown);
+                    }
+                    setDropdownVillageCoord(dropdown, selectVillage);
+                } else {
+                    togglePanchayatOthersCoord(dropdown);
+                }
+                return;
+            }
 
             $.ajax({
                 type: "get",
@@ -998,20 +1059,33 @@
                     let dropdown = document.getElementById("panchayat-dropdown-coord");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
-                    togglePanchayatOthersCoord(dropdown);
+                    if (selectPanchayat) {
+                        dropdown.value = selectPanchayat;
+                        if (dropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                            dropdown.value = 'Others';
+                            togglePanchayatOthersCoord(dropdown, selectPanchayat);
+                        } else {
+                            togglePanchayatOthersCoord(dropdown);
+                        }
+                        setDropdownVillageCoord(dropdown, selectVillage);
+                    } else {
+                        togglePanchayatOthersCoord(dropdown);
+                    }
                 },
                 error: (err) => {
                     document.getElementById("panchayat-dropdown-coord").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                    togglePanchayatOthersCoord(document.getElementById("panchayat-dropdown-coord"));
                 }
             });
         }
 
-        function togglePanchayatOthersCoord(selectEl) {
+        function togglePanchayatOthersCoord(selectEl, manualValue = '') {
             const othersInput = document.getElementById('panchayat_others_input_coord');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'panchayat-coord');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
                 othersInput.value = '';
@@ -1182,8 +1256,32 @@
             });
         }
 
+        let originalFormDataUpdateCoord = "";
+        setTimeout(function() {
+            const form = document.forms['coordinatorregistration-coord'];
+            if(form) {
+                originalFormDataUpdateCoord = new URLSearchParams(new FormData(form)).toString();
+                const checkbox = document.getElementById("correctdetails-coord");
+                
+                form.addEventListener('change', function() {
+                    if(checkbox) activateCoordButton(checkbox);
+                });
+                form.addEventListener('input', function() {
+                    if(checkbox) activateCoordButton(checkbox);
+                });
+            }
+        }, 800);
+
+        function checkFormChangedCoord() {
+            const form = document.forms['coordinatorregistration-coord'];
+            if(!form) return false;
+            const currentFormData = new URLSearchParams(new FormData(form)).toString();
+            return currentFormData !== originalFormDataUpdateCoord;
+        }
+
         function activateCoordButton(checkbox) {
-            document.getElementById("coordsubmitbutton").disabled = !checkbox.checked;
+            const isChanged = checkFormChangedCoord();
+            document.getElementById("coordsubmitbutton").disabled = !(checkbox.checked && isChanged);
         }
 
         function validateCoordInput(field) {
@@ -1884,9 +1982,17 @@
         }
 
         $(document).ready(function() {
-            // Native Village Load
-            const p1 = document.getElementById('panchayat-dropdown-coord');
-            if(p1 && p1.value) setDropdownVillageCoord(p1, '<?= isset($coordinator)?$coordinator->Village:'' ?>');
+            // Initial Cascading Load (Native)
+            const s1 = document.getElementById('states-dropdown-coord');
+            if (s1 && s1.value) {
+                setDropdowndistrictsCoord(
+                    s1, 
+                    '<?= $coordinator->District ?>', 
+                    '<?= $coordinator->Taluk ?>', 
+                    '<?= $coordinator->Panchayat ?>', 
+                    '<?= $coordinator->Village ?>'
+                );
+            }
             
             // Toggle blocks (without clearing dropdowns on initial load)
             toggleCurrentAddressTypeCoord(true);

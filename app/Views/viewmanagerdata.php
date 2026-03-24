@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Details</title>
+    <title><?= (session()->get('role') == 1) ? 'My Details' : 'Manager Details' ?></title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>  
     <style>
+      .grayscale-filter {
+        filter: grayscale(100%);
+      }
+
       .ps-logo{
         display:flex;
         align-items:center;
@@ -564,7 +570,11 @@
                 <div class="card-body px-4 py-4">
                     <div class="row">
                         <div class="col-md-4 text-center">
-                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $manager->Memberimage) ?>" alt="Manager Image">
+                            <?php 
+                                $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+                                $p_img = (!empty($manager->Memberimage) && file_exists('assets/membersdocuments/'.$manager->Memberimage)) ? base_url('assets/membersdocuments/'.$manager->Memberimage) : $default_profile;
+                            ?>
+                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= $p_img ?>" alt="Manager Image" onerror="this.src='<?= $default_profile ?>'">
                             
                             <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
                                 <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$manager->Aadharfrontimage?>','<?=$manager->Aadharbackimage?>','<?=$manager->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
@@ -958,14 +968,15 @@
           if (!familyMembersData || familyMembersData.length === 0) return;
           
           let searchTerm = "";
-          let searchInput = document.getElementById("commonsearch");
+          let searchInput = document.querySelector("#commonsearch input");
           if(searchInput) searchTerm = searchInput.value.toLowerCase().trim();
           
           let displayData = familyMembersData;
           if (searchTerm !== "") {
               displayData = familyMembersData.filter(item => {
                   return item.name.toLowerCase().includes(searchTerm) || 
-                         item.role.toLowerCase().includes(searchTerm);
+                         item.role.toLowerCase().includes(searchTerm) ||
+                         item.id.toLowerCase().includes(searchTerm);
               });
           }
 

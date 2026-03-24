@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -22,8 +24,9 @@
         height: auto; 
         flex-wrap: wrap; 
         padding: 5px 0 !important;
-        position: fixed;
-        top: 0;
+        /* Remove fixed position to match viewmanagerdata */
+        /* position: fixed; */
+        /* top: 0; */
         width: 100%;
         z-index: 1050;
       }
@@ -38,7 +41,8 @@
         width: 100% !important;
       }
       .main-body-row { 
-        margin-top: 200px !important; /* Adjust for stacked top bar elements */
+        /* Remove large margin-top since fixed position is removed */
+        /* margin-top: 200px !important; */
         flex-direction: column; 
         overflow: auto; 
       }
@@ -511,12 +515,14 @@
 
     @media screen and (max-width:768px) {
   #ps-logo {
-    background: rgb(248, 245, 245) !important;
+    /* Remove light background override to keep header dark consistent with topmenu/pslogo */
+    /* background: rgb(248, 245, 245) !important; */
     padding: 12px 20px !important;
   }
   
   #ps-name-line {
-    font-size: 1.3rem !important;
+    /* Remove large font size to match standard header */
+    /* font-size: 1.3rem !important; */
     line-height: 1.2;
   }
   
@@ -1093,15 +1099,6 @@
   }
   
 
-  function togglePasswordIcon() {
-    const toggleButton = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("current_password");
-    const icon = document.getElementById("togglePasswordIcon");
-    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-        passwordInput.setAttribute("type", type);
-        icon.classList.toggle("bi-eye");
-        icon.classList.toggle("bi-eye-slash");
-  }
   
 
         function searchcoordinators(coords){

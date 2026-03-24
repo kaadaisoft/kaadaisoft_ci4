@@ -170,31 +170,41 @@ class MembersModel extends Model
             $coordinator_id = trim($session->get('Kaadaisoft_userId'));
         }
 
-        // Generate Familymembershipid Logic
+        // Generate Prefix logic
         $district_code = strtoupper(substr($district, 0, 3)); // Default fallback
-        
-        // 1. Get District Code from DB
         $code_query = $this->db->query("SELECT district_code FROM panchayat_table WHERE district_name = ?", [$district]);
         $code_row = $code_query->getRow();
-        
         if ($code_row && !empty($code_row->district_code)) {
             $district_code = $code_row->district_code;
         }
 
-        // 2. Generate Next Numeric ID (Global Sequence)
-        // Extract numeric part from existing IDs (assuming format XXX00000)
-        $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num FROM kaadaimembers WHERE Familymembershipid REGEXP '^[A-Z]{3}[0-9]+$'");
-        $max_row = $max_query->getRow();
-        $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
-        
-        // 3. Construct ID
-        $new_membership_id = $district_code . sprintf('%05d', $next_num);
+        // 1. Determine Prefix
+        if (!empty($existfamilyid)) {
+             $prefix = substr(trim($existfamilyid), 0, 3);
+        } else {
+             $prefix = $district_code;
+        }
+
+        $approved_status = (session()->get('role') == 1) ? 'Verified' : 'Pending';
+        $new_membership_id = NULL; // Use NULL for pending members
+
+        // 2. ONLY generate ID if the member is being verified (Admin adding member)
+        if ($approved_status == 'Verified') {
+            $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num 
+                                           FROM kaadaimembers 
+                                           WHERE Familymembershipid LIKE '$prefix%'");
+            $max_row = $max_query->getRow();
+            $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
+            
+            // 3. Construct ID
+            $new_membership_id = $prefix . sprintf('%05d', $next_num);
+        }
 
         $data = [
             'Name' => $name,
             'Coordinator_id' => $coordinator_id,
             'Coordinator_Two_id' => $coordinator_two_id,
-            'Approvedstatus' => (session()->get('role') == 1) ? 'Verified' : 'Pending',
+            'Approvedstatus' => $approved_status,
             'Dob' => $dob,
             'Gender' => $gender,
             'Bloodgroup' => $bloodgroup,
@@ -252,7 +262,8 @@ class MembersModel extends Model
         $insert = $this->db->table('kaadaimembers')->insert($data);
 
         // Fix ID if it was generated with suffix (e.g. _01)
-        if ($insert && !empty($existfamilyid)) {
+        // ONLY if it is verified. Pending members should NOT have an ID.
+        if ($insert && !empty($existfamilyid) && $approved_status == 'Verified') {
             $new_pk = $this->db->insertID();
             if ($new_pk) {
                 // Fetch the generated Familymembershipid
@@ -263,12 +274,10 @@ class MembersModel extends Model
                     $generated_id = $row->Familymembershipid;
                     $prefix = substr($generated_id, 0, 3); // Assume 3 char prefix like NMK, ERD
                     
-                    // Get Max Global ID Number
-                    // We look for any ID that matches strictly 3 letters + digits (e.g. NMK00004, ERD00064)
-                    // We ignore those with underscores or other formats
+                    // Get Max Numeric ID for THIS prefix (District-wise sequence)
                     $max_query = $this->db->query("SELECT MAX(CAST(SUBSTRING(Familymembershipid, 4) AS UNSIGNED)) as max_num 
                                                    FROM kaadaimembers 
-                                                   WHERE Familymembershipid REGEXP '^[A-Z]{3}[0-9]+$'");
+                                                   WHERE Familymembershipid LIKE '$prefix%'");
                     
                     $max_row = $max_query->getRow();
                     $next_num = ($max_row && $max_row->max_num) ? ($max_row->max_num + 1) : 1;
@@ -688,7 +697,7 @@ class MembersModel extends Model
             $familyId = $member->Familymembershipid;
         }
 
-        $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId' OR Existfamilyid IN (SELECT Familymembershipid FROM kaadaimembers WHERE Existfamilyid = '$familyId')) AND isShow = 1 AND Approvedstatus = 'Verified' ORDER BY Dob ASC");
+        $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId' OR Existfamilyid IN (SELECT Familymembershipid FROM kaadaimembers WHERE Existfamilyid = '$familyId')) AND isShow = 1 AND (Approvedstatus = 'Verified' OR Role IN (1, 2)) ORDER BY Dob ASC");
         return $query->getResult();
     }
 

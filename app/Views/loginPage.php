@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Poondurai Kaadai Kulam</title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,19 +23,19 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrolling */
+            overflow-y: auto; /* Allow scrolling if content overflows */
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
         }
 
         .login-wrapper {
             position: relative;
-            height: 100vh;
+            min-height: 100vh;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            padding: 40px 0 80px; /* Space for footer */
         }
 
         .login-image {
@@ -251,7 +253,7 @@
             bottom: 20px;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 1000; /* Ensure it's above everything */
             text-align: center;
         }
 
@@ -408,7 +410,7 @@
                 font-size: 0.85rem;
             }
             .legal-links {
-                bottom: 10px;
+                bottom: 20px;
             }
             .legal-links a {
                 font-size: 0.75rem;
@@ -455,7 +457,7 @@
                             <input type="password" class="unique" value="<?= $password ?? '' ?>"
                                 id="password" name="password" placeholder="Password">
                             <i class="fa-solid fa-lock"></i>
-                            <i class="fa-solid fa-eye password-toggle" id="togglePassword"></i>
+                            <i class="fa-solid fa-eye-slash password-toggle" id="togglePassword"></i>
                         </div>
                     </div>
 

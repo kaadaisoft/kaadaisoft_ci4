@@ -208,7 +208,7 @@ class PaymentsFilter extends BaseController {
 
         if ($initialindex < 0) $initialindex = 0;
 
-        $counts = $initialindex * 5;
+        $counts = $initialindex * 10;
         $this->session->set('filteruserscounts', $counts);
 
         $totalmembers = $this->paymentsModel->getPaidorunpaidusers(

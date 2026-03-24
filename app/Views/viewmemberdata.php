@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinators</title>
+    <title><?= (session()->get('role') == 3) ? 'My Details' : 'Member Details' ?></title>
+    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> 
     <!-- <link rel="stylesheet" href="./kaadaisoft.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -12,6 +14,10 @@
     <style>
       body {
         overflow-x: hidden;
+      }
+
+      .grayscale-filter {
+        filter: grayscale(100%);
       }
 
       .ps-logo{
@@ -975,7 +981,11 @@
                 <div class="card-body px-4 py-4">
                     <div class="row">
                         <div class="col-md-4 text-center">
-                            <img class="shadow-sm" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa;" src="<?= base_url('assets/membersdocuments/' . $member->Memberimage) ?>" alt="Member Image">
+                            <?php 
+                                $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+                                $p_img = (!empty($member->Memberimage) && file_exists('assets/membersdocuments/'.$member->Memberimage)) ? base_url('assets/membersdocuments/'.$member->Memberimage) : $default_profile;
+                            ?>
+                            <img class="shadow-sm <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'grayscale-filter' : '' ?>" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa; <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'opacity: 0.6;' : '' ?>" src="<?= $p_img ?>" alt="Member Image" onerror="this.src='<?= $default_profile ?>'">
                             
                             <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
                                 <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$member->Aadharfrontimage?>','<?=$member->Aadharbackimage?>','<?=$member->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
@@ -1544,9 +1554,16 @@ let familyMembersData = [];
         }
         $role_counters = [];
         foreach($family_members as $fm) {
-            $dob = new DateTime($fm->Dob);
-            $now = new DateTime();
-            $age = $now->diff($dob)->y;
+            $age = 'N/A';
+            if (!empty($fm->Dob) && $fm->Dob != '0000-00-00') {
+                try {
+                    $dob = new DateTime($fm->Dob);
+                    $now = new DateTime();
+                    $age = $now->diff($dob)->y;
+                } catch (\Exception $e) {
+                    $age = 'N/A';
+                }
+            }
             
             $role = $fm->MemberRole;
             $display_role = $role;
@@ -1582,8 +1599,9 @@ function renderFamilyMembers(data, sNo) {
     data.forEach(value => {
         let deadClass = value.is_dead == 1 ? 'dead-member-row bg-light' : '';
         let clickAttr = (value.is_dead != 1 && isHead) ? `onclick="showupdatemembermodal('${value.id}')" style="cursor:pointer;"` : '';
-        let genderIcon = value.gender.toLowerCase() === 'male' ? '<i class="fa-solid fa-mars text-primary me-1"></i>' : 
-                         (value.gender.toLowerCase() === 'female' ? '<i class="fa-solid fa-venus text-danger me-1"></i>' : '');
+        let genderVal = (value.gender || "").toLowerCase();
+        let genderIcon = genderVal === 'male' ? '<i class="fa-solid fa-mars text-primary me-1"></i>' : 
+                         (genderVal === 'female' ? '<i class="fa-solid fa-venus text-danger me-1"></i>' : '');
         
         let pendingBadge = value.pending == 1 ? `<span class="badge bg-warning text-dark ms-2 px-2 py-1" style="font-size: 0.75em; border-radius: 4px;">In Review</span>` : '';
 
@@ -1666,13 +1684,34 @@ function renderFamilyPagination(totalItems, currentPage) {
 
 function goToFamilyPage(page) {
     if (!familyMembersData || familyMembersData.length === 0) return;
-    const totalPages = Math.ceil(familyMembersData.length / ITEMS_PER_PAGE);
-    if (page < 1 || page > totalPages) return;
+    
+    let searchTerm = "";
+    let searchInput = document.querySelector("#commonsearch input");
+    if(searchInput) searchTerm = searchInput.value.toLowerCase().trim();
+    
+    let displayData = familyMembersData;
+    if (searchTerm !== "") {
+        displayData = familyMembersData.filter(item => {
+            return (item.name || "").toLowerCase().includes(searchTerm) || 
+                   (item.role || "").toLowerCase().includes(searchTerm) ||
+                   (item.id || "").toLowerCase().includes(searchTerm);
+        });
+    }
+
+    const totalPages = Math.ceil(displayData.length / ITEMS_PER_PAGE);
+    if (totalPages === 0) {
+        renderFamilyMembers([], 0);
+        renderFamilyPagination(0, 1);
+        return;
+    }
+
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
     currentFamilyActivePage = page;
     
     let offset = (page - 1) * ITEMS_PER_PAGE;
-    renderFamilyMembers(familyMembersData.slice(offset, offset + ITEMS_PER_PAGE), offset);
-    renderFamilyPagination(familyMembersData.length, currentFamilyActivePage);
+    renderFamilyMembers(displayData.slice(offset, offset + ITEMS_PER_PAGE), offset);
+    renderFamilyPagination(displayData.length, currentFamilyActivePage);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -1802,19 +1841,10 @@ $.ajax({
     // document.getElementById("menu-bar").style.height = (window.innerHeight - document.getElementById("search-bar").getBoundingClientRect().height)+"px";
 
     function commonSearch(input) {
-        let filter = input.value.toLowerCase();
-        
-        // Filter Family Members Table (Client-side)
-        let familyTableBody = document.getElementById("family_members_body");
-        if (familyTableBody) {
-            let tr = familyTableBody.getElementsByTagName("tr");
-            for (let i = 0; i < tr.length; i++) {
-                let tdName = tr[i].getElementsByTagName("td")[1];
-                if (tdName) {
-                    let txtValue = tdName.textContent || tdName.innerText;
-                    tr[i].style.display = txtValue.toLowerCase().indexOf(filter) > -1 ? "" : "none";
-                }
-            }
+        // Filter Family Members Table (Paginated)
+        if(familyMembersData && familyMembersData.length > 0) {
+           currentFamilyActivePage = 1;
+           goToFamilyPage(1);
         }
 
         // Filter Master Coordinators list at bottom (AJAX)

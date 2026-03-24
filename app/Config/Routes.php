@@ -64,10 +64,13 @@ $routes->post('AdminDashboard/get-villages-for-dropdown', 'AdminDashboard::getVi
 $routes->post('AdminDashboard/getVillagesfordropdown', 'AdminDashboard::getVillagesfordropdown');
 $routes->post('AdminDashboard/check-exist-phoneno', 'Members::checkExistphoneno');
 $routes->post('AdminDashboard/check-exist-aadharno', 'Members::checkExistaadharno');
-$routes->get('AdminDashboard/get-members-for-assign', 'AdminDashboard::getMembersforassign');
+$routes->get('AdminDashboard/getMembersforassign', 'AdminDashboard::getMembersforassign');
+$routes->get('AdminDashboard/getCoordinatorsforassign', 'AdminDashboard::getCoordinatorsforassign');
 $routes->get('AdminDashboard/getMembersforassign', 'AdminDashboard::getMembersforassign');
 $routes->post('AdminDashboard/reassign-coordinator', 'AdminDashboard::reassignCoordinator');
 $routes->post('AdminDashboard/reassignCoordinator', 'AdminDashboard::reassignCoordinator');
+$routes->post('AdminDashboard/reassignCoordinatorProcess', 'AdminDashboard::reassignCoordinatorProcess');
+$routes->post('AdminDashboard/getCoordinatorAssignments', 'AdminDashboard::getCoordinatorAssignments');
 $routes->post('AdminDashboard/add-village', 'AdminDashboard::addVillage');
 $routes->post('AdminDashboard/addVillage', 'AdminDashboard::addVillage');
 $routes->post('AdminDashboard/remove-village', 'AdminDashboard::removeVillage');

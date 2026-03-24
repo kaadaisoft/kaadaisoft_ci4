@@ -671,9 +671,9 @@ class Members extends BaseController
         }
 
         if ($updateMember === 'no_changes') {
-            $this->session->set("coordsuccessstatus", "No changes were made to the details.");
-            $this->session->set("membersuccessstatus", "No changes were made to the details.");
-            $this->session->set("managersuccessstatus", "No changes were made to the details.");
+            // $this->session->set("coordsuccessstatus", "No changes were made to the details.");
+            // $this->session->set("membersuccessstatus", "No changes were made to the details.");
+            // $this->session->set("managersuccessstatus", "No changes were made to the details.");
             if ($this->session->get('role') == 3) {
                 return redirect()->to("view-member-data?member_id=" . $this->session->get('Kaadaisoft_userId'));
             }
@@ -690,20 +690,24 @@ class Members extends BaseController
                     return redirect()->to("view-member-data?member_id=" . $Familymembershipid);
                 }
 
-                $this->session->set("coordsuccessstatus", "The Coordinator ".$data['Name']." data is updated.");
+                if ($Familymembershipid == $this->session->get('Kaadaisoft_userId')) {
+                    $this->session->set("coordsuccessstatus", "Your data is updated successfully.");
+                } else {
+                    $this->session->set("coordsuccessstatus", "The Coordinator $Familymembershipid details updated successfully.");
+                }
                 return redirect()->to("view-coordinator-data?coord_id=" . $Familymembershipid);
             } else if ($this->session->get('role') == 1 && $path == "coordinator") {
-                $this->session->set("coordsuccessstatus", "The Manager $Familymembershipid details updated successfully.");
+                $this->session->set("coordsuccessstatus", "The Coordinator $Familymembershipid details updated successfully.");
                 return redirect()->to("coordinators");
             } else if ($this->session->get('role') == 1 && $path == "manager") {
                 $this->session->set("managersuccessstatus", "The Manager $Familymembershipid details updated successfully.");
                 return redirect()->to("admindashboard");
             } else {
                 if ($path == "member") {
-                    $this->session->set("membersuccessstatus", "The Coordinator ".$data['Name']." data is updated.");
+                    $this->session->set("membersuccessstatus", "The Member $Familymembershipid details updated successfully.");
                     return redirect()->to("members");
                 } else {
-                    $this->session->set("coordsuccessstatus", "The Coordinator ".$data['Name']." data is updated.");
+                    $this->session->set("coordsuccessstatus", "The Coordinator $Familymembershipid details updated successfully.");
                     return redirect()->to("coordinators");
                 }
             }
@@ -1018,7 +1022,7 @@ class Members extends BaseController
             
             // Use defaults from Config\Email.php
             $email->setTo($email_address);
-            $email->setSubject('Email Verification OTP - Kaadaisoft');
+            $email->setSubject('Email Verification OTP - Poondurai Kaadai Kulam');
             $email->setMessage("Your OTP for email verification is: <b>$otp</b>. It is valid for 10 minutes.");
 
             if ($email->send()) {

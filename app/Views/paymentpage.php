@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paymentforevent</title>
+  <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -15,7 +17,8 @@
     .ps-logo {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-left: 20px;
     }
 
     .ps-gray {
@@ -306,7 +309,7 @@
           left: 0;
           width: 100%;
           height: 100vh;
-          background-color: white;
+          background-color: #0f172a;
           z-index: 9999;
           overflow-y: auto;
           animation: slideIn 0.3s ease-out;
@@ -323,7 +326,7 @@
           right: 20px;
           font-size: 30px;
           cursor: pointer;
-          color: #333;
+          color: #cbd5e1;
       }
 
       #mobile-menu-content {
@@ -347,20 +350,33 @@
     .main-content-area { flex: 1; overflow-y: auto; background-color: #f8fafc; padding-bottom: 50px; }
 
     @media screen and (max-width: 768px) {
-      .top-navbar-row { height: auto; flex-wrap: wrap; }
-      .main-body-row { flex-direction: column; overflow: auto; }
+      .top-navbar-row { 
+        height: auto; 
+        flex-wrap: wrap; 
+        padding: 5px 0 !important;
+        width: 100%;
+        z-index: 1050;
+      }
+      #ps-logo {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        width: 100% !important;
+      }
+      #search-bar {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        width: 100% !important;
+      }
+      .main-body-row {
+        flex-direction: column; 
+        overflow: auto; 
+      }
       #menu-bar { display: none; }
-      .main-content-area { width: 100%; overflow: visible; }
+      .main-content-area { width: 100%; overflow: visible; padding-left: 10px !important; padding-right: 10px !important; }
+      #filter-form { margin-left: 0 !important; }
       html, body { overflow: auto; height: auto; }
       .layout-container { height: auto; }
     }
-
-      @media screen and (max-width: 768px) {
-        .top-navbar-row { height: auto; flex-direction: column; }
-        .main-body-row { flex-direction: column; }
-        #menu-bar { display: none; }
-        .main-content-area { width: 100% !important; }
-      }
 
       /* Modern Table Styling */
       .table-container {
@@ -645,16 +661,16 @@
         <div id="changepage" class="main-content-area px-4"><!-----------main-dashboard------------------------->
         <div id="filter-form" class="ms-4">
 
-          <div class="pt-3 pb-4 px-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="pt-3 pb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
               <span class="text-secondary fs-4 fw-bold">📊 Bulk Payment Upload</span>
               <div class="d-flex align-items-center gap-2">
-                <button onclick="toggleFilterSection()" class="btn btn-outline-primary fw-bold px-4 py-2 shadow-sm rounded">
+                <button onclick="toggleFilterSection()" class="btn btn-outline-primary fw-bold px-4 py-2 shadow-sm rounded-pill transition-300">
                     <i class="fas fa-filter me-1"></i>Filter
                 </button>
-                <button type="button" class="btn btn-success fw-bold px-4 py-2" data-bs-toggle="modal"
+                <button type="button" class="btn btn-success fw-bold px-4 py-2 shadow-sm rounded-pill transition-300" data-bs-toggle="modal"
                     data-bs-target="#bulkUploadModal">
-                    <i class="fas fa-upload me-2"></i>Upload CSV
+                    <i class="fas fa-upload me-2 text-white"></i>Upload CSV
                 </button>
               </div>
             </div>
@@ -987,13 +1003,12 @@
 
     let statusforpaid;
 
-// Mobile Menu Functions
     function openMobileMenu() {
-      document.getElementById('custom-mobile-menu').style.display = 'block';
+        document.getElementById('custom-mobile-menu').style.display = 'block';
     }
 
     function closeMobileMenu() {
-      document.getElementById('custom-mobile-menu').style.display = 'none';
+        document.getElementById('custom-mobile-menu').style.display = 'none';
     }
 
     $.ajax({

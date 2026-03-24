@@ -351,7 +351,11 @@
         <div class="container-fluid">
           <br>
           <span class="text-secondary h3"> Report Status Filter:
-            <!--<div id="alertContainer" class="h6 fw-normal text-danger "></div>-->
+            <?php if (session()->has('validationmessage')) {
+              $validationmessage = session()->get('validationmessage');
+              echo "<div id='alertContainer' class='alert alert-danger alert-dismissible fade show h6 fw-normal text-danger '>$validationmessage</div>";
+              session()->remove('validationmessage');
+            } ?>
           </span>
           <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off">
             <div class="row filter-card-premium"><!----------filter-start------------>

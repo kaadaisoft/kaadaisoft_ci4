@@ -222,7 +222,7 @@ class PaymentsModel extends Model
             $builder->where('pr.status', 'Paid');
         }
     
-        $builder->limit(5, $count);
+        $builder->limit(10, $count);
     
         $query = $builder->get();
         return $query->getResultArray();
