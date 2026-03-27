@@ -120,7 +120,6 @@
             <input hidden value="updatemanager" type="text" name="reason">
             
             <!-- Verification Tracking -->
-            <input type="hidden" id="is_email_verified-manager" name="is_email_verified-manager" value="1">
             <input type="hidden" id="is_phone_verified-manager" name="is_phone_verified-manager" value="1">
             <input type="hidden" id="original_email-manager" value="<?= esc($manager->Email) ?>">
             <input type="hidden" id="original_phone-manager" value="<?= esc($manager->Phonenumber) ?>">
@@ -232,22 +231,8 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-update">Email</label>
-                            <div class="input-group">
-                                <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
-                                <button type="button" id="verify-email-btn-manager" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPManager()">Verify</button>
-                                <span id="email-verified-badge-manager" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
-                            </div>
+                            <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
                             <small id="emailerror-update" class="text-danger"></small>
-                        </div>
-
-                        <!-- Email OTP Section (Manager) -->
-                        <div class="col-md-4" id="email-otp-section-manager" style="display:none;">
-                            <label for="email-otp-manager">Enter OTP Sent to Email <span class="mandatory-star">*</span></label>
-                            <div class="input-group">
-                                <input type="text" id="email-otp-manager" class="form-control" placeholder="6-digit OTP" maxlength="6">
-                                <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPManager()">Verify OTP</button>
-                            </div>
-                            <small id="email-otp-error-manager" class="text-danger"></small>
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -1353,25 +1338,15 @@
 
             // Real-time Email Change Check
             if (field.id === 'email-update') {
-                const originalEmail = document.getElementById('original_email-manager').value;
-                const verifyBtn = document.getElementById('verify-email-btn-manager');
-                const badge = document.getElementById('email-verified-badge-manager');
-                const statusInput = document.getElementById('is_email_verified-manager');
-
-                if (field.value !== originalEmail && field.value !== "") {
-                    verifyBtn.style.display = 'block';
-                    badge.style.display = 'none';
-                    statusInput.value = "0";
-                    document.getElementById('email-otp-section-manager').style.display = 'none';
-                } else if (field.value === originalEmail) {
-                    verifyBtn.style.display = 'none';
-                    badge.style.display = 'block';
-                    statusInput.value = "1";
-                    document.getElementById('email-otp-section-manager').style.display = 'none';
+                const emailError = document.getElementById('emailerror-update');
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                
+                if (field.value.trim() !== "" && !emailRegex.test(field.value.trim())) {
+                    emailError.innerHTML = "Invalid email format.";
+                    field.classList.add('is-invalid');
                 } else {
-                    verifyBtn.style.display = 'none';
-                    badge.style.display = 'none';
-                    statusInput.value = "0";
+                    emailError.innerHTML = "";
+                    field.classList.remove('is-invalid');
                 }
             }
 
@@ -1399,15 +1374,8 @@
         }
 
         function validateUpdateManagerform() {
-            const isEmailVerified = document.getElementById('is_email_verified-manager').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-manager').value;
              const f = document.forms['managerregistration-update'];
-
-            if (f['email-update'].value !== "" && isEmailVerified === "0") {
-                alert("Please verify your new email address before updating.");
-                f['email-update'].focus();
-                return false;
-            }
 
             if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number before updating.");
@@ -1482,81 +1450,7 @@
             return isValid;
         }
 
-        function sendUpdateEmailOTPManager() {
-            const email = document.getElementById('email-update').value;
-            const errorElem = document.getElementById('emailerror-update');
-            const otpSection = document.getElementById('email-otp-section-manager');
-            const btn = document.getElementById('verify-email-btn-manager');
 
-            if (!email || !email.includes('@')) {
-                errorElem.textContent = "Please enter a valid email address.";
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "Sending...";
-
-            $.ajax({
-                type: "POST",
-                url: "<?= base_url('members/send-registration-otp') ?>",
-                data: { email: email },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        alert(response.message);
-                        otpSection.style.display = 'block';
-                        errorElem.textContent = "";
-                        btn.style.display = 'none';
-                    } else {
-                        btn.disabled = false;
-                        btn.innerText = "Verify";
-                        errorElem.textContent = response.message || "Failed to send OTP. Try again.";
-                    }
-                },
-                error: function() {
-                    btn.disabled = false;
-                    btn.innerText = "Verify";
-                    errorElem.textContent = "Server error occurred. Please try again.";
-                }
-            });
-        }
-
-        function verifyUpdateEmailOTPManager() {
-            const email = document.getElementById('email-update').value;
-            const otp = document.getElementById('email-otp-manager').value;
-            const errorElem = document.getElementById('email-otp-error-manager');
-            const statusInput = document.getElementById('is_email_verified-manager');
-            const verifyBtn = document.getElementById('verify-email-btn-manager');
-            const badge = document.getElementById('email-verified-badge-manager');
-            const otpSection = document.getElementById('email-otp-section-manager');
-
-            if (otp.length !== 6) {
-                errorElem.textContent = "Enter a valid 6-digit OTP.";
-                return;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "<?= base_url('members/verify-registration-otp') ?>",
-                data: { email: email, otp: otp },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        alert(response.message);
-                        statusInput.value = "1";
-                        verifyBtn.style.display = 'none';
-                        badge.style.display = 'block';
-                        otpSection.style.display = 'none';
-                        errorElem.textContent = "";
-                    } else {
-                        errorElem.textContent = response.message || "Invalid or expired OTP.";
-                    }
-                },
-                error: function() {
-                    errorElem.textContent = "Verification failed. Try again.";
-                }
-            });
-        }
 
         function checkPhoneVerificationManager() {
             const phoneno = document.getElementById('phoneno-update').value;

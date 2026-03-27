@@ -453,29 +453,10 @@
                                     <!-- Email -->
                                     <div class="col-md-4">
                                         <label for="emailfield">Email <span class="text-danger">*</span></label>
-                                        <div class="input-group input-group-sm">
-                                            <input id="emailfield" onkeyup="validateInputfield(this)"
+                                        <input id="emailfield" onkeyup="validateInputfield(this)"
                                                 class="form-control form-control-sm" type="email" name="email">
-                                            <button class="btn btn-outline-primary" type="button" id="verify_email_btn" onclick="sendEmailOTP()">Verify</button>
-                                        </div>
                                         <small id="emailerror" class="text-danger"></small>
-                                        
-                                        <!-- OTP Verification Section -->
-                                        <div id="otp_section" class="mt-2" style="display:none;">
-                                            <div class="input-group input-group-sm">
-                                                <input type="text" id="email_otp" class="form-control" placeholder="Enter OTP">
-                                                <button class="btn btn-success" type="button" onclick="verifyEmailOTP()">Confirm OTP</button>
-                                            </div>
-                                            <small class="text-muted">OTP sent to your email. Valid for 10 mins.</small>
-                                            <small id="otperror" class="text-danger d-block"></small>
-                                        </div>
-                                        
-                                        <div id="email_verified_badge" class="mt-1 text-success fw-bold" style="display:none;">
-                                            <i class="bi bi-check-circle-fill"></i> Verified
-                                        </div>
                                     </div>
-
-                                    <input type="hidden" id="is_email_verified" name="is_email_verified" value="0">
 
 
                                     <!-- WhatsApp Number + Same as Phone -->
@@ -1886,12 +1867,11 @@
 
             // Email *  ✅ NEW
             const email = f.email.value.trim();
-            const isVerified = document.getElementById('is_email_verified').value;
-            // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!email) {
                 setErr('emailerror', 'Email is mandatory.', document.getElementById('emailfield'));
-            } else if (isVerified !== '1') {
-                setErr('emailerror', 'Please verify your email address.', document.getElementById('emailfield'));
+            } else if (!emailRegex.test(email)) {
+                setErr('emailerror', 'Enter a valid email like name@example.com', document.getElementById('emailfield'));
             }
 
 
@@ -2749,83 +2729,6 @@
 
 
 
-        function sendEmailOTP() {
-            const email = document.getElementById('emailfield').value.trim();
-            const btn = document.getElementById('verify_email_btn');
-            const err = document.getElementById('emailerror');
-            
-            if (!email) {
-                err.innerHTML = "Please enter email to verify.";
-                return;
-            }
-            
-            // Basic regex
-             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-             if (!emailRegex.test(email)) {
-                 err.innerHTML = "Invalid email format.";
-                 return;
-             }
-
-            btn.disabled = true;
-            btn.innerText = "Sending...";
-            err.innerHTML = "";
-
-            $.ajax({
-                url: "<?= base_url('members/send-registration-otp') ?>",
-                type: "POST",
-                data: { email: email },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        document.getElementById('otp_section').style.display = 'block';
-                        btn.style.display = 'none'; // Hide verify button
-                        alert(response.message);
-                    } else {
-                        btn.disabled = false;
-                        btn.innerText = "Verify";
-                        err.innerHTML = response.message;
-                    }
-                },
-                error: function() {
-                    btn.disabled = false;
-                    btn.innerText = "Verify";
-                    err.innerHTML = "Error sending OTP. Please try again.";
-                }
-            });
-        }
-
-        function verifyEmailOTP() {
-            const otp = document.getElementById('email_otp').value.trim();
-            const email = document.getElementById('emailfield').value.trim();
-            const err = document.getElementById('otperror');
-
-            if (!otp) {
-                err.innerHTML = "Please enter OTP.";
-                return;
-            }
-
-            $.ajax({
-                url: "<?= base_url('members/verify-registration-otp') ?>",
-                type: "POST",
-                data: { email: email, otp: otp },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        document.getElementById('otp_section').style.display = 'none';
-                        document.getElementById('email_verified_badge').style.display = 'block';
-                        document.getElementById('is_email_verified').value = "1";
-                        document.getElementById('emailfield').readOnly = true;
-                        document.getElementById('emailerror').innerHTML = "";
-                        alert(response.message);
-                    } else {
-                        err.innerHTML = response.message;
-                    }
-                },
-                error: function() {
-                    err.innerHTML = "Error verifying OTP.";
-                }
-            });
-        }
 
     </script>
 

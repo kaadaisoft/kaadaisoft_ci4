@@ -248,26 +248,8 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-member">Email</label>
-                            <div class="input-group">
-                                <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
-                                <button class="btn btn-outline-primary" type="button" id="verify_email_btn-member" onclick="sendUpdateEmailOTP()">Verify</button>
-                            </div>
+                            <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
                             <small id="emailerror-member" class="text-danger"></small>
-                            
-                            <!-- OTP Verification Section -->
-                            <div id="otp_section-member" class="mt-2" style="display:none;">
-                                <div class="input-group">
-                                    <input type="text" id="email_otp-member" class="form-control" placeholder="Enter OTP">
-                                    <button class="btn btn-success" type="button" onclick="verifyUpdateEmailOTP()">Confirm</button>
-                                </div>
-                                <small class="text-muted">OTP sent to your email. Valid for 10 mins.</small>
-                                <small id="otperror-member" class="text-danger d-block"></small>
-                            </div>
-                            
-                            <div id="email_verified_badge-member" class="mt-1 text-success fw-bold" style="display:<?= (!empty($member->Email)) ? 'block' : 'none' ?>;">
-                                <i class="fa-solid fa-circle-check"></i> Verified
-                            </div>
-                            <input type="hidden" id="is_email_verified-member" name="is_email_verified-update" value="<?= (!empty($member->Email)) ? '1' : '0' ?>">
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -1436,10 +1418,6 @@
             // Live Email Change check
             if (field.id === 'email-member') {
                 const currentEmail = field.value.trim();
-                const verifyBtn = document.getElementById('verify_email_btn-member');
-                const verifiedBadge = document.getElementById('email_verified_badge-member');
-                const isVerifiedInput = document.getElementById('is_email_verified-member');
-                const otpSection = document.getElementById('otp_section-member');
                 const emailError = document.getElementById('emailerror-member');
 
                 // Basic Format Validation
@@ -1450,19 +1428,6 @@
                 } else {
                     emailError.innerHTML = "";
                     field.classList.remove('is-invalid');
-                }
-
-                if (currentEmail !== originalEmailMember) {
-                    verifiedBadge.style.display = 'none';
-                    isVerifiedInput.value = "0";
-                    verifyBtn.style.display = 'inline-block';
-                    verifyBtn.disabled = false;
-                    verifyBtn.innerText = "Verify";
-                } else if (currentEmail !== "" && currentEmail === originalEmailMember) {
-                    verifiedBadge.style.display = 'block';
-                    isVerifiedInput.value = "1";
-                    verifyBtn.style.display = 'none';
-                    otpSection.style.display = 'none';
                 }
             }
 
@@ -1533,13 +1498,7 @@
             document.querySelectorAll(".text-danger").forEach(el => el.innerHTML = "");
 
             // Verification checks
-            const isEmailVerified = document.getElementById('is_email_verified-member').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-member').value;
-            if (f['email-update'].value !== "" && isEmailVerified === "0") {
-                alert("Please verify your new email address.");
-                f['email-update'].focus();
-                return false;
-            }
             if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number.");
                 f['phoneno-update'].focus();
@@ -2021,82 +1980,6 @@
             } else {
                 wrapper.style.display = 'none';
             }
-        }
-        function sendUpdateEmailOTP() {
-            const email = document.getElementById('email-member').value.trim();
-            const btn = document.getElementById('verify_email_btn-member');
-            const err = document.getElementById('emailerror-member');
-            
-            if (!email) {
-                err.innerHTML = "Please enter email to verify.";
-                return;
-            }
-            
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(email)) {
-                err.innerHTML = "Invalid email format.";
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "Sending...";
-            err.innerHTML = "";
-
-            $.ajax({
-                url: "<?= base_url('members/send-registration-otp') ?>",
-                type: "POST",
-                data: { email: email },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        document.getElementById('otp_section-member').style.display = 'block';
-                        btn.style.display = 'none';
-                        alert(response.message);
-                    } else {
-                        btn.disabled = false;
-                        btn.innerText = "Verify";
-                        err.innerHTML = response.message;
-                    }
-                },
-                error: function() {
-                    btn.disabled = false;
-                    btn.innerText = "Verify";
-                    err.innerHTML = "Error sending OTP. Please try again.";
-                }
-            });
-        }
-
-        function verifyUpdateEmailOTP() {
-            const otp = document.getElementById('email_otp-member').value.trim();
-            const email = document.getElementById('email-member').value.trim();
-            const err = document.getElementById('otperror-member');
-
-            if (!otp) {
-                err.innerHTML = "Please enter OTP.";
-                return;
-            }
-
-            $.ajax({
-                url: "<?= base_url('members/verify-registration-otp') ?>",
-                type: "POST",
-                data: { email: email, otp: otp },
-                dataType: "json",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        document.getElementById('otp_section-member').style.display = 'none';
-                        document.getElementById('email_verified_badge-member').style.display = 'block';
-                        document.getElementById('is_email_verified-member').value = "1";
-                        document.getElementById('email-member').readOnly = true;
-                        document.getElementById('emailerror-member').innerHTML = "";
-                        alert(response.message);
-                    } else {
-                        err.innerHTML = response.message;
-                    }
-                },
-                error: function() {
-                    err.innerHTML = "Error verifying OTP.";
-                }
-            });
         }
 
         function checkPhoneVerificationMember() {
