@@ -130,7 +130,8 @@ class AdminDashboard extends BaseController {
             }
             else{
             foreach ($membersdata as $key => $value){
-              echo "<li class='assignmember p-2 fw-bold' onclick='assignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>".($value->Role == 'coordinator' ? 'C' : 'M')."</span>&nbsp;".($value->Role == 'coordinator' ? "<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>" : '')."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
+              $areas_label = ($value->Role == 'coordinator') ? "<span class='badge ".($value->Assigned_areas_count < 4 ? 'bg-success' : 'bg-danger')." ms-1' style='font-size: 0.75rem;'>Assigned Areas: $value->Assigned_areas_count</span>" : "";
+              echo "<li class='assignmember p-2 fw-bold' onclick='assignForcoordinator(".json_encode($value).")'>&nbsp;$areas_label&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
             }
             }
         }
@@ -149,7 +150,8 @@ class AdminDashboard extends BaseController {
             }
             else{
             foreach ($membersdata as $key => $value){
-              echo "<li class='assignmember p-2 fw-bold' onclick='reassignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>C</span>&nbsp;"."<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>"."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
+              $areas_label = "<span class='badge ".($value->Assigned_areas_count < 4 ? 'bg-success' : 'bg-danger')." ms-1' style='font-size: 0.75rem;'>Assigned Areas: $value->Assigned_areas_count</span>";
+              echo "<li class='assignmember p-2 fw-bold' onclick='reassignForcoordinator(".json_encode($value).")'>&nbsp;$areas_label&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
             }
             }
         }

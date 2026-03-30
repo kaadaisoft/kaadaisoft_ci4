@@ -152,7 +152,7 @@ public function rejectMember($applicationid, $rejectreason){
   }
 
   public function getVillages($panchayat_name){
-   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
+   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name' AND TRIM(village_name) != '' ORDER BY village_name ASC");
    return $query->getResult();
   }
 

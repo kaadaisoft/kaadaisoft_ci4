@@ -2480,6 +2480,11 @@ function resetMemberFilters() {
   $("#gender-dropdown").val("");
   $("#occupation-dropdown").val("");
 
+  // Clear the text search input as well
+  $("#advanced-search-input").val("");
+  let globalInput = document.querySelector("#commonsearch input");
+  if (globalInput) globalInput.value = "";
+
   commonSearch();
 }
 

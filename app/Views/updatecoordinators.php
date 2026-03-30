@@ -120,6 +120,7 @@
             <input hidden value="updatecoordinator" type="text" name="reason">
             
             <!-- Verification Tracking -->
+            <input type="hidden" id="is_email_verified-coord" name="is_email_verified-coord" value="1">
             <input type="hidden" id="is_phone_verified-coord" name="is_phone_verified-coord" value="1">
             <input type="hidden" id="original_email-coord" value="<?= esc($coordinator->Email) ?>">
             <input type="hidden" id="original_phone-coord" value="<?= esc($coordinator->Phonenumber) ?>">
@@ -231,8 +232,22 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-coord">Email</label>
-                            <input id="email-coord" onkeyup="validateCoordInput(this)" class="form-control" type="email" name="email-coord" value="<?= $coordinator->Email ?>">
+                            <div class="input-group">
+                                <input id="email-coord" onkeyup="validateCoordInput(this)" class="form-control" type="email" name="email-coord" value="<?= $coordinator->Email ?>">
+                                <button type="button" id="verify-email-btn-coord" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPCoord()">Verify</button>
+                                <span id="email-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <small id="emailerror-coord" class="text-danger"></small>
+                        </div>
+
+                        <!-- Email OTP Section (Coordinator) -->
+                        <div class="col-md-4" id="email-otp-section-coord" style="display:none;">
+                            <label for="email-otp-coord">Enter OTP Sent to Email <span class="mandatory-star">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="email-otp-coord" class="form-control" placeholder="6-digit OTP" maxlength="6">
+                                <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPCoord()">Verify OTP</button>
+                            </div>
+                            <small id="email-otp-error-coord" class="text-danger"></small>
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -337,7 +352,7 @@
                     <div class="row g-3">
                         <!-- Education -->
                         <div class="col-md-4" style="position: relative;">
-                            <label for="education_input-coord">Education <span class="text-danger">*</span></label>
+                            <label for="education_input-coord">Education</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-coord" style="cursor: text; min-height: 38px;">
                                 <div id="education_tags-coord" class="d-flex flex-wrap gap-1"></div>
                                 <input type="text" id="education_input-coord"
@@ -445,7 +460,7 @@
                                     $display_prof = $profession_map[$coordinator->Profession];
                                 }
                             ?>
-                            <label for="profession_input-coord">Profession <span class="text-danger">*</span></label>
+                            <label for="profession_input-coord">Profession</label>
                             <div class="border rounded p-1 bg-white" id="profession_wrapper-coord" style="cursor: pointer;">
                                 <input type="text" id="profession_input-coord" 
                                     class="form-control border-0 bg-transparent" 
@@ -739,7 +754,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledCoord(this, 'coord_memberimage_btn')" id="coord_memberimage" type="file" name="Memberimage" accept="image/*">
+                                <input onchange="uploadFileStyledCoord(this, 'coord_memberimage_btn'); activateCoordButton(document.getElementById('correctdetails-coord'))" id="coord_memberimage" type="file" name="Memberimage" accept="image/*">
                             </div>
                             <small class="text-danger Memberimage"></small>
                         </div>
@@ -750,7 +765,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledCoord(this, 'coord_aadharfront_btn')" id="coord_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
+                                <input onchange="uploadFileStyledCoord(this, 'coord_aadharfront_btn'); activateCoordButton(document.getElementById('correctdetails-coord'))" id="coord_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharfrontimage"></small>
                         </div>
@@ -761,7 +776,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledCoord(this, 'coord_aadharback_btn')" id="coord_aadharback" type="file" name="Aadharbackimage" accept="image/*">
+                                <input onchange="uploadFileStyledCoord(this, 'coord_aadharback_btn'); activateCoordButton(document.getElementById('correctdetails-coord'))" id="coord_aadharback" type="file" name="Aadharbackimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharbackimage"></small>
                         </div>
@@ -772,7 +787,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledCoord(this, 'coord_communitycert_btn')" id="coord_communitycert" type="file" name="Communitycertificate" accept="image/*">
+                                <input onchange="uploadFileStyledCoord(this, 'coord_communitycert_btn'); activateCoordButton(document.getElementById('correctdetails-coord'))" id="coord_communitycert" type="file" name="Communitycertificate" accept="image/*">
                             </div>
                             <small class="text-danger Communitycertificate"></small>
                         </div>
@@ -1255,17 +1270,28 @@
                     if(checkbox) activateCoordButton(checkbox);
                 });
             }
-        }, 800);
+        }, 500);
 
         function checkFormChangedCoord() {
             const form = document.forms['coordinatorregistration-coord'];
             if(!form) return false;
+            
+            // Check text-based data
             const currentFormData = new URLSearchParams(new FormData(form)).toString();
-            return currentFormData !== originalFormDataUpdateCoord;
+            if (currentFormData !== originalFormDataUpdateCoord) return true;
+
+            // Check file inputs
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            for (let input of fileInputs) {
+                if (input.files.length > 0) return true;
+            }
+
+            return false;
         }
 
         function activateCoordButton(checkbox) {
             const isChanged = checkFormChangedCoord();
+            // Button is enabled ONLY if checkbox is checked AND form has changed
             document.getElementById("coordsubmitbutton").disabled = !(checkbox.checked && isChanged);
         }
 
@@ -1278,15 +1304,25 @@
 
             // Real-time Email Change Check
             if (field.id === 'email-coord') {
-                const emailError = document.getElementById('emailerror-coord');
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                
-                if (field.value.trim() !== "" && !emailRegex.test(field.value.trim())) {
-                    emailError.innerHTML = "Invalid email format.";
-                    field.classList.add('is-invalid');
+                const originalEmail = document.getElementById('original_email-coord').value;
+                const verifyBtn = document.getElementById('verify-email-btn-coord');
+                const badge = document.getElementById('email-verified-badge-coord');
+                const statusInput = document.getElementById('is_email_verified-coord');
+
+                if (field.value !== originalEmail && field.value !== "") {
+                    verifyBtn.style.display = 'block';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                    document.getElementById('email-otp-section-coord').style.display = 'none';
+                } else if (field.value === originalEmail) {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'block';
+                    statusInput.value = "1";
+                    document.getElementById('email-otp-section-coord').style.display = 'none';
                 } else {
-                    emailError.innerHTML = "";
-                    field.classList.remove('is-invalid');
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
                 }
             }
 
@@ -1329,7 +1365,13 @@
             document.querySelectorAll(".text-danger").forEach(el => el.innerHTML = "");
 
             // Verification checks
+            const isEmailVerified = document.getElementById('is_email_verified-coord').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-coord').value;
+            if (f['email-coord'].value !== "" && isEmailVerified === "0") {
+                alert("Please verify your new email address.");
+                f['email-coord'].focus();
+                return false;
+            }
             if (f['phoneno-coord'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number.");
                 f['phoneno-coord'].focus();
@@ -1343,40 +1385,9 @@
             if (!f['aadharno-coord'].value.trim()) setErr('aadharnoerror-coord', 'Aadhar is required.', f['aadharno-coord']);
             else if (f['aadharno-coord'].value.trim().length !== 12) setErr('aadharnoerror-coord', 'Aadhar must be 12 digits.', f['aadharno-coord']);
 
-            // Education & Career
-            if (!document.getElementById('educationfield-coord').value) setErr('educationerror-coord', 'Education is required.', document.getElementById('education_input-coord'));
-            if (!f['profession-coord'].value) setErr('professionerror-coord', 'Profession is required.', document.getElementById('profession_input-coord'));
-
-            // Native Address
-            if (!f['state-coord'].value) setErr('stateerror-coord', 'State is required.', f['state-coord']);
-            if (!f['district-coord'].value) setErr('districterror-coord', 'District is required.', f['district-coord']);
-            if (!f['taluk-coord'].value) setErr('talukerror-coord', 'Taluk is required.', f['taluk-coord']);
-            if (!f['panchayat-coord'].value) setErr('panchayaterror-coord', 'Panchayat is required.', f['panchayat-coord']);
-            if (!f['village-coord'].value.trim()) setErr('villageerror-coord', 'Village is required.', f['village-coord']);
-            if (!f['street-coord'].value.trim()) setErr('streeterror-coord', 'Street is required.', f['street-coord']);
-            if (!f['doorno-coord'].value.trim()) setErr('doornoerror-coord', 'Door number is required.', f['doorno-coord']);
-            if (!f['pincode-coord'].value.trim()) setErr('pincodeerror-coord', 'Pincode is required.', f['pincode-coord']);
-
-            // Current Address
-            const curType = document.querySelector('input[name="cur_address_type-coord"]:checked')?.value;
-            if (!curType) {
-                setErr('cur_address_type_error-coord', 'Select address type.', document.getElementById('cur_address_tn-coord'));
-            } else if (curType === 'TamilNadu') {
-                if (!f['cur_state-coord'].value) setErr('cur_stateerror-coord', 'State is required.', f['cur_state-coord']);
-                if (!f['cur_district-coord'].value) setErr('cur_districterror-coord', 'District is required.', f['cur_district-coord']);
-                if (!f['cur_taluk-coord'].value) setErr('cur_talukerror-coord', 'Taluk is required.', f['cur_taluk-coord']);
-                if (!f['cur_panchayat-coord'].value) setErr('cur_panchayaterror-coord', 'Panchayat is required.', f['cur_panchayat-coord']);
-                if (!f['cur_village-coord'].value.trim()) setErr('cur_villageerror-coord', 'Village is required.', f['cur_village-coord']);
-                if (!f['cur_street-coord'].value.trim()) setErr('cur_streeterror-coord', 'Street is required.', f['cur_street-coord']);
-                if (!f['cur_doorno-coord'].value.trim()) setErr('cur_doornoerror-coord', 'Door number is required.', f['cur_doorno-coord']);
-                if (!f['cur_pincode-coord'].value.trim()) setErr('cur_pincodeerror-coord', 'Pincode is required.', f['cur_pincode-coord']);
-                else if (f['cur_pincode-coord'].value.trim().length !== 6) setErr('cur_pincodeerror-coord', 'Must be 6 digits.', f['cur_pincode-coord']);
-            } else if (curType === 'OtherState' || curType === 'NRI') {
-                if (curType === 'NRI' && !f['cur_nri_country-coord'].value) setErr('cur_nri_countryerror-coord', 'Country is required.', f['cur_nri_country-coord']);
-                if (!f['cur_nri_state-coord'].value) setErr('cur_nri_stateerror-coord', 'State is required.', f['cur_nri_state-coord']);
-                if (!f['cur_nri_city-coord'].value) setErr('cur_nri_cityerror-coord', 'City is required.', f['cur_nri_city-coord']);
-                if (!f['cur_nri_zip-coord'].value.trim()) setErr('cur_nri_ziperror-coord', 'Zip is required.', f['cur_nri_zip-coord']);
-                if (!f['cur_nri_fulladdress-coord'].value.trim()) setErr('cur_nri_fulladdresserror-coord', 'Full address is required.', f['cur_nri_fulladdress-coord']);
+            if (!isValid && firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (firstInvalid.focus) firstInvalid.focus();
             }
 
             if (!isValid && firstInvalid) {
@@ -1387,6 +1398,81 @@
             return isValid;
         }
 
+        function sendUpdateEmailOTPCoord() {
+            const email = document.getElementById('email-coord').value;
+            const errorElem = document.getElementById('emailerror-coord');
+            const otpSection = document.getElementById('email-otp-section-coord');
+            const btn = document.getElementById('verify-email-btn-coord');
+
+            if (!email || !email.includes('@')) {
+                errorElem.textContent = "Please enter a valid email address.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        otpSection.style.display = 'block';
+                        errorElem.textContent = "";
+                        btn.style.display = 'none';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        errorElem.textContent = response.message || "Failed to send OTP. Try again.";
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    errorElem.textContent = "Server error occurred. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTPCoord() {
+            const email = document.getElementById('email-coord').value;
+            const otp = document.getElementById('email-otp-coord').value;
+            const errorElem = document.getElementById('email-otp-error-coord');
+            const statusInput = document.getElementById('is_email_verified-coord');
+            const verifyBtn = document.getElementById('verify-email-btn-coord');
+            const badge = document.getElementById('email-verified-badge-coord');
+            const otpSection = document.getElementById('email-otp-section-coord');
+
+            if (otp.length !== 6) {
+                errorElem.textContent = "Enter a valid 6-digit OTP.";
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        statusInput.value = "1";
+                        verifyBtn.style.display = 'none';
+                        badge.style.display = 'block';
+                        otpSection.style.display = 'none';
+                        errorElem.textContent = "";
+                    } else {
+                        errorElem.textContent = response.message || "Invalid or expired OTP.";
+                    }
+                },
+                error: function() {
+                    errorElem.textContent = "Verification failed. Try again.";
+                }
+            });
+        }
 
         function checkPhoneVerificationCoord() {
             const phoneno = document.getElementById('phoneno-coord').value;
@@ -1468,6 +1554,10 @@
                     btn.classList.add('file-selected');
                     btn.querySelector('.ps-file-label').textContent = file.files[0].name;
                     btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                    
+                    // Force button check since files don't trigger 'change' on the form in some browsers
+                    const checkbox = document.getElementById("correctdetails-coord");
+                    if(checkbox) activateCoordButton(checkbox);
                 }
             }
         }
@@ -1745,14 +1835,17 @@
             });
         }
 
-        function toggleTalukOthersCurrentCoord(selectEl) {
+        function toggleTalukOthersCurrentCoord(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_taluk_others_input_coord');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_taluk-coord');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_taluk_others_coord');
                 selectEl.setAttribute('name', 'cur_taluk-coord'); 
@@ -1801,14 +1894,17 @@
             });
         }
 
-        function togglePanchayatOthersCurrentCoord(selectEl) {
+        function togglePanchayatOthersCurrentCoord(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_panchayat_others_input_coord');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_panchayat-coord');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_panchayat_others_coord');
                 selectEl.setAttribute('name', 'cur_panchayat-coord'); 

@@ -120,6 +120,7 @@
             <input hidden value="updatemanager" type="text" name="reason">
             
             <!-- Verification Tracking -->
+            <input type="hidden" id="is_email_verified-manager" name="is_email_verified-manager" value="1">
             <input type="hidden" id="is_phone_verified-manager" name="is_phone_verified-manager" value="1">
             <input type="hidden" id="original_email-manager" value="<?= esc($manager->Email) ?>">
             <input type="hidden" id="original_phone-manager" value="<?= esc($manager->Phonenumber) ?>">
@@ -231,8 +232,22 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-update">Email</label>
-                            <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
+                            <div class="input-group">
+                                <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
+                                <button type="button" id="verify-email-btn-manager" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPManager()">Verify</button>
+                                <span id="email-verified-badge-manager" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <small id="emailerror-update" class="text-danger"></small>
+                        </div>
+
+                        <!-- Email OTP Section (Manager) -->
+                        <div class="col-md-4" id="email-otp-section-manager" style="display:none;">
+                            <label for="email-otp-manager">Enter OTP Sent to Email <span class="mandatory-star">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="email-otp-manager" class="form-control" placeholder="6-digit OTP" maxlength="6">
+                                <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPManager()">Verify OTP</button>
+                            </div>
+                            <small id="email-otp-error-manager" class="text-danger"></small>
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -337,7 +352,7 @@
                     <div class="row g-3">
                         <!-- Education -->
                         <div class="col-md-4" style="position: relative;">
-                            <label for="education_input-update">Education <span class="text-danger">*</span></label>
+                            <label for="education_input-update">Education</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-update" style="cursor: text; min-height: 38px;">
                                 <div id="education_tags-update" class="d-flex flex-wrap gap-1"></div>
                                 <input type="text" id="education_input-update"
@@ -445,7 +460,7 @@
                                     $display_prof = $profession_map[$manager->Profession];
                                 }
                             ?>
-                            <label for="profession-update">Profession <span class="text-danger">*</span></label>
+                            <label for="profession-update">Profession</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center" id="profession_wrapper-update" style="cursor: pointer; min-height: 38px;">
                                 <input type="text" id="profession_input-update" 
                                     class="form-control form-control-sm border-0 bg-transparent shadow-none" 
@@ -596,7 +611,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="d-block">Current Address Type <span class="text-danger">*</span></label>
+                        <label class="d-block">Current Address Type</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_tn-update" value="TamilNadu" <?= ($manager->Curaddresstype == 'TamilNadu' || ($manager->Curaddresstype == 'India' && $manager->Curstate == 35)) ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
                             <label class="form-check-label" for="cur_address_tn-update">Tamil Nadu</label>
@@ -739,7 +754,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_memberimage_btn')" id="mgr_memberimage" type="file" name="Memberimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_memberimage_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_memberimage" type="file" name="Memberimage" accept="image/*">
                             </div>
                             <small class="text-danger Memberimage"></small>
                         </div>
@@ -750,7 +765,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharfront_btn')" id="mgr_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharfront_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharfrontimage"></small>
                         </div>
@@ -761,7 +776,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharback_btn')" id="mgr_aadharback" type="file" name="Aadharbackimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharback_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_aadharback" type="file" name="Aadharbackimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharbackimage"></small>
                         </div>
@@ -772,7 +787,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_communitycert_btn')" id="mgr_communitycert" type="file" name="Communitycertificate" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_communitycert_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_communitycert" type="file" name="Communitycertificate" accept="image/*">
                             </div>
                             <small class="text-danger Communitycertificate"></small>
                         </div>
@@ -1192,6 +1207,9 @@
             if (tnRadio) {
                 tnRadio.checked = true;
                 toggleCurrentAddressTypeUpdate(); // This will clear NRI fields and set TN state
+                if (typeof psShowToast === 'function') {
+                    psShowToast('success', 'Native address details copied to current address.');
+                }
             }
 
             // Copy simple fields
@@ -1308,6 +1326,9 @@
                 originalFormDataUpdateManager = new URLSearchParams(new FormData(form)).toString();
                 const checkbox = document.getElementById("correctdetails-update");
                 
+                // Initialize button state immediately
+                if(checkbox) activateUpdateButton(checkbox);
+
                 form.addEventListener('change', function() {
                     if(checkbox) activateUpdateButton(checkbox);
                 });
@@ -1315,18 +1336,28 @@
                     if(checkbox) activateUpdateButton(checkbox);
                 });
             }
-        }, 800);
+        }, 500);
 
         function checkFormChangedManager() {
             const form = document.forms['managerregistration-update'];
             if(!form) return false;
+            
+            // Check text-based data
             const currentFormData = new URLSearchParams(new FormData(form)).toString();
-            return currentFormData !== originalFormDataUpdateManager;
+            if (currentFormData !== originalFormDataUpdateManager) return true;
+
+            // Check file inputs
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            for (let input of fileInputs) {
+                if (input.files.length > 0) return true;
+            }
+
+            return false;
         }
 
         function activateUpdateButton(checkbox) {
-            const isChanged = checkFormChangedManager();
-            document.getElementById("updatesubmitbutton").disabled = !(checkbox.checked && isChanged);
+            const hasChanged = checkFormChangedManager();
+            document.getElementById("updatesubmitbutton").disabled = !(checkbox.checked && hasChanged);
         }
 
         function validateUpdateInput(field) {
@@ -1338,15 +1369,25 @@
 
             // Real-time Email Change Check
             if (field.id === 'email-update') {
-                const emailError = document.getElementById('emailerror-update');
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                
-                if (field.value.trim() !== "" && !emailRegex.test(field.value.trim())) {
-                    emailError.innerHTML = "Invalid email format.";
-                    field.classList.add('is-invalid');
+                const originalEmail = document.getElementById('original_email-manager').value;
+                const verifyBtn = document.getElementById('verify-email-btn-manager');
+                const badge = document.getElementById('email-verified-badge-manager');
+                const statusInput = document.getElementById('is_email_verified-manager');
+
+                if (field.value !== originalEmail && field.value !== "") {
+                    verifyBtn.style.display = 'block';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                    document.getElementById('email-otp-section-manager').style.display = 'none';
+                } else if (field.value === originalEmail) {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'block';
+                    statusInput.value = "1";
+                    document.getElementById('email-otp-section-manager').style.display = 'none';
                 } else {
-                    emailError.innerHTML = "";
-                    field.classList.remove('is-invalid');
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
                 }
             }
 
@@ -1374,8 +1415,15 @@
         }
 
         function validateUpdateManagerform() {
+            const isEmailVerified = document.getElementById('is_email_verified-manager').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-manager').value;
              const f = document.forms['managerregistration-update'];
+
+            if (f['email-update'].value !== "" && isEmailVerified === "0") {
+                alert("Please verify your new email address before updating.");
+                f['email-update'].focus();
+                return false;
+            }
 
             if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number before updating.");
@@ -1404,37 +1452,6 @@
             if (!f['aadharno-update'].value.trim()) setErr('aadharnoerror-update', 'Aadhar number is required', f['aadharno-update']);
             else if (f['aadharno-update'].value.length !== 12) setErr('aadharnoerror-update', 'Aadhar must be 12 digits', f['aadharno-update']);
 
-            // Native Address
-            if (!f['state-update'].value) setErr('stateerror-update', 'State is required', f['state-update']);
-            if (!f['district-update'].value) setErr('districterror-update', 'District is required', f['district-update']);
-            if (!f['taluk-update'].value) setErr('talukerror-update', 'Taluk is required', f['taluk-update']);
-            if (!f['panchayat-update'].value) setErr('panchayaterror-update', 'Panchayat is required', f['panchayat-update']);
-            if (!f['village-update'].value.trim()) setErr('villageerror-update', 'Village is required', f['village-update']);
-            if (!f['street-update'].value.trim()) setErr('streeterror-update', 'Street is required', f['street-update']);
-            if (!f['doorno-update'].value.trim()) setErr('doornoerror-update', 'Door no is required', f['doorno-update']);
-            if (!f['pincode-update'].value.trim()) setErr('pincodeerror-update', 'Pincode is required', f['pincode-update']);
-
-            // Current Address
-            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
-            if (!curType) {
-                setErr('cur_address_type_error-update', 'Please select address type', document.getElementById('cur_address_tn-update'));
-            } else if (curType === 'TamilNadu') {
-                if (!f['cur_state-update'].value) setErr('cur_stateerror-update', 'State is required', f['cur_state-update']);
-                if (!f['cur_district-update'].value) setErr('cur_districterror-update', 'District is required', f['cur_district-update']);
-                if (!f['cur_taluk-update'].value) setErr('cur_talukerror-update', 'Taluk is required', f['cur_taluk-update']);
-                if (!f['cur_panchayat-update'].value) setErr('cur_panchayaterror-update', 'Panchayat is required', f['cur_panchayat-update']);
-                if (!f['cur_village-update'].value.trim()) setErr('cur_villageerror-update', 'Village is required', f['cur_village-update']);
-                if (!f['cur_street-update'].value.trim()) setErr('cur_streeterror-update', 'Street is required', f['cur_street-update']);
-                if (!f['cur_doorno-update'].value.trim()) setErr('cur_doornoerror-update', 'Door no is required', f['cur_doorno-update']);
-                if (!f['cur_pincode-update'].value.trim()) setErr('cur_pincodeerror-update', 'Pincode is required', f['cur_pincode-update']);
-            } else if (curType === 'OtherState' || curType === 'NRI') {
-                if (curType === 'NRI' && !f['cur_nri_country-update'].value) setErr('cur_nri_countryerror-update', 'Country is required', f['cur_nri_country-update']);
-                if (!f['cur_nri_state-update'].value) setErr('cur_nri_stateerror-update', 'State is required', f['cur_nri_state-update']);
-                if (!f['cur_nri_city-update'].value) setErr('cur_nri_cityerror-update', 'City is required', f['cur_nri_city-update']);
-                if (!f['cur_nri_zip-update'].value.trim()) setErr('cur_nri_ziperror-update', 'Zip code is required', f['cur_nri_zip-update']);
-                if (!f['cur_nri_fulladdress-update'].value.trim()) setErr('cur_nri_fulladdresserror-update', 'Full address is required', f['cur_nri_fulladdress-update']);
-            }
-
             // Relationship Transfer Check
             let aliveStatusDead = document.getElementById("alive_no-update");
             let upcomingHeadSelect = document.getElementById("upcoming_head-update");
@@ -1450,7 +1467,81 @@
             return isValid;
         }
 
+        function sendUpdateEmailOTPManager() {
+            const email = document.getElementById('email-update').value;
+            const errorElem = document.getElementById('emailerror-update');
+            const otpSection = document.getElementById('email-otp-section-manager');
+            const btn = document.getElementById('verify-email-btn-manager');
 
+            if (!email || !email.includes('@')) {
+                errorElem.textContent = "Please enter a valid email address.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        otpSection.style.display = 'block';
+                        errorElem.textContent = "";
+                        btn.style.display = 'none';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        errorElem.textContent = response.message || "Failed to send OTP. Try again.";
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    errorElem.textContent = "Server error occurred. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTPManager() {
+            const email = document.getElementById('email-update').value;
+            const otp = document.getElementById('email-otp-manager').value;
+            const errorElem = document.getElementById('email-otp-error-manager');
+            const statusInput = document.getElementById('is_email_verified-manager');
+            const verifyBtn = document.getElementById('verify-email-btn-manager');
+            const badge = document.getElementById('email-verified-badge-manager');
+            const otpSection = document.getElementById('email-otp-section-manager');
+
+            if (otp.length !== 6) {
+                errorElem.textContent = "Enter a valid 6-digit OTP.";
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        statusInput.value = "1";
+                        verifyBtn.style.display = 'none';
+                        badge.style.display = 'block';
+                        otpSection.style.display = 'none';
+                        errorElem.textContent = "";
+                    } else {
+                        errorElem.textContent = response.message || "Invalid or expired OTP.";
+                    }
+                },
+                error: function() {
+                    errorElem.textContent = "Verification failed. Try again.";
+                }
+            });
+        }
 
         function checkPhoneVerificationManager() {
             const phoneno = document.getElementById('phoneno-update').value;
@@ -1532,6 +1623,10 @@
                     btn.classList.add('file-selected');
                     btn.querySelector('.ps-file-label').textContent = file.files[0].name;
                     btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                    
+                    // Force button check
+                    const checkbox = document.getElementById("correctdetails-update");
+                    if(checkbox) activateUpdateButton(checkbox);
                 }
             }
         }
@@ -1826,14 +1921,17 @@
             });
         }
 
-        function toggleTalukOthersCurrentManager(selectEl) {
+        function toggleTalukOthersCurrentManager(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_taluk_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_taluk-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_taluk_others_update');
                 selectEl.setAttribute('name', 'cur_taluk-update'); 
@@ -1882,14 +1980,17 @@
             });
         }
 
-        function togglePanchayatOthersCurrentManager(selectEl) {
+        function togglePanchayatOthersCurrentManager(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_panchayat_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_panchayat-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_panchayat_others_update');
                 selectEl.setAttribute('name', 'cur_panchayat-update'); 
@@ -1997,19 +2098,6 @@
             }
         }
 
-        $(document).on("click", "#profession_dropdown-update .profession-option", function() {
-            const value = this.getAttribute("data-value");
-            const input = document.getElementById("profession_input-update");
-            const hidden = document.getElementById("profession-update");
-            
-            input.value = this.textContent;
-            hidden.value = value;
-            document.getElementById("profession_dropdown-update").style.display = "none";
-            
-            // Trigger profession change logic
-            handleProfessionChangeUpdate({value: value});
-            // validateUpdateInput(hidden); // if available
-        });
 
         // Toggle readonly to allow typing when focused
         $("#profession_input-update").on("focus", function() {

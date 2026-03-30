@@ -327,7 +327,7 @@ class MembersModel extends Model
 
     public function getVillages($panchayat_name)
     {
-        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
+        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' AND TRIM(village_name) != '' ORDER BY village_name ASC");
         return $query->getResult();
     }
 
@@ -340,6 +340,7 @@ class MembersModel extends Model
         $builder->where('Role', 3);
         $builder->where('isShow', 1);
         $builder->where('MemberRole', 'Head');
+        $builder->where('Approvedstatus', 'Verified');
 
         if (is_array($searchfields)) {
             // Address filters
@@ -406,6 +407,7 @@ class MembersModel extends Model
         $builder->where('Role', 3);
         $builder->where('isShow', 1);
         $builder->where('MemberRole', 'Head');
+        $builder->where('Approvedstatus', 'Verified');
 
         if (is_array($searchfields)) {
             if (!empty($searchfields['state_id'])) $builder->where('state_id', $searchfields['state_id']);

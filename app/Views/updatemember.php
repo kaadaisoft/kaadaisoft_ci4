@@ -248,8 +248,26 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-member">Email</label>
-                            <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
+                            <div class="input-group">
+                                <input id="email-member" onkeyup="validateMemberInput(this)" class="form-control" type="email" name="email-update" value="<?= $member->Email ?>">
+                                <button class="btn btn-outline-primary" type="button" id="verify_email_btn-member" onclick="sendUpdateEmailOTP()">Verify</button>
+                            </div>
                             <small id="emailerror-member" class="text-danger"></small>
+                            
+                            <!-- OTP Verification Section -->
+                            <div id="otp_section-member" class="mt-2" style="display:none;">
+                                <div class="input-group">
+                                    <input type="text" id="email_otp-member" class="form-control" placeholder="Enter OTP">
+                                    <button class="btn btn-success" type="button" onclick="verifyUpdateEmailOTP()">Confirm</button>
+                                </div>
+                                <small class="text-muted">OTP sent to your email. Valid for 10 mins.</small>
+                                <small id="otperror-member" class="text-danger d-block"></small>
+                            </div>
+                            
+                            <div id="email_verified_badge-member" class="mt-1 text-success fw-bold" style="display:<?= (!empty($member->Email)) ? 'block' : 'none' ?>;">
+                                <i class="fa-solid fa-circle-check"></i> Verified
+                            </div>
+                            <input type="hidden" id="is_email_verified-member" name="is_email_verified-update" value="<?= (!empty($member->Email)) ? '1' : '0' ?>">
                         </div>
 
                         <!-- WhatsApp Number -->
@@ -347,7 +365,7 @@
                     <div class="row g-3">
                         <!-- Education -->
                         <div class="col-md-4" style="position: relative;">
-                            <label for="education_input-member">Education <span class="text-danger">*</span></label>
+                            <label for="education_input-member">Education</label>
                             
                             <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-member" style="cursor: text; min-height: 38px;">
                                 <!-- Tags Container -->
@@ -575,7 +593,7 @@
                                     $display_prof = $profession_map[$member->Profession];
                                 }
                             ?>
-                            <label for="profession-member">Profession <span class="text-danger">*</span></label>
+                            <label for="profession-member">Profession</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center" id="profession_wrapper-member" style="cursor: pointer; min-height: 38px;">
                                 <input type="text" id="profession_input-member" 
                                     class="form-control form-control-sm border-0 bg-transparent shadow-none" 
@@ -726,7 +744,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="d-block">Current Address Type <span class="mandatory-star">*</span></label>
+                        <label class="d-block">Current Address Type</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_tn-member" value="TamilNadu" <?= ($member->Curaddresstype == 'TamilNadu' || ($member->Curaddresstype == 'India' && $member->Curstate == 35)) ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeMember()">
                             <label class="form-check-label" for="cur_address_tn-member">Tamil Nadu</label>
@@ -871,7 +889,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledMember(this, 'update_memberimage_btn')" id="update_memberimage" type="file" name="Memberimage" accept="image/*">
+                                <input onchange="uploadFileStyledMember(this, 'update_memberimage_btn'); activateMemberButton(document.getElementById('correctdetails-member'))" id="update_memberimage" type="file" name="Memberimage" accept="image/*">
                             </div>
                             <small class="text-danger Memberimage"></small>
                         </div>
@@ -882,7 +900,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledMember(this, 'update_aadharfront_btn')" id="update_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
+                                <input onchange="uploadFileStyledMember(this, 'update_aadharfront_btn'); activateMemberButton(document.getElementById('correctdetails-member'))" id="update_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharfrontimage"></small>
                         </div>
@@ -893,7 +911,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledMember(this, 'update_aadharback_btn')" id="update_aadharback" type="file" name="Aadharbackimage" accept="image/*">
+                                <input onchange="uploadFileStyledMember(this, 'update_aadharback_btn'); activateMemberButton(document.getElementById('correctdetails-member'))" id="update_aadharback" type="file" name="Aadharbackimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharbackimage"></small>
                         </div>
@@ -904,7 +922,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledMember(this, 'update_communitycert_btn')" id="update_communitycert" type="file" name="Communitycertificate" accept="image/*">
+                                <input onchange="uploadFileStyledMember(this, 'update_communitycert_btn'); activateMemberButton(document.getElementById('correctdetails-member'))" id="update_communitycert" type="file" name="Communitycertificate" accept="image/*">
                             </div>
                             <small class="text-danger Communitycertificate"></small>
                         </div>
@@ -1329,58 +1347,122 @@
         }
 
         function copyNativeAddressMember() {
-            // Ensure Tamil Nadu is selected for current address type
-            var tnRadio = document.getElementById('cur_address_tn-member');
+            const tnRadio = document.getElementById('cur_address_tn-member');
             if (tnRadio) {
                 tnRadio.checked = true;
                 toggleCurrentAddressTypeMember();
+                if (typeof psShowToast === 'function') {
+                    psShowToast('success', 'Native address details copied to current address.');
+                }
             }
 
-            var fields = {
-                'street-member': 'cur_street-member',
-                'doorno-member': 'cur_doorno-member',
-                'pincode-member': 'cur_pincode-member'
-            };
+            const c_street = document.getElementById('cur_street-member');
+            const c_doorno = document.getElementById('cur_doorno-member');
+            const c_pincode = document.getElementById('cur_pincode-member');
+            const n_street = document.getElementById('street-member');
+            const n_doorno = document.getElementById('doorno-member');
+            const n_pincode = document.getElementById('pincode-member');
 
-            for (var sourceId in fields) {
-                var source = document.getElementById(sourceId);
-                var target = document.getElementById(fields[sourceId]);
-                if (source && target) target.value = source.value;
-            }
-            
-            var n_state = document.getElementById('states-dropdown-member').value;
-            var n_district = document.getElementById('districts-dropdown-member').value;
-            var n_taluk = document.getElementById('taluks-dropdown-member').value;
-            var n_panchayat = document.getElementById('panchayat-dropdown-member').value;
-            var n_village_select = document.getElementById('village-member');
-            var n_village = n_village_select.value;
-            if (n_village === 'Others') {
-                n_village = document.getElementById('village_others_input_member').value;
-            }
-            
-            var c_state = document.getElementById('cur_state-member');
-            if (c_state && n_state) {
-                c_state.value = n_state;
-                // Trigger chained AJAX for current address dropdowns with full path
-                setDropdowndistrictsCurrentMember(c_state, n_district, n_taluk, n_panchayat, n_village);
-                
-                // Special handling for 'Others' in Taluk and Panchayat
-                setTimeout(() => {
-                    const c_taluk = document.getElementById('cur_taluk-member');
-                    const c_panchayat = document.getElementById('cur_panchayat-member');
-                    
-                    if (n_taluk === 'Others') {
-                        c_taluk.value = 'Others';
-                        toggleTalukOthersCurrentMember(c_taluk);
-                        document.getElementById('cur_taluk_others_input_member').value = document.getElementById('taluk_others_input_member').value;
-                    }
-                    if (n_panchayat === 'Others') {
-                        c_panchayat.value = 'Others';
-                        togglePanchayatOthersCurrentMember(c_panchayat);
-                        document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
-                    }
-                }, 1000); // Wait for AJAX cascade
-            }
+            if (c_street && n_street) c_street.value = n_street.value;
+            if (c_doorno && n_doorno) c_doorno.value = n_doorno.value;
+            if (c_pincode && n_pincode) c_pincode.value = n_pincode.value;
+
+            const n_state = document.getElementById('states-dropdown-member').value;
+            const n_district = document.getElementById('districts-dropdown-member').value;
+            const n_taluk = document.getElementById('taluks-dropdown-member').value;
+            const n_panchayat = document.getElementById('panchayat-dropdown-member').value;
+            const n_village_sel = document.getElementById('village-member');
+            const n_village = n_village_sel.value;
+
+            const n_taluk_others = document.getElementById('taluk_others_input_member').value;
+            const n_panchayat_others = document.getElementById('panchayat_others_input_member').value;
+            const n_village_others = document.getElementById('village_others_input_member').value;
+
+            const c_state = document.getElementById('cur_state-member');
+            const c_district = document.getElementById('cur_district-member');
+            const c_taluk = document.getElementById('cur_taluk-member');
+            const c_panchayat = document.getElementById('cur_panchayat-member');
+            const c_village = document.getElementById('cur_village-member');
+
+            const c_taluk_others_input = document.getElementById('cur_taluk_others_input_member');
+            const c_panchayat_others_input = document.getElementById('cur_panchayat_others_input_member');
+            const c_village_others_input = document.getElementById('cur_village_others_input_member');
+
+            if (c_state) c_state.value = n_state;
+
+            // Direct Nested AJAX for copying
+            $.ajax({
+                type: "get",
+                url: "<?= base_url('members/getDistrictsfordropdown') ?>",
+                data: { state_id: n_state },
+                success: function(resDist) {
+                    c_district.innerHTML = resDist;
+                    c_district.value = n_district;
+
+                    $.ajax({
+                        type: "get",
+                        url: "<?= base_url('members/getTaluksfordropdown') ?>",
+                        data: { district_name: n_district },
+                        success: function(resTaluk) {
+                            c_taluk.innerHTML = resTaluk;
+                            c_taluk.innerHTML += '<option value="Others">Others</option>';
+                            c_taluk.value = n_taluk;
+                            toggleTalukOthersCurrentMember(c_taluk);
+                            if (n_taluk === 'Others') {
+                                c_taluk_others_input.value = n_taluk_others;
+                            }
+
+                            if (n_taluk === 'Others') {
+                                c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                                c_panchayat.value = n_panchayat;
+                                togglePanchayatOthersCurrentMember(c_panchayat);
+                                if (n_panchayat === 'Others') {
+                                    c_panchayat_others_input.value = n_panchayat_others;
+                                }
+                                
+                                if (n_panchayat === 'Others') {
+                                    c_village.innerHTML = '<option value="">Select Village</option><option value="Others">Others</option>';
+                                    c_village.value = n_village;
+                                    toggleVillageOthersCurrentMember(c_village);
+                                    if (n_village === 'Others') {
+                                        c_village_others_input.value = n_village_others;
+                                    }
+                                } else {
+                                    setDropdownVillageCurrentMember(c_panchayat, n_village);
+                                    setTimeout(() => { if (n_village === 'Others') c_village_others_input.value = n_village_others; }, 500);
+                                }
+                            } else {
+                                $.ajax({
+                                    type: "get",
+                                    url: "<?= base_url('members/getPanchayatsfordropdown') ?>",
+                                    data: { taluk_name: n_taluk },
+                                    success: function(resPanch) {
+                                        c_panchayat.innerHTML = resPanch;
+                                        c_panchayat.innerHTML += '<option value="Others">Others</option>';
+                                        c_panchayat.value = n_panchayat;
+                                        togglePanchayatOthersCurrentMember(c_panchayat);
+                                        if (n_panchayat === 'Others') {
+                                            c_panchayat_others_input.value = n_panchayat_others;
+                                        }
+
+                                        if (n_panchayat === 'Others') {
+                                            c_village.innerHTML = '<option value="">Select Village</option><option value="Others">Others</option>';
+                                            c_village.value = n_village;
+                                            toggleVillageOthersCurrentMember(c_village);
+                                            if (n_village === 'Others') {
+                                                c_village_others_input.value = n_village_others;
+                                            }
+                                        } else {
+                                            setDropdownVillageCurrentMember(c_panchayat, n_village);
+                                            setTimeout(() => { if (n_village === 'Others') c_village_others_input.value = n_village_others; }, 500);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         let originalFormDataUpdateMember = "";
@@ -1390,6 +1472,11 @@
                 originalFormDataUpdateMember = new URLSearchParams(new FormData(form)).toString();
                 const checkbox = document.getElementById("correctdetails-member");
                 
+                form.addEventListener('click', function(e) {
+                    if(e.target.type === 'radio' || e.target.type === 'checkbox') {
+                        if(checkbox) activateMemberButton(checkbox);
+                    }
+                });
                 form.addEventListener('change', function() {
                     if(checkbox) activateMemberButton(checkbox);
                 });
@@ -1397,17 +1484,28 @@
                     if(checkbox) activateMemberButton(checkbox);
                 });
             }
-        }, 800);
+        }, 500);
 
         function checkFormChangedMember() {
             const form = document.forms['memberregistration-update'];
             if(!form) return false;
+            
+            // Check text-based data
             const currentFormData = new URLSearchParams(new FormData(form)).toString();
-            return currentFormData !== originalFormDataUpdateMember;
+            if (currentFormData !== originalFormDataUpdateMember) return true;
+
+            // Check file inputs
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            for (let input of fileInputs) {
+                if (input.files.length > 0) return true;
+            }
+
+            return false;
         }
 
         function activateMemberButton(checkbox) {
             const isChanged = checkFormChangedMember();
+            // Button is enabled ONLY if checkbox is checked AND form has changed
             document.getElementById("membersubmitbutton").disabled = !(checkbox.checked && isChanged);
         }
 
@@ -1418,6 +1516,10 @@
             // Live Email Change check
             if (field.id === 'email-member') {
                 const currentEmail = field.value.trim();
+                const verifyBtn = document.getElementById('verify_email_btn-member');
+                const verifiedBadge = document.getElementById('email_verified_badge-member');
+                const isVerifiedInput = document.getElementById('is_email_verified-member');
+                const otpSection = document.getElementById('otp_section-member');
                 const emailError = document.getElementById('emailerror-member');
 
                 // Basic Format Validation
@@ -1428,6 +1530,19 @@
                 } else {
                     emailError.innerHTML = "";
                     field.classList.remove('is-invalid');
+                }
+
+                if (currentEmail !== originalEmailMember) {
+                    verifiedBadge.style.display = 'none';
+                    isVerifiedInput.value = "0";
+                    verifyBtn.style.display = 'inline-block';
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerText = "Verify";
+                } else if (currentEmail !== "" && currentEmail === originalEmailMember) {
+                    verifiedBadge.style.display = 'block';
+                    isVerifiedInput.value = "1";
+                    verifyBtn.style.display = 'none';
+                    otpSection.style.display = 'none';
                 }
             }
 
@@ -1498,7 +1613,13 @@
             document.querySelectorAll(".text-danger").forEach(el => el.innerHTML = "");
 
             // Verification checks
+            const isEmailVerified = document.getElementById('is_email_verified-member').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-member').value;
+            if (f['email-update'].value !== "" && isEmailVerified === "0") {
+                alert("Please verify your new email address.");
+                f['email-update'].focus();
+                return false;
+            }
             if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
                 alert("Please verify your new phone number.");
                 f['phoneno-update'].focus();
@@ -1512,40 +1633,11 @@
             if (!f['aadharno-update'].value.trim()) setErr('aadharnoerror-member', 'Aadhar is required.', f['aadharno-update']);
             else if (f['aadharno-update'].value.trim().length !== 12) setErr('aadharnoerror-member', 'Aadhar must be 12 digits.', f['aadharno-update']);
             
-            // Education & Profession
-            if (!document.getElementById('educationfield-member').value) setErr('educationerror-member', 'Education is required.', document.getElementById('education_input-member'));
-            if (!f['profession-update'].value) setErr('professionerror-member', 'Profession is required.', document.getElementById('profession_input-member'));
-
-            // Native Address
-            if (!f['state-update'].value) setErr('stateerror-member', 'State is required.', f['state-update']);
-            if (!f['district-update'].value) setErr('districterror-member', 'District is required.', f['district-update']);
-            if (!f['taluk-update'].value) setErr('talukerror-member', 'Taluk is required.', f['taluk-update']);
-            if (!f['panchayat-update'].value) setErr('panchayaterror-member', 'Panchayat is required.', f['panchayat-update']);
-            if (!f['village-update'].value.trim()) setErr('villageerror-member', 'Village is required.', f['village-update']);
-            if (!f['street-update'].value.trim()) setErr('streeterror-member', 'Street is required.', f['street-update']);
-            if (!f['doorno-update'].value.trim()) setErr('doornoerror-member', 'Door number is required.', f['doorno-update']);
-            if (!f['pincode-update'].value.trim()) setErr('pincodeerror-member', 'Pincode is required.', f['pincode-update']);
-
-            // Current Address
-            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
-            if (!curType) {
-                setErr('cur_address_type_error-member', 'Select address type.', document.getElementById('cur_address_tn-member'));
-            } else if (curType === 'TamilNadu') {
-                if (!f['cur_state-update'].value) setErr('cur_stateerror-member', 'State is required.', f['cur_state-update']);
-                if (!f['cur_district-update'].value) setErr('cur_districterror-member', 'District is required.', f['cur_district-update']);
-                if (!f['cur_taluk-update'].value) setErr('cur_talukerror-member', 'Taluk is required.', f['cur_taluk-update']);
-                if (!f['cur_panchayat-update'].value) setErr('cur_panchayaterror-member', 'Panchayat is required.', f['cur_panchayat-update']);
-                if (!f['cur_village-update'].value.trim()) setErr('cur_villageerror-member', 'Village is required.', f['cur_village-update']);
-                if (!f['cur_street-update'].value.trim()) setErr('cur_streeterror-member', 'Street is required.', f['cur_street-update']);
-                if (!f['cur_doorno-update'].value.trim()) setErr('cur_doornoerror-member', 'Door number is required.', f['cur_doorno-update']);
-                if (!f['cur_pincode-update'].value.trim()) setErr('cur_pincodeerror-member', 'Pincode is required.', f['cur_pincode-update']);
-                else if (f['cur_pincode-update'].value.trim().length !== 6) setErr('cur_pincodeerror-member', 'Must be 6 digits.', f['cur_pincode-update']);
-            } else if (curType === 'OtherState' || curType === 'NRI') {
-                if (curType === 'NRI' && !f['cur_nri_country-member'].value) setErr('cur_nri_countryerror-member', 'Country is required.', f['cur_nri_country-member']);
-                if (!f['cur_nri_state-member'].value) setErr('cur_nri_stateerror-member', 'State is required.', f['cur_nri_state-member']);
-                if (!f['cur_nri_city-member'].value) setErr('cur_nri_cityerror-member', 'City is required.', f['cur_nri_city-member']);
-                if (!f['cur_nri_zip-member'].value.trim()) setErr('cur_nri_ziperror-member', 'Zip is required.', f['cur_nri_zip-member']);
-                if (!f['cur_nri_fulladdress-member'].value.trim()) setErr('cur_nri_fulladdresserror-member', 'Full address is required.', f['cur_nri_fulladdress-member']);
+            // Relationship Transfer Check
+            let aliveStatusDead = document.getElementById("alive_no-member");
+            let upcomingHeadSelect = document.getElementById("upcoming_head-member");
+            if (f['relationship-update'].value === "Head" && aliveStatusDead && aliveStatusDead.checked && !upcomingHeadSelect.value) {
+                setErr('upcomingheaderror-member', 'Please select upcoming head', upcomingHeadSelect);
             }
 
             if (!isValid && firstInvalid) {
@@ -1555,6 +1647,8 @@
 
             return isValid;
         }
+
+
 
         function uploadFileMember(file) {
             let errorbox = document.querySelector(`.${file.name}`);
@@ -1591,6 +1685,10 @@
                     btn.classList.add('file-selected');
                     btn.querySelector('.ps-file-label').textContent = file.files[0].name;
                     btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                    
+                    // Force button check
+                    const checkbox = document.getElementById("correctdetails-member");
+                    if(checkbox) activateMemberButton(checkbox);
                 }
             }
         }
@@ -1796,9 +1894,16 @@
                 talukDropdown.innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                 if (selectTaluk) {
                     talukDropdown.value = selectTaluk;
+                    if (talukDropdown.value !== selectTaluk && selectTaluk !== "") {
+                        talukDropdown.value = 'Others';
+                        toggleTalukOthersCurrentMember(talukDropdown, selectTaluk);
+                    } else {
+                        toggleTalukOthersCurrentMember(talukDropdown);
+                    }
                     setDropdownpanchayatCurrentMember(talukDropdown, selectPanchayat, selectVillage);
+                } else {
+                    toggleTalukOthersCurrentMember(talukDropdown);
                 }
-                toggleTalukOthersCurrentMember(talukDropdown);
                 return;
             }
 
@@ -1812,24 +1917,35 @@
                     talukDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectTaluk) {
                         talukDropdown.value = selectTaluk;
+                        if (talukDropdown.value !== selectTaluk && selectTaluk !== "") {
+                            talukDropdown.value = 'Others';
+                            toggleTalukOthersCurrentMember(talukDropdown, selectTaluk);
+                        } else {
+                            toggleTalukOthersCurrentMember(talukDropdown);
+                        }
                         setDropdownpanchayatCurrentMember(talukDropdown, selectPanchayat, selectVillage);
+                    } else {
+                        toggleTalukOthersCurrentMember(talukDropdown);
                     }
-                    toggleTalukOthersCurrentMember(talukDropdown);
                 },
                 error: (err) => {
                     document.getElementById("cur_taluk-member").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
+                    toggleTalukOthersCurrentMember(document.getElementById("cur_taluk-member"));
                 }
             });
         }
 
-        function toggleTalukOthersCurrentMember(selectEl) {
+        function toggleTalukOthersCurrentMember(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_taluk_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_taluk-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_taluk_others_update');
                 selectEl.setAttribute('name', 'cur_taluk-update'); 
@@ -1854,9 +1970,16 @@
                 panchayatDropdown.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
                 if (selectPanchayat) {
                     panchayatDropdown.value = selectPanchayat;
+                    if (panchayatDropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                        panchayatDropdown.value = 'Others';
+                        togglePanchayatOthersCurrentMember(panchayatDropdown, selectPanchayat);
+                    } else {
+                        togglePanchayatOthersCurrentMember(panchayatDropdown);
+                    }
                     setDropdownVillageCurrentMember(panchayatDropdown, selectVillage);
+                } else {
+                    togglePanchayatOthersCurrentMember(panchayatDropdown);
                 }
-                togglePanchayatOthersCurrentMember(panchayatDropdown);
                 return;
             }
 
@@ -1870,24 +1993,35 @@
                     panchayatDropdown.innerHTML += '<option value="Others">Others</option>';
                     if (selectPanchayat) {
                         panchayatDropdown.value = selectPanchayat;
+                        if (panchayatDropdown.value !== selectPanchayat && selectPanchayat !== "") {
+                            panchayatDropdown.value = 'Others';
+                            togglePanchayatOthersCurrentMember(panchayatDropdown, selectPanchayat);
+                        } else {
+                            togglePanchayatOthersCurrentMember(panchayatDropdown);
+                        }
                         setDropdownVillageCurrentMember(panchayatDropdown, selectVillage);
+                    } else {
+                        togglePanchayatOthersCurrentMember(panchayatDropdown);
                     }
-                    togglePanchayatOthersCurrentMember(panchayatDropdown);
                 },
                 error: (err) => {
                     document.getElementById("cur_panchayat-member").innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
+                    togglePanchayatOthersCurrentMember(document.getElementById("cur_panchayat-member"));
                 }
             });
         }
 
-        function togglePanchayatOthersCurrentMember(selectEl) {
+        function togglePanchayatOthersCurrentMember(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_panchayat_others_input_member');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_panchayat-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_panchayat_others_update');
                 selectEl.setAttribute('name', 'cur_panchayat-update'); 
@@ -1980,6 +2114,82 @@
             } else {
                 wrapper.style.display = 'none';
             }
+        }
+        function sendUpdateEmailOTP() {
+            const email = document.getElementById('email-member').value.trim();
+            const btn = document.getElementById('verify_email_btn-member');
+            const err = document.getElementById('emailerror-member');
+            
+            if (!email) {
+                err.innerHTML = "Please enter email to verify.";
+                return;
+            }
+            
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                err.innerHTML = "Invalid email format.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            err.innerHTML = "";
+
+            $.ajax({
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                type: "POST",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section-member').style.display = 'block';
+                        btn.style.display = 'none';
+                        alert(response.message);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    err.innerHTML = "Error sending OTP. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTP() {
+            const otp = document.getElementById('email_otp-member').value.trim();
+            const email = document.getElementById('email-member').value.trim();
+            const err = document.getElementById('otperror-member');
+
+            if (!otp) {
+                err.innerHTML = "Please enter OTP.";
+                return;
+            }
+
+            $.ajax({
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                type: "POST",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section-member').style.display = 'none';
+                        document.getElementById('email_verified_badge-member').style.display = 'block';
+                        document.getElementById('is_email_verified-member').value = "1";
+                        document.getElementById('email-member').readOnly = true;
+                        document.getElementById('emailerror-member').innerHTML = "";
+                        alert(response.message);
+                    } else {
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    err.innerHTML = "Error verifying OTP.";
+                }
+            });
         }
 
         function checkPhoneVerificationMember() {

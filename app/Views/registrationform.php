@@ -148,6 +148,94 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .ps-toast {
+            background: #3E2723;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 300px;
+            border-left: 4px solid #D7CCC8;
+        }
+
+        .ps-toast.show {
+            transform: translateX(0);
+        }
+
+        .ps-toast-icon {
+            font-size: 1.25rem;
+            color: #D7CCC8;
+        }
+
+        .ps-toast-message {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .ps-toast-warning {
+            background: #B71C1C;
+            border-left-color: #EF5350;
+        }
+        }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .ps-toast {
+            background: #3E2723;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 300px;
+            border-left: 4px solid #D7CCC8;
+        }
+
+        .ps-toast.show {
+            transform: translateX(0);
+        }
+
+        .ps-toast-icon {
+            font-size: 1.25rem;
+            color: #D7CCC8;
+        }
+
+        .ps-toast-message {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .ps-toast-warning {
+            background: #B71C1C;
+            border-left-color: #EF5350;
+        }
+        }
         .btn-copy-address:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3);
@@ -329,6 +417,8 @@
             <?php unset($_SESSION["registerprocesserror"]); endif; ?>
         <!---------------------register-status-modal-end------------------>
 
+        <div id="psToastContainer" class="toast-container"></div>
+
         <div class="mx-auto" style="max-width: 1150px;">
             <div class="card shadow-lg border-0 rounded-3">
 
@@ -453,10 +543,29 @@
                                     <!-- Email -->
                                     <div class="col-md-4">
                                         <label for="emailfield">Email <span class="text-danger">*</span></label>
-                                        <input id="emailfield" onkeyup="validateInputfield(this)"
+                                        <div class="input-group input-group-sm">
+                                            <input id="emailfield" onkeyup="validateInputfield(this)"
                                                 class="form-control form-control-sm" type="email" name="email">
+                                            <button class="btn btn-outline-primary" type="button" id="verify_email_btn" onclick="sendEmailOTP()">Verify</button>
+                                        </div>
                                         <small id="emailerror" class="text-danger"></small>
+                                        
+                                        <!-- OTP Verification Section -->
+                                        <div id="otp_section" class="mt-2" style="display:none;">
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" id="email_otp" class="form-control" placeholder="Enter OTP">
+                                                <button class="btn btn-success" type="button" onclick="verifyEmailOTP()">Confirm OTP</button>
+                                            </div>
+                                            <small class="text-muted">OTP sent to your email. Valid for 10 mins.</small>
+                                            <small id="otperror" class="text-danger d-block"></small>
+                                        </div>
+                                        
+                                        <div id="email_verified_badge" class="mt-1 text-success fw-bold" style="display:none;">
+                                            <i class="bi bi-check-circle-fill"></i> Verified
+                                        </div>
                                     </div>
+
+                                    <input type="hidden" id="is_email_verified" name="is_email_verified" value="0">
 
 
                                     <!-- WhatsApp Number + Same as Phone -->
@@ -1867,11 +1976,12 @@
 
             // Email *  ✅ NEW
             const email = f.email.value.trim();
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const isVerified = document.getElementById('is_email_verified').value;
+            // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!email) {
                 setErr('emailerror', 'Email is mandatory.', document.getElementById('emailfield'));
-            } else if (!emailRegex.test(email)) {
-                setErr('emailerror', 'Enter a valid email like name@example.com', document.getElementById('emailfield'));
+            } else if (isVerified !== '1') {
+                setErr('emailerror', 'Please verify your email address.', document.getElementById('emailfield'));
             }
 
 
@@ -2118,6 +2228,31 @@
         }
 
 
+        // Custom Notification function
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('psToastContainer');
+            const toast = document.createElement('div');
+            toast.className = `ps-toast ${type === 'warning' ? 'ps-toast-warning' : ''}`;
+            
+            const icon = type === 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill';
+            
+            toast.innerHTML = `
+                <i class="bi ${icon} ps-toast-icon"></i>
+                <div class="ps-toast-message">${message}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
         function copyNativeAddress() {
             // Native fields
             const n_state = document.getElementById("states-dropdown");
@@ -2132,7 +2267,7 @@
             // Validate: native address must be filled before copying
             if (!n_state.value || !n_district.value || !n_taluk.value || !n_panchayat.value ||
                 !n_village.value || !n_street.value || !n_doorno.value || !n_pincode.value) {
-                alert("Please fill in all Native Address fields before copying.");
+                showNotification("Please fill in all Native Address fields before copying.", "warning");
                 return;
             }
 
@@ -2156,9 +2291,12 @@
             // 1. Check if NRI
             const curType = getCurrentAddressType();
             if (curType === 'NRI') {
-                alert("Same as Native Address is primarily for India addresses. Please fill NRI address manually.");
+                showNotification("Same as Native Address is for India addresses. Please fill NRI address manually.", "warning");
                 return;
             }
+
+            // Success notification
+            showNotification("Native address copied successfully!");
 
             // 1. State
             c_state.value = n_state.value;
@@ -2519,11 +2657,13 @@
                 success: function(result) {
                     villageSelect.innerHTML = result;
                     
-                    // Add Others option
-                    const othersOption = document.createElement('option');
-                    othersOption.value = 'Others';
-                    othersOption.textContent = 'Others';
-                    villageSelect.appendChild(othersOption);
+                    // Add Others option only if not already present in the result (server usually returns Select Village + villages)
+                    if (!villageSelect.innerHTML.includes('value="Others"')) {
+                        const othersOption = document.createElement('option');
+                        othersOption.value = 'Others';
+                        othersOption.textContent = 'Others';
+                        villageSelect.appendChild(othersOption);
+                    }
                     
                     // Handle selection
                     if (selectedVillage) {
@@ -2579,11 +2719,13 @@
                 success: function(result) {
                     villageSelect.innerHTML = result;
                     
-                    // Add Others option
-                    const othersOption = document.createElement('option');
-                    othersOption.value = 'Others';
-                    othersOption.textContent = 'Others';
-                    villageSelect.appendChild(othersOption);
+                    // Add Others option only if not already present
+                    if (!villageSelect.innerHTML.includes('value="Others"')) {
+                        const othersOption = document.createElement('option');
+                        othersOption.value = 'Others';
+                        othersOption.textContent = 'Others';
+                        villageSelect.appendChild(othersOption);
+                    }
                     
                     // Handle selection
                     if (selectedVillage) {
@@ -2729,6 +2871,83 @@
 
 
 
+        function sendEmailOTP() {
+            const email = document.getElementById('emailfield').value.trim();
+            const btn = document.getElementById('verify_email_btn');
+            const err = document.getElementById('emailerror');
+            
+            if (!email) {
+                err.innerHTML = "Please enter email to verify.";
+                return;
+            }
+            
+            // Basic regex
+             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+             if (!emailRegex.test(email)) {
+                 err.innerHTML = "Invalid email format.";
+                 return;
+             }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            err.innerHTML = "";
+
+            $.ajax({
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                type: "POST",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section').style.display = 'block';
+                        btn.style.display = 'none'; // Hide verify button
+                        alert(response.message);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    err.innerHTML = "Error sending OTP. Please try again.";
+                }
+            });
+        }
+
+        function verifyEmailOTP() {
+            const otp = document.getElementById('email_otp').value.trim();
+            const email = document.getElementById('emailfield').value.trim();
+            const err = document.getElementById('otperror');
+
+            if (!otp) {
+                err.innerHTML = "Please enter OTP.";
+                return;
+            }
+
+            $.ajax({
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                type: "POST",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        document.getElementById('otp_section').style.display = 'none';
+                        document.getElementById('email_verified_badge').style.display = 'block';
+                        document.getElementById('is_email_verified').value = "1";
+                        document.getElementById('emailfield').readOnly = true;
+                        document.getElementById('emailerror').innerHTML = "";
+                        alert(response.message);
+                    } else {
+                        err.innerHTML = response.message;
+                    }
+                },
+                error: function() {
+                    err.innerHTML = "Error verifying OTP.";
+                }
+            });
+        }
 
     </script>
 

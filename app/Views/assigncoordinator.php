@@ -1112,7 +1112,7 @@ function closeMobileMenu() {
     function getCoordinatorStatus() {
         let coordid = document.getElementById("coordinatoridremoval").value;
         if(!coordid) {
-            alert("Please select a coordinator first.");
+            psShowToast("warning", "Please select a coordinator first.");
             return;
         }
 
@@ -1145,14 +1145,25 @@ function closeMobileMenu() {
                 }
             },
             error: function() {
-                alert("Error fetching coordinator assignments.");
+                psShowToast("error", "Error fetching coordinator assignments.");
             }
         });
     }
 
     function removeAssignment(villageData, btn) {
-        if(!confirm(`Are you sure you want to remove this coordinator from ${villageData.village_name}?`)) return;
+        document.getElementById("reassign-confirm-alert").innerHTML = `<p>Are you sure you want to remove this coordinator from <span class="text-danger">${villageData.village_name}</span>? <br><b>Note:</b> This will unassign them from this specific village immediately.</p>
+        <div class="mt-3"><button class='btn btn-danger' data-bs-dismiss="modal" onclick='confirmRemoveAssignment(${JSON.stringify(villageData)}, this)'>Confirm Remove</button>&nbsp;&nbsp;<button class='btn btn-secondary' data-bs-dismiss="modal">Cancel</button></div>`;
         
+        // Find the button reference in the prompt, this is tricky with string injection. 
+        // Let's modify confirmRemoveAssignment to find the row by data or something, 
+        // OR just pass the village name and let it refresh/re-fetch.
+        // Actually, easiest is to just pass a class or ID to the row.
+        
+        let reassign_alert_modal = new bootstrap.Modal(document.getElementById("reassign-alert"));
+        reassign_alert_modal.show();
+    }
+
+    function confirmRemoveAssignment(villageData, placeholderBtn) {
         let coordid = document.getElementById("coordinatoridremoval").value;
         $.ajax({
             type: "POST",
@@ -1166,16 +1177,14 @@ function closeMobileMenu() {
             },
             success: function(result) {
                 if(result) {
-                    btn.closest('tr').remove();
-                    if(document.querySelectorAll('#assignmentlist tbody tr').length === 0) {
-                        document.getElementById("assignmentlist").innerHTML = "<p class='text-muted'>All assignments removed.</p>";
-                    }
+                    psShowToast("success", `Removed from ${villageData.village_name} successfully.`);
+                    getCoordinatorStatus(); // Refresh the list
                 } else {
-                    alert("Unexpected error please try again.");
+                    psShowToast("error", "Unexpected error please try again.");
                 }
             },
             error: function() {
-                alert("Error removing assignment.");
+                psShowToast("error", "Error removing assignment.");
             }
         });
     }
@@ -1334,7 +1343,7 @@ function closeMobileMenu() {
              let villages = JSON.stringify(selectedtaluksforremove);
              
              if(!coordid || selectedtaluksforremove.length === 0) {
-                 alert("Please select a coordinator and at least one village.");
+                 psShowToast("warning", "Please select a coordinator and at least one village.");
                  return;
              }
 
@@ -1356,14 +1365,14 @@ function closeMobileMenu() {
              },
              success: function(result) {
                  if(result.trim() === "success") {
-                     alert("Coordinator reassigned successfully.");
-                     window.location.reload();
+                     psShowToast("success", "Coordinator reassigned successfully.");
+                     setTimeout(() => window.location.reload(), 1500);
                  } else {
-                     alert("Error during reassignment: " + result);
+                     psShowToast("error", "Error during reassignment: " + result);
                  }
              },
              error: function(err) {
-                 alert("Server error during reassignment.");
+                 psShowToast("error", "Server error during reassignment.");
              }
          });
      }
@@ -1422,9 +1431,16 @@ function closeMobileMenu() {
     
     // Member search result box
     if(event.target !== resultbox && event.target !== document.getElementById("membername")){
-        resultbox.style.display = "none";
+        if(resultbox) resultbox.style.display = "none";
     }
 
+    // Reassign Coordinator search result box
+    let coordBoxReassign = document.getElementById("searchcoordinatordata");
+    if(event.target !== coordBoxReassign && event.target !== document.getElementById("coordinatorname")){
+        if(coordBoxReassign) coordBoxReassign.style.display = "none";
+    }
+
+    // Remove Coordinator search result box
     let coordBoxRemoval = document.getElementById("searchcoordinatordataporemoval");
     if(event.target !== coordBoxRemoval && event.target !== document.getElementById("coordinatornameremoval")){
         if(coordBoxRemoval) coordBoxRemoval.style.display = "none";

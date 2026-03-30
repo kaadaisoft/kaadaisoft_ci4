@@ -173,8 +173,36 @@ class Loginpage extends BaseController {
         // Send Email
         $email = \Config\Services::email();
         $email->setTo($user->Email);
-        $email->setSubject('Password Reset OTP - Kaadaisoft');
-        $email->setMessage("Your OTP for password reset is: $otp. It is valid for 15 minutes.");
+        $email->setSubject('Password Reset OTP - Poondurai Kaadai Kulam');
+        
+        $email->setMailType('html');
+        
+        $imagePath = FCPATH . 'assets/logo_small.png';
+        if (file_exists($imagePath)) {
+            $email->attach($imagePath, 'inline');
+            $cid = $email->setAttachmentCID($imagePath);
+            $logoUrl = 'cid:' . $cid;
+        } else {
+            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
+        }
+
+        // Fetch the timestamp for the email (now respects global time settings)
+        $antiClip = date('h:i A');
+
+        $messageHtml = "
+        <div style='font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;'>
+            <div style='max-width: 500px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);'>
+                <img src='{$logoUrl}' alt='Poondurai Kaadai Kulam Logo' style='width: 80px; height: 80px; margin-bottom: 15px;'>
+                <h2 style='color: #333; margin-top: 0;'>Password Reset OTP</h2>
+                <p style='font-size: 16px; color: #555;'>Your OTP for password reset is:</p>
+                <div style='font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #38bdf8; margin: 20px 0;'>{$otp}</div>
+                <p style='font-size: 15px; color: #444; font-weight: 500; margin-bottom: 0;'>
+                    <strong>Notice:</strong> This OTP is valid for 15 minutes.
+                </p>
+                <div style='font-size: 10px; color: #ccc; margin-top: 15px;'>Generated at: {$antiClip}</div>
+            </div>
+        </div>";
+        $email->setMessage($messageHtml);
 
         if ($email->send()) {
             return view('verifyOtp', ['identifier' => $username]);
