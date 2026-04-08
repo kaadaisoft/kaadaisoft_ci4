@@ -688,7 +688,7 @@ class Members extends BaseController
             if($file && $file->isValid() && !$file->hasMoved()){
                  $newName = str_replace(' ', '-', $data['Name'] . $trimaadhar . $trimphoneno . $imgField . time() . "." . $file->getExtension());
                  try {
-                     $file->move('assets/membersdocuments/', $newName);
+                     $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                      $data[$imgField] = $newName;
                  } catch (\Exception $e) {
                      // ignore or handle
@@ -748,7 +748,7 @@ class Members extends BaseController
             if(!$this->session->getFlashdata('coorderrorstatus') && !$this->session->getFlashdata('membererrorstatus')){
                 $this->session->set("coorderrorstatus", "Unexpected error please try again.");
             }
-            return redirect()->to("members");
+            return redirect()->back(); // Stay on the same page where update was initiated
         }
     }
 
@@ -803,6 +803,23 @@ class Members extends BaseController
             }
         }
 
+    }
+
+    public function checkExistEmail()
+    {
+        if ($this->request->isAJAX()) {
+            $email = trim($this->request->getPost("email"));
+            if (empty($email)) {
+                echo "false";
+                return;
+            }
+            $checkExist = $this->membersModel->checkExistemail($email);
+            if ($checkExist->getNumRows() > 0) {
+                echo "true";
+            } else {
+                echo "false";
+            }
+        }
     }
 
     public function addFamilyMember()
@@ -905,7 +922,7 @@ class Members extends BaseController
                  $newName = str_replace(' ', '-', $name . $trimaadhar . $trimphoneno . $suffix . "." . $file->getExtension());
                  
                  try {
-                     $file->move('assets/membersdocuments/', $newName);
+                     $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                      $documents[$i] = $newName;
                  } catch (\Exception $e) {
                       if ($this->session->get('role') == 1 || $this->session->get('role') == 2) {
@@ -1013,11 +1030,14 @@ class Members extends BaseController
             } elseif ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Family member added successfully.");
                 return redirect()->to("view-member-data");
-            } else {
+             } else {
                  // Public Registration
+                 if (!empty($email)) {
+                     $msg_email = $this->sendRegistrationSuccessEmail($email, $name);
+                 }
                  $this->session->set("registerprocesssuccess", "Your application is submitted. Please wait 48 hours.");
                  return redirect()->to("registrationform");
-            }
+             }
         }
     }
 
@@ -1052,10 +1072,34 @@ class Members extends BaseController
 
             $email = \Config\Services::email();
             
-            // Use defaults from Config\Email.php
             $email->setTo($email_address);
             $email->setSubject('Email Verification OTP - Poondurai Kaadai Kulam');
-            $email->setMessage("Your OTP for email verification is: <b>$otp</b>. It is valid for 10 minutes.");
+            $email->setMailType('html');
+
+            // Attach logo inline (same as password reset email)
+            $imagePath = FCPATH . 'assets/email_logo.png';
+            if (file_exists($imagePath)) {
+                $email->attach($imagePath, 'inline');
+                $cid = $email->setAttachmentCID($imagePath);
+                $logoUrl = 'cid:' . $cid;
+            } else {
+                $logoUrl = base_url('assets/email_logo.png');
+            }
+
+            $emailData = [
+                'title' => 'Email Verification',
+                'subtitle' => 'Poondurai Kaadai Kulam',
+                'logo_url' => $logoUrl,
+                'message' => 'You are receiving this email because you initiated a registration on our platform. Please use the following code to verify your email address:',
+                'highlight_box' => $otp,
+                'highlight_label' => 'Verification Code',
+                'highlight_subtext' => 'This code will expire in 10 minutes.',
+                'primary_color' => '#38bdf8'
+            ];
+
+            $messageHtml = view('emails/common_email', $emailData);
+
+            $email->setMessage($messageHtml);
 
             if ($email->send()) {
                 return $this->response->setJSON(['status' => 'success', 'message' => 'OTP sent successfully']);
@@ -1064,6 +1108,7 @@ class Members extends BaseController
                 log_message('error', 'Email Error: ' . $data);
                 return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to send OTP. Please check email address.']);
             }
+
         }
     }
 
@@ -1106,6 +1151,44 @@ class Members extends BaseController
                 return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid OTP.']);
             }
         }
+    }
+
+    private function sendRegistrationSuccessEmail($email_address, $name)
+    {
+        if (empty($email_address)) {
+            return false;
+        }
+
+        $email = \Config\Services::email();
+        $email->setTo($email_address);
+        $email->setSubject('Welcome to Poondurai Kaadai Kulam - Registration Received');
+        $email->setMailType('html');
+
+        // Attach logo inline
+        $imagePath = FCPATH . 'assets/email_logo.png';
+        if (file_exists($imagePath)) {
+            $email->attach($imagePath, 'inline');
+            $cid = $email->setAttachmentCID($imagePath);
+            $logoUrl = 'cid:' . $cid;
+        } else {
+            $logoUrl = base_url('assets/email_logo.png');
+        }
+
+        $emailData = [
+            'title' => 'Registration Received!',
+            'subtitle' => 'Welcome to Poondurai Kaadai Kulam',
+            'logo_url' => $logoUrl,
+            'name' => $name,
+            'message' => 'Thank you for registering with <strong>Poondurai Kaadai Kulam</strong>. Your application has been successfully submitted and is now under review by our team.',
+            'extra_info' => '<strong>Next Steps:</strong><br>• Our administrators will verify your details within 48 hours.<br>• You will receive another notification once your membership is approved.<br>• You can then log in using your phone number and the password set during registration.',
+            'primary_color' => '#0ea5e9'
+        ];
+
+        $messageHtml = view('emails/common_email', $emailData);
+
+        $email->setMessage($messageHtml);
+
+        return $email->send();
     }
 }
 ?>

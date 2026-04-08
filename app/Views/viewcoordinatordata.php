@@ -983,13 +983,33 @@
                         <div class="col-md-4 text-center">
                             <?php 
                                 $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-                                $p_img = (!empty($coordinator->Memberimage) && file_exists('assets/membersdocuments/'.$coordinator->Memberimage)) ? base_url('assets/membersdocuments/'.$coordinator->Memberimage) : $default_profile;
+                                $safe_default_profile = str_replace("'", "%27", $default_profile);
+                                $p_img = (!empty($coordinator->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$coordinator->Memberimage)) ? base_url('documents/view/'.$coordinator->Memberimage) : $default_profile;
                             ?>
-                            <img class="shadow-sm <?= (isset($coordinator->is_dead) && $coordinator->is_dead == 1) ? 'grayscale-filter' : '' ?>" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa; <?= (isset($coordinator->is_dead) && $coordinator->is_dead == 1) ? 'opacity: 0.6;' : '' ?>" src="<?= $p_img ?>" alt="Member Image" onerror="this.src='<?= $default_profile ?>'">
+                            <img class="shadow-sm <?= (isset($coordinator->is_dead) && $coordinator->is_dead == 1) ? 'grayscale-filter' : '' ?>" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa; cursor:pointer; <?= (isset($coordinator->is_dead) && $coordinator->is_dead == 1) ? 'opacity: 0.6;' : '' ?>" src="<?= $p_img ?>" alt="Member Image" onclick="viewFullImage('<?= $coordinator->Memberimage ?>', 'Member Photo')" onerror="this.onerror=null; this.src='<?= $safe_default_profile ?>'">
                             
-                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
-                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#coord_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewCoorddocuments('<?=$coordinator->Aadharfrontimage?>','<?=$coordinator->Aadharbackimage?>','<?=$coordinator->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i><?=(isset($coordinator->is_dead) && $coordinator->is_dead == 1) ? 'Late ' : ''?>Documents</button>
+                            <div class="d-flex justify-content-center gap-3 mt-4 px-xl-5 px-lg-4 px-md-2 w-100">
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Aadhar Front" 
+                                        onclick="viewFullImage('<?=$coordinator->Aadharfrontimage?>', 'Aadhar Front')">
+                                    <i class="fa-solid fa-id-card fs-5"></i>
+                                </button>
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Aadhar Back" 
+                                        onclick="viewFullImage('<?=$coordinator->Aadharbackimage?>', 'Aadhar Back')">
+                                    <i class="fa-solid fa-id-card-clip fs-5"></i>
+                                </button>
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Community Certificate" 
+                                        onclick="viewFullImage('<?=$coordinator->Communitycertificate?>', 'Community Certificate')">
+                                    <i class="fa-solid fa-certificate fs-5"></i>
+                                </button>
+                            </div>
 
+                            <div class="d-flex flex-column align-items-center gap-2 mt-3 px-xl-5 px-lg-4 px-md-2 w-100">
                                 <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$coordinator->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
 
                                 <?php if(session()->get('role') != 3): ?>
@@ -1001,9 +1021,10 @@
                                 <?php endif; ?>
                                 
                                 <?php if(session()->get('role') == 2 || session()->get('role') == 3): ?>
-                                    <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                                    <button type="button" style="width: 100%; border-radius: 8px;" onclick="showAddFamilyMemberModal()" class="btn btn-primary fw-bold shadow-sm py-2 mt-1"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</button>
                                 <?php endif; ?>
                             </div>
+
                         </div>  
                         <div class="col-md-8 mt-4 mt-md-0">
                             <div class="table-responsive h-100 p-4 bg-light rounded shadow-sm">
@@ -1016,6 +1037,10 @@
                                         <tr class="border-bottom border-light">
                                             <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
                                             <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$coordinator->Familymembershipid?></span></td>
+                                        </tr>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Phone Number:</th>
+                                            <td class="text-dark fw-medium fs-5 py-3"><?=$coordinator->Phonenumber?></td>
                                         </tr>
                                         <tr class="border-bottom border-light">
                                             <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
@@ -1117,7 +1142,7 @@
                                                     <?php foreach($g0 as $gm): ?>
                                                         <div class="member-card <?= (isset($gm->is_dead) && $gm->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($gm->is_dead) && $gm->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($gm->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                             <?php if(isset($gm->is_dead) && $gm->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                            <img src="<?= (!empty($gm->Memberimage) && file_exists('assets/membersdocuments/'.$gm->Memberimage)) ? base_url('assets/membersdocuments/'.$gm->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                            <img src="<?= (!empty($gm->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$gm->Memberimage)) ? base_url('documents/view/'.$gm->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                             <span class="member-name"><?= $gm->Name ?></span>
                                                             <span class="member-role role-grand"><?= $gm->MemberRole ?></span>
                                                         </div>
@@ -1133,7 +1158,7 @@
                                                             <?php foreach($g1 as $gp): ?>
                                                                 <div class="member-card <?= (isset($gp->is_dead) && $gp->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($gp->is_dead) && $gp->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($gp->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                                     <?php if(isset($gp->is_dead) && $gp->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                    <img src="<?= (!empty($gp->Memberimage) && file_exists('assets/membersdocuments/'.$gp->Memberimage)) ? base_url('assets/membersdocuments/'.$gp->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <img src="<?= (!empty($gp->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$gp->Memberimage)) ? base_url('documents/view/'.$gp->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                     <span class="member-name"><?= $gp->Name ?></span>
                                                                     <span class="member-role role-parent"><?= $gp->MemberRole ?></span>
                                                                 </div>
@@ -1149,7 +1174,7 @@
                                                                 <?php if($g2_manager): ?>
                                                                     <div class="member-card <?= (isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($g2_manager->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                                         <?php if(isset($g2_manager->is_dead) && $g2_manager->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                        <img src="<?= (!empty($g2_manager->Memberimage) && file_exists('assets/membersdocuments/'.$g2_manager->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_manager->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <img src="<?= (!empty($g2_manager->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$g2_manager->Memberimage)) ? base_url('documents/view/'.$g2_manager->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                         <span class="member-name"><?= $g2_manager->Name ?></span>
                                                                         <span class="member-role role-head"><?= $g2_manager->MemberRole ?></span>
                                                                     </div>
@@ -1158,7 +1183,7 @@
                                                                 <?php if($g2_spouse): ?>
                                                                     <div class="member-card <?= (isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($g2_spouse->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                                         <?php if(isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                        <img src="<?= (!empty($g2_spouse->Memberimage) && file_exists('assets/membersdocuments/'.$g2_spouse->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_spouse->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <img src="<?= (!empty($g2_spouse->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$g2_spouse->Memberimage)) ? base_url('documents/view/'.$g2_spouse->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                         <span class="member-name"><?= $g2_spouse->Name ?></span>
                                                                         <span class="member-role role-spouse"><?= $g2_spouse->MemberRole ?></span>
                                                                     </div>
@@ -1175,7 +1200,7 @@
                                                                         <li>
                                                                             <div class="member-card <?= (isset($child->is_dead) && $child->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($child->is_dead) && $child->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($child->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                                                 <?php if(isset($child->is_dead) && $child->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                                <img src="<?= (!empty($child->Memberimage) && file_exists('assets/membersdocuments/'.$child->Memberimage)) ? base_url('assets/membersdocuments/'.$child->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                                <img src="<?= (!empty($child->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$child->Memberimage)) ? base_url('documents/view/'.$child->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                                 <span class="member-name"><?= $child->Name ?></span>
                                                                                 <span class="member-role <?= $role_class ?>"><?= $child->MemberRole ?></span>
                                                                             </div>
@@ -1190,7 +1215,7 @@
                                                             <li>
                                                                 <div class="member-card <?= (isset($sib->is_dead) && $sib->is_dead == 1) ? 'dead-member' : '' ?>" <?= (isset($sib->is_dead) && $sib->is_dead == 1) ? '' : "onclick=\"showupdatecoordsmodal('".trim($sib->Familymembershipid)."')\" style=\"cursor:pointer;\"" ?>>
                                                                     <?php if(isset($sib->is_dead) && $sib->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                    <img src="<?= (!empty($sib->Memberimage) && file_exists('assets/membersdocuments/'.$sib->Memberimage)) ? base_url('assets/membersdocuments/'.$sib->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <img src="<?= (!empty($sib->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$sib->Memberimage)) ? base_url('documents/view/'.$sib->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                     <span class="member-name"><?= $sib->Name ?></span>
                                                                     <span class="member-role role-sibling"><?= $sib->MemberRole ?></span>
                                                                 </div>
@@ -1363,6 +1388,13 @@
 </div>
 
 <!------------------------------coordinators-modal-end-------------------------------->
+
+<div id="addfamilymember-modal-hide" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+    <div id="add-family-member-section" style="width: 90%; margin: 2% auto; background: #fff; border-radius: 20px; padding: 20px; position: relative;">
+        <div id="add-family-member-form"></div>
+        <button class="btn btn-danger mt-3" onclick="hideAddFamilyMemberModal()">Close</button>
+    </div>
+</div>
 
 <!--------------------view-community-certificate------------>
 
@@ -1727,6 +1759,39 @@ document.addEventListener("DOMContentLoaded", function() {
     goToFamilyPage(1);
 });
 
+function showAddFamilyMemberModal() {
+    $.ajax({
+        type: "get",
+        url: "<?= base_url('add_family_member') ?>",
+        success: (result) => {
+            $("#add-family-member-form").html(result);
+            document.getElementById("addfamilymember-modal-hide").style.display = 'block';
+        }
+    });
+}
+function hideAddFamilyMemberModal() {
+    document.getElementById("addfamilymember-modal-hide").style.display = 'none';
+}
+
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    
+    let isMatch = pathSegments.some(seg => seg === linkPage);
+    // Explicitly match "coordinators" menu when on "view-coordinator-data" page
+    if (linkPage === 'coordinators' && pathSegments.includes('view-coordinator-data')) {
+        isMatch = true;
+    }
+    
+    if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
 // Mobile Menu Functions
 function openMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -1744,6 +1809,7 @@ $.ajax({
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           highlightActiveMenu();
            // updateHeights();
       },
       error:(error)=>{
@@ -1789,7 +1855,7 @@ $.ajax({
     });
 
     let showupdatecoords = document.getElementById("updatecoords-modal-hide");
-    showupdatecoords.style.height = 100+window.innerHeight+"px";
+    if(showupdatecoords) showupdatecoords.style.height = 100+window.innerHeight+"px";
 
     function viewMemberundercoord(url) {
         let a = document.createElement("a");
@@ -2085,13 +2151,13 @@ function setDropdownpanchayat(taluk){
 
     function viewCoorddocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
          document.getElementById("showdocuments").innerHTML = `<div style="width:fit-content;"><p>Aadhar Front Image:</p>
-         <img style="width:300px;height:200px;" src="assets/membersdocuments/${aadharfrontimage}"></div>
+         <img style="width:300px;height:200px;" src="<?= base_url('documents/view/') ?>/${aadharfrontimage}"></div>
          <div style="width:fit-content;">
          <p>Aadhar Back Image:</p>
-         <img style="width:300px;height:200px;" src="assets/membersdocuments/${aadharbackimage}"></div>
+         <img style="width:300px;height:200px;" src="<?= base_url('documents/view/') ?>/${aadharbackimage}"></div>
          <div style="width:fit-content;">
          <p>Communitycertificate:</p>
-         <img style="width:200px;height:300px;cursor:pointer;" onclick="viewCommunitycertificate('${communitycertificate}')" src="assets/membersdocuments/${communitycertificate}"></div>`;
+         <img style="width:200px;height:300px;cursor:pointer;" onclick="viewCommunitycertificate('${communitycertificate}')" src="<?= base_url('documents/view/') ?>/${communitycertificate}"></div>`;
     }
 
     function viewMemberdata(id) {
@@ -2107,21 +2173,43 @@ function setDropdownpanchayat(taluk){
                 <div class="row align-items-center bg-light rounded shadow-sm py-4 border">
                     <div class="col-md-4 text-center mb-4 mb-md-0 border-end">
                         <div class="position-relative d-inline-block">
-                            <img class="img-fluid rounded-circle mb-2 shadow-sm bg-white p-1" style="width:160px;height:160px;object-fit:cover;" src="assets/membersdocuments/${member_data.Memberimage}" alt="Member Image" onerror="this.onerror=null; this.src=''; this.alt='Member Image';">
+                            <?php 
+                                $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"; 
+                                $safe_default_profile = str_replace("'", "%27", $default_profile);
+                            ?>
+                            <img class="img-fluid rounded-circle mb-2 shadow-sm bg-white p-1" style="width:160px;height:160px;object-fit:cover; cursor:pointer;" src="${member_data.Memberimage ? '<?= base_url('documents/view/') ?>' + member_data.Memberimage : "<?= $default_profile ?>"}" alt="Member Image" onclick="viewFullImage('${member_data.Memberimage}', 'Member Photo')" onerror="this.onerror=null; this.src='<?= $safe_default_profile ?>'">
                         </div>
-                        <div class="d-flex flex-column gap-3 mt-4 px-xl-4 pb-2">
-                            <button data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMemberdocuments('${member_data.Aadharfrontimage}','${member_data.Aadharbackimage}','${member_data.Communitycertificate}')">
-                                <i class="fa-solid fa-file-lines me-2"></i> View Documents
-                            </button>
-                            <button data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMembereventparticipation('${member_data.Familymembershipid}')">
-                                <i class="fa-solid fa-calendar-check me-2"></i> Event Participation
-                            </button>
-                            ${member_data.Role != 2 ? `
-                            <button data-bs-dismiss="modal" class="btn btn-outline-warning fw-bold text-dark py-2 rounded bg-white shadow-sm" onclick="showupdatecoordsmodal('${member_data.Familymembershipid}')">
-                                <i class="fa-solid fa-user-pen me-2"></i> Update Details
-                            </button>
-                            ` : ''}
-                        </div>
+                <div class="d-flex justify-content-center gap-3 mt-4 px-xl-4 pb-2 w-100">
+                    <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm bg-white" 
+                            style="width: 48px; height: 48px;" 
+                            title="Aadhar Front" 
+                            onclick="viewFullImage('${member_data.Aadharfrontimage}', 'Aadhar Front')">
+                        <i class="fa-solid fa-id-card fs-5"></i>
+                    </button>
+                    <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm bg-white" 
+                            style="width: 48px; height: 48px;" 
+                            title="Aadhar Back" 
+                            onclick="viewFullImage('${member_data.Aadharbackimage}', 'Aadhar Back')">
+                        <i class="fa-solid fa-id-card-clip fs-5"></i>
+                    </button>
+                    <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm bg-white" 
+                            style="width: 48px; height: 48px;" 
+                            title="Community Certificate" 
+                            onclick="viewFullImage('${member_data.Communitycertificate}', 'Community Certificate')">
+                        <i class="fa-solid fa-certificate fs-5"></i>
+                    </button>
+                </div>
+                <div class="d-flex flex-column gap-2 mt-3 px-xl-4 pb-2 w-100">
+                    <button data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMembereventparticipation('${member_data.Familymembershipid}')">
+                        <i class="fa-solid fa-calendar-check me-2"></i> Event Participation
+                    </button>
+                    ${member_data.Role != 2 ? `
+                    <button data-bs-dismiss="modal" class="btn btn-outline-warning fw-bold text-dark py-2 rounded bg-white shadow-sm" onclick="showupdatecoordsmodal('${member_data.Familymembershipid}')">
+                        <i class="fa-solid fa-user-pen me-2"></i> Update Details
+                    </button>
+                    ` : ''}
+                </div>
+
                     </div>  
                     <div class="col-md-8">
                         <div class="card border-0 bg-transparent h-100">
@@ -2515,35 +2603,37 @@ else{
          <div class="d-flex flex-wrap justify-content-center gap-4 py-3">
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Aadhar Front Image:</p>
-                 <a href="assets/membersdocuments/${aadharfrontimage}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharfrontimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${aadharfrontimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${aadharfrontimage}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
              
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Aadhar Back Image:</p>
-                 <a href="assets/membersdocuments/${aadharbackimage}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharbackimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${aadharbackimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${aadharbackimage}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
              
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Community Certificate:</p>
-                 <a href="assets/membersdocuments/${communitycertificate}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${communitycertificate}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${communitycertificate}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${communitycertificate}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
          </div>`;
     }
 
-    function viewCommunitycertificate(communitycertificate) {
-      let viewcert_modal = new bootstrap.Modal(document.getElementById("show_commun_cert"),{
-        backdrop:"static",
-        keyboard:false
-      });
-      viewcert_modal.show();
-      document.getElementById("dis_commun_cert").innerHTML = `<img style="width:100%;height:750px;" class="img-fluid" src='assets/membersdocuments/${communitycertificate}'>`;
+    function viewFullImage(imageName, title) {
+        let viewImageModal = new bootstrap.Modal(document.getElementById("imageFullViewModal"), {
+            backdrop: "static",
+            keyboard: false
+        });
+        document.getElementById("imageFullViewTitle").innerText = title;
+        document.getElementById("imageFullViewContent").innerHTML = `<img style="max-width:100%; max-height:80vh; object-fit:contain;" class="img-fluid shadow-lg rounded" src='<?= base_url("documents/view/") ?>/${imageName}'>`;
+        viewImageModal.show();
     }
+
 
     function switchView(view) {
         if (view === 'table') {
@@ -2571,7 +2661,26 @@ else{
 
       
     
+        <!-- Full Image View Modal -->
+        <div id="imageFullViewModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class='modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered'>
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                    <div class="modal-header bg-light border-0 py-3">
+                        <h5 class="modal-title fw-bold text-primary" id="imageFullViewTitle">Image View</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss='modal' aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0 text-center bg-dark d-flex align-items-center justify-content-center" style="min-height: 400px; max-height: 85vh; overflow: hidden;">
+                        <div id="imageFullViewContent" class="w-100 h-100">
+                            <!-- Image will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Full Image View Modal End -->
+
 </body>
+
 </html>
 
 

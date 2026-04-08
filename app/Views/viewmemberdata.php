@@ -983,13 +983,33 @@
                         <div class="col-md-4 text-center">
                             <?php 
                                 $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-                                $p_img = (!empty($member->Memberimage) && file_exists('assets/membersdocuments/'.$member->Memberimage)) ? base_url('assets/membersdocuments/'.$member->Memberimage) : $default_profile;
+                                $safe_default_profile = str_replace("'", "%27", $default_profile);
+                                $p_img = (!empty($member->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$member->Memberimage)) ? base_url('documents/view/'.$member->Memberimage) : $default_profile;
                             ?>
-                            <img class="shadow-sm <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'grayscale-filter' : '' ?>" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa; <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'opacity: 0.6;' : '' ?>" src="<?= $p_img ?>" alt="Member Image" onerror="this.src='<?= $default_profile ?>'">
+                            <img class="shadow-sm <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'grayscale-filter' : '' ?>" style="width:180px;height:180px;object-fit:cover;border-radius:50%;border: 4px solid #f8f9fa; cursor:pointer; <?= (isset($member->is_dead) && $member->is_dead == 1) ? 'opacity: 0.6;' : '' ?>" src="<?= $p_img ?>" alt="Member Image" onclick="viewFullImage('<?= $member->Memberimage ?>', 'Member Photo')" onerror="this.onerror=null; this.src='<?= $safe_default_profile ?>'">
                             
-                            <div class="d-flex flex-column align-items-center gap-2 mt-4 px-xl-5 px-lg-4 px-md-2">
-                                <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#member_documents" class="btn btn-outline-primary fw-bold py-2" onclick="viewMemberdocuments('<?=$member->Aadharfrontimage?>','<?=$member->Aadharbackimage?>','<?=$member->Communitycertificate?>')"><i class="fa-solid fa-file-lines me-2"></i>View Documents</button>
+                            <div class="d-flex justify-content-center gap-3 mt-4 px-xl-5 px-lg-4 px-md-2 w-100">
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Aadhar Front" 
+                                        onclick="viewFullImage('<?=$member->Aadharfrontimage?>', 'Aadhar Front')">
+                                    <i class="fa-solid fa-id-card fs-5"></i>
+                                </button>
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Aadhar Back" 
+                                        onclick="viewFullImage('<?=$member->Aadharbackimage?>', 'Aadhar Back')">
+                                    <i class="fa-solid fa-id-card-clip fs-5"></i>
+                                </button>
+                                <button class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                        style="width: 48px; height: 48px;" 
+                                        title="Community Certificate" 
+                                        onclick="viewFullImage('<?=$member->Communitycertificate?>', 'Community Certificate')">
+                                    <i class="fa-solid fa-certificate fs-5"></i>
+                                </button>
+                            </div>
 
+                            <div class="d-flex flex-column align-items-center gap-2 mt-3 px-xl-5 px-lg-4 px-md-2 w-100">
                                 <button style="width: 100%; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#eventparticipation" class="btn btn-outline-success fw-bold py-2" onclick="viewMembereventparticipation('<?=$member->Familymembershipid?>')"><i class="fa-solid fa-calendar-check me-2"></i>Event Participation</button>
 
                                 <?php if($member->MemberRole == 'Head'): ?>
@@ -1000,10 +1020,11 @@
                                     <?php endif; ?>
                                     
                                     <?php if(session()->get('role') == 3): ?>
-                                        <a style="width: 100%; border-radius: 8px;" href="<?= base_url('add_family_member'); ?>" class="btn btn-primary fw-bold shadow-sm py-2"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</a>
+                                        <button type="button" style="width: 100%; border-radius: 8px;" onclick="showAddFamilyMemberModal()" class="btn btn-primary fw-bold shadow-sm py-2 mt-1"><i class="fa-solid fa-user-plus me-2"></i>Add Family Member</button>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
+
                         </div>  
                         <div class="col-md-8 mt-4 mt-md-0">
                             <?php
@@ -1026,6 +1047,12 @@
                                             <th class="text-secondary py-3 fs-6">Family Membership ID:</th>
                                             <td class="py-3"><span class="badge bg-primary px-3 py-2 fs-6 rounded-pill shadow-sm"><?=$member->Familymembershipid?></span></td>
                                         </tr>
+                                        <?php if(isset($member->Phonenumber)): ?>
+                                        <tr class="border-bottom border-light">
+                                            <th class="text-secondary py-3 fs-6">Phone Number:</th>
+                                            <td class="text-dark fw-medium fs-5 py-3"><?= isset($updated_data) ? getDisplayVal('Phonenumber', $member, $updated_data) : $member->Phonenumber ?></td>
+                                        </tr>
+                                        <?php endif; ?>
                                         <tr>
                                             <th class="text-secondary py-3 fs-6" style="vertical-align:top;">Address:</th>
                                             <td class="py-3 fw-medium text-dark">
@@ -1037,12 +1064,7 @@
                                                 </ul>
                                             </td>
                                         </tr>
-                                        <?php if(isset($member->Phonenumber)): ?>
-                                        <tr class="border-top border-light">
-                                            <th class="text-secondary py-3 fs-6">Phone:</th>
-                                            <td class="py-3 fw-medium text-dark"><?= isset($updated_data) ? getDisplayVal('Phonenumber', $member, $updated_data) : $member->Phonenumber ?></td>
-                                        </tr>
-                                        <?php endif; ?>
+
                                         <?php if(isset($member->Aadharnumber)): ?>
                                         <tr class="border-top border-light">
                                             <th class="text-secondary py-3 fs-6">Aadhar:</th>
@@ -1136,7 +1158,7 @@
                                                     <?php foreach($g0 as $gm): ?>
                                                         <div class="member-card <?= (isset($gm->is_dead) && $gm->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($gm->is_dead) && $gm->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($gm->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                             <?php if(isset($gm->is_dead) && $gm->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                            <img src="<?= (!empty($gm->Memberimage) && file_exists('assets/membersdocuments/'.$gm->Memberimage)) ? base_url('assets/membersdocuments/'.$gm->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                            <img src="<?= (!empty($gm->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$gm->Memberimage)) ? base_url('documents/view/'.$gm->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                             <span class="member-name"><?= $gm->Name ?></span>
                                                             <span class="member-role role-grand"><?= $gm->MemberRole ?></span>
                                                         </div>
@@ -1152,7 +1174,7 @@
                                                             <?php foreach($g1 as $gp): ?>
                                                                 <div class="member-card <?= (isset($gp->is_dead) && $gp->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($gp->is_dead) && $gp->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($gp->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                                     <?php if(isset($gp->is_dead) && $gp->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                    <img src="<?= (!empty($gp->Memberimage) && file_exists('assets/membersdocuments/'.$gp->Memberimage)) ? base_url('assets/membersdocuments/'.$gp->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <img src="<?= (!empty($gp->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$gp->Memberimage)) ? base_url('documents/view/'.$gp->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                     <span class="member-name"><?= $gp->Name ?></span>
                                                                     <span class="member-role role-parent"><?= $gp->MemberRole ?></span>
                                                                 </div>
@@ -1168,7 +1190,7 @@
                                                                 <?php if($g2_manager): ?>
                                                                     <div class="member-card <?= (isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($g2_manager->is_dead) && $g2_manager->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($g2_manager->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                                         <?php if(isset($g2_manager->is_dead) && $g2_manager->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                        <img src="<?= (!empty($g2_manager->Memberimage) && file_exists('assets/membersdocuments/'.$g2_manager->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_manager->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <img src="<?= (!empty($g2_manager->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$g2_manager->Memberimage)) ? base_url('documents/view/'.$g2_manager->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                         <span class="member-name"><?= $g2_manager->Name ?></span>
                                                                         <span class="member-role role-head"><?= $g2_manager->MemberRole ?></span>
                                                                     </div>
@@ -1177,7 +1199,7 @@
                                                                 <?php if($g2_spouse): ?>
                                                                     <div class="member-card <?= (isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($g2_spouse->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                                         <?php if(isset($g2_spouse->is_dead) && $g2_spouse->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                        <img src="<?= (!empty($g2_spouse->Memberimage) && file_exists('assets/membersdocuments/'.$g2_spouse->Memberimage)) ? base_url('assets/membersdocuments/'.$g2_spouse->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                        <img src="<?= (!empty($g2_spouse->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$g2_spouse->Memberimage)) ? base_url('documents/view/'.$g2_spouse->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                         <span class="member-name"><?= $g2_spouse->Name ?></span>
                                                                         <span class="member-role role-spouse"><?= $g2_spouse->MemberRole ?></span>
                                                                     </div>
@@ -1194,7 +1216,7 @@
                                                                         <li>
                                                                             <div class="member-card <?= (isset($child->is_dead) && $child->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($child->is_dead) && $child->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($child->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                                                 <?php if(isset($child->is_dead) && $child->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                                <img src="<?= (!empty($child->Memberimage) && file_exists('assets/membersdocuments/'.$child->Memberimage)) ? base_url('assets/membersdocuments/'.$child->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                                <img src="<?= (!empty($child->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$child->Memberimage)) ? base_url('documents/view/'.$child->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                                 <span class="member-name"><?= $child->Name ?></span>
                                                                                 <span class="member-role <?= $role_class ?>"><?= $child->MemberRole ?></span>
                                                                             </div>
@@ -1209,7 +1231,7 @@
                                                             <li>
                                                                 <div class="member-card <?= (isset($sib->is_dead) && $sib->is_dead == 1) ? 'dead-member' : '' ?>" <?= (!(isset($sib->is_dead) && $sib->is_dead == 1) && $member->MemberRole == 'Head') ? "onclick=\"showupdatemembermodal('".trim($sib->Familymembershipid)."')\" style=\"cursor:pointer;\"" : "" ?>>
                                                                     <?php if(isset($sib->is_dead) && $sib->is_dead == 1): ?><span class="tree-dead-badge">Late</span><?php endif; ?>
-                                                                    <img src="<?= (!empty($sib->Memberimage) && file_exists('assets/membersdocuments/'.$sib->Memberimage)) ? base_url('assets/membersdocuments/'.$sib->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
+                                                                    <img src="<?= (!empty($sib->Memberimage) && file_exists(WRITEPATH . 'uploads/membersdocuments/'.$sib->Memberimage)) ? base_url('documents/view/'.$sib->Memberimage) : $default_img ?>" class="member-img" onerror="this.src='<?= $default_img ?>'">
                                                                     <span class="member-name"><?= $sib->Name ?></span>
                                                                     <span class="member-role role-sibling"><?= $sib->MemberRole ?></span>
                                                                 </div>
@@ -1341,8 +1363,6 @@
 
           if(isset($initialindex) && isset($newcounts)){
             
-            $newcounts = $newcounts;
-            $initialindex = $initialindex;
             $countsperpage = 10;
             $noofpages = ceil($newcounts / $countsperpage) - 1;
             $totalpagesarr = createarr($noofpages);
@@ -1418,6 +1438,32 @@
 </div>
 
 <!------------------------------coordinators-modal-end-------------------------------->
+
+<div id="addfamilymember-modal-hide" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+    <div id="add-family-member-section" style="width: 90%; margin: 2% auto; background: #fff; border-radius: 20px; padding: 20px; position: relative;">
+        <div id="add-family-member-form"></div>
+        <button class="btn btn-danger mt-3" onclick="hideAddFamilyMemberModal()">Close</button>
+    </div>
+</div>
+        
+        <!-- Full Image View Modal -->
+        <div id="imageFullViewModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class='modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered'>
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                    <div class="modal-header bg-light border-0 py-3">
+                        <h5 class="modal-title fw-bold text-primary" id="imageFullViewTitle">Image View</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss='modal' aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0 text-center bg-dark d-flex align-items-center justify-content-center" style="min-height: 400px; max-height: 85vh; overflow: hidden;">
+                        <div id="imageFullViewContent" class="w-100 h-100">
+                            <!-- Image will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Full Image View Modal End -->
+
 
 <!--------------------view-members------------------------->
 <div id="viewCoordinatordata" class="modal fade">
@@ -1718,6 +1764,40 @@ document.addEventListener("DOMContentLoaded", function() {
     goToFamilyPage(1);
 });
 
+function showAddFamilyMemberModal() {
+    $.ajax({
+        type: "get",
+        url: "<?= base_url('add_family_member') ?>",
+        success: (result) => {
+            $("#add-family-member-form").html(result);
+            document.getElementById("addfamilymember-modal-hide").style.display = 'block';
+        }
+    });
+}
+function hideAddFamilyMemberModal() {
+    document.getElementById("addfamilymember-modal-hide").style.display = 'none';
+}
+
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    
+    let isMatch = pathSegments.some(seg => seg === linkPage);
+    // Explicitly match "members" menu when on "view-member-data" page
+    if (linkPage === 'members' && pathSegments.includes('view-member-data')) {
+        isMatch = true;
+    }
+    // The base case for role=3 already matches because linkPage is 'view-member-data'
+    
+    if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
 // Mobile Menu Functions
 function openMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -1736,7 +1816,8 @@ $.ajax({
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
-           updateHeights();
+           // updateHeights();
+           highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
@@ -1760,7 +1841,7 @@ $.ajax({
       url:"<?= base_url('members/topmenu') ?>",
       success:(result)=>{
            document.getElementById("search-bar").innerHTML = result;
-           updateHeights();
+           // updateHeights();
            //  document.getElementById("searchcoords").style.display = "flex";
            //  document.getElementById("dashboardsubmenu").style.display = "flex";
            },
@@ -1803,8 +1884,8 @@ $.ajax({
     let showaddmember = document.getElementById("members-modal-hide");
     let showupdatemember = document.getElementById("updatemember-modal-hide");
 
-    showaddmember.style.height =  100+window.innerHeight+"px";
-    showupdatemember.style.height = 100+window.innerHeight+"px";
+    if(showaddmember) showaddmember.style.height =  100+window.innerHeight+"px";
+    if(showupdatemember) showupdatemember.style.height = 100+window.innerHeight+"px";
 
      function getmemberdata(areas){
         let area = areas.value;
@@ -2011,17 +2092,17 @@ $.ajax({
          document.getElementById("showdocuments").innerHTML = `
     <div style="width:fit-content;">
         <p>Aadhar Front Image:</p>
-        <img style="width:300px;height:200px;" src="<?= base_url('assets/membersdocuments/') ?>${aadharfrontimage}">
+        <img style="width:300px;height:200px;" src="<?= base_url('documents/view/') ?>/${aadharfrontimage}">
     </div>
     <div style="width:fit-content;">
         <p>Aadhar Back Image:</p>
-        <img style="width:300px;height:200px;" src="<?= base_url('assets/membersdocuments/') ?>${aadharbackimage}">
+        <img style="width:300px;height:200px;" src="<?= base_url('documents/view/') ?>/${aadharbackimage}">
     </div>
     <div style="width:fit-content;">
         <p>Communitycertificate:</p>
         <img style="width:200px;height:300px;cursor:pointer;" 
              onclick="viewCommunitycertificate('${communitycertificate}')" 
-             src="<?= base_url('assets/membersdocuments/') ?>${communitycertificate}">
+             src="<?= base_url('documents/view/') ?>/${communitycertificate}">
     </div>`;
     }
 
@@ -2031,33 +2112,19 @@ $.ajax({
         keyboard:false
       });
       viewcert_modal.show();
-      document.getElementById("dis_commun_cert").innerHTML = `<img style="width:100%;height:750px;" class="img-fluid" src='assets/membersdocuments/${communitycertificate}'>`;
+      document.getElementById("dis_commun_cert").innerHTML = `<img style="width:100%;height:750px;" class="img-fluid" src='<?= base_url('documents/view/') ?>/${communitycertificate}'>`;
     }
 
-    function viewMembereventparticipation(id) {
-        $.ajax({
-        type:"post",
-        url:"<?= base_url('event-participation') ?>",
-        data:{"id":id},
-        success:function(result){
-          
-        let event = [JSON.parse(result)];
-        let eventparticipation = event[0]
-        console.log(eventparticipation)
-        if(eventparticipation.length < 1){
-          document.getElementById("nomemberresult").innerHTML = `<tr><td class="text-center" colspan="6">No records found</td></tr>`;
-        }
-        else{
-           document.getElementById("showparticipation").innerHTML = eventparticipation.map((participation,index)=> {
-           return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.Collectedamount}</td><td>${participation.balanceamount}</td><td>${participation.paymentdate}</td></tr>`;
-           }).join("");
-          }
-        },
-        error:function(error){
-            // document.getElementById('deletetoast').innerHTML = error;
-        }
-      })
+    function viewFullImage(imageName, title) {
+        let viewImageModal = new bootstrap.Modal(document.getElementById("imageFullViewModal"), {
+            backdrop: "static",
+            keyboard: false
+        });
+        document.getElementById("imageFullViewTitle").innerText = title;
+        document.getElementById("imageFullViewContent").innerHTML = `<img style="max-width:100%; max-height:80vh; object-fit:contain;" class="img-fluid shadow-lg rounded" src='<?= base_url("documents/view/") ?>/${imageName}'>`;
+        viewImageModal.show();
     }
+
 
     function showupdatemembermodal(id){
       // let show = document.getElementById("updatemember-modal-hide");

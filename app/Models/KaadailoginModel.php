@@ -15,7 +15,14 @@ class KaadailoginModel extends Model
     public function getDetails($identifier, $value)
     {
         $builder = $this->db->table('kaadaimembers');
-        $builder->where($identifier, $value);
+        
+        // Handle encrypted Aadhar searching via hash
+        if ($identifier == 'Aadharnumber') {
+            $builder->where('Aadhar_hash', hash('sha256', $value));
+        } else {
+            $builder->where($identifier, $value);
+        }
+        
         // Prioritize Login: Alive members first, then Family Heads
         $builder->orderBy('is_dead', 'ASC'); 
         $builder->orderBy("CASE WHEN MemberRole = 'Head' THEN 0 ELSE 1 END", 'ASC', false); 
@@ -25,9 +32,15 @@ class KaadailoginModel extends Model
 
     public function updateOTP($identifier, $value, $otp, $expiry)
     {
-        return $this->db->table('kaadaimembers')
-            ->where($identifier, $value)
-            ->update([
+        $builder = $this->db->table('kaadaimembers');
+        
+        if ($identifier == 'Aadharnumber') {
+            $builder->where('Aadhar_hash', hash('sha256', $value));
+        } else {
+            $builder->where($identifier, $value);
+        }
+        
+        return $builder->update([
                 'otp' => $otp,
                 'otp_expiry' => $expiry
             ]);
@@ -35,9 +48,15 @@ class KaadailoginModel extends Model
 
     public function verifyOTP($identifier, $value, $otp)
     {
-        $query = $this->db->table('kaadaimembers')
-            ->where($identifier, $value)
-            ->where('otp', $otp)
+        $builder = $this->db->table('kaadaimembers');
+        
+        if ($identifier == 'Aadharnumber') {
+            $builder->where('Aadhar_hash', hash('sha256', $value));
+        } else {
+            $builder->where($identifier, $value);
+        }
+        
+        $query = $builder->where('otp', $otp)
             ->where('otp_expiry >=', date('Y-m-d H:i:s'))
             ->get();
         return $query->getRow();
@@ -45,13 +64,18 @@ class KaadailoginModel extends Model
 
     public function updatePassword($identifier, $value, $newPassword)
     {
-        return $this->db->table('kaadaimembers')
-            ->where($identifier, $value)
-            ->update([
+        $builder = $this->db->table('kaadaimembers');
+        
+        if ($identifier == 'Aadharnumber') {
+            $builder->where('Aadhar_hash', hash('sha256', $value));
+        } else {
+            $builder->where($identifier, $value);
+        }
+        
+        return $builder->update([
                 'Password' => password_hash($newPassword, PASSWORD_BCRYPT),
                 'otp' => null,
                 'otp_expiry' => null
             ]);
     }
 }
-?>

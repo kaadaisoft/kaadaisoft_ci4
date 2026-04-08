@@ -7,10 +7,12 @@ use Exception;
 class Bulk_upload_model extends Model
 {
     protected $db;
+    protected $encrypter;
 
     public function __construct() {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     // Method for bulk insert
@@ -31,23 +33,27 @@ class Bulk_upload_model extends Model
             // Check for errors during the transaction
             if ($this->db->transStatus() === FALSE) {
                 // If an error occurred, roll back the transaction
-                // transComplete() handles rollback if failed but we can enforce check
                 throw new Exception('Transaction failed! Data not inserted.');
             } else {
                 return true;
             }
         } catch (Exception $e) {
-            // transStart/Complete handles rollback automatically on failure, but explicit rollback if needed
-            // $this->db->transRollback(); 
-            throw $e;  // 
+            throw $e;  
         }
     }
 
     public function getMembersdetails()
     {
-        $query = $this->db->query("SELECT km.Familymembershipid, km.Name, pr.paymentdate, km.Phonenumber AS Mobile, km.Taluk AS MemberTaluk, pr.eventid, pr.eventname,pr.paidamount,pr.balanceamount 
+        $query = $this->db->query("SELECT km.Familymembershipid, km.Name, km.Aadharnumber, pr.paymentdate, km.Phonenumber AS Mobile, km.Taluk AS MemberTaluk, pr.eventid, pr.eventname, pr.paidamount, pr.balanceamount 
         FROM kaadaimembers AS km LEFT JOIN paymentreceipts AS pr ON pr.Familymembershipid = km.Familymembershipid");
-        return $query->getResultArray();
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 }
-?>

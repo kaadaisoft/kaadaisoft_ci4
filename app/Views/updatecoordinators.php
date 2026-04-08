@@ -1,115 +1,274 @@
-<style>
-        .section-title {
-            border-left: 5px solid #3E2723;
-            padding-left: .75rem;
-            font-weight: 800;
-            color: #1a0f0d !important;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-brown: #2D1B18;
+            --medium-brown: #3E2723;
+            --accent-gold: #C5A028;
+            --glass-white: rgba(255, 255, 255, 0.65);
+            --border-white: rgba(255, 255, 255, 0.5);
+            --soft-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
-        .mandatory-star {
-            color: red;
-            font-weight: 500;
+        #registration-form {
+            font-family: 'Outfit', sans-serif;
+            color: #333333;
+        }
+
+        .bg-custom-header {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+            padding: 1.25rem 1.5rem !important;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        .card.shadow-lg, .card {
+            background: var(--glass-white) !important;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid var(--border-white) !important;
+            border-top: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 20px !important;
+            box-shadow: var(--soft-shadow) !important;
         }
 
         #registration-form label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #000000 !important;
+            color: #333333 !important;
+            margin-bottom: 0.4rem;
+            display: inline-block;
+            letter-spacing: 0.2px;
         }
 
         #registration-form .form-control,
         #registration-form .form-select {
-            font-size: 0.9rem;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            color: #000;
-            border-radius: 4px;
+            font-size: 0.92rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            transition: all 0.25s ease;
         }
 
-        .bg-custom-header {
+        #registration-form .form-control:focus,
+        #registration-form .form-select:focus {
             background-color: #fff;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-color: var(--medium-brown);
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .section-title {
+            position: relative;
+            padding-left: 1rem;
+            font-weight: 700;
+            color: var(--primary-brown) !important;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem !important;
+            border-left: none !important;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--accent-gold);
+            border-radius: 2px;
         }
 
         .ps-img-btn,
         #coordsubmitbutton {
             color: white !important;
-            font-weight: 700;
+            font-weight: 600;
             border: none;
-            background: linear-gradient(135deg, #795548 0%, #3E2723 100%);
-            padding: 8px 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, var(--medium-brown) 0%, var(--primary-brown) 100%);
+            padding: 10px 28px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        #coordsubmitbutton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.4);
+            filter: brightness(1.1);
         }
 
         #coordsubmitbutton:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+            background: #cbd5e1;
+            color: #94a3b8 !important;
             box-shadow: none;
+            cursor: not-allowed;
         }
 
-        #education_wrapper-update, #education_wrapper-coord {
-            min-height: 38px;
-            background-color: #ffffff;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            padding: 5px;
+        /* Integration buttons */
+        #registration-form .btn-outline-primary, 
+        #registration-form .btn-outline-secondary, 
+        #registration-form .btn-outline-success {
+            border-color: #D7CCC8 !important;
+            color: var(--medium-brown) !important;
+            background: #fff;
+            border-radius: 0 10px 10px 0 !important;
+            font-weight: 500;
         }
 
-        #education_tags-update .badge, #education_tags-coord .badge {
-            margin-right: 4px;
-            margin-bottom: 4px;
-            background-color: #3E2723 !important;
+        #registration-form .btn-outline-primary:hover, 
+        #registration-form .btn-outline-secondary:hover, 
+        #registration-form .btn-outline-success:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        #education_wrapper-coord {
+            min-height: 44px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 4px 8px !important;
+            transition: all 0.25s ease;
+        }
+
+        #education_wrapper-coord:focus-within {
+            border-color: var(--medium-brown);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
+        }
+
+        #education_tags-coord .badge {
+            margin: 2px;
+            background-color: var(--primary-brown) !important;
             color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .education-option:hover {
-            background-color: #efebe9;
-            cursor: pointer;
-        }
-
-        .cursor-pointer {
-            cursor: pointer;
-        }
-    </style>
-
-    <style>
         /* Flowbite-style file input */
         .ps-file-upload-wrapper { position: relative; }
         .ps-file-upload-wrapper input[type="file"] { display: none; }
         .ps-file-upload-btn {
             display: flex; align-items: center; gap: 8px; width: 100%;
-            padding: 7px 12px; font-size: 13px; border: 1.5px solid #ced4da;
-            border-radius: 6px; background-color: #f8f9fa; cursor: pointer;
-            color: #6c757d; transition: border-color 0.2s, background-color 0.2s;
+            padding: 9px 12px; font-size: 13px; border: 1.5px solid #E0E0E0;
+            border-radius: 10px; background-color: rgba(255, 255, 255, 0.9); cursor: pointer;
+            color: #666; transition: all 0.2s;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .ps-file-upload-btn:hover { background-color: #e9ecef; border-color: #86b7fe; }
-        .ps-file-upload-btn .ps-file-icon { flex-shrink: 0; font-size: 15px; color: #495057; }
-        .ps-file-upload-btn .ps-file-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-        .ps-file-upload-btn.file-selected { border-color: #0d6efd; background-color: #e7f1ff; color: #0a3d91; font-weight: 500; }
+        .ps-file-upload-btn:hover { background-color: #fff; border-color: var(--medium-brown); }
+        .ps-file-upload-btn.file-selected {
+            border-color: var(--primary-brown);
+            background-color: rgba(93, 64, 55, 0.1);
+            color: var(--primary-brown);
+            font-weight: 500;
+        }
+
+        .exit-form-btn {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border: 1.5px solid var(--border-white) !important;
+            color: var(--primary-brown) !important;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: blur(8px);
+            border-radius: 50% !important;
+        }
+
+        .exit-form-btn:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.25) !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        /* Inner cards transparent */
+        .card-body .card {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 15px !important;
+            margin-bottom: 1.5rem !important;
+            box-shadow: none !important;
+        }
+
+        /* Radio buttons */
+        .form-check-input:checked {
+            background-color: var(--primary-brown);
+            border-color: var(--primary-brown);
+        }
+
+        .btn-copy-address {
+            background-color: transparent !important;
+            border: 1px solid var(--primary-brown) !important;
+            color: var(--primary-brown) !important;
+            padding: 6px 14px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-address:hover {
+            background-color: var(--primary-brown) !important;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 27, 24, 0.15);
+        }
+        
+        .card:focus-within {
+            position: relative;
+            z-index: 10 !important;
+        }
+        
+        .cursor-pointer { cursor: pointer; }
     </style>
 
+
     <?php if (isset($coordinator)) : ?>
-        <div class="bg-custom-header py-3 px-4 border-bottom shadow-sm">
+        <div class="bg-custom-header py-3 px-4 border-bottom">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0 text-dark font-weight-bold">
+                <h4 class="mb-0">
                     <?php 
                         $is_self = ($coordinator->Familymembershipid == session()->get('Kaadaisoft_userId'));
                         $is_head = ($coordinator->MemberRole == 'Head');
                         if ($is_self) {
-                            $icon = 'fa-user-gear';
+                            $icon = 'bi-person-circle';
                             $title = 'Update My Details';
                         } else {
-                            $icon = $is_head ? 'fa-user-gear' : 'fa-users';
+                            $icon = $is_head ? 'bi-person-circle' : 'bi-people-fill';
                             $title = $is_head ? 'Update Coordinator Details' : 'Update Family Member Details';
                         }
                     ?>
-                    <i class="fa-solid <?= $icon ?> me-2"></i><?= $title ?>: <small class="text-primary"><?= $coordinator->Familymembershipid ?></small>
+                    <i class="bi <?= $icon ?> me-2"></i><?= $title ?>: <small style="color: var(--accent-gold);"><?= $coordinator->Familymembershipid ?></small>
                 </h4>
-                <button onclick="hideupdatecoordsform()" class="btn btn-close"></button>
+                <button onclick="hideupdatecoordsform()" class="btn exit-form-btn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
         </div>
 
@@ -126,14 +285,13 @@
             <input type="hidden" id="original_phone-coord" value="<?= esc($coordinator->Phonenumber) ?>">
 
 
-            <!-- Basic Details Section -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-user text-primary me-2"></i>Basic Details
+                        <i class="bi bi-person-circle fs-5 me-2"></i>Basic Details
                     </h5>
 
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <!-- Relationship - For Coordinator, usually Head or specific role, but we follow member fields -->
                         <div class="col-md-4">
                             <label for="relationship-coord">Relationship</label>
@@ -177,9 +335,11 @@
                         <div class="col-md-4">
                             <label for="phoneno-coord">Phone Number</label>
                             <div class="input-group">
-                                <input id="phoneno-coord" class="form-control" type="number" name="phoneno-coord" value="<?= $coordinator->Phonenumber ?>" onkeyup="validateCoordInput(this)">
+                                <input id="phoneno-coord" class="form-control" type="number" name="phoneno-coord" value="<?= $coordinator->Phonenumber ?>" 
+                                    oninput="if (this.value.length > 10) this.value = this.value.slice(0, 10)" 
+                                    onkeyup="validateCoordInput(this)">
                                 <button type="button" id="verify-phone-btn-coord" class="btn btn-outline-primary" style="display:none;" onclick="checkPhoneVerificationCoord()">Verify</button>
-                                <span id="phone-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                                <span id="phone-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="bi bi-check-circle-fill"></i></span>
                             </div>
                             <small id="phonenoerror-coord" class="text-danger"></small>
                         </div>
@@ -235,7 +395,7 @@
                             <div class="input-group">
                                 <input id="email-coord" onkeyup="validateCoordInput(this)" class="form-control" type="email" name="email-coord" value="<?= $coordinator->Email ?>">
                                 <button type="button" id="verify-email-btn-coord" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPCoord()">Verify</button>
-                                <span id="email-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                                <span id="email-verified-badge-coord" class="input-group-text text-success" title="Verified"><i class="bi bi-check-circle-fill"></i></span>
                             </div>
                             <small id="emailerror-coord" class="text-danger"></small>
                         </div>
@@ -254,7 +414,9 @@
                         <div class="col-md-4">
                             <label for="whatsappno-coord">WhatsApp Number</label>
                             <div class="input-group">
-                                <input id="whatsappno-coord" class="form-control" type="number" name="whatsappno-coord" value="<?= $coordinator->Whatsappnumber ?>" onkeyup="validateCoordInput(this)">
+                                <input id="whatsappno-coord" class="form-control" type="number" name="whatsappno-coord" value="<?= $coordinator->Whatsappnumber ?>" 
+                                    oninput="if (this.value.length > 10) this.value = this.value.slice(0, 10)" 
+                                    onkeyup="validateCoordInput(this)">
                                 <button class="btn btn-outline-secondary" type="button" onclick="copyPhoneToWhatsappCoord()">Same as Phone</button>
                             </div>
                             <small id="whatsappnoerror-coord" class="text-danger"></small>
@@ -343,15 +505,14 @@
                 </div>
             </div>
 
-            <!-- Occupation Details -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-briefcase text-primary me-2"></i>Education & Career Details
+                        <i class="bi bi-briefcase-fill fs-5 me-2"></i>Education & Career Details
                     </h5>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <!-- Education -->
-                        <div class="col-md-4" style="position: relative;">
+                        <div class="col-md-4" style="position: relative; z-index: 10;">
                             <label for="education_input-coord">Education</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-coord" style="cursor: text; min-height: 38px;">
                                 <div id="education_tags-coord" class="d-flex flex-wrap gap-1"></div>
@@ -367,7 +528,7 @@
                             <small id="educationerror-coord" class="text-danger"></small>
                             <div id="education_hidden_container-coord"></div>
                             <input type="hidden" id="educationfield-coord" name="education-coord">
-                            <div class="border rounded mt-1 bg-white shadow-sm" id="education_dropdown-coord" style="max-height:250px; overflow:auto; display:none; position:absolute; width: calc(100% - 1.5rem); left: 0.75rem; z-index: 1001;">
+                            <div class="border rounded mt-1 bg-white shadow-sm" id="education_dropdown-coord" style="max-height:250px; overflow:auto; display:none; position:absolute; width: calc(100% - 1.5rem); left: 0.75rem; z-index: 100001;">
                                 <div class="education-option p-2 border-bottom" data-value="SSLC">SSLC</div>
                                 <div class="education-option p-2 border-bottom" data-value="HSC">HSC</div>
                                 <div class="education-option p-2 border-bottom" data-value="Diploma">Diploma</div>
@@ -419,7 +580,7 @@
                         </div>
 
                         <!-- Profession -->
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="position: relative; z-index: 10;">
                             <?php 
                                 $profession_map = [
                                     "Doctor" => "Doctor", "Lawyer" => "Lawyer", "Police" => "Police", 
@@ -472,8 +633,7 @@
                                     value="<?= esc($display_prof) ?>">
                                 <input type="hidden" id="profession-coord" name="profession-coord" value="<?= esc($coordinator->Profession) ?>">
                             </div>
-                            <div class="border rounded mt-1 bg-white" id="profession_dropdown-coord" 
-                                style="max-height:250px; overflow:auto; display:none; position:absolute; z-index:1001; width: calc(33.33% - 20px);">
+                            <div class="border rounded mt-1 bg-white shadow-sm" id="profession_dropdown-coord" style="max-height:250px; overflow:auto; display:none; position:absolute; width: calc(100% - 1.5rem); left: 0.75rem; z-index: 100001;">
                                 <?php 
                                     foreach($profession_map as $val => $text) {
                                         echo "<div class='profession-option p-2 border-bottom' data-value='$val'>$text</div>";
@@ -495,13 +655,12 @@
                 </div>
             </div>
 
-            <!-- Native Address -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i>Native Address
+                        <i class="bi bi-geo-alt-fill fs-5 me-2"></i>Native Address
                     </h5>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-3" style="display: none;">
                             <label for="states-dropdown-coord">State</label>
                             <select id="states-dropdown-coord" onchange="setDropdowndistrictsCoord(this); validateCoordInput(this)" class="form-select" name="state-coord">
@@ -597,14 +756,13 @@
                 </div>
             </div>
 
-            <!-- Current Address -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="mb-0 section-title">
-                            <i class="fa-solid fa-location-dot text-success me-2"></i>Current Address
+                            <i class="bi bi-geo-alt-fill fs-5 me-2" style="color: #2E7D32;"></i>Current Address
                         </h5>
-                        <button type="button" id="btn_same_as_native-coord" class="btn btn-outline-success btn-sm" onclick="copyNativeAddressCoord()" style="display: <?= ($coordinator->Curaddresstype == 'India') ? 'inline-block' : 'none' ?>;">
+                        <button type="button" id="btn_same_as_native-coord" class="btn-copy-address" onclick="copyNativeAddressCoord()" style="display: <?= ($coordinator->Curaddresstype == 'India' || $coordinator->Curaddresstype == 'TamilNadu' || $coordinator->Curaddresstype == 'OtherState') ? 'inline-block' : 'none' ?>;">
                             Same as Native Address
                         </button>
                     </div>
@@ -740,13 +898,12 @@
                 </div>
             </div>
 
-            <!-- Documents -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-image text-primary me-2"></i>Documents
+                        <i class="bi bi-image fs-5 me-2"></i>Documents
                     </h5>
-                    <div class="row g-3 align-items-end">
+                    <div class="row g-4 align-items-end">
                         <div class="col-md-3 d-flex flex-column">
                             <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Passport Photo</label>
                             <div class="ps-file-upload-wrapper">
@@ -800,9 +957,11 @@
 
             <!-- Submit Section -->
             <div class="text-center pb-5">
-                <div class="form-check d-inline-flex align-items-center mb-3">
-                    <input onchange="activateCoordButton(this)" type="checkbox" class="form-check-input" id="correctdetails-coord">
-                    <label for="correctdetails-coord" class="form-check-label ms-2 font-weight-bold">I confirm that the above details are correct.</label>
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="background: rgba(0,0,0,0.03); padding: 10px 20px; border-radius: 12px;">
+                    <div class="form-check m-0 d-flex align-items-center">
+                        <input onchange="activateCoordButton(this)" type="checkbox" class="form-check-input m-0" id="correctdetails-coord" style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                        <label for="correctdetails-coord" class="form-check-label ms-2 font-weight-bold cursor-pointer" style="font-size: 0.95rem; line-height: 1.25rem;">I confirm that the above details are correct.</label>
+                    </div>
                 </div>
                 <div>
                     <button id="coordsubmitbutton" disabled type="submit" class="btn btn-lg rounded-pill px-5">Update Details</button>
@@ -862,7 +1021,11 @@
                 if (tnBlock) tnBlock.style.display = 'block';
                 if (nriBlock) nriBlock.style.display = 'none';
                 if (curStateContainer) curStateContainer.style.display = 'none';
-                if (sameBtn) sameBtn.style.display = 'inline-block';
+                if (sameBtn) {
+                    sameBtn.disabled = false;
+                    sameBtn.classList.remove('disabled');
+                    sameBtn.style.display = 'inline-block';
+                }
                 if (!isInitial) clearCurrentNriAddressCoord(); 
                 
                 let stateSelect = document.getElementById("cur_state-coord");
@@ -1175,6 +1338,17 @@
             const n_doorno = document.getElementById('doorno-coord');
             const n_pincode = document.getElementById('pincode-coord');
 
+            // Validation: Ensure all native fields have values
+            if (!n_district.value || !n_taluk.value || !n_panchayat.value || !n_village_sel.value || 
+                !n_street.value || !n_doorno.value || !n_pincode.value) {
+                if (typeof psShowToast === 'function') {
+                    psShowToast('error', 'Please fill all native address fields before copying.');
+                } else {
+                    alert('Please fill all native address fields before copying.');
+                }
+                return;
+            }
+
             // Source 'Others' inputs
             const n_taluk_others_input = document.getElementById('taluk_others_input_coord');
             const n_panchayat_others_input = document.getElementById('panchayat_others_input_coord');
@@ -1190,18 +1364,18 @@
             var tnRadio = document.getElementById('cur_address_tn-coord');
             if (tnRadio) {
                 tnRadio.checked = true;
-                toggleCurrentAddressTypeCoord();
+                toggleCurrentAddressTypeCoord(true);
             }
 
-            // Copy simple fields
+            // 2. Set State explicitly to ensure AJAX consistency
+            if (c_state && n_state) {
+                c_state.value = n_state.value;
+            }
             c_street.value = n_street.value;
             c_doorno.value = n_doorno.value;
             c_pincode.value = n_pincode.value;
 
-            // 2. Set State
-            // c_state.value = n_state.value; // Already handled for TN
-
-            // 3. Chain AJAX
+            // 3. Chain AJAX for cascading fields
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
@@ -1231,7 +1405,12 @@
                                     c_panchayat_others_input.value = n_panchayat_others_input.value;
                                 }
                                 setDropdownVillageCurrentCoord(c_panchayat, n_village_sel.value);
-                                setTimeout(() => { if (n_village_sel.value === 'Others') c_village_others_input.value = n_village_others_input.value; }, 100);
+                                setTimeout(() => { 
+                                    if (n_village_sel.value === 'Others') c_village_others_input.value = n_village_others_input.value; 
+                                    psShowToast('success', 'Address copied from native details.');
+                                    const checkbox = document.getElementById("correctdetails-coord");
+                                    if(checkbox) activateCoordButton(checkbox);
+                                }, 100);
                             } else {
                                 $.ajax({
                                     type: "get",
@@ -1246,7 +1425,12 @@
                                             c_panchayat_others_input.value = n_panchayat_others_input.value;
                                         }
                                         setDropdownVillageCurrentCoord(c_panchayat, n_village_sel.value);
-                                        setTimeout(() => { if (n_village_sel.value === 'Others') c_village_others_input.value = n_village_others_input.value; }, 100);
+                                        setTimeout(() => { 
+                                    if (n_village_sel.value === 'Others') c_village_others_input.value = n_village_others_input.value; 
+                                    psShowToast('success', 'Address copied from native details.');
+                                    const checkbox = document.getElementById("correctdetails-coord");
+                                    if(checkbox) activateCoordButton(checkbox);
+                                }, 150);
                                     }
                                 });
                             }
@@ -1368,12 +1552,12 @@
             const isEmailVerified = document.getElementById('is_email_verified-coord').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-coord').value;
             if (f['email-coord'].value !== "" && isEmailVerified === "0") {
-                alert("Please verify your new email address.");
+                psShowToast('warning', 'Please verify your new email address.');
                 f['email-coord'].focus();
                 return false;
             }
             if (f['phoneno-coord'].value !== "" && isPhoneVerified === "0") {
-                alert("Please verify your new phone number.");
+                psShowToast('warning', 'Please verify your new phone number.');
                 f['phoneno-coord'].focus();
                 return false;
             }
@@ -1419,7 +1603,7 @@
                 dataType: "json",
                 success: function(response) {
                     if (response.status === 'success') {
-                        alert(response.message);
+                        psShowToast('success', response.message);
                         otpSection.style.display = 'block';
                         errorElem.textContent = "";
                         btn.style.display = 'none';
@@ -1458,7 +1642,7 @@
                 dataType: "json",
                 success: function(response) {
                     if (response.status === 'success') {
-                        alert(response.message);
+                        psShowToast('success', response.message);
                         statusInput.value = "1";
                         verifyBtn.style.display = 'none';
                         badge.style.display = 'block';
@@ -1498,7 +1682,7 @@
                 },
                 success: function(response) {
                     if (response.trim() === "false") {
-                        alert("Phone number is unique and verified.");
+                        psShowToast('success', 'Phone number is unique and verified.');
                         statusInput.value = "1";
                         verifyBtn.style.display = 'none';
                         badge.style.display = 'block';
@@ -1626,9 +1810,11 @@
                 filterEducationOptionsCoord(document.getElementById("education_input-coord"));
             });
 
-            // Click listener for education options
-            $(document).off('click', '#education_dropdown-coord .education-option').on('click', '#education_dropdown-coord .education-option', function() {
-                const val = $(this).data('value');
+            // Mousedown listener for education options (fires before blur/close)
+            $(document).off('mousedown', '#education_dropdown-coord .education-option').on('mousedown', '#education_dropdown-coord .education-option', function(e) {
+                e.preventDefault(); // Prevent focus loss from input
+                
+                const val = this.getAttribute('data-value');
                 if (val === 'Others') {
                     document.getElementById('education_others_wrapper-coord').style.display = 'block';
                     document.getElementById('education_dropdown-coord').style.display = 'none';
@@ -2018,7 +2204,9 @@
             }
         }
 
-        $(document).on("click", "#profession_dropdown-coord .profession-option", function() {
+        $(document).off("mousedown", "#profession_dropdown-coord .profession-option").on("mousedown", "#profession_dropdown-coord .profession-option", function(e) {
+            e.preventDefault(); // Prevent focus loss
+            
             const value = this.getAttribute("data-value");
             const input = document.getElementById("profession_input-coord");
             const hidden = document.getElementById("profession-coord");

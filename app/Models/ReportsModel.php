@@ -5,12 +5,13 @@ use CodeIgniter\Model;
 
 class ReportsModel extends Model
 {
-    protected $db;
+    protected $encrypter;
 
     public function __construct()
     {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function getTotalreports()
@@ -26,22 +27,52 @@ class ReportsModel extends Model
             $sql .= " OFFSET $counts";
         }
         $query = $this->db->query($sql);
-        return $query->getResultArray();
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getReportswithlimit($counts)
     {
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1 AND MemberRole = 'Head' AND Approvedstatus = 'Verified' LIMIT 10 OFFSET $counts");
-        return $query->getResultArray();
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getReportsSearchfields($searchfields)
     {
-        // Safe binding
-        $sql = "SELECT * FROM kaadaimembers WHERE (Name LIKE ? OR Familymembershipid LIKE ? OR Taluk LIKE ? OR Phonenumber LIKE ? OR Aadharnumber LIKE ? OR Role LIKE ?) AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
-        $like = "%$searchfields%";
-        $query = $this->db->query($sql, [$like, $like, $like, $like, $like, $like]);
-        return $query->getResultArray();
+        // Fix search logic for Aadhar
+        if (preg_match('/^[0-9]{12}$/', $searchfields)) {
+            $sql = "SELECT * FROM kaadaimembers WHERE (Aadhar_hash = ?) AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
+            $query = $this->db->query($sql, [hash('sha256', $searchfields)]);
+        } else {
+            $sql = "SELECT * FROM kaadaimembers WHERE (Name LIKE ? OR Familymembershipid LIKE ? OR Taluk LIKE ? OR Phonenumber LIKE ? OR Role LIKE ? OR District LIKE ?) AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
+            $like = "%$searchfields%";
+            $query = $this->db->query($sql, [$like, $like, $like, $like, $like, $like]);
+        }
+        
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getReportdata($id)
@@ -84,7 +115,7 @@ class ReportsModel extends Model
     public function getMembersHistory($eventid, $status)
     {
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
         $escapedEventId = (int)$eventid;
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
@@ -99,7 +130,16 @@ class ReportsModel extends Model
         $builder->where('km.Approvedstatus', 'Verified');
         $builder->groupBy('km.Familymembershipid');
         $builder->limit(10);
-        return $builder->get()->getResultArray();
+        
+        $results = $builder->get()->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getTotalmembershistory($eventid, $status)
@@ -124,7 +164,7 @@ class ReportsModel extends Model
     
     public function getFilteredeventreports($eventname, $status, $counts) {
          $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
          $escapedEventId = (int)$eventname;
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
@@ -139,19 +179,26 @@ class ReportsModel extends Model
          $builder->where('km.Approvedstatus', 'Verified');
          $builder->groupBy('km.Familymembershipid');
          $builder->limit(10, $counts); // limit 10 offset $counts
-         return $builder->get()->getResultArray();
+         
+         $results = $builder->get()->getResultArray();
+         foreach ($results as &$row) {
+             if (!empty($row['Aadharnumber'])) {
+                 try {
+                     $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                 } catch (\Exception $e) {}
+             }
+         }
+         return $results;
     }
     
     public function getFilFteredeventreports($eventname, $status, $counts) {
         // Typo in method name in Controller line 354: getFilFteredeventreports
-        // I should stick to that name or fix it.
-        // I'll implement it to match.
         return $this->getFilteredeventreports($eventname, $status, $counts);
     }
     
     public function getFilteredReportsSearchfields($searchfields, $eventname, $status) {
          $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
+         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
          $escapedEventId = (int)$eventname;
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
          
@@ -172,11 +219,19 @@ class ReportsModel extends Model
          $builder->where('km.isShow', 1);
          $builder->where('km.Approvedstatus', 'Verified');
          $builder->groupBy('km.Familymembershipid');
-         return $builder->get()->getResultArray();
+         
+         $results = $builder->get()->getResultArray();
+         foreach ($results as &$row) {
+             if (!empty($row['Aadharnumber'])) {
+                 try {
+                     $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                 } catch (\Exception $e) {}
+             }
+         }
+         return $results;
     }
     
     public function getEventreportcount($eventname, $status) {
-        // Controller line 182 calls this.
         return count($this->getTotalmembershistory($eventname, $status));
     }
 
@@ -187,12 +242,11 @@ class ReportsModel extends Model
         }
         $escapedEventId = (int)$eventid;
         
-        // Fetch event details for default tax amount
         $event = $this->db->table('eventlist')->where('Id', $escapedEventId)->get()->getRow();
         $defaultTax = $event ? $event->TaxAmount : 0;
         
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Taluk, km.Panchayat, km.Village, 
+        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.Taluk, km.Panchayat, km.Village, 
             COALESCE(MAX(pr.Taxamount), $defaultTax) AS EventMoney, 
             COALESCE(SUM(pr.paidamount), 0) AS PaidCash, 
             COALESCE(MIN(pr.balanceamount), $defaultTax) AS Pending, 
@@ -219,7 +273,16 @@ class ReportsModel extends Model
         $builder->where('km.isShow', 1);
         $builder->where('km.Approvedstatus', 'Verified');
         $builder->groupBy('km.Familymembershipid');
-        return $builder->get()->getResultArray();
+        
+        $results = $builder->get()->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getFilteredMembersForDownload($searchfields)
@@ -263,23 +326,43 @@ class ReportsModel extends Model
             }
         }
 
-        if (session()->get('role') == 2) {
-            $coord_id = session()->get("Kaadaisoft_userId");
-            $builder->groupStart()
-                    ->where('Coordinator_id', $coord_id)
-                    ->orWhere('Coordinator_Two_id', $coord_id)
-                    ->groupEnd();
+        if (is_array($searchfields) && !empty($searchfields['search'])) {
+            $term = $searchfields['search'];
+            if (preg_match('/^[0-9]{12}$/', $term)) {
+                $builder->orWhere('Aadhar_hash', hash('sha256', $term));
+            }
         }
 
-        return $builder->get()->getResultArray();
+        $results = $builder->get()->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
     
     public function getMemberById($id) {
-         return $this->db->table('kaadaimembers')->where('Familymembershipid', $id)->get()->getRowArray();
+         $member = $this->db->table('kaadaimembers')->where('Familymembershipid', $id)->get()->getRowArray();
+         if ($member && !empty($member['Aadharnumber'])) {
+             try {
+                 $member['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($member['Aadharnumber']));
+             } catch (\Exception $e) {}
+         }
+         return $member;
     }
     
     public function getAllMembers() {
-         return $this->db->table('kaadaimembers')->where('isShow', 1)->get()->getResultArray();
+         $results = $this->db->table('kaadaimembers')->where('isShow', 1)->get()->getResultArray();
+         foreach ($results as &$row) {
+             if (!empty($row['Aadharnumber'])) {
+                 try {
+                     $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                 } catch (\Exception $e) {}
+             }
+         }
+         return $results;
     }
 }
-?>

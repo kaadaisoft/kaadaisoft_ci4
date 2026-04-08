@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports</title>
+  <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -235,7 +236,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       border: 1px solid #e2e8f0;
-      overflow: hidden;
+      overflow-x: auto;
       margin-bottom: 2rem;
     }
     .custom-table-modern {
@@ -328,8 +329,10 @@
 </head>
 
 <body>
+  <?= view('notification_toast') ?>
 
   <div class="container-fluid layout-container p-0">
+
 
     <div class="top-navbar-row"><!-----top-bar--------------->
 
@@ -350,14 +353,10 @@
         <!-----------main-dashboard------------------------->
         <div class="container-fluid">
           <br>
-          <span class="text-secondary h3"> Report Status Filter:
-            <?php if (session()->has('validationmessage')) {
-              $validationmessage = session()->get('validationmessage');
-              echo "<div id='alertContainer' class='alert alert-danger alert-dismissible fade show h6 fw-normal text-danger '>$validationmessage</div>";
-              session()->remove('validationmessage');
-            } ?>
-          </span>
-          <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off">
+          <span class="text-secondary h3"> Report Status Filter:</span>
+
+          <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off" onsubmit="return validateReportsForm()">
+
             <div class="row filter-card-premium"><!----------filter-start------------>
 
               <div id="showyear" class="col-md-3 mb-3"><!-----year-search--------->
@@ -529,7 +528,20 @@
 
 
   <script>
+  function validateReportsForm() {
+    const year = document.getElementById('eventyear').value;
+    const event = document.getElementById('eventid').value;
+    const status = document.querySelector('input[name="paymentstatus"]:checked');
+
+    if (!year || !event || !status) {
+      psShowAlert('warning', 'Selection Required', 'All fields are required. Please select a year, event, and payment status.');
+      return false;
+    }
+    return true;
+  }
+
   function updateHeights() {
+
       let c = window.innerHeight;
       let topBarElement = document.getElementById("search-bar");
       let d = topBarElement ? topBarElement.getBoundingClientRect().height : 0;
@@ -543,6 +555,23 @@
   
   // Also run it immediately if possible
   updateHeights();
+
+  function highlightActiveMenu() {
+    const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+    document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+      link.classList.remove('active-menu-item');
+      const linkPage = link.getAttribute('data-page');
+      
+      let isMatch = pathSegments.some(seg => seg === linkPage);
+      if (linkPage === 'reports' && pathSegments.some(seg => seg.toLowerCase().includes('report'))) {
+          isMatch = true;
+      }
+      
+      if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+        link.classList.add('active-menu-item');
+      }
+    });
+  }
 
   // Mobile Menu Functions
   function openMobileMenu() {
@@ -560,6 +589,7 @@
     success: (result) => {
       document.getElementById("menu-bar").innerHTML = result;
       document.getElementById("mobile-menu-content").innerHTML = result;
+      highlightActiveMenu();
     },
     error: (error) => {
       console.error('Error loading sidemenu:', error);

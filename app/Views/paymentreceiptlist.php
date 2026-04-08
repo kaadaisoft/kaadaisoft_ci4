@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaymentReceiptList</title>
     <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -345,11 +348,30 @@
     </div>
 
     <!-- Hidden Area for off-screen High-Quality PDF capture (Perfect Tamil) -->
-    <div id="captureArea" style="position: absolute; left: -9999px; width: 800px; padding: 20px; background: white;"></div>
+    <div id="captureArea" class="no-print" style="position: absolute; left: -9999px; width: 800px; padding: 20px; background: white;"></div>
+
 
     <script>
+        // Highlight active sidebar menu item after AJAX load
+        function highlightActiveMenu() {
+          const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+          document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+            link.classList.remove('active-menu-item');
+            const linkPage = link.getAttribute('data-page');
+            
+            let isMatch = pathSegments.some(seg => seg === linkPage);
+            if ((linkPage === 'paymentpage' || linkPage === 'payment-receipt-list') && pathSegments.includes('payment-receipt-list')) {
+                isMatch = true;
+            }
+            
+            if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+              link.classList.add('active-menu-item');
+            }
+          });
+        }
+
         // Load side menu, top menu, and logo
-        $.ajax({ url: "<?= base_url('dashboard/sidemenu') ?>", success: (r) => { document.getElementById("menu-bar").innerHTML = r; } });
+        $.ajax({ url: "<?= base_url('dashboard/sidemenu') ?>", success: (r) => { document.getElementById("menu-bar").innerHTML = r; highlightActiveMenu(); } });
         $.ajax({ url: "<?= base_url('dashboard/topmenu') ?>", success: (r) => { document.getElementById("search-bar").innerHTML = r; } });
         $.ajax({ url: "<?= base_url('dashboard/pslogo') ?>", success: (r) => { document.getElementById("ps-logo").innerHTML = r; } });
 
@@ -375,7 +397,7 @@
 
         function downloadReceipt(url, receiptId){
             // If the modal is open and current content matches the requested receipt, capture from modal
-            const modalContent = document.querySelector('#receiptModalBody .container-fluid');
+            const modalContent = document.getElementById('printable-receipt');
             const isModalOpen = $('#receiptModal').is(':visible');
             const isLoaded = $('#modalDownloadBtn').prop('disabled') === false;
 
@@ -384,7 +406,6 @@
                 captureAndSave(modalContent, receiptId);
             } else {
                 // SILENT DOWNLOAD - Render off-screen and save
-                // This happens when clicking the DOWNLOAD (Arrow) icon in the list
                 const captureArea = document.getElementById('captureArea');
                 captureArea.innerHTML = '<div style="text-align:center; padding:50px;">Generating PDF...</div>';
                 
@@ -395,7 +416,7 @@
                         captureArea.innerHTML = result;
                         // Wait for fonts/images
                         setTimeout(() => {
-                            const element = captureArea.querySelector('.container-fluid');
+                            const element = captureArea.querySelector('#printable-receipt');
                             if(element) {
                                 captureAndSave(element, receiptId, true);
                             }
@@ -423,38 +444,11 @@
         }
 
         function printReceiptFromModal() {
-            let divContents = document.getElementById("printreceipt") ? document.getElementById("printreceipt").innerHTML : '';
-            let receiptId = document.getElementById("receipt_id_val") ? document.getElementById("receipt_id_val").innerText : 'சீட்டு எண் : -';
-            let paymentDate = document.getElementById("receipt_date_val") ? document.getElementById("receipt_date_val").innerText : 'தேதி : -';
-            
-            let printWindow = window.open('', '', 'height=1000, width=1000');
-            printWindow.document.open();
-            
-            let htmlContent = "<html><head><title>Print Receipt</title>" +
-                "<style>" +
-                "body { font-family: sans-serif; padding: 20px; }" +
-                ".heading-kaadaisoft { color: #007bff; font-weight: 800; font-size: 32px; text-align: center; }" +
-                ".receipt-title { font-weight: bold; font-size: 18px; text-align: center; margin-bottom: 20px; }" +
-                "table { width: 100%; border-collapse: collapse; border: 2px solid grey; border-radius: 15px; padding: 20px; }" +
-                "td { padding: 10px; }" +
-                "</style></head><" + "body>" +
-                "<table>" +
-                "<tr><td colspan='3' style='text-align:center;'><div class='heading-kaadaisoft'>Poondurai Kadai Kulam</div><div class='receipt-title'>Receipt</div></td></tr>" +
-                "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td></td><td style='font-weight:bold; text-align: right;'>" + receiptId + "</td></tr>" +
-                "<tr><td style='font-weight:bold;'>" + paymentDate + "</td></tr>" +
-                divContents +
-                "</table></" + "body></" + "html>";
-
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
+            window.print();
         }
+
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -804,6 +804,24 @@
       document.getElementById('custom-mobile-menu').style.display = 'none';
     }
 
+    // Highlight active sidebar menu item after AJAX load
+    function highlightActiveMenu() {
+      const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+      document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+        link.classList.remove('active-menu-item');
+        const linkPage = link.getAttribute('data-page');
+        
+        let isMatch = pathSegments.some(seg => seg === linkPage);
+        if ((linkPage === 'paymentpage' || linkPage === 'payment-receipt-list') && pathSegments.includes('get-filtered-users')) {
+            isMatch = true;
+        }
+
+        if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+          link.classList.add('active-menu-item');
+        }
+      });
+    }
+
     $.ajax({
       type: "get",
       url: "payments/sidemenu",
@@ -811,6 +829,7 @@
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
         document.getElementById("mobile-menu-content").innerHTML = result;
+        highlightActiveMenu();
       },
       error: (error) => {
         document.getElementById("menu-bar").innerHTML = error;

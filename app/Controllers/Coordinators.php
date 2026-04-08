@@ -437,7 +437,7 @@ class Coordinators extends BaseController{
                 if($file && $file->isValid() && !$file->hasMoved()){
                     $newName = str_replace(' ','-',$data['Name'].$trimaadhar.$trimphoneno.$imagenames[$i].time().".".$file->getExtension());
                     try {
-                         $file->move('assets/membersdocuments/', $newName);
+                         $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                          $images["$imagenames[$i]"] = $newName;
                     } catch (\Exception $e) {
                          // handle error

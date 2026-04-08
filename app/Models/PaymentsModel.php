@@ -5,11 +5,12 @@ use CodeIgniter\Model;
 
 class PaymentsModel extends Model
 {
-    protected $db;
+    protected $encrypter;
 
     public function __construct() {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function getMembersdetails($counts)
@@ -18,10 +19,19 @@ class PaymentsModel extends Model
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
             $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
-            return $query->getResultArray();
+        } else {
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Role = 3 OR Role = 2) AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' LIMIT 10 OFFSET $counts");
-        return $query->getResultArray();
+        
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function get_member_collected($eventid, $familyid)
@@ -53,15 +63,34 @@ class PaymentsModel extends Model
             $role_filter = "Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND MemberRole = 'Head' AND isShow = 1 AND Approvedstatus = 'Verified'";
         }
 
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE ($role_filter) AND (Name LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Taluk LIKE '%$searchfields%' OR Aadharnumber LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%')");
-        return $query->getResultArray();
+        if (preg_match('/^[0-9]{12}$/', $searchfields)) {
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE ($role_filter) AND (Aadhar_hash = ?)", [hash('sha256', $searchfields)]);
+        } else {
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE ($role_filter) AND (Name LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Taluk LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR District LIKE '%$searchfields%')");
+        }
+
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getMemberforPayment($memberid)
     {
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$memberid'");
         if ($query) {
-            return $query->getRow();
+            $row = $query->getRow();
+            if ($row && !empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+            return $row;
         } else {
             return false;
         }
@@ -173,6 +202,7 @@ class PaymentsModel extends Model
             pr.paidamount, 
             km.Phonenumber AS Mobile, 
             km.Taluk AS MemberTaluk, 
+            km.Aadharnumber,
             pr.eventid, 
             pr.eventname, 
             pr.balanceamount
@@ -224,8 +254,15 @@ class PaymentsModel extends Model
     
         $builder->limit(10, $count);
     
-        $query = $builder->get();
-        return $query->getResultArray();
+        $results = $builder->get()->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
     
     public function getPaidorunpaidusers($eventid = null, $status = null, $stateid = null, $districtname = null, $talukname = null, $panchayatname = null, $villagename = null)
@@ -353,7 +390,13 @@ class PaymentsModel extends Model
     public function getMember($userid)
     {
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$userid'");
-        return $query->getRow();
+        $row = $query->getRow();
+        if ($row && !empty($row->Aadharnumber)) {
+            try {
+                $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+            } catch (\Exception $e) {}
+        }
+        return $row;
     }
 
     public function getReceiptdetail($userid, $dues, $eventid)
@@ -376,8 +419,14 @@ class PaymentsModel extends Model
 
     public function getCoordinatordata($coord_id)
     {
-        $query = $this->db->query("SELECT kaadaimembers.Familymembershipid,kaadaimembers.State,village_table.* FROM kaadaimembers LEFT JOIN village_table ON (kaadaimembers.Familymembershipid = village_table.Coordinator_id OR kaadaimembers.Familymembershipid = village_table.Coordinator_Two_id) WHERE kaadaimembers.Familymembershipid = '$coord_id' AND kaadaimembers.isShow = 1");
-        return $query->getRow();
+        $query = $this->db->query("SELECT kaadaimembers.Familymembershipid,kaadaimembers.Aadharnumber,kaadaimembers.State,village_table.* FROM kaadaimembers LEFT JOIN village_table ON (kaadaimembers.Familymembershipid = village_table.Coordinator_id OR kaadaimembers.Familymembershipid = village_table.Coordinator_Two_id) WHERE kaadaimembers.Familymembershipid = '$coord_id' AND kaadaimembers.isShow = 1");
+        $row = $query->getRow();
+        if ($row && !empty($row->Aadharnumber)) {
+            try {
+                $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+            } catch (\Exception $e) {}
+        }
+        return $row;
     }
 
     public function getCoordinatorTaluks($coord_id)

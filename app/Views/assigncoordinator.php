@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <?= view('notification_toast') ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign coordinators</title>
@@ -391,6 +392,36 @@
           .layout-container { height: auto; }
           #ps-logo, #search-bar { width: 100% !important; }
       }
+
+      .removetaluk {
+        display: inline-flex;
+        align-items: center;
+        background-color: #f1f3f9;
+        color: #334155;
+        font-weight: 500;
+        font-size: 14px;
+        white-space: nowrap;
+        margin: 2px;
+        padding: 4px 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 20px !important;
+        transition: all 0.2s;
+      }
+      .removetaluk:hover {
+        background-color: #e2e8f0;
+      }
+      .remove-btn {
+        width: 0.6em !important;
+        height: 0.6em !important;
+        margin-left: 8px;
+        padding: 0 !important;
+      }
+      #choosetaluks, #choosetaluksforremove {
+        border-radius: 8px !important;
+        min-height: 42px !important;
+        background-color: #fbfcfe;
+        border-color: #d1d5db !important;
+      }
     </style>
 </head>
 <body>
@@ -497,12 +528,12 @@
             </label>
             </div><!------------panchayat-choose-end----------->
 
-           <div id="localareas" class="col-md-3"><!------------select-villages----------->
+           <div id="localareas" class="col-md-9"><!------------select-villages----------->
             <label class="container-fluid position-relative" for="aadhar">Villages:<br>
             <div id="choosetaluks" style="min-height:40px;max-height:100px;overflow:auto;gap:5px;" class="border d-flex flex-wrap justify-content-start p-2">
 
             </div>
-            <div id="selectedtalukerror" style="color:red;"></div>
+
              <div id="displaytaluks" style="display:none;z-index:1000;max-height:200px;overflow-y:auto;min-width:250px;" class="bg-white container-fluid border rounded position-absolute" name="taluks">
             <ul id='talukslist' class='list-unstyled'></ul>
             </div>
@@ -571,13 +602,13 @@
             </label>
             </div><!------------panchayat-choose-end----------->
 
-           <div id="localareasremove" class="col-md-3"><!------------select-villages----------->
+           <div id="localareasremove" class="col-md-9"><!------------select-villages----------->
            <label class="container-fluid position-relative" for="villagesforremove">Villages:<br>
            <input hidden type="text" name="taluksforremove" class="border w-100" id="taluksarrayforremove">
             <div id="choosetaluksforremove" style="min-height:40px;max-height:100px;overflow:auto;gap:5px;" class="border d-flex flex-wrap justify-content-start p-2">
 
             </div>
-            <div id="selectedvillageerrorremove" style="color:red;"></div>
+
              <div id="displaytaluksforremove" style="display:none;z-index:1000;max-height:200px;overflow-y:auto;min-width:250px;" class="bg-white container-fluid border rounded position-absolute" name="taluks">
             <ul id='talukslistforremove' class='list-unstyled'></ul>
             </div>
@@ -688,7 +719,7 @@
             <h4 style="color: #dc3545;"><i class="fa-solid fa-trash-alt me-2"></i>Remove Village</h4>
          </div>
          <div class="assign-card-body">
-         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off" onsubmit="return confirm('Are you sure you want to delete this village? This action cannot be undone.');">
+         <form id="removevillageform" action="<?=base_url("AdminDashboard/removeVillage")?>" method="post" class="row assigncoordfilter" Autocomplete="off">
          
          <div class="col-md-3" style="display: none;"><!------------state-choose------------>
            <label class="container-fluid" for="stateiddelete">State:<br>
@@ -736,7 +767,9 @@
            </select>
             </label>
             </div>     <!------------village-choose-end----------->
-            <div class="col-md-3 mb-3 d-flex align-items-end"><button type="submit" class="btn btn-danger text-white w-100">Remove Village</button></div>
+            <div class="col-md-3 mb-3 d-flex align-items-end">
+                <button type="button" class="btn btn-danger text-white w-100" onclick="handleRemoveVillageSubmit()">Remove Village</button>
+            </div>
            </form>
           </div>
          </div>
@@ -834,6 +867,25 @@ function closeMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'none';
 }
 
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    
+    let isMatch = pathSegments.some(seg => seg === linkPage);
+    // Explicitly match "coordinators" menu when on "assigncoordinator" page
+    if (linkPage === 'coordinators' && pathSegments.includes('assigncoordinator')) {
+        isMatch = true;
+    }
+    
+    if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
       $.ajax({
       type:"get",
       url:"<?= base_url('members/sidemenu') ?>",
@@ -841,6 +893,7 @@ function closeMobileMenu() {
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
@@ -1000,7 +1053,7 @@ function closeMobileMenu() {
                     target[i].style.display = "none";
                   }
                 }
-               document.getElementById("selectedtalukerror").innerHTML = "";
+               // document.getElementById("selectedtalukerror").innerHTML = ""; // Removed as element does not exist
                showTaluks(selectedtaluks);
                }
                else{
@@ -1176,7 +1229,7 @@ function closeMobileMenu() {
                 "district": villageData.district_name
             },
             success: function(result) {
-                if(result) {
+                if(result.trim() === "success") {
                     psShowToast("success", `Removed from ${villageData.village_name} successfully.`);
                     getCoordinatorStatus(); // Refresh the list
                 } else {
@@ -1208,11 +1261,12 @@ function closeMobileMenu() {
     function validateAssigncoordinator() {
       let taluk_count = selectedtaluks.length;
       if(taluk_count == 0){
-        document.getElementById("selectedtalukerror").innerHTML = "Choose atleast one village.";
+        psShowAlert("warning", "Selection Required", "Please select at least one village.");
         return false;
       }
       return true;
     }
+
 
     function getDistrictsforremove(state){
       let stateid = state.value;
@@ -1343,9 +1397,10 @@ function closeMobileMenu() {
              let villages = JSON.stringify(selectedtaluksforremove);
              
              if(!coordid || selectedtaluksforremove.length === 0) {
-                 psShowToast("warning", "Please select a coordinator and at least one village.");
+                 psShowAlert("warning", "Selection Required", "Please select a coordinator and at least one village.");
                  return;
              }
+
 
              document.getElementById("reassign-confirm-alert").innerHTML = `<p>Are you sure you want to reassign <span class="text-success">${coordname}</span> as coordinator for the selected village(s)? <br><b>Note:</b> They will be removed from all their current assignments.</p>
              <div><button class='btn btn-success' data-bs-dismiss="modal" onclick='processFullReassignment("${coordid}")'>Confirm Reassign</button>&nbsp;&nbsp;<button class='btn btn-danger' data-bs-dismiss="modal">Cancel</button></div>`;
@@ -1395,7 +1450,7 @@ function closeMobileMenu() {
       },
       success: function(result) {
         let reassign_table = document.getElementById(id);
-        if(result) {
+        if(result.trim() === "success") {
           reassign_table.innerHTML += `&nbsp;<span class='text-success fw-bold rounded'>Successfully removed.</span>`; 
         }
         else{
@@ -1413,6 +1468,20 @@ function closeMobileMenu() {
 
   function pageRefresh() {
     window.location.reload();
+  }
+
+  function handleRemoveVillageSubmit() {
+    const village = document.getElementById('villageiddelete').value;
+    if(!village) {
+        psShowToast("warning", "Please select a village to remove.");
+        return;
+    }
+    psConfirm(
+        'Are you sure you want to delete this village? This action cannot be undone.', 
+        () => document.getElementById('removevillageform').submit(), 
+        'Delete Village', 
+        'danger'
+    );
   }
 
   // Handle outside clicks to close lists

@@ -813,6 +813,25 @@ unset($_SESSION["altermembersindex"]);
 let pageheight = window.innerHeight;
 // document.getElementById("pageheight").style.height = pageheight+"px";
 
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    
+    let isMatch = pathSegments.some(seg => seg === linkPage);
+    // Explicitly match "members" menu when on "view-under-members" page
+    if (linkPage === 'members' && pathSegments.includes('view-under-members')) {
+        isMatch = true;
+    }
+    
+    if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
 // Mobile Menu Functions
     function openMobileMenu() {
       document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -829,6 +848,7 @@ let pageheight = window.innerHeight;
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
         document.getElementById("mobile-menu-content").innerHTML = result;
+        highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
@@ -1159,7 +1179,11 @@ function setDropdownpanchayat(taluk){
                 <div class="row align-items-center bg-light rounded shadow-sm py-4 border">
                     <div class="col-md-4 text-center mb-4 mb-md-0 border-end">
                         <div class="position-relative d-inline-block">
-                            <img class="img-fluid rounded-circle mb-2 shadow-sm bg-white p-1" style="width:160px;height:160px;object-fit:cover;" src="assets/membersdocuments/${member_data.Memberimage}" alt="Member Image" onerror="this.onerror=null; this.src=''; this.alt='Member Image';">
+                            <?php 
+                                $default_profile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"; 
+                                $safe_default_profile = str_replace("'", "%27", $default_profile);
+                            ?>
+                            <img class="img-fluid rounded-circle mb-2 shadow-sm bg-white p-1" style="width:160px;height:160px;object-fit:cover;" src="${member_data.Memberimage ? '<?= base_url('documents/view/') ?>' + member_data.Memberimage : "<?= $default_profile ?>"}" alt="Member Image" onerror="this.onerror=null; this.src='<?= $safe_default_profile ?>'">
                         </div>
                         <div class="d-flex flex-column gap-3 mt-4 px-xl-4 pb-2">
                             <button data-bs-toggle="modal" data-bs-target="#showmembersdocuments" class="btn btn-outline-primary fw-bold py-2 rounded bg-white shadow-sm" onclick="viewMemberdocuments('${member_data.Aadharfrontimage}','${member_data.Aadharbackimage}','${member_data.Communitycertificate}')">
@@ -1228,22 +1252,22 @@ function setDropdownpanchayat(taluk){
          <div class="d-flex flex-wrap justify-content-center gap-4 py-3">
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Aadhar Front Image:</p>
-                 <a href="assets/membersdocuments/${aadharfrontimage}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharfrontimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${aadharfrontimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${aadharfrontimage}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
              
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Aadhar Back Image:</p>
-                 <a href="assets/membersdocuments/${aadharbackimage}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${aadharbackimage}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${aadharbackimage}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${aadharbackimage}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
              
              <div class="text-center">
                  <p class="fw-bold text-secondary mb-2">Community Certificate:</p>
-                 <a href="assets/membersdocuments/${communitycertificate}" target="_blank">
-                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="assets/membersdocuments/${communitycertificate}" onerror="this.src=''; this.alt='Image Not Found';">
+                 <a href="<?= base_url('documents/view/') ?>${communitycertificate}" target="_blank">
+                     <img class="img-thumbnail shadow-sm border" style="width:300px; height:200px; object-fit:cover;" src="<?= base_url('documents/view/') ?>${communitycertificate}" onerror="this.src=''; this.alt='Image Not Found';">
                  </a>
              </div>
          </div>`;

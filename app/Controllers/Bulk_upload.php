@@ -15,11 +15,13 @@ class Bulk_upload extends BaseController {
     protected $bulk_upload_model;
     protected $session;
     protected $db;
+    protected $encrypter;
 
     public function __construct() {
         $this->bulk_upload_model = new Bulk_upload_model();
         $this->session = session();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function index() {
@@ -302,6 +304,9 @@ class Bulk_upload extends BaseController {
                  $coordid_two = null; 
             }
 
+            $aadhar_hash = hash('sha256', $aadharnumber);
+            $encrypted_aadhar = base64_encode($this->encrypter->encrypt($aadharnumber));
+
             $data[] = array(
                 'Familymembershipid' => $familyMembershipId,
                 'MemberRole' => 'Head', 
@@ -315,9 +320,11 @@ class Bulk_upload extends BaseController {
                 'Doornumber' => $doornumber,
                 'Pincode' => $pincode,
                 'Phonenumber' => $processed_phone,
-                'Aadharnumber' => $aadharnumber,
+                'Aadharnumber' => $encrypted_aadhar,
+                'Aadhar_hash' => $aadhar_hash,
                 'Approvedstatus' => $approvedstatus,
                 'state_id' => $state_id,
+                'Kulam' => 'Poondurai Kaadai',
                 'Coordinator_id' => $coordid,
                 'Coordinator_Two_id' => $coordid_two,
                 'Password' => $hashed_password
