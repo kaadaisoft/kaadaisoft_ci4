@@ -284,6 +284,34 @@
             margin-bottom: 1.5rem !important;
         }
 
+        .btn-copy-address {
+            background-color: transparent;
+            border: 1px solid var(--primary-brown);
+            color: var(--primary-brown);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-address:hover:not(:disabled):not(.disabled) {
+            background-color: var(--primary-brown);
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 27, 24, 0.15);
+        }
+
+        .btn-copy-address.disabled, .btn-copy-address:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #888;
+        }
+
 
 </head>
 

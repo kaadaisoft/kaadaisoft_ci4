@@ -212,13 +212,13 @@ class Loginpage extends BaseController {
         $email->setSubject('Password Reset OTP - Poondurai Kaadai Kulam');
         $email->setMailType('html');
         
-        $imagePath = FCPATH . 'assets/email_logo.png';
+        $imagePath = FCPATH . 'assets/logo_small.png';
         if (file_exists($imagePath)) {
             $email->attach($imagePath, 'inline');
             $cid = $email->setAttachmentCID($imagePath);
             $logoUrl = 'cid:' . $cid;
         } else {
-            $logoUrl = base_url('assets/email_logo.png');
+            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
         }
 
         $emailData = [

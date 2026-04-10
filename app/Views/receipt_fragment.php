@@ -62,13 +62,18 @@
             </tr>
             
             <tr class="receipt-total-row">
-                <td class="receipt-label receipt-total-label">செலுத்தியது / Paid</td>
+                <td class="receipt-label receipt-total-label">தற்போதைய கட்டணம் / Current Paid</td>
                 <td class="receipt-value receipt-total-value">₹<?= number_format($receipt->paidamount, 2) ?></td>
             </tr>
 
             <tr>
+                <td class="receipt-label">மொத்தமாக செலுத்தியது / Total Collected</td>
+                <td class="receipt-value">₹<?= number_format($receipt->Collectedamount, 2) ?></td>
+            </tr>
+
+            <tr>
                 <td class="receipt-label">இருப்பு தொகை / Balance</td>
-                <td class="receipt-value text-danger">₹<?= number_format($receipt->balanceamount, 2) ?></td>
+                <td class="receipt-value <?= $receipt->balanceamount == 0 ? 'text-success' : 'text-danger' ?>">₹<?= number_format($receipt->balanceamount, 2) ?></td>
             </tr>
             
             <tr>

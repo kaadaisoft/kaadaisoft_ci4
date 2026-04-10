@@ -911,7 +911,8 @@
         let rows_html = '';
         let total_pending = 0;
 
-        data.forEach(function(participation) {
+        // Calculate total pending first
+        data.forEach(participation => {
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
             if (pending > 0) total_pending += pending;
@@ -930,19 +931,23 @@
         if (currentPendingPage < 1) currentPendingPage = 1;
 
         let startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
-        let endIndex = startIndex + pendingItemsPerPage;
-        let paginatedItems = data.slice(startIndex, endIndex);
+        let paginatedItems = data.slice(startIndex, startIndex + pendingItemsPerPage);
 
         paginatedItems.forEach(function(participation, index) {
-            let originalIndex = data.indexOf(participation);
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
-            let pending_display = (pending === 0) ? "0" : pending;
+            
+            let status_badge = "";
+            if (pending <= 0) {
+                status_badge = `<span class="badge bg-success-soft text-success border border-success ms-2" style="font-size: 0.65rem; background-color: #f0fdf4;">PAID</span>`;
+                pending = 0;
+            }
+
             rows_html += `<tr onclick="handleRowClick('${participation.Id}')" style="cursor: pointer;">
                 <td>${startIndex + index + 1}</td>
-                <td>${participation.eventname}</td>
+                <td>${participation.eventname}${status_badge}</td>
                 <td>${participation.Taxamount}</td>
-                <td>${pending_display}</td>
+                <td class="${pending === 0 ? 'text-success' : 'text-danger'}">${pending}</td>
             </tr>`;
         });
 

@@ -359,27 +359,26 @@ class PaymentsModel extends Model
         return $query->getResultArray();
     }
 
-    public function saveTaxreport($eventid, $eventname, $fromdate, $todate, $taxamount, $year, $memberid, $membermobile, $membertaluk, $name, $paymenttype, $paidamount, $bankname, $transactionid, $banknameforcheckque, $checkqueno, $upitranscationid, $cashtype, $balanceamount, $paymentdate, $wheretopay, $receivedby = null, $other_bank_name = null)
+    public function saveTaxreport($eventid, $eventname, $fromdate, $todate, $taxamount, $year, $memberid, $membermobile, $membertaluk, $name, $paymenttype, $paidamount, $bankname, $transactionid, $banknameforcheckque, $checkqueno, $upitranscationid, $cashtype, $client_balanceamount, $paymentdate, $wheretopay, $receivedby = null, $other_bank_name = null)
     {
-
         $duecount = $this->db->query("SELECT count(Familymembershipid) AS dues FROM paymentreceipts WHERE eventid = $eventid AND Familymembershipid = '$memberid'");
-
-        $currentdue = "";
-        // $receiptdate = date("Y-m-d");
-        $collectedamount = $taxamount - $balanceamount;
         $due = $duecount->getRow();
         $getdue = $due->dues;
         $currentdue = (int) $getdue + 1;
-        $status = "";
-        if ($balanceamount == 0) {
-            $status = "Paid";
-        } else {
-            $status = "Pending";
-        }
+
+        // Calculate actual balance on server-side to prevent client-side manipulation or errors
+        $already_collected = $this->get_member_collected($eventid, $memberid);
+        $total_after_this_payment = $already_collected + $paidamount;
+        $balanceamount = max(0, $taxamount - $total_after_this_payment);
+        
+        $collectedamount = $total_after_this_payment;
+        
+        $status = ($balanceamount == 0) ? "Paid" : "Pending";
 
         $updatereport = $this->db->query("UPDATE paymentreceipts SET status = null WHERE Familymembershipid = '$memberid' AND eventid = $eventid AND status = 'Pending'");
 
-        $savereceipt = $this->db->query("INSERT INTO paymentreceipts (eventid,eventname,fromdate,todate,year,Familymembershipid,Membername,Mobile,MemberTaluk,Taxamount,paymentdate,dues,paidamount,Collectedamount,balanceamount,paymenttype,bankname,transactionid,banknameforcheckque,checkqueno,upitransactionid,wheretopay,status,receivedby,other_bank_name) VALUES($eventid,'$eventname','$fromdate','$todate',$year,'$memberid','$name',$membermobile,'$membertaluk',$taxamount,'$paymentdate',$currentdue,$paidamount,$collectedamount,$balanceamount,'$paymenttype','$bankname','$transactionid','$banknameforcheckque','$checkqueno','$upitranscationid','$wheretopay','$status','$receivedby','$other_bank_name')");
+        $savereceipt = $this->db->query("INSERT INTO paymentreceipts (eventid,eventname,fromdate,todate,year,Familymembershipid,Membername,Mobile,MemberTaluk,Taxamount,paymentdate,dues,paidamount,Collectedamount,balanceamount,paymenttype,bankname,transactionid,banknameforcheckque,checkqueno,upitransactionid,wheretopay,status,receivedby,other_bank_name) VALUES($eventid,'$eventname','$fromdate','$todate',$year,'$memberid','$name','$membermobile','$membertaluk',$taxamount,'$paymentdate',$currentdue,$paidamount,$collectedamount,$balanceamount,'$paymenttype','$bankname','$transactionid','$banknameforcheckque','$checkqueno','$upitranscationid','$wheretopay','$status','$receivedby','$other_bank_name')");
+        
         if ($updatereport && $savereceipt) {
             return $currentdue;
         } else {
