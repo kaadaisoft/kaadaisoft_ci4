@@ -439,6 +439,19 @@
 
 
 
+    // Highlight active sidebar menu item after AJAX load
+    function highlightActiveMenu() {
+      const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+      document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+        link.classList.remove('active-menu-item');
+        const linkPage = link.getAttribute('data-page');
+        if (pathSegments.some(seg => seg === linkPage) ||
+            (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+          link.classList.add('active-menu-item');
+        }
+      });
+    }
+
     // Mobile Menu Functions
     function openMobileMenu() {
       document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -455,6 +468,7 @@
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
         document.getElementById("mobile-menu-content").innerHTML = result;
+        highlightActiveMenu();
       },
       error: (error) => {
         document.getElementById("menu-bar").innerHTML = error;

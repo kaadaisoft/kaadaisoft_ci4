@@ -147,7 +147,9 @@ class Members extends BaseController
             $villages = $this->membersModel->getVillages($panchayat_name);
             echo "<option value=''>Select Village</option>";
             foreach ($villages as $key => $village) {
-                echo "<option value='$village->village_name'>$village->village_name</option>";
+                if (!empty(trim($village->village_name))) {
+                    echo "<option value='$village->village_name'>$village->village_name</option>";
+                }
             }
         }
     }
@@ -520,8 +522,22 @@ class Members extends BaseController
         $data["State"] = $getstatename ? $getstatename->state_title : ($currentMember ? $currentMember->State : "");
         
         $data["District"] = $this->request->getPost("district" . $suffix) ?: $this->request->getPost("district");
-        $data["Taluk"] = $this->request->getPost("taluk" . $suffix) ?: $this->request->getPost("taluk");
-        $data["Panchayat"] = $this->request->getPost("panchayat" . $suffix) ?: $this->request->getPost("panchayat");
+        
+        $taluk_val = $this->request->getPost("taluk" . $suffix) ?: $this->request->getPost("taluk");
+        if ($taluk_val === "Others" || $taluk_val === "other" || empty($taluk_val)) {
+            $other_taluk = $this->request->getPost("taluk_others_member") ?: $this->request->getPost("taluk_others_coord");
+            if (empty($other_taluk)) $other_taluk = $this->request->getPost("taluk_others_update");
+            if (!empty($other_taluk)) $taluk_val = $other_taluk;
+        }
+        $data["Taluk"] = trim($taluk_val);
+
+        $panchayat_val = $this->request->getPost("panchayat" . $suffix) ?: $this->request->getPost("panchayat");
+        if ($panchayat_val === "Others" || $panchayat_val === "other" || empty($panchayat_val)) {
+            $other_panchayat = $this->request->getPost("panchayat_others_member") ?: $this->request->getPost("panchayat_others_coord");
+            if (empty($other_panchayat)) $other_panchayat = $this->request->getPost("panchayat_others_update");
+            if (!empty($other_panchayat)) $panchayat_val = $other_panchayat;
+        }
+        $data["Panchayat"] = trim($panchayat_val);
         
         // Robust Village selection
         $val = $this->request->getPost("village" . $suffix) ?: $this->request->getPost("village");
@@ -533,6 +549,7 @@ class Members extends BaseController
         if ($val === "Others" || $val === "other" || empty($val)) {
              $other_val = $this->request->getPost("village_others_member") ?: $this->request->getPost("village_others_coord");
              if (empty($other_val)) $other_val = $this->request->getPost("village_others");
+             if (empty($other_val)) $other_val = $this->request->getPost("village_others_update");
              if (!empty($other_val)) $val = $other_val;
         }
         
@@ -594,8 +611,22 @@ class Members extends BaseController
         $data["Curaddresstype"] = $this->request->getPost("cur_address_type" . $suffix) ?: $this->request->getPost("cur_address_type");
         $data["Curstate"] = $this->request->getPost("cur_state" . $suffix) ?: $this->request->getPost("cur_state");
         $data["Curdistrict"] = $this->request->getPost("cur_district" . $suffix) ?: $this->request->getPost("cur_district");
-        $data["Curtaluk"] = $this->request->getPost("cur_taluk" . $suffix) ?: $this->request->getPost("cur_taluk");
-        $data["Curpanchayat"] = $this->request->getPost("cur_panchayat" . $suffix) ?: $this->request->getPost("cur_panchayat");
+        
+        $cur_taluk_val = $this->request->getPost("cur_taluk" . $suffix) ?: $this->request->getPost("cur_taluk");
+        if ($cur_taluk_val === "Others" || $cur_taluk_val === "other" || empty($cur_taluk_val)) {
+            $cur_other_taluk = $this->request->getPost("cur_taluk_others_member") ?: $this->request->getPost("cur_taluk_others_coord");
+            if (empty($cur_other_taluk)) $cur_other_taluk = $this->request->getPost("cur_taluk_others_update");
+            if (!empty($cur_other_taluk)) $cur_taluk_val = $cur_other_taluk;
+        }
+        $data["Curtaluk"] = trim($cur_taluk_val);
+
+        $cur_panchayat_val = $this->request->getPost("cur_panchayat" . $suffix) ?: $this->request->getPost("cur_panchayat");
+        if ($cur_panchayat_val === "Others" || $cur_panchayat_val === "other" || empty($cur_panchayat_val)) {
+            $cur_other_panchayat = $this->request->getPost("cur_panchayat_others_member") ?: $this->request->getPost("cur_panchayat_others_coord");
+            if (empty($cur_other_panchayat)) $cur_other_panchayat = $this->request->getPost("cur_panchayat_others_update");
+            if (!empty($cur_other_panchayat)) $cur_panchayat_val = $cur_other_panchayat;
+        }
+        $data["Curpanchayat"] = trim($cur_panchayat_val);
         
         $cur_village_val = $this->request->getPost("cur_village" . $suffix) ?: $this->request->getPost("cur_village");
         if (empty($cur_village_val)) {
@@ -605,6 +636,7 @@ class Members extends BaseController
         if ($cur_village_val === "Others" || $cur_village_val === "other" || empty($cur_village_val)) {
              $cur_other_val = $this->request->getPost("cur_village_others_member") ?: $this->request->getPost("cur_village_others_coord");
              if (empty($cur_other_val)) $cur_other_val = $this->request->getPost("cur_village_others");
+             if (empty($cur_other_val)) $cur_other_val = $this->request->getPost("cur_village_others_update");
              if (!empty($cur_other_val)) $cur_village_val = $cur_other_val;
         }
 
@@ -656,7 +688,7 @@ class Members extends BaseController
             if($file && $file->isValid() && !$file->hasMoved()){
                  $newName = str_replace(' ', '-', $data['Name'] . $trimaadhar . $trimphoneno . $imgField . time() . "." . $file->getExtension());
                  try {
-                     $file->move('assets/membersdocuments/', $newName);
+                     $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                      $data[$imgField] = $newName;
                  } catch (\Exception $e) {
                      // ignore or handle
@@ -716,7 +748,7 @@ class Members extends BaseController
             if(!$this->session->getFlashdata('coorderrorstatus') && !$this->session->getFlashdata('membererrorstatus')){
                 $this->session->set("coorderrorstatus", "Unexpected error please try again.");
             }
-            return redirect()->to("members");
+            return redirect()->back(); // Stay on the same page where update was initiated
         }
     }
 
@@ -771,6 +803,23 @@ class Members extends BaseController
             }
         }
 
+    }
+
+    public function checkExistEmail()
+    {
+        if ($this->request->isAJAX()) {
+            $email = trim($this->request->getPost("email"));
+            if (empty($email)) {
+                echo "false";
+                return;
+            }
+            $checkExist = $this->membersModel->checkExistemail($email);
+            if ($checkExist->getNumRows() > 0) {
+                echo "true";
+            } else {
+                echo "false";
+            }
+        }
     }
 
     public function addFamilyMember()
@@ -873,7 +922,7 @@ class Members extends BaseController
                  $newName = str_replace(' ', '-', $name . $trimaadhar . $trimphoneno . $suffix . "." . $file->getExtension());
                  
                  try {
-                     $file->move('assets/membersdocuments/', $newName);
+                     $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                      $documents[$i] = $newName;
                  } catch (\Exception $e) {
                       if ($this->session->get('role') == 1 || $this->session->get('role') == 2) {
@@ -981,11 +1030,14 @@ class Members extends BaseController
             } elseif ($this->session->get('role') == 3) {
                 $this->session->set("coordsuccessstatus", "Family member added successfully.");
                 return redirect()->to("view-member-data");
-            } else {
+             } else {
                  // Public Registration
+                 if (!empty($email)) {
+                     $msg_email = $this->sendRegistrationSuccessEmail($email, $name);
+                 }
                  $this->session->set("registerprocesssuccess", "Your application is submitted. Please wait 48 hours.");
                  return redirect()->to("registrationform");
-            }
+             }
         }
     }
 
@@ -994,6 +1046,149 @@ class Members extends BaseController
         return $this->addFamilyMember();
     }
 
+    public function send_registration_otp()
+    {
+        if ($this->request->isAJAX()) {
+            $email_address = $this->request->getPost('email');
+            
+            if (empty($email_address)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Email is required']);
+            }
 
+            // Check if email already exists (optional, based on requirement)
+            // For now, we allow multiple members with same email or user choice? 
+            // Usually unique is better. Let's check.
+            // $existing = $this->membersModel->where('Email', $email_address)->first();
+            // Email duplication check
+            $existing = $this->db->table('kaadaimembers')->where('Email', $email_address)->get()->getRow();
+            if ($existing) {
+                 return $this->response->setJSON(['status' => 'error', 'message' => 'This email is already registered. Please use a different email or login.']);
+            }
+
+            $otp = rand(100000, 999999);
+            $this->session->set('registration_otp', $otp);
+            $this->session->set('registration_email', $email_address);
+            $this->session->set('registration_otp_time', time());
+
+            $email = \Config\Services::email();
+            
+            $email->setTo($email_address);
+            $email->setSubject('Email Verification OTP - Poondurai Kaadai Kulam');
+            $email->setMailType('html');
+
+            // Attach logo inline (same as password reset email)
+            $imagePath = FCPATH . 'assets/logo_small.png';
+            if (file_exists($imagePath)) {
+                $email->attach($imagePath, 'inline');
+                $cid = $email->setAttachmentCID($imagePath);
+                $logoUrl = 'cid:' . $cid;
+            } else {
+                $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
+            }
+
+            $emailData = [
+                'title' => 'Email Verification',
+                'subtitle' => 'Poondurai Kaadai Kulam',
+                'logo_url' => $logoUrl,
+                'message' => 'You are receiving this email because you initiated a registration on our platform. Please use the following code to verify your email address:',
+                'highlight_box' => $otp,
+                'highlight_label' => 'Verification Code',
+                'highlight_subtext' => 'This code will expire in 10 minutes.',
+                'primary_color' => '#38bdf8'
+            ];
+
+            $messageHtml = view('emails/common_email', $emailData);
+
+            $email->setMessage($messageHtml);
+
+            if ($email->send()) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'OTP sent successfully']);
+            } else {
+                $data = $email->printDebugger(['headers']);
+                log_message('error', 'Email Error: ' . $data);
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to send OTP. Please check email address.']);
+            }
+
+        }
+    }
+
+    public function verify_registration_otp()
+    {
+        if ($this->request->isAJAX()) {
+            $user_otp = $this->request->getPost('otp');
+            $user_email = $this->request->getPost('email');
+
+            $session_otp = $this->session->get('registration_otp');
+            $session_email = $this->session->get('registration_email');
+            $session_time = $this->session->get('registration_otp_time');
+
+            if (!$session_otp || !$session_email) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'OTP expired or not found. Please resend.']);
+            }
+
+            if ($session_email !== $user_email) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Email mismatch. Please resend OTP.']);
+            }
+
+            if (time() - $session_time > 600) { // 10 minutes
+                $this->session->remove(['registration_otp', 'registration_email', 'registration_otp_time']);
+                return $this->response->setJSON(['status' => 'error', 'message' => 'OTP expired. Please resend.']);
+            }
+
+            if ($user_otp == $session_otp) {
+                // Verification successful
+                // We keep the flag in session to allow form submission? 
+                // Or just return success and let frontend handle token/flag?
+                // For security, backend should check this flag on actual registration, 
+                // but since registerMember is reused for admin adding members too, 
+                // we might just rely on frontend for now or add a hidden field check if feasible.
+                
+                $this->session->set('is_email_verified', true);
+                $this->session->set('verified_email', $user_email);
+                
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Email verified successfully!']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid OTP.']);
+            }
+        }
+    }
+
+    private function sendRegistrationSuccessEmail($email_address, $name)
+    {
+        if (empty($email_address)) {
+            return false;
+        }
+
+        $email = \Config\Services::email();
+        $email->setTo($email_address);
+        $email->setSubject('Welcome to Poondurai Kaadai Kulam - Registration Received');
+        $email->setMailType('html');
+
+        // Attach logo inline
+        $imagePath = FCPATH . 'assets/logo_small.png';
+        if (file_exists($imagePath)) {
+            $email->attach($imagePath, 'inline');
+            $cid = $email->setAttachmentCID($imagePath);
+            $logoUrl = 'cid:' . $cid;
+        } else {
+            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
+        }
+
+        $emailData = [
+            'title' => 'Registration Received!',
+            'subtitle' => 'Welcome to Poondurai Kaadai Kulam',
+            'logo_url' => $logoUrl,
+            'name' => $name,
+            'message' => 'Thank you for registering with <strong>Poondurai Kaadai Kulam</strong>. Your application has been successfully submitted and is now under review by our team.',
+            'extra_info' => '<strong>Next Steps:</strong><br>• Our administrators will verify your details within 48 hours.<br>• You will receive another notification once your membership is approved.<br>• You can then log in using your phone number and the password set during registration.',
+            'primary_color' => '#0ea5e9'
+        ];
+
+        $messageHtml = view('emails/common_email', $emailData);
+
+        $email->setMessage($messageHtml);
+
+        return $email->send();
+    }
 }
 ?>

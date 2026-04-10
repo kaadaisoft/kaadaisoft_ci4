@@ -368,6 +368,19 @@
                 if (menu) menu.style.display = 'none';
             }
 
+            // Highlight active sidebar menu item after AJAX load
+            function highlightActiveMenu() {
+              const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+              document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+                link.classList.remove('active-menu-item');
+                const linkPage = link.getAttribute('data-page');
+                if (pathSegments.some(seg => seg === linkPage) ||
+                    (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+                  link.classList.add('active-menu-item');
+                }
+              });
+            }
+
             $(document).ready(function () {
                 // Load components via AJAX to ensure consistency
                 $.ajax({
@@ -396,6 +409,7 @@
                         var mobileContent = document.getElementById("mobile-menu-content");
                         if (menuBar) menuBar.innerHTML = result;
                         if (mobileContent) mobileContent.innerHTML = result;
+                        highlightActiveMenu();
                     },
                     error: (error) => {
                         console.error("Error loading menus:", error);
@@ -440,13 +454,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <form action="<?= base_url('reject-member-update') ?>" method="POST" onsubmit="return confirm('Are you sure you want to reject this member update?')">
-                        <input type="hidden" name="request_id" id="reject_request_id">
-                        <button type="submit" class="btn btn-danger">Reject</button>
-                    </form>
-                    <form action="<?= base_url('approve-member-update') ?>" method="POST" onsubmit="return confirm('Are you sure you want to approve this member update?')">
+                    <form id="approveUpdateForm" action="<?= base_url('approve-member-update') ?>" method="POST" class="me-2">
                         <input type="hidden" name="request_id" id="approve_request_id">
-                        <button type="submit" class="btn btn-success">Approve Update</button>
+                        <button type="button" class="btn btn-success" onclick="psConfirm('Are you sure you want to approve this member update?', () => document.getElementById('approveUpdateForm').submit(), 'Approve', 'success')">Approve Update</button>
+                    </form>
+                    <form id="rejectUpdateForm" action="<?= base_url('reject-member-update') ?>" method="POST">
+                        <input type="hidden" name="request_id" id="reject_request_id">
+                        <button type="button" class="btn btn-danger" onclick="psConfirm('Are you sure you want to reject this member update?', () => document.getElementById('rejectUpdateForm').submit(), 'Reject', 'danger')">Reject</button>
                     </form>
                 </div>
             </div>
@@ -507,16 +521,18 @@
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                             <form action="<?= base_url('approve-member-update') ?>" method="POST"
-                                class="d-inline" onsubmit="return confirm('Are you sure you want to approve this member update?')">
+                                class="d-inline" id="approveForm_${req.id}">
                                 <input type="hidden" name="request_id" value="${req.id}">
-                                <button type="submit" class="btn-action-premium btn-approve-premium" title="Approve">
+                                <button type="button" class="btn-action-premium btn-approve-premium" title="Approve"
+                                    onclick="psConfirm('Approve update for ${req.MemberName}?', () => this.closest(\'form\').submit(), \'Approve\', \'success\')">
                                     <i class="fa-solid fa-check"></i>
                                 </button>
                             </form>
                             <form action="<?= base_url('reject-member-update') ?>" method="POST"
-                                class="d-inline" onsubmit="return confirm('Are you sure you want to reject this member update?')">
+                                class="d-inline">
                                 <input type="hidden" name="request_id" value="${req.id}">
-                                <button type="submit" class="btn-action-premium btn-reject-premium" title="Reject">
+                                <button type="button" class="btn-action-premium btn-reject-premium" title="Reject"
+                                    onclick="psConfirm('Reject update for ${req.MemberName}?', () => this.closest(\'form\').submit(), \'Reject\', \'danger\')">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </form>
@@ -606,7 +622,7 @@
                 // Skip utility fields
                 if (['updated_at', 'Id', 'Approvedstatus', 'Coordinator_id', 'state_id', 'Id_forwhoapproved', 'Id_who_assign_coord', 'Approved_by', 'RejectReason', 'isShow', 'Role'].includes(key)) continue;
 
-                let hasChanged = (newVal != oldVal);
+                let hasChanged = (String(newVal || "").trim() !== String(oldVal || "").trim());
                 let displayNew = newVal;
                 let displayOld = "";
 
@@ -614,14 +630,14 @@
                 if (key.toLowerCase().includes('image') || key.toLowerCase().includes('certificate')) {
                     if (newVal) {
                         let cssClass = hasChanged ? "green-underline" : "";
-                        displayNew = `<a href="<?= base_url('assets/membersdocuments/') ?>${newVal}" target="_blank" class="${cssClass}">View ${hasChanged ? 'New' : ''} File</a>`;
+                        displayNew = `<a href="<?= base_url('documents/view/') ?>${newVal}" target="_blank" class="${cssClass}">View ${hasChanged ? 'New' : ''} File</a>`;
                     } else {
                         displayNew = "Empty";
                     }
 
                     if (hasChanged) {
                         if (oldVal && oldVal !== 'N/A') {
-                            displayOld = `<div class="mb-1"><a href="<?= base_url('assets/membersdocuments/') ?>${oldVal}" target="_blank" class="old-value">View Old File</a></div>`;
+                            displayOld = `<div class="mb-1"><a href="<?= base_url('documents/view/') ?>${oldVal}" target="_blank" class="old-value">View Old File</a></div>`;
                         } else {
                             displayOld = `<div class="mb-1 text-muted small">Previously: Empty</div>`;
                         }

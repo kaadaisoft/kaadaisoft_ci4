@@ -337,8 +337,10 @@
 </head>
 
 <body>
+  <?= view('notification_toast') ?>
 
   <div class="container-fluid layout-container p-0">
+
 
     <div class="top-navbar-row" style="flex-wrap: wrap;"><!-----top-bar--------------->
 
@@ -360,14 +362,10 @@
         <div class="container-fluid">
           <br>
 
-          <span class="text-secondary h3">Report Status Filter:
-            <?php if (session()->has('validationmessage')) {
-              $validationmessage = session()->get('validationmessage');
-              echo "<div id='alertContainer' class='alert alert-danger alert-dismissible fade show h6 fw-normal text-danger '>$validationmessage</div>";
-              session()->remove('validationmessage');
-            } ?>
-          </span>
-          <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off" id="result-form">
+          <span class="text-secondary h3">Report Status Filter:</span>
+
+          <form action="<?= base_url("reportFilterPage") ?>" method="get" autocomplete="off" id="result-form" onsubmit="return validateForm()">
+
             <div class="row filter-card-premium"><!----------filter-start------------>
 
               <div id="showyear" class="col-md-3 mb-3"><!-----year-search--------->
@@ -534,6 +532,19 @@
 
   <script>
 // Mobile Menu Functions
+    // Highlight active sidebar menu item after AJAX load
+    function highlightActiveMenu() {
+      const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+      document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+        link.classList.remove('active-menu-item');
+        const linkPage = link.getAttribute('data-page');
+        if (pathSegments.some(seg => seg === linkPage) ||
+            (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+          link.classList.add('active-menu-item');
+        }
+      });
+    }
+
     function openMobileMenu() {
       document.getElementById('custom-mobile-menu').style.display = 'block';
     }
@@ -549,6 +560,7 @@
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
         document.getElementById("mobile-menu-content").innerHTML = result;
+        highlightActiveMenu();
       },
       error: (error) => {
         document.getElementById("menu-bar").innerHTML = error;
@@ -739,29 +751,18 @@
       // Get form elements
       let eventYear = document.getElementById("eventyear").value;
       let eventName = document.getElementById("eventname").value;
-      let eventNames = document.getElementById("paid").value;
       let paymentStatus = document.querySelector('input[name="paymentstatus"]:checked');
 
-      // Get alert container (you need to add this in the HTML)
-      let alertContainer = document.getElementById("alertContainer");
-
-      // Reset alert content
-      alertContainer.innerHTML = "";
-
       // Check if all fields are filled
-      if (!eventYear || !eventName || !paymentStatus || !eventNames) {
-        // Add Bootstrap alert
-        alertContainer.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                All fields are required.
-              
-            </div>`;
+      if (!eventYear || !eventName || !paymentStatus) {
+        psShowAlert('warning', 'Selection Required', 'All fields are required. Please select a year, event, and payment status.');
         return false; // Prevent form submission
       }
 
       // If all fields are valid
       return true; // Allow form submission
     }
+
 
     function applyFilter() {
 

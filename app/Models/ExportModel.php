@@ -6,15 +6,25 @@ use CodeIgniter\Model;
 class ExportModel extends Model {
 
     protected $db;
+    protected $encrypter;
 
     public function __construct() {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function get_data(){
         $query = $this->db->query("SELECT * FROM kaadaimembers WHERE isShow = 1");
-        return $query->getResultArray();
+        $results = $query->getResultArray();
+        foreach ($results as &$row) {
+            if (!empty($row['Aadharnumber'])) {
+                try {
+                    $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
     
     public function get_Filterdata($eventname, $status){

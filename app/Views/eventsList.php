@@ -18,10 +18,10 @@
         <td class="fw-bold text-muted"><?= $displaySno ?></td>
         <td class="fw-bold text-dark"><?= $value['EventName'] ?></td>
         <td>
-            <div class="event-banner-wrapper">
+            <div class="event-banner-wrapper" onclick="showImageFullSize('<?= $imagePath ?>')">
                 <img class="event-banner-img" src="<?= $imagePath ?>" alt="<?= $value['EventName'] ?>"/>
                 <button class="banner-change-overlay" <?= (session()->get('role') == 2 || session()->get('role') == 3) ? 'hidden' : '' ?> 
-                        onclick="showupdateeventbannermodal(<?= $value['Id'] ?>, '<?= $value['EventName'] ?>')">
+                        onclick="event.stopPropagation(); showupdateeventbannermodal(<?= $value['Id'] ?>, '<?= $value['EventName'] ?>')">
                     CHANGE
                 </button>
             </div>

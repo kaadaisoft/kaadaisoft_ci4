@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -782,8 +785,10 @@
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()">Print Receipt</button>
+                <button type="button" id="modalDownloadBtn" class="btn btn-success rounded-pill px-4" disabled>Download PDF</button>
+                <button type="button" id="modalPrintBtn" class="btn btn-primary rounded-pill px-4" onclick="printReceiptFromModal()">Print Receipt</button>
             </div>
+
         </div>
     </div>
 </div>
@@ -840,12 +845,40 @@
       success:(result)=>{
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
-           document.getElementById("mobile-menu-content").innerHTML = result; 
+           document.getElementById("mobile-menu-content").innerHTML = result;
+           // Highlight the active menu item after content is injected
+           highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = error;
       }
     }); 
+
+    // Global highlight function - runs after AJAX injects sidemenu HTML
+    function highlightActiveMenu() {
+        const currentPath = window.location.pathname;
+        const segments = currentPath.replace(/^\//, '').split('/');
+        const navLinks = document.querySelectorAll('#sidemenu-nav .nav-item a[data-page]');
+
+        let matched = false;
+
+        navLinks.forEach(link => {
+            const page = link.getAttribute('data-page');
+            if (segments.includes(page)) {
+                link.classList.add('active-menu-item');
+                matched = true;
+            }
+        });
+
+        if (!matched) {
+            navLinks.forEach(link => {
+                const page = link.getAttribute('data-page');
+                if (segments.some(seg => seg.startsWith(page) || page.startsWith(seg))) {
+                    link.classList.add('active-menu-item');
+                }
+            });
+        }
+    }
 
 
     $.ajax({
@@ -878,7 +911,8 @@
         let rows_html = '';
         let total_pending = 0;
 
-        data.forEach(function(participation) {
+        // Calculate total pending first
+        data.forEach(participation => {
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
             if (pending > 0) total_pending += pending;
@@ -897,19 +931,23 @@
         if (currentPendingPage < 1) currentPendingPage = 1;
 
         let startIndex = (currentPendingPage - 1) * pendingItemsPerPage;
-        let endIndex = startIndex + pendingItemsPerPage;
-        let paginatedItems = data.slice(startIndex, endIndex);
+        let paginatedItems = data.slice(startIndex, startIndex + pendingItemsPerPage);
 
         paginatedItems.forEach(function(participation, index) {
-            let originalIndex = data.indexOf(participation);
             let pending = parseFloat(participation.balanceamount);
             if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
-            let pending_display = (pending === 0) ? "0" : pending;
+            
+            let status_badge = "";
+            if (pending <= 0) {
+                status_badge = `<span class="badge bg-success-soft text-success border border-success ms-2" style="font-size: 0.65rem; background-color: #f0fdf4;">PAID</span>`;
+                pending = 0;
+            }
+
             rows_html += `<tr onclick="handleRowClick('${participation.Id}')" style="cursor: pointer;">
                 <td>${startIndex + index + 1}</td>
-                <td>${participation.eventname}</td>
+                <td>${participation.eventname}${status_badge}</td>
                 <td>${participation.Taxamount}</td>
-                <td>${pending_display}</td>
+                <td class="${pending === 0 ? 'text-success' : 'text-danger'}">${pending}</td>
             </tr>`;
         });
 
@@ -1003,14 +1041,24 @@
     }
 
     function viewReceipt(url) {
+        // This modal logic is for viewing receipts on the dashboard
         $('#receiptModal').modal('show');
         $('#receiptModalBody').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+        $('#modalDownloadBtn, #modalPrintBtn').prop('disabled', true);
+
+        // Try to extract receipt info for the filename
+        const params = new URLSearchParams(url.split('?')[1]);
+        const receiptId = params.get('dues') || 'receipt';
+        const downloadUrl = url.replace('paymentreceiptpdf', 'downloadpdf');
+        
+        document.getElementById('modalDownloadBtn').setAttribute('onclick', `downloadReceipt('${downloadUrl}', '${receiptId}')`);
         
         $.ajax({
             type: "get",
             url: url + "&ajax=1",
             success: (result) => {
                 $('#receiptModalBody').html(result);
+                $('#modalDownloadBtn, #modalPrintBtn').prop('disabled', false);
             },
             error: (error) => {
                 $('#receiptModalBody').html('<div class="alert alert-danger m-3">Error loading receipt. Please try again.</div>');
@@ -1018,36 +1066,55 @@
         });
     }
 
-    function printReceiptFromModal() {
-        let divContents = document.getElementById("printreceipt") ? document.getElementById("printreceipt").innerHTML : '';
-        let receiptId = document.getElementById("receipt_id_val") ? document.getElementById("receipt_id_val").innerText : 'சீட்டு எண் : -';
-        let paymentDate = document.getElementById("receipt_date_val") ? document.getElementById("receipt_date_val").innerText : 'தேதி : -';
-        
-        let printWindow = window.open('', '', 'height=auto, width=auto');
-        printWindow.document.open();
-        
-        let htmlContent = "<html><head><title>Print Receipt</title>";
-        htmlContent += "<style>";
-        htmlContent += ".ps-logo{ display:flex; align-items:center; justify-content:center; }";
-        htmlContent += "table td,th{ padding-top:10px; }";
-        htmlContent += ".heading-kaadaisoft{ color: rgb(0, 123, 255); font-weight:800; font-family:sans-serif; font-size:32px; }";
-        htmlContent += ".printuse{ text-align:center; }";
-        htmlContent += "</style></head><" + "body>";
-        htmlContent += "<div><table style='border:2px solid grey;border-radius:15px;padding:20px;width:100%;'>";
-        htmlContent += "<tr><td colspan='3' style='text-align:center;'><span class='heading-kaadaisoft'>KAADAISOFT</span></td></tr>";
-        htmlContent += "<tr><td style='font-weight:bold;'>உறுப்பினர் விவரம்</td><td style='font-weight:bold;'></td><td style='font-weight:bold;'>" + receiptId + "</td></tr>";
-        htmlContent += "<tr><td style='font-weight:bold;'>" + paymentDate + "</td></tr>";
-        htmlContent += divContents;
-        htmlContent += "</table></div></" + "body></" + "html>";
+    function downloadReceipt(url, receiptId) {
+        const modalContent = document.getElementById('printable-receipt');
+        const isModalOpen = $('#receiptModal').is(':visible');
+        const isLoaded = $('#modalDownloadBtn').prop('disabled') === false;
 
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(function() {
-            printWindow.print();
-            printWindow.close();
-        }, 500);
+        if (isModalOpen && modalContent && isLoaded) {
+            captureAndSave(modalContent, receiptId);
+        } else {
+            const captureArea = document.getElementById('captureArea');
+            captureArea.innerHTML = '<div style="text-align:center; padding:50px;">Generating PDF...</div>';
+            
+            $.ajax({
+                type: "get",
+                url: url.replace('downloadpdf', 'paymentreceiptpdf') + "&ajax=1",
+                success: (result) => {
+                    captureArea.innerHTML = result;
+                    setTimeout(() => {
+                        const element = captureArea.querySelector('#printable-receipt');
+                        if (element) {
+                            captureAndSave(element, receiptId, true);
+                        }
+                    }, 800);
+                }
+            });
+        }
     }
+
+    function captureAndSave(element, receiptId, isSilent = false) {
+        const fileName = receiptId ? 'receipt_' + receiptId + '.pdf' : 'receipt.pdf';
+        const opt = {
+            margin: 0.3,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: 0 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            if (isSilent) {
+                document.getElementById('captureArea').innerHTML = '';
+            }
+        });
+    }
+
+
+    function printReceiptFromModal() {
+        window.print();
+    }
+
 
     $.ajax({
     type: "post",
@@ -1497,6 +1564,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   </script>
+
+    <div id="captureArea" class="no-print" style="position: absolute; left: -9999px; width: 800px; padding: 20px; background: white;"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     

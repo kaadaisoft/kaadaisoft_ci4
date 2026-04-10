@@ -1,115 +1,274 @@
-<style>
-        .section-title {
-            border-left: 5px solid #283593;
-            padding-left: .75rem;
-            font-weight: 800;
-            color: #1a237e !important;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-brown: #2D1B18;
+            --medium-brown: #3E2723;
+            --accent-gold: #C5A028;
+            --glass-white: rgba(255, 255, 255, 0.65);
+            --border-white: rgba(255, 255, 255, 0.5);
+            --soft-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
-        .mandatory-star {
-            color: red;
-            font-weight: 500;
+        #registration-form {
+            font-family: 'Outfit', sans-serif;
+            color: #333333;
+        }
+
+        .bg-custom-header {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+            padding: 1.25rem 1.5rem !important;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        .card.shadow-lg {
+            background: var(--glass-white) !important;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid var(--border-white) !important;
+            border-top: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 20px !important;
+            box-shadow: var(--soft-shadow) !important;
         }
 
         #registration-form label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #000000 !important;
+            color: #333333 !important;
+            margin-bottom: 0.4rem;
+            display: inline-block;
+            letter-spacing: 0.2px;
         }
 
         #registration-form .form-control,
         #registration-form .form-select {
-            font-size: 0.9rem;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            color: #000;
-            border-radius: 4px;
+            font-size: 0.92rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            transition: all 0.25s ease;
         }
 
-        .bg-custom-header {
+        #registration-form .form-control:focus,
+        #registration-form .form-select:focus {
             background-color: #fff;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-color: var(--medium-brown);
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .section-title {
+            position: relative;
+            padding-left: 1rem;
+            font-weight: 700;
+            color: var(--primary-brown) !important;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem !important;
+            border-left: none !important;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--accent-gold);
+            border-radius: 2px;
         }
 
         .ps-img-btn,
         #updatesubmitbutton {
             color: white !important;
-            font-weight: 700;
+            font-weight: 600;
             border: none;
-            background: linear-gradient(135deg, #3f51b5 0%, #1a237e 100%);
-            padding: 8px 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, var(--medium-brown) 0%, var(--primary-brown) 100%);
+            padding: 10px 28px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        #updatesubmitbutton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.4);
+            filter: brightness(1.1);
         }
 
         #updatesubmitbutton:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+            background: #cbd5e1;
+            color: #94a3b8 !important;
             box-shadow: none;
+            cursor: not-allowed;
         }
 
-        #education_wrapper-update, #education_wrapper-coord {
-            min-height: 38px;
-            background-color: #ffffff;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            padding: 5px;
+        /* Integration buttons */
+        #registration-form .btn-outline-primary, 
+        #registration-form .btn-outline-secondary, 
+        #registration-form .btn-outline-success {
+            border-color: #D7CCC8 !important;
+            color: var(--medium-brown) !important;
+            background: #fff;
+            border-radius: 0 10px 10px 0 !important;
+            font-weight: 500;
         }
 
-        #education_tags-update .badge, #education_tags-coord .badge {
-            margin-right: 4px;
-            margin-bottom: 4px;
-            background-color: #1a237e !important;
+        #registration-form .btn-outline-primary:hover, 
+        #registration-form .btn-outline-secondary:hover, 
+        #registration-form .btn-outline-success:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        #education_wrapper-update {
+            min-height: 44px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 4px 8px !important;
+            transition: all 0.25s ease;
+        }
+
+        #education_wrapper-update:focus-within {
+            border-color: var(--medium-brown);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
+        }
+
+        #education_tags-update .badge {
+            margin: 2px;
+            background-color: var(--primary-brown) !important;
             color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .education-option:hover {
-            background-color: #e8eaf6;
-            cursor: pointer;
-        }
-
-        .cursor-pointer {
-            cursor: pointer;
-        }
-    </style>
-
-    <style>
         /* Flowbite-style file input */
         .ps-file-upload-wrapper { position: relative; }
         .ps-file-upload-wrapper input[type="file"] { display: none; }
         .ps-file-upload-btn {
             display: flex; align-items: center; gap: 8px; width: 100%;
-            padding: 7px 12px; font-size: 13px; border: 1.5px solid #ced4da;
-            border-radius: 6px; background-color: #f8f9fa; cursor: pointer;
-            color: #6c757d; transition: border-color 0.2s, background-color 0.2s;
+            padding: 9px 12px; font-size: 13px; border: 1.5px solid #E0E0E0;
+            border-radius: 10px; background-color: rgba(255, 255, 255, 0.9); cursor: pointer;
+            color: #666; transition: all 0.2s;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .ps-file-upload-btn:hover { background-color: #e9ecef; border-color: #86b7fe; }
-        .ps-file-upload-btn .ps-file-icon { flex-shrink: 0; font-size: 15px; color: #495057; }
-        .ps-file-upload-btn .ps-file-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-        .ps-file-upload-btn.file-selected { border-color: #0d6efd; background-color: #e7f1ff; color: #0a3d91; font-weight: 500; }
+        .ps-file-upload-btn:hover { background-color: #fff; border-color: var(--medium-brown); }
+        .ps-file-upload-btn.file-selected {
+            border-color: var(--primary-brown);
+            background-color: rgba(93, 64, 55, 0.1);
+            color: var(--primary-brown);
+            font-weight: 500;
+        }
+
+        .exit-form-btn {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border: 1.5px solid var(--border-white) !important;
+            color: var(--primary-brown) !important;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: blur(8px);
+            border-radius: 50% !important;
+        }
+
+        .exit-form-btn:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.25) !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        /* Inner cards transparent */
+        .card-body .card {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 15px !important;
+            margin-bottom: 1.5rem !important;
+            box-shadow: none !important;
+        }
+
+        /* Radio buttons */
+        .form-check-input:checked {
+            background-color: var(--primary-brown);
+            border-color: var(--primary-brown);
+        }
+
+        .btn-copy-address {
+            background-color: transparent !important;
+            border: 1px solid var(--primary-brown) !important;
+            color: var(--primary-brown) !important;
+            padding: 6px 14px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-address:hover {
+            background-color: var(--primary-brown) !important;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 27, 24, 0.15);
+        }
+
+        .card:focus-within {
+            position: relative;
+            z-index: 10 !important;
+        }
+        
+        .cursor-pointer { cursor: pointer; }
     </style>
 
+
     <?php if (isset($manager)) : ?>
-        <div class="bg-custom-header py-3 px-4 border-bottom shadow-sm">
+        <div class="bg-custom-header py-3 px-4 border-bottom">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0 text-dark font-weight-bold">
+                <h4 class="mb-0">
                     <?php 
                         $is_self = ($manager->Familymembershipid == session()->get('Kaadaisoft_userId'));
                         $is_head = ($manager->MemberRole == 'Head');
                         if ($is_self) {
-                            $icon = 'fa-user-tie';
+                            $icon = 'bi-person-circle';
                             $title = 'Update My Details';
                         } else {
-                            $icon = $is_head ? 'fa-user-tie' : 'fa-users';
+                            $icon = $is_head ? 'bi-person-circle' : 'bi-people-fill';
                             $title = $is_head ? 'Update Manager Details' : 'Update Family Member Details';
                         }
                     ?>
-                    <i class="fa-solid <?= $icon ?> me-2"></i><?= $title ?>: <small class="text-primary"><?= $manager->Familymembershipid ?></small>
+                    <i class="bi <?= $icon ?> me-2"></i><?= $title ?>: <small style="color: var(--accent-gold);"><?= $manager->Familymembershipid ?></small>
                 </h4>
-                <button onclick="hideupdatemanagerform()" class="btn btn-close"></button>
+                <button onclick="hideupdatemanagerform()" class="btn exit-form-btn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
         </div>
 
@@ -120,19 +279,19 @@
             <input hidden value="updatemanager" type="text" name="reason">
             
             <!-- Verification Tracking -->
+            <input type="hidden" id="is_email_verified-manager" name="is_email_verified-manager" value="1">
             <input type="hidden" id="is_phone_verified-manager" name="is_phone_verified-manager" value="1">
             <input type="hidden" id="original_email-manager" value="<?= esc($manager->Email) ?>">
             <input type="hidden" id="original_phone-manager" value="<?= esc($manager->Phonenumber) ?>">
 
 
-            <!-- Basic Details Section -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-user text-primary me-2"></i>Basic Details
+                        <i class="bi bi-person-circle fs-5 me-2"></i>Basic Details
                     </h5>
 
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <!-- Relationship -->
                         <div class="col-md-4">
                             <label for="relationship-update">Relationship</label>
@@ -176,7 +335,9 @@
                         <div class="col-md-4">
                             <label for="phoneno-update">Phone Number <span class="mandatory-star">*</span></label>
                             <div class="input-group">
-                                <input id="phoneno-update" class="form-control" type="number" name="phoneno-update" value="<?= $manager->Phonenumber ?>" onkeyup="validateUpdateInput(this)" required>
+                                <input id="phoneno-update" class="form-control" type="number" name="phoneno-update" value="<?= $manager->Phonenumber ?>" 
+                                    oninput="if (this.value.length > 10) this.value = this.value.slice(0, 10)" 
+                                    onkeyup="validateUpdateInput(this)" required>
                                 <button type="button" id="verify-phone-btn-manager" class="btn btn-outline-primary" style="display:none;" onclick="checkPhoneVerificationManager()">Verify</button>
                                 <span id="phone-verified-badge-manager" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
                             </div>
@@ -231,15 +392,31 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <label for="email-update">Email</label>
-                            <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
+                            <div class="input-group">
+                                <input id="email-update" onkeyup="validateUpdateInput(this)" class="form-control" type="email" name="email-update" value="<?= $manager->Email ?>">
+                                <button type="button" id="verify-email-btn-manager" class="btn btn-outline-primary" style="display:none;" onclick="sendUpdateEmailOTPManager()">Verify</button>
+                                <span id="email-verified-badge-manager" class="input-group-text text-success" title="Verified"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <small id="emailerror-update" class="text-danger"></small>
+                        </div>
+
+                        <!-- Email OTP Section (Manager) -->
+                        <div class="col-md-4" id="email-otp-section-manager" style="display:none;">
+                            <label for="email-otp-manager">Enter OTP Sent to Email <span class="mandatory-star">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="email-otp-manager" class="form-control" placeholder="6-digit OTP" maxlength="6">
+                                <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPManager()">Verify OTP</button>
+                            </div>
+                            <small id="email-otp-error-manager" class="text-danger"></small>
                         </div>
 
                         <!-- WhatsApp Number -->
                         <div class="col-md-4">
                             <label for="whatsappno-update">WhatsApp Number</label>
                             <div class="input-group">
-                                <input id="whatsappno-update" class="form-control" type="number" name="whatsappno-update" value="<?= $manager->Whatsappnumber ?>" onkeyup="validateUpdateInput(this)">
+                                <input id="whatsappno-update" class="form-control" type="number" name="whatsappno-update" value="<?= $manager->Whatsappnumber ?>" 
+                                    oninput="if (this.value.length > 10) this.value = this.value.slice(0, 10)" 
+                                    onkeyup="validateUpdateInput(this)">
                                 <button class="btn btn-outline-secondary" type="button" onclick="copyPhoneToWhatsappUpdate()">Same as Phone</button>
                             </div>
                             <small id="whatsappnoerror-update" class="text-danger"></small>
@@ -328,16 +505,15 @@
                 </div>
             </div>
 
-            <!-- Occupation Details -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-briefcase text-primary me-2"></i>Education & Career Details
+                        <i class="bi bi-briefcase-fill fs-5 me-2"></i>Education & Career Details
                     </h5>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <!-- Education -->
                         <div class="col-md-4" style="position: relative;">
-                            <label for="education_input-update">Education <span class="text-danger">*</span></label>
+                            <label for="education_input-update">Education</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center flex-wrap gap-1" id="education_wrapper-update" style="cursor: text; min-height: 38px;">
                                 <div id="education_tags-update" class="d-flex flex-wrap gap-1"></div>
                                 <input type="text" id="education_input-update"
@@ -445,7 +621,7 @@
                                     $display_prof = $profession_map[$manager->Profession];
                                 }
                             ?>
-                            <label for="profession-update">Profession <span class="text-danger">*</span></label>
+                            <label for="profession-update">Profession</label>
                             <div class="border rounded p-1 bg-white d-flex align-items-center" id="profession_wrapper-update" style="cursor: pointer; min-height: 38px;">
                                 <input type="text" id="profession_input-update" 
                                     class="form-control form-control-sm border-0 bg-transparent shadow-none" 
@@ -481,13 +657,12 @@
                 </div>
             </div>
 
-            <!-- Native Address -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i>Native Address
+                        <i class="bi bi-geo-alt-fill fs-5 me-2"></i>Native Address
                     </h5>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-3" style="display: none;">
                             <label for="states-dropdown-update">State</label>
                             <select id="states-dropdown-update" onchange="setDropdowndistrictsUpdate(this); validateUpdateInput(this)" class="form-select" name="state-update">
@@ -583,20 +758,19 @@
                 </div>
             </div>
 
-            <!-- Current Address -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="mb-0 section-title">
-                            <i class="fa-solid fa-location-dot text-success me-2"></i>Current Address
+                            <i class="bi bi-geo-alt-fill fs-5 me-2" style="color: #2E7D32;"></i>Current Address
                         </h5>
-                        <button type="button" id="btn_same_as_native-update" class="btn btn-outline-success btn-sm" onclick="copyNativeAddressUpdate()" style="display: <?= ($manager->Curaddresstype == 'India') ? 'inline-block' : 'none' ?>;">
+                        <button type="button" id="btn_same_as_native-update" class="btn-copy-address" onclick="copyNativeAddressUpdate()" style="display: <?= ($manager->Curaddresstype == 'India' || $manager->Curaddresstype == 'TamilNadu' || $manager->Curaddresstype == 'OtherState') ? 'inline-block' : 'none' ?>;">
                             Same as Native Address
                         </button>
                     </div>
 
                     <div class="mb-3">
-                        <label class="d-block">Current Address Type <span class="text-danger">*</span></label>
+                        <label class="d-block">Current Address Type</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="cur_address_type-update" id="cur_address_tn-update" value="TamilNadu" <?= ($manager->Curaddresstype == 'TamilNadu' || ($manager->Curaddresstype == 'India' && $manager->Curstate == 35)) ? 'checked' : '' ?> onchange="toggleCurrentAddressTypeUpdate()">
                             <label class="form-check-label" for="cur_address_tn-update">Tamil Nadu</label>
@@ -725,13 +899,12 @@
                 </div>
             </div>
 
-            <!-- Documents -->
-            <div class="card mb-4 border-0 shadow-sm rounded-3">
+            <div class="card mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-4 section-title">
-                        <i class="fa-solid fa-image text-primary me-2"></i>Documents
+                        <i class="bi bi-image fs-5 me-2"></i>Documents
                     </h5>
-                    <div class="row g-3 align-items-end">
+                    <div class="row g-4 align-items-end">
                         <div class="col-md-3 d-flex flex-column">
                             <label class="form-label mb-2" style="font-size: 14px; font-weight: 500; flex-grow: 1;">Passport Photo</label>
                             <div class="ps-file-upload-wrapper">
@@ -739,7 +912,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_memberimage_btn')" id="mgr_memberimage" type="file" name="Memberimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_memberimage_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_memberimage" type="file" name="Memberimage" accept="image/*">
                             </div>
                             <small class="text-danger Memberimage"></small>
                         </div>
@@ -750,7 +923,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharfront_btn')" id="mgr_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharfront_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_aadharfront" type="file" name="Aadharfrontimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharfrontimage"></small>
                         </div>
@@ -761,7 +934,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharback_btn')" id="mgr_aadharback" type="file" name="Aadharbackimage" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_aadharback_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_aadharback" type="file" name="Aadharbackimage" accept="image/*">
                             </div>
                             <small class="text-danger Aadharbackimage"></small>
                         </div>
@@ -772,7 +945,7 @@
                                     <i class="bi bi-upload ps-file-icon"></i>
                                     <span class="ps-file-label">Choose file...</span>
                                 </label>
-                                <input onchange="uploadFileStyledUpdate(this, 'mgr_communitycert_btn')" id="mgr_communitycert" type="file" name="Communitycertificate" accept="image/*">
+                                <input onchange="uploadFileStyledUpdate(this, 'mgr_communitycert_btn'); activateUpdateButton(document.getElementById('correctdetails-update'))" id="mgr_communitycert" type="file" name="Communitycertificate" accept="image/*">
                             </div>
                             <small class="text-danger Communitycertificate"></small>
                         </div>
@@ -783,11 +956,12 @@
                 </div>
             </div>
 
-            <!-- Submit Section -->
             <div class="text-center pb-5">
-                <div class="form-check d-inline-flex align-items-center mb-3">
-                    <input onchange="activateUpdateButton(this)" type="checkbox" class="form-check-input" id="correctdetails-update">
-                    <label for="correctdetails-update" class="form-check-label ms-2 font-weight-bold">I confirm that the above details are correct.</label>
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="background: rgba(0,0,0,0.03); padding: 10px 20px; border-radius: 12px;">
+                    <div class="form-check m-0 d-flex align-items-center">
+                        <input onchange="activateUpdateButton(this)" type="checkbox" class="form-check-input m-0" id="correctdetails-update" style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                        <label for="correctdetails-update" class="form-check-label ms-2 font-weight-bold cursor-pointer" style="font-size: 0.95rem; line-height: 1.25rem;">I confirm that the above details are correct.</label>
+                    </div>
                 </div>
                 <div>
                     <button id="updatesubmitbutton" disabled type="submit" class="btn btn-lg rounded-pill px-5">Update Details</button>
@@ -870,7 +1044,7 @@
                 type: "get",
                 url: "<?= base_url('members/getTaluksfordropdown') ?>",
                 data: { "district_name": district_name },
-                success: (result) => {
+                success: function (result) {
                     let dropdown = document.getElementById("taluks-dropdown-update");
                     dropdown.innerHTML = result;
                     dropdown.innerHTML += '<option value="Others">Others</option>';
@@ -888,7 +1062,7 @@
                         toggleTalukOthersUpdate(dropdown);
                     }
                 },
-                error: () => {
+                error: function () {
                     document.getElementById("taluks-dropdown-update").innerHTML = '<option value="">Select Taluk</option><option value="Others">Others</option>';
                     toggleTalukOthersUpdate(document.getElementById("taluks-dropdown-update"));
                 }
@@ -1182,6 +1356,17 @@
             const n_panchayat_others_input = document.getElementById('panchayat_others_input_manager');
             const n_village_others_input = document.getElementById('village_others_input_manager');
 
+            // Validation: Ensure all native fields have values
+            if (!n_district.value || !n_taluk.value || !n_panchayat.value || !n_village_sel.value || 
+                !n_street.value || !n_doorno.value || !n_pincode.value) {
+                if (typeof psShowToast === 'function') {
+                    psShowToast('error', 'Please fill all native address fields before copying.');
+                } else {
+                    alert('Please fill all native address fields before copying.');
+                }
+                return;
+            }
+
             // Target 'Others' inputs
             const c_taluk_others_input = document.getElementById('cur_taluk_others_input_manager');
             const c_panchayat_others_input = document.getElementById('cur_panchayat_others_input_manager');
@@ -1191,7 +1376,8 @@
             let tnRadio = document.getElementById('cur_address_tn-update');
             if (tnRadio) {
                 tnRadio.checked = true;
-                toggleCurrentAddressTypeUpdate(); // This will clear NRI fields and set TN state
+                // Pass true to avoid re-triggering AJAX from the toggle function itself
+                toggleCurrentAddressTypeUpdate(true); 
             }
 
             // Copy simple fields
@@ -1199,8 +1385,10 @@
             c_doorno.value = n_doorno.value;
             c_pincode.value = n_pincode.value;
 
-            // 2. Set State (Tamil Nadu is pre-selected by toggleCurrentAddressTypeUpdate)
-            // c_state.value = n_state.value; // This is handled by toggleCurrentAddressTypeUpdate for TN
+            // 2. Set State explicitly to ensure AJAX consistency
+            if (c_state && n_state) {
+                c_state.value = n_state.value;
+            }
 
             // 3. Chain AJAX for District/Taluk/Panchayat/Village
             $.ajax({
@@ -1239,7 +1427,12 @@
                                     if (n_village_sel.value === 'Others') {
                                         c_village_others_input.value = n_village_others_input.value;
                                     }
-                                }, 100); // Small delay to ensure dropdown is populated
+                                    if (typeof psShowToast === 'function') {
+                                        psShowToast('success', 'Native address copied to current address.');
+                                    }
+                                    const checkbox = document.getElementById("correctdetails-update");
+                                    if(checkbox) activateUpdateButton(checkbox);
+                                }, 100); 
                             } else {
                                 $.ajax({
                                     type: "get",
@@ -1260,7 +1453,12 @@
                                             if (n_village_sel.value === 'Others') {
                                                 c_village_others_input.value = n_village_others_input.value;
                                             }
-                                        }, 100); // Small delay to ensure dropdown is populated
+                                            if (typeof psShowToast === 'function') {
+                                                psShowToast('success', 'Native address copied to current address.');
+                                            }
+                                            const checkbox = document.getElementById("correctdetails-update");
+                                            if(checkbox) activateUpdateButton(checkbox);
+                                        }, 100); 
                                     }
                                 });
                             }
@@ -1284,6 +1482,11 @@
                                 if (n_village_sel.value === 'Others') {
                                     c_village_others_input.value = n_village_others_input.value;
                                 }
+                                if (typeof psShowToast === 'function') {
+                                    psShowToast('success', 'Native address details partially copied.');
+                                }
+                                const checkbox = document.getElementById("correctdetails-update");
+                                if(checkbox) activateUpdateButton(checkbox);
                             }, 100);
                         }
                     });
@@ -1301,13 +1504,16 @@
             });
         }
 
-        let originalFormDataUpdateManager = "";
+        var originalFormDataUpdateManager = "";
         setTimeout(function() {
             const form = document.forms['managerregistration-update'];
             if(form) {
                 originalFormDataUpdateManager = new URLSearchParams(new FormData(form)).toString();
                 const checkbox = document.getElementById("correctdetails-update");
                 
+                // Initialize button state immediately
+                if(checkbox) activateUpdateButton(checkbox);
+
                 form.addEventListener('change', function() {
                     if(checkbox) activateUpdateButton(checkbox);
                 });
@@ -1315,18 +1521,28 @@
                     if(checkbox) activateUpdateButton(checkbox);
                 });
             }
-        }, 800);
+        }, 500);
 
         function checkFormChangedManager() {
             const form = document.forms['managerregistration-update'];
             if(!form) return false;
+            
+            // Check text-based data
             const currentFormData = new URLSearchParams(new FormData(form)).toString();
-            return currentFormData !== originalFormDataUpdateManager;
+            if (currentFormData !== originalFormDataUpdateManager) return true;
+
+            // Check file inputs
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            for (let input of fileInputs) {
+                if (input.files.length > 0) return true;
+            }
+
+            return false;
         }
 
         function activateUpdateButton(checkbox) {
-            const isChanged = checkFormChangedManager();
-            document.getElementById("updatesubmitbutton").disabled = !(checkbox.checked && isChanged);
+            const hasChanged = checkFormChangedManager();
+            document.getElementById("updatesubmitbutton").disabled = !(checkbox.checked && hasChanged);
         }
 
         function validateUpdateInput(field) {
@@ -1338,15 +1554,25 @@
 
             // Real-time Email Change Check
             if (field.id === 'email-update') {
-                const emailError = document.getElementById('emailerror-update');
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                
-                if (field.value.trim() !== "" && !emailRegex.test(field.value.trim())) {
-                    emailError.innerHTML = "Invalid email format.";
-                    field.classList.add('is-invalid');
+                const originalEmail = document.getElementById('original_email-manager').value;
+                const verifyBtn = document.getElementById('verify-email-btn-manager');
+                const badge = document.getElementById('email-verified-badge-manager');
+                const statusInput = document.getElementById('is_email_verified-manager');
+
+                if (field.value !== originalEmail && field.value !== "") {
+                    verifyBtn.style.display = 'block';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
+                    document.getElementById('email-otp-section-manager').style.display = 'none';
+                } else if (field.value === originalEmail) {
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'block';
+                    statusInput.value = "1";
+                    document.getElementById('email-otp-section-manager').style.display = 'none';
                 } else {
-                    emailError.innerHTML = "";
-                    field.classList.remove('is-invalid');
+                    verifyBtn.style.display = 'none';
+                    badge.style.display = 'none';
+                    statusInput.value = "0";
                 }
             }
 
@@ -1374,11 +1600,18 @@
         }
 
         function validateUpdateManagerform() {
+            const isEmailVerified = document.getElementById('is_email_verified-manager').value;
             const isPhoneVerified = document.getElementById('is_phone_verified-manager').value;
              const f = document.forms['managerregistration-update'];
 
+            if (f['email-update'].value !== "" && isEmailVerified === "0") {
+                psShowToast('warning', 'Please verify your new email address before updating.');
+                f['email-update'].focus();
+                return false;
+            }
+
             if (f['phoneno-update'].value !== "" && isPhoneVerified === "0") {
-                alert("Please verify your new phone number before updating.");
+                psShowToast('warning', 'Please verify your new phone number before updating.');
                 f['phoneno-update'].focus();
                 return false;
             }
@@ -1404,37 +1637,6 @@
             if (!f['aadharno-update'].value.trim()) setErr('aadharnoerror-update', 'Aadhar number is required', f['aadharno-update']);
             else if (f['aadharno-update'].value.length !== 12) setErr('aadharnoerror-update', 'Aadhar must be 12 digits', f['aadharno-update']);
 
-            // Native Address
-            if (!f['state-update'].value) setErr('stateerror-update', 'State is required', f['state-update']);
-            if (!f['district-update'].value) setErr('districterror-update', 'District is required', f['district-update']);
-            if (!f['taluk-update'].value) setErr('talukerror-update', 'Taluk is required', f['taluk-update']);
-            if (!f['panchayat-update'].value) setErr('panchayaterror-update', 'Panchayat is required', f['panchayat-update']);
-            if (!f['village-update'].value.trim()) setErr('villageerror-update', 'Village is required', f['village-update']);
-            if (!f['street-update'].value.trim()) setErr('streeterror-update', 'Street is required', f['street-update']);
-            if (!f['doorno-update'].value.trim()) setErr('doornoerror-update', 'Door no is required', f['doorno-update']);
-            if (!f['pincode-update'].value.trim()) setErr('pincodeerror-update', 'Pincode is required', f['pincode-update']);
-
-            // Current Address
-            const curType = document.querySelector('input[name="cur_address_type-update"]:checked')?.value;
-            if (!curType) {
-                setErr('cur_address_type_error-update', 'Please select address type', document.getElementById('cur_address_tn-update'));
-            } else if (curType === 'TamilNadu') {
-                if (!f['cur_state-update'].value) setErr('cur_stateerror-update', 'State is required', f['cur_state-update']);
-                if (!f['cur_district-update'].value) setErr('cur_districterror-update', 'District is required', f['cur_district-update']);
-                if (!f['cur_taluk-update'].value) setErr('cur_talukerror-update', 'Taluk is required', f['cur_taluk-update']);
-                if (!f['cur_panchayat-update'].value) setErr('cur_panchayaterror-update', 'Panchayat is required', f['cur_panchayat-update']);
-                if (!f['cur_village-update'].value.trim()) setErr('cur_villageerror-update', 'Village is required', f['cur_village-update']);
-                if (!f['cur_street-update'].value.trim()) setErr('cur_streeterror-update', 'Street is required', f['cur_street-update']);
-                if (!f['cur_doorno-update'].value.trim()) setErr('cur_doornoerror-update', 'Door no is required', f['cur_doorno-update']);
-                if (!f['cur_pincode-update'].value.trim()) setErr('cur_pincodeerror-update', 'Pincode is required', f['cur_pincode-update']);
-            } else if (curType === 'OtherState' || curType === 'NRI') {
-                if (curType === 'NRI' && !f['cur_nri_country-update'].value) setErr('cur_nri_countryerror-update', 'Country is required', f['cur_nri_country-update']);
-                if (!f['cur_nri_state-update'].value) setErr('cur_nri_stateerror-update', 'State is required', f['cur_nri_state-update']);
-                if (!f['cur_nri_city-update'].value) setErr('cur_nri_cityerror-update', 'City is required', f['cur_nri_city-update']);
-                if (!f['cur_nri_zip-update'].value.trim()) setErr('cur_nri_ziperror-update', 'Zip code is required', f['cur_nri_zip-update']);
-                if (!f['cur_nri_fulladdress-update'].value.trim()) setErr('cur_nri_fulladdresserror-update', 'Full address is required', f['cur_nri_fulladdress-update']);
-            }
-
             // Relationship Transfer Check
             let aliveStatusDead = document.getElementById("alive_no-update");
             let upcomingHeadSelect = document.getElementById("upcoming_head-update");
@@ -1450,7 +1652,81 @@
             return isValid;
         }
 
+        function sendUpdateEmailOTPManager() {
+            const email = document.getElementById('email-update').value;
+            const errorElem = document.getElementById('emailerror-update');
+            const otpSection = document.getElementById('email-otp-section-manager');
+            const btn = document.getElementById('verify-email-btn-manager');
 
+            if (!email || !email.includes('@')) {
+                errorElem.textContent = "Please enter a valid email address.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/send-registration-otp') ?>",
+                data: { email: email },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        psShowToast('success', response.message);
+                        otpSection.style.display = 'block';
+                        errorElem.textContent = "";
+                        btn.style.display = 'none';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerText = "Verify";
+                        errorElem.textContent = response.message || "Failed to send OTP. Try again.";
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerText = "Verify";
+                    errorElem.textContent = "Server error occurred. Please try again.";
+                }
+            });
+        }
+
+        function verifyUpdateEmailOTPManager() {
+            const email = document.getElementById('email-update').value;
+            const otp = document.getElementById('email-otp-manager').value;
+            const errorElem = document.getElementById('email-otp-error-manager');
+            const statusInput = document.getElementById('is_email_verified-manager');
+            const verifyBtn = document.getElementById('verify-email-btn-manager');
+            const badge = document.getElementById('email-verified-badge-manager');
+            const otpSection = document.getElementById('email-otp-section-manager');
+
+            if (otp.length !== 6) {
+                errorElem.textContent = "Enter a valid 6-digit OTP.";
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('members/verify-registration-otp') ?>",
+                data: { email: email, otp: otp },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status === 'success') {
+                        psShowToast('success', response.message);
+                        statusInput.value = "1";
+                        verifyBtn.style.display = 'none';
+                        badge.style.display = 'block';
+                        otpSection.style.display = 'none';
+                        errorElem.textContent = "";
+                    } else {
+                        errorElem.textContent = response.message || "Invalid or expired OTP.";
+                    }
+                },
+                error: function() {
+                    errorElem.textContent = "Verification failed. Try again.";
+                }
+            });
+        }
 
         function checkPhoneVerificationManager() {
             const phoneno = document.getElementById('phoneno-update').value;
@@ -1476,7 +1752,7 @@
                 },
                 success: function(response) {
                     if (response.trim() === "false") {
-                        alert("Phone number is unique and verified.");
+                        psShowToast('success', 'Phone number is unique and verified.');
                         statusInput.value = "1";
                         verifyBtn.style.display = 'none';
                         badge.style.display = 'block';
@@ -1532,6 +1808,10 @@
                     btn.classList.add('file-selected');
                     btn.querySelector('.ps-file-label').textContent = file.files[0].name;
                     btn.querySelector('.ps-file-icon').className = "bi bi-check-circle-fill ps-file-icon";
+                    
+                    // Force button check
+                    const checkbox = document.getElementById("correctdetails-update");
+                    if(checkbox) activateUpdateButton(checkbox);
                 }
             }
         }
@@ -1602,7 +1882,7 @@
 
             // Click listener for education options
             $(document).off('click', '#education_dropdown-update .education-option').on('click', '#education_dropdown-update .education-option', function() {
-                const val = $(this).data('value');
+                const val = this.getAttribute('data-value');
                 if (val === 'Others') {
                     document.getElementById('education_others_wrapper-update').style.display = 'block';
                     document.getElementById('education_dropdown-update').style.display = 'none';
@@ -1668,7 +1948,7 @@
             dropdown.style.display = hasVisible ? "block" : "none";
         }
 
-        $(document).on("click", "#profession_dropdown-update .profession-option", function() {
+        $(document).off("click", "#profession_dropdown-update .profession-option").on("click", "#profession_dropdown-update .profession-option", function() {
             const value = this.getAttribute("data-value");
             const input = document.getElementById("profession_input-update");
             const hidden = document.getElementById("profession-update");
@@ -1826,14 +2106,17 @@
             });
         }
 
-        function toggleTalukOthersCurrentManager(selectEl) {
+        function toggleTalukOthersCurrentManager(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_taluk_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_taluk-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_taluk_others_update');
                 selectEl.setAttribute('name', 'cur_taluk-update'); 
@@ -1882,14 +2165,17 @@
             });
         }
 
-        function togglePanchayatOthersCurrentManager(selectEl) {
+        function togglePanchayatOthersCurrentManager(selectEl, manualValue = '') {
             const othersInput = document.getElementById('cur_panchayat_others_input_manager');
             if (selectEl.value === 'Others') {
                 othersInput.style.display = 'block';
+                othersInput.setAttribute('required', 'required');
                 selectEl.removeAttribute('name'); 
                 othersInput.setAttribute('name', 'cur_panchayat-update');
+                if (manualValue && !othersInput.value) othersInput.value = manualValue;
             } else {
                 othersInput.style.display = 'none';
+                othersInput.removeAttribute('required');
                 othersInput.value = '';
                 othersInput.setAttribute('name', 'cur_panchayat_others_update');
                 selectEl.setAttribute('name', 'cur_panchayat-update'); 
@@ -1956,10 +2242,10 @@
             if (s1 && s1.value) {
                 setDropdowndistrictsUpdate(
                     s1, 
-                    '<?= $manager->District ?>', 
-                    '<?= $manager->Taluk ?>', 
-                    '<?= $manager->Panchayat ?>', 
-                    '<?= $manager->Village ?>'
+                    '<?= addslashes((string)($manager->District ?? "")) ?>', 
+                    '<?= addslashes((string)($manager->Taluk ?? "")) ?>', 
+                    '<?= addslashes((string)($manager->Panchayat ?? "")) ?>', 
+                    '<?= addslashes((string)($manager->Village ?? "")) ?>'
                 );
             }
             
@@ -1973,15 +2259,15 @@
                 if (curState && curState.value) {
                     setDropdowndistrictsCurrentUpdate(
                         curState, 
-                        '<?= $manager->Curdistrict ?>', 
-                        '<?= $manager->Curtaluk ?>', 
-                        '<?= $manager->Curpanchayat ?>', 
-                        '<?= $manager->Curvillage ?>'
+                        '<?= addslashes((string)($manager->Curdistrict ?? "")) ?>', 
+                        '<?= addslashes((string)($manager->Curtaluk ?? "")) ?>', 
+                        '<?= addslashes((string)($manager->Curpanchayat ?? "")) ?>', 
+                        '<?= addslashes((string)($manager->Curvillage ?? "")) ?>'
                     );
                 }
             } else if (curType === 'OtherState' || curType === 'NRI') {
-                if ('<?= $manager->Curnricountry ?>') {
-                    loadNRIStatesUpdate('<?= $manager->Curnricountry ?>', '<?= $manager->Curnristate ?>', '<?= $manager->Curnricity ?>');
+                if ('<?= addslashes((string)($manager->Curnricountry ?? "")) ?>') {
+                    loadNRIStatesUpdate('<?= addslashes((string)($manager->Curnricountry ?? "")) ?>', '<?= addslashes((string)($manager->Curnristate ?? "")) ?>', '<?= addslashes((string)($manager->Curnricity ?? "")) ?>');
                 }
             }
 
@@ -1997,19 +2283,6 @@
             }
         }
 
-        $(document).on("click", "#profession_dropdown-update .profession-option", function() {
-            const value = this.getAttribute("data-value");
-            const input = document.getElementById("profession_input-update");
-            const hidden = document.getElementById("profession-update");
-            
-            input.value = this.textContent;
-            hidden.value = value;
-            document.getElementById("profession_dropdown-update").style.display = "none";
-            
-            // Trigger profession change logic
-            handleProfessionChangeUpdate({value: value});
-            // validateUpdateInput(hidden); // if available
-        });
 
         // Toggle readonly to allow typing when focused
         $("#profession_input-update").on("focus", function() {

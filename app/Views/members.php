@@ -742,46 +742,54 @@
                    <div class="border rounded p-4 bg-light shadow-sm" style="border-left: 5px solid #ffc107 !important; border-radius: 15px !important;">
                       <h6 class="mb-3 fw-bold text-dark"><i class="fas fa-search-plus me-2"></i>Advanced Search Filters</h6>
                       <div class="row mb-3" <?php if (session()->get('role') == 2) echo 'style="display:none;"'; ?>>
-                         <!-- State -->
-                         <div class="col-md-3">
-                            <label class="small fw-bold mb-1 text-muted" for="states-dropdown">State:</label>
-                            <select id="states-dropdown" onchange="setDropdowndistricts(this)"
-                               class="form-select form-select-sm border-0 shadow-sm">
-                               <option value="">Choose State</option>
-                               <?php if (isset($states)): ?>
-                                  <?php foreach ($states as $state): ?>
-                                     <option value="<?= $state->state_id ?>"><?= $state->state_title ?></option>
-                                  <?php endforeach; ?>
-                               <?php endif ?>
-                            </select>
-                         </div>
+                          <?php
+                          $tn_id = "";
+                          if (isset($states)) {
+                             foreach ($states as $state) {
+                                if ($state->state_title == "Tamil Nadu") {
+                                   $tn_id = $state->state_id;
+                                   break;
+                                }
+                             }
+                          }
+                          ?>
+                          <!-- Hidden State (Default: Tamil Nadu) -->
+                          <input type="hidden" id="states-dropdown" value="<?= $tn_id ?>">
 
-                         <!-- District -->
-                         <div class="col-md-3">
-                            <label class="small fw-bold mb-1 text-muted" for="districts-dropdown">Districts:</label>
-                            <select id="districts-dropdown" onchange="setDropdowntaluks(this)"
-                               class="form-select form-select-sm border-0 shadow-sm">
-                               <option value="">Choose District</option>
-                            </select>
-                         </div>
+                          <!-- District -->
+                          <div class="col-md-3">
+                             <label class="small fw-bold mb-1 text-muted" for="districts-dropdown">Districts:</label>
+                             <select id="districts-dropdown" onchange="setDropdowntaluks(this)"
+                                class="form-select form-select-sm border-0 shadow-sm">
+                                <option value="">Choose District</option>
+                             </select>
+                          </div>
 
-                         <!-- Taluk -->
-                         <div class="col-md-3">
-                            <label class="small fw-bold mb-1 text-muted" for="taluks-dropdown">Taluks:</label>
-                            <select id="taluks-dropdown" onchange="setDropdownpanchayat(this)"
-                               class="form-select form-select-sm border-0 shadow-sm">
-                               <option value="">Choose Taluk</option>
-                            </select>
-                         </div>
+                          <!-- Taluk -->
+                          <div class="col-md-3">
+                             <label class="small fw-bold mb-1 text-muted" for="taluks-dropdown">Taluks:</label>
+                             <select id="taluks-dropdown" onchange="setDropdownpanchayat(this)"
+                                class="form-select form-select-sm border-0 shadow-sm">
+                                <option value="">Choose Taluk</option>
+                             </select>
+                          </div>
 
-                         <!-- Panchayat -->
-                         <div class="col-md-3">
-                            <label class="small fw-bold mb-1 text-muted" for="panchayat-dropdown">Panchayat:</label>
-                            <select id="panchayat-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
-                               <option value="">Choose Panchayat</option>
-                            </select>
-                         </div>
-                      </div>
+                          <!-- Panchayat -->
+                          <div class="col-md-3">
+                             <label class="small fw-bold mb-1 text-muted" for="panchayat-dropdown">Panchayat:</label>
+                             <select id="panchayat-dropdown" onchange="setDropdownvillage(this)" class="form-select form-select-sm border-0 shadow-sm">
+                                <option value="">Choose Panchayat</option>
+                             </select>
+                          </div>
+
+                          <!-- Village -->
+                          <div class="col-md-3">
+                             <label class="small fw-bold mb-1 text-muted" for="village-dropdown">Village:</label>
+                             <select id="village-dropdown" onchange="commonSearch()" class="form-select form-select-sm border-0 shadow-sm">
+                                <option value="">Choose Village</option>
+                             </select>
+                          </div>
+                       </div>
 
                       <div class="row mb-3">
                          <!-- Specific Search (Name, ID, Mobile, Email, Aadhar) -->
@@ -1410,12 +1418,26 @@
 
 
 
+// Highlight active sidebar menu item after AJAX load
+      function highlightActiveMenu() {
+        const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+        document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+          link.classList.remove('active-menu-item');
+          const linkPage = link.getAttribute('data-page');
+          if (pathSegments.some(seg => seg === linkPage) ||
+              (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+            link.classList.add('active-menu-item');
+          }
+        });
+      }
+
       $.ajax({
          type: "get",
          url: "<?= base_url('members/sidemenu'); ?>",
          success: (result) => {
             document.getElementById("menu-bar").innerHTML = result;
             document.getElementById("offcanvasmenu").innerHTML = result;
+            highlightActiveMenu();
          },
          error: (error) => {
             document.getElementById("menu-bar").innerHTML = error;
@@ -1452,6 +1474,7 @@
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = "Error fetching menu";
@@ -1473,6 +1496,7 @@
          document.getElementById("districts-dropdown").innerHTML = "<option value=''>Select District</option>";
          document.getElementById("taluks-dropdown").innerHTML = "<option value=''>Select Taluk</option>";
          document.getElementById("panchayat-dropdown").innerHTML = "<option value=''>Select Panchayat</option>";
+         document.getElementById("village-dropdown").innerHTML = "<option value=''>Select Village</option>";
          commonSearch();
          let state_id = state.value;
          $.ajax({
@@ -1491,6 +1515,7 @@
       function setDropdowntaluks(district) {
          document.getElementById("taluks-dropdown").innerHTML = "<option value=''>Select Taluk</option>";
          document.getElementById("panchayat-dropdown").innerHTML = "<option value=''>Select Panchayat</option>";
+         document.getElementById("village-dropdown").innerHTML = "<option value=''>Select Village</option>";
          commonSearch();
          let district_name = district.value;
          $.ajax({
@@ -1508,6 +1533,7 @@
 
       function setDropdownpanchayat(taluk) {
          document.getElementById("panchayat-dropdown").innerHTML = "<option value=''>Select Panchayat</option>";
+         document.getElementById("village-dropdown").innerHTML = "<option value=''>Select Village</option>";
          commonSearch();
          let taluk_name = taluk.value;
          $.ajax({
@@ -1519,6 +1545,23 @@
             },
             error: () => {
                document.getElementById("panchayat-dropdown").innerHTML = "";
+            }
+         });
+      }
+
+      function setDropdownvillage(panchayat) {
+         document.getElementById("village-dropdown").innerHTML = "<option value=''>Select Village</option>";
+         commonSearch();
+         let panchayat_name = panchayat.value;
+         $.ajax({
+            type: "get",
+            url: "<?= base_url('members/getVillagesfordropdown') ?>",
+            data: { "panchayat_name": panchayat_name },
+            success: (result) => {
+               document.getElementById("village-dropdown").innerHTML = result;
+            },
+            error: () => {
+               document.getElementById("village-dropdown").innerHTML = "";
             }
          });
       }
@@ -1564,6 +1607,7 @@
          let district = document.getElementById("districts-dropdown").value;
          let taluk = document.getElementById("taluks-dropdown").value;
          let panchayat = document.getElementById("panchayat-dropdown").value;
+         let village = document.getElementById("village-dropdown").value;
          let bloodgroup = document.getElementById("bloodgroup-dropdown").value;
          let gender = document.getElementById("gender-dropdown").value;
          let occupation = document.getElementById("occupation-dropdown").value;
@@ -1574,6 +1618,7 @@
             "district": district,
             "taluk": taluk,
             "panchayat": panchayat,
+            "village": village,
             "bloodgroup": bloodgroup,
             "gender": gender,
             "occupation": occupation
@@ -2341,7 +2386,7 @@
       function submitMemberRejection() {
           let reason = document.getElementById("member_reject_reason").value;
           if(reason.trim() == "") {
-              alert("Please enter a reason for rejection.");
+              psShowToast('warning', 'Please enter a reason for rejection.');
               return;
           }
           document.getElementById("memberRejectForm").submit();
@@ -2471,17 +2516,36 @@ function getEventsByYear(sel) {
 
 
 function resetMemberFilters() {
-  $("#states-dropdown").val("");
+  // $("#states-dropdown").val(""); // Don't clear hidden state
   $("#districts-dropdown").html('<option value="">Choose District</option>');
   $("#taluks-dropdown").html('<option value="">Choose Taluk</option>');
   $("#panchayat-dropdown").html('<option value="">Choose Panchayat</option>');
+  $("#village-dropdown").html('<option value="">Choose Village</option>');
 
   $("#bloodgroup-dropdown").val("");
   $("#gender-dropdown").val("");
   $("#occupation-dropdown").val("");
 
+  // Clear the text search input as well
+  $("#advanced-search-input").val("");
+  let globalInput = document.querySelector("#commonsearch input");
+  if (globalInput) globalInput.value = "";
+  
+  // Reload TN districts
+  let tnId = document.getElementById("states-dropdown").value;
+  if(tnId) {
+      setDropdowndistricts({value: tnId});
+  }
+
   commonSearch();
 }
+
+$(document).ready(function() {
+    let tnId = document.getElementById("states-dropdown").value;
+    if(tnId) {
+        setDropdowndistricts({value: tnId});
+    }
+});
 
 function toggleFilterSection() {
     $("#filter-segment").slideToggle(400);

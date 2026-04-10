@@ -7,6 +7,9 @@
     <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
@@ -30,13 +33,6 @@
         </div>
     </div>
     
-    <script>
-        <?php if (session()->getFlashdata('error')): ?>
-            Swal.fire({ icon: 'error', title: 'Error', text: '<?= session()->getFlashdata('error') ?>' });
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('success')): ?>
-            Swal.fire({ icon: 'success', title: 'Success', text: '<?= session()->getFlashdata('success') ?>' });
-        <?php endif; ?>
-    </script>
+    <?= view('notification_toast') ?>
 </body>
 </html>

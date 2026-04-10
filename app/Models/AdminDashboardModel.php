@@ -7,26 +7,47 @@ class AdminDashboardModel extends Model {
 
     protected $db;
 
+    protected $encrypter;
+
     public function __construct()
     {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function getPendingapplications(){
        $session = session();
-       if($session->get('role') == 2){
-           $CoordinatorId = trim($session->get('Kaadaisoft_userId'));
-           // Case-insensitive and trimmed comparison
-           $query = $this->db->query("SELECT * FROM kaadaimembers 
-                                      WHERE (LOWER(TRIM(Coordinator_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
-                                      OR LOWER(TRIM(Coordinator_Two_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
-                                      OR LOWER(TRIM(Id_who_assign_coord)) = LOWER(" . $this->db->escape($CoordinatorId) . ")) 
-                                      AND Approvedstatus = 'Pending'");    
-          return $query->getResult();
-       }
+        if($session->get('role') == 2){
+            $CoordinatorId = trim($session->get('Kaadaisoft_userId'));
+            // Case-insensitive and trimmed comparison
+            $query = $this->db->query("SELECT * FROM kaadaimembers 
+                                       WHERE (LOWER(TRIM(Coordinator_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
+                                       OR LOWER(TRIM(Coordinator_Two_id)) = LOWER(" . $this->db->escape($CoordinatorId) . ") 
+                                       OR LOWER(TRIM(Id_who_assign_coord)) = LOWER(" . $this->db->escape($CoordinatorId) . ")) 
+                                       AND Approvedstatus = 'Pending'");    
+           $results = $query->getResult();
+           foreach ($results as $row) {
+               if (!empty($row->Aadharnumber)) {
+                   try {
+                       $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                   } catch (\Exception $e) {}
+               }
+           }
+           return $results;
+        }
          $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Pending'");    
-         return $query->getResult();
+         $results = $query->getResult();
+         foreach ($results as $row) {
+             if (!empty($row->Aadharnumber)) {
+                 try {
+                     $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                 } catch (\Exception $e) {
+                     // 
+                 }
+             }
+         }
+         return $results;
     } 
 
    public function approveMember($applicationid, $userid, $username, $district, $taluk, $village)
@@ -122,13 +143,31 @@ public function rejectMember($applicationid, $rejectreason){
 
 
    public function getMembersSearchfields($searchfields){
-      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadharnumber = '$searchfields' OR District = '$searchfields') HAVING(isShow = 1 AND Role <> 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
-      return $query->getResult();
+      $aadhar_hash = hash('sha256', $searchfields);
+      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadhar_hash = '$aadhar_hash' OR District = '$searchfields') HAVING(isShow = 1 AND Role <> 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
+      $results = $query->getResult();
+      foreach ($results as $row) {
+          if (!empty($row->Aadharnumber)) {
+              try {
+                  $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+              } catch (\Exception $e) {}
+          }
+      }
+      return $results;
    }
 
    public function getCoordinatorsSearchfields($searchfields){
-      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadharnumber = '$searchfields' OR District = '$searchfields') HAVING(isShow = 1 AND Role = 2 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
-      return $query->getResult();
+      $aadhar_hash = hash('sha256', $searchfields);
+      $query = $this->db->query("SELECT * FROM kaadaimembers WHERE (Name LIKE '%$searchfields%' OR Familymembershipid LIKE '%$searchfields%' OR Phonenumber LIKE '%$searchfields%' OR Aadhar_hash = '$aadhar_hash' OR District = '$searchfields') HAVING(isShow = 1 AND Role = 2 AND Approvedstatus = 'Verified' AND MemberRole = 'Head')");
+      $results = $query->getResult();
+      foreach ($results as $row) {
+          if (!empty($row->Aadharnumber)) {
+              try {
+                  $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+              } catch (\Exception $e) {}
+          }
+      }
+      return $results;
    }
 
    public function getStates(){
@@ -152,7 +191,7 @@ public function rejectMember($applicationid, $rejectreason){
   }
 
   public function getVillages($panchayat_name){
-   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
+   $query = $this->db->query("SELECT village_name, isAssigned, taluk_name, district_name, panchayat_name, (CASE WHEN Coordinator_id IS NOT NULL AND Coordinator_id != '' THEN 1 ELSE 0 END + CASE WHEN Coordinator_Two_id IS NOT NULL AND Coordinator_Two_id != '' THEN 1 ELSE 0 END) as assigned_count FROM village_table WHERE panchayat_name = '$panchayat_name' AND TRIM(village_name) != '' ORDER BY village_name ASC");
    return $query->getResult();
   }
 
@@ -198,12 +237,10 @@ public function rejectMember($applicationid, $rejectreason){
       }
      }
 
-   $get_count = $this->db->query("SELECT Assigned_areas_count FROM kaadaimembers WHERE Familymembershipid = '$memberid'");
-   $count = $get_count->getRow();
-   $assigned_areas_count = $count->Assigned_areas_count;
-   $current_count = $assigned_areas_count + $villagecount;
-   $setrole = $this->db->query("UPDATE kaadaimembers SET Role = 2, Assigned_areas_count = $current_count WHERE Familymembershipid = '$memberid'");
-   return true;
+      $count_query = $this->db->query("SELECT COUNT(*) as count FROM village_table WHERE (Coordinator_id = '$memberid' OR Coordinator_Two_id = '$memberid') AND isAssigned = 1");
+      $current_count = $count_query->getRow()->count;
+      $setrole = $this->db->query("UPDATE kaadaimembers SET Role = 2, Assigned_areas_count = $current_count WHERE Familymembershipid = '$memberid'");
+      return true;
    }
    catch(\Exception $e){
       return false;
@@ -212,7 +249,13 @@ public function rejectMember($applicationid, $rejectreason){
   }
   
   public function get_user_by_id($id) {
-   return $this->db->table('kaadaimembers')->where('Familymembershipid', $id)->get()->getRow();
+   $user = $this->db->table('kaadaimembers')->where('Familymembershipid', $id)->get()->getRow();
+   if ($user && !empty($user->Aadharnumber)) {
+       try {
+           $user->Aadharnumber = $this->encrypter->decrypt(base64_decode($user->Aadharnumber));
+       } catch (\Exception $e) {}
+   }
+   return $user;
   }
 
   function getExistvillage($v_name, $p_name, $t_name, $d_name) {
@@ -447,10 +490,11 @@ public function rejectMember($applicationid, $rejectreason){
    $getcode = $getdistrictcode->getRow();
    $districtcode = $getcode->district_code;
 
+   $aadhar_hash = hash('sha256', $aadharno);
    $checkexistphoneno = $this->db->query("SELECT * FROM kaadaimembers WHERE Phonenumber = $phoneno");
    $existphoneno = $checkexistphoneno->getNumRows();
 
-   $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadharnumber = $aadharno");
+   $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadhar_hash = '$aadhar_hash'");
    $existaadharno = $checkexistaadharno->getNumRows();
    if($existphoneno > 0 || $existaadharno > 0){
       $session = session();
@@ -496,9 +540,10 @@ public function rejectMember($applicationid, $rejectreason){
        $membershipid = $districtcode . sprintf('%05d', $next_num);
    }
     $current_user_id = session()->get('Kaadaisoft_userId');
+    $encrypted_aadhar = base64_encode($this->encrypter->encrypt($aadharno));
 
-    $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Aadharnumber, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id, Id_who_assign_coord) 
-                                VALUES (" . $this->db->escape($membershipid) . ", " . $this->db->escape($name) . ", " . $this->db->escape($state) . ", " . $this->db->escape($district) . ", " . $this->db->escape($taluk) . ", " . $this->db->escape($panchayat) . ", " . $this->db->escape($village) . ", " . $this->db->escape($street) . ", " . $this->db->escape($doorno) . ", " . $this->db->escape($pincode) . ", " . $this->db->escape($existfamilyid) . ", " . $this->db->escape($phoneno) . ", " . $this->db->escape($aadharno) . ", " . $this->db->escape($hashed_password) . ", " . $this->db->escape($documents[0]) . ", " . $this->db->escape($documents[1]) . ", " . $this->db->escape($documents[2]) . ", " . $this->db->escape($documents[3]) . ", '$approved_status', " . $this->db->escape($coordid) . ", " . $this->db->escape($coordid_two) . ", $state_id, " . $this->db->escape($current_user_id) . ")");
+    $query = $this->db->query("INSERT INTO kaadaimembers (Familymembershipid, Name, State, District, Taluk, Panchayat, Village, Street, Doornumber, Pincode, Existfamilyid, Phonenumber, Aadharnumber, Aadhar_hash, Password, Memberimage, Aadharfrontimage, Aadharbackimage, Communitycertificate, Approvedstatus, Coordinator_id, Coordinator_Two_id, state_id, Id_who_assign_coord) 
+                                VALUES (" . $this->db->escape($membershipid) . ", " . $this->db->escape($name) . ", " . $this->db->escape($state) . ", " . $this->db->escape($district) . ", " . $this->db->escape($taluk) . ", " . $this->db->escape($panchayat) . ", " . $this->db->escape($village) . ", " . $this->db->escape($street) . ", " . $this->db->escape($doorno) . ", " . $this->db->escape($pincode) . ", " . $this->db->escape($existfamilyid) . ", " . $this->db->escape($phoneno) . ", " . $this->db->escape($encrypted_aadhar) . ", " . $this->db->escape($aadhar_hash) . ", " . $this->db->escape($hashed_password) . ", " . $this->db->escape($documents[0]) . ", " . $this->db->escape($documents[1]) . ", " . $this->db->escape($documents[2]) . ", " . $this->db->escape($documents[3]) . ", '$approved_status', " . $this->db->escape($coordid) . ", " . $this->db->escape($coordid_two) . ", $state_id, " . $this->db->escape($current_user_id) . ")");
 
    if($query){
        return true;
@@ -510,7 +555,15 @@ public function rejectMember($applicationid, $rejectreason){
 
 public function getApplications($counts) {
    $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Approvedstatus = 'Pending' LIMIT 10 OFFSET $counts");
-   return $query->getResult();
+   $results = $query->getResult();
+   foreach ($results as $row) {
+       if (!empty($row->Aadharnumber)) {
+           try {
+               $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+           } catch (\Exception $e) {}
+       }
+   }
+   return $results;
 }
 
 public function displayApplications() {
@@ -539,7 +592,16 @@ public function update_password($id, $hashedPassword) {
         } else {
             $query = $this->db->query("SELECT r.*, m.Name as MemberName $select_old FROM member_edit_requests r JOIN kaadaimembers m ON r.Familymembershipid = m.Familymembershipid WHERE r.status = 'Pending'");
         }
-        return $query->getResult();
+        
+        $results = $query->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->old_Aadharnumber)) {
+                try {
+                    $row->old_Aadharnumber = $this->encrypter->decrypt(base64_decode($row->old_Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function approveMemberUpdate($request_id)
@@ -578,8 +640,9 @@ public function update_password($id, $hashedPassword) {
 
             // Check for duplicate Aadhaar
             if (!empty($data['Aadharnumber'])) {
+                $aadhar_hash = hash('sha256', $data['Aadharnumber']);
                 $checkAadhaar = $this->db->table('kaadaimembers')
-                    ->where('Aadharnumber', $data['Aadharnumber'])
+                    ->where('Aadhar_hash', $aadhar_hash)
                     ->where('Familymembershipid !=', $request->Familymembershipid)
                     ->countAllResults();
 
@@ -587,6 +650,9 @@ public function update_password($id, $hashedPassword) {
                     session()->setFlashdata('approvederror', "Cannot approve: Aadhaar number already exists for another member.");
                     return false;
                 }
+                // Encrypt before saving
+                $data['Aadhar_hash'] = $aadhar_hash;
+                $data['Aadharnumber'] = base64_encode($this->encrypter->encrypt($data['Aadharnumber']));
             }
 
             // Composite Check for Phone + Aadhaar to prevent DB crash

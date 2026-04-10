@@ -767,9 +767,13 @@
             <tr><th style="vertical-align:middle;">Address:</th><td id="address"></td></tr>
             <tr><th>Family Membership Id:</th><td style="font-weight:500;" id="familyid"></td></tr>
             <tr><th style="vertical-align:middle;">Photo:</th><td id="photo"></td></tr>
-            <tr><th style="vertical-align:middle;">Aadhar front:</th><td id="aadharfront"></td></tr>
-            <tr><th style="vertical-align:middle;">Aadhar back:</th><td id="aadharback"></td></tr>
-            <tr><th style="vertical-align:middle;">Community Certificate:</th><td id="communitycertificate"></td></tr>
+            <tr>
+                <th style="vertical-align:middle;">Documents:</th>
+                <td id="application_documents">
+                    <!-- Icons injected via JS -->
+                </td>
+            </tr>
+
        </table>
        
        <div id="approve_section">
@@ -802,19 +806,21 @@
 
 <!--------------------view-community-certificate------------>
 
-<div id="show_commun_cert" class="modal fade">
+<!-- Full Image View Modal -->
+<div id="imageFullViewModal" class="modal fade">
    <div class='modal-dialog modal-dialog-scrollable modal-lg'>
        <div class="modal-content">
         <div class="modal-header">
-          <h4>Community certificate</h4>
+          <h4 id="imageFullViewTitle">Image View</h4>
           <button class="btn btn-close" data-bs-dismiss='modal'></button>
         </div>
-         <div style="height:700px;" id="dis_commun_cert" class="modal-body">
-             
+         <div style="height:700px;" id="imageFullViewContent" class="modal-body">
+             <!-- Image will be injected here -->
          </div>
        </div>
    </div>
 </div>
+<!-- Full Image View Modal End -->
 
 <!--------------------view-community-certificate-end-------->
 
@@ -993,6 +999,25 @@ function commonSearch(searchField) {
     }
 }    
 
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    
+    let isMatch = pathSegments.some(seg => seg === linkPage);
+    
+    if (linkPage === 'admindashboard' && pathSegments.includes('viewreceivedapplications')) {
+        isMatch = true;
+    }
+    
+    if (isMatch || (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
 // Mobile Menu Functions
     function openMobileMenu() {
       document.getElementById('custom-mobile-menu').style.display = 'block';
@@ -1009,6 +1034,7 @@ function commonSearch(searchField) {
         document.getElementById("menu-bar").innerHTML = result;
         // Populate custom mobile menu content
         document.getElementById("mobile-menu-content").innerHTML = result;
+        highlightActiveMenu();
       },
       error: (error) => {
         document.getElementById("menu-bar").innerHTML = error;
@@ -1146,10 +1172,31 @@ function commonSearch(searchField) {
                                                       <tr><th>State</th><td>-</td><td class='fw-bold'>${application.State}</td></tr>
                                                       </table>`;
      document.getElementById("familyid").innerHTML = application.Existfamilyid  == "" ? "No" : application.Existfamilyid;   
-     document.getElementById("photo").innerHTML = `<img style='width:150px;height:200px;' src='<?=base_url("assets/membersdocuments/")?>${application.Memberimage}'>`;
-     document.getElementById("aadharfront").innerHTML = `<img style='width:300px;height:200px;' src='<?=base_url("assets/membersdocuments/")?>${application.Aadharfrontimage}'>`; 
-     document.getElementById("aadharback").innerHTML = `<img style='width:300px;height:200px;' src='<?=base_url("assets/membersdocuments/")?>${application.Aadharbackimage}'>`;     
-     document.getElementById("communitycertificate").innerHTML = `<img style='width:200px;height:300px;cursor:pointer;' onclick="viewCommunitycertificate('${application.Communitycertificate}')" src='<?=base_url("assets/membersdocuments/")?>${application.Communitycertificate}'>`;    
+     document.getElementById("photo").innerHTML = `<img style='width:120px;height:150px;cursor:pointer;object-fit:cover;' class="img-thumbnail shadow-sm" onclick="viewFullImage('${application.Memberimage}', 'Member Photo')" src='<?=base_url("documents/view/")?>${application.Memberimage}'>`;
+     
+     document.getElementById("application_documents").innerHTML = `
+        <div class="d-flex gap-3 align-items-center py-2">
+            <button type="button" class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                    style="width: 45px; height: 45px;" 
+                    title="Aadhar Front" 
+                    onclick="viewFullImage('${application.Aadharfrontimage}', 'Aadhar Front')">
+                <i class="fa-solid fa-id-card fs-5"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                    style="width: 45px; height: 45px;" 
+                    title="Aadhar Back" 
+                    onclick="viewFullImage('${application.Aadharbackimage}', 'Aadhar Back')">
+                <i class="fa-solid fa-id-card-clip fs-5"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                    style="width: 45px; height: 45px;" 
+                    title="Community Certificate" 
+                    onclick="viewFullImage('${application.Communitycertificate}', 'Community Certificate')">
+                <i class="fa-solid fa-certificate fs-5"></i>
+            </button>
+        </div>
+     `;
+
      document.getElementById("applicationid").value = `${application.Id}`;
      document.getElementById("userid").value = "<?=session()->get("userId")?>";
      document.getElementById("username").value = "<?=session()->get("userName")?>";
@@ -1464,13 +1511,14 @@ let searchmemberdata = document.getElementById("searchmemberdata")
     document.getElementById("searchmemberdata").style.display = "none";
   }
 
-  function viewCommunitycertificate(communitycertificate) {
-      let viewcert_modal = new bootstrap.Modal(document.getElementById("show_commun_cert"),{
+  function viewFullImage(imageName, title) {
+      let viewImageModal = new bootstrap.Modal(document.getElementById("imageFullViewModal"),{
         backdrop:"static",
         keyboard:false
       });
-      viewcert_modal.show();
-      document.getElementById("dis_commun_cert").innerHTML = `<img style="width:100%;height:750px;" class="img-fluid" src='assets/membersdocuments/${communitycertificate}'>`;
+      document.getElementById("imageFullViewTitle").innerText = title;
+      document.getElementById("imageFullViewContent").innerHTML = `<img style="width:100%;height:auto;max-height:100%;" class="img-fluid" src='<?=base_url("documents/view/")?>${imageName}'>`;
+      viewImageModal.show();
   }
 
 /*   let coordsform = document.getElementById("assigncoords-form")
@@ -1523,7 +1571,7 @@ function hideRejectSection() {
 function confirmReject() {
     let reason = document.getElementById("rejectreason").value;
     if(reason.trim() == "") {
-        alert("Please enter a reason for rejection.");
+        psShowToast('warning', 'Please enter a reason for rejection.');
         return;
     }
     

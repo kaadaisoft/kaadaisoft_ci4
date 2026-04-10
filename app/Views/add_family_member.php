@@ -1,23 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Member Registration Form</title>
-    <link rel="icon" type="image/png" href="<?= base_url('assets/poondurai kaadaikulam image.png') ?>">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-color: #f0f2f5;
+        :root {
+            --primary-brown: #2D1B18;
+            --medium-brown: #3E2723;
+            --accent-gold: #C5A028;
+            --glass-white: rgba(255, 255, 255, 0.65);
+            --border-white: rgba(255, 255, 255, 0.5);
+            --soft-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        #add-family-member-form {
+            font-family: 'Outfit', sans-serif;
+            color: #333333;
         }
 
         .login-image {
@@ -34,149 +32,249 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: brightness(0.65);
+            filter: brightness(0.9) contrast(1.0);
+            transform: scale(1.0);
+            transition: transform 10s ease;
         }
 
-        .card.shadow-lg {
-            background: rgba(255, 255, 255, 0.50) !important;
-            backdrop-filter: blur(1px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 15px !important;
+        .container {
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .card-header,
-        .card-body,
-        .card {
-            background: transparent !important;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .card-header h4 {
-            color: #000000 !important;
-            font-weight: 800 !important;
+        #add-family-member-form .card.shadow-lg {
+            background: var(--glass-white) !important;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid var(--border-white) !important;
+            border-top: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 20px !important;
+            box-shadow: var(--soft-shadow) !important;
+        }
+
+        #add-family-member-form .card-header {
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+            padding: 1.25rem 1.5rem !important;
+        }
+
+        #add-family-member-form .card-header h4 {
+            color: var(--primary-brown) !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.5px;
         }
 
         #registration-form label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #000000 !important;
+            color: #333333 !important;
+            margin-bottom: 0.4rem;
+            display: inline-block;
+            letter-spacing: 0.2px;
         }
 
         #registration-form .form-control,
-        #registration-form select {
-            font-size: 0.9rem;
-            background-color: rgba(255, 255, 255, 1);
-            border: 1px solid #a1887f;
-            color: #000000 !important;
-            font-weight: 600;
+        #registration-form .form-select {
+            font-size: 0.92rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            transition: all 0.25s ease;
         }
 
-        .section-title {
-            border-left: 5px solid #3E2723;
-            padding-left: .75rem;
-            font-weight: 800;
-            color: #1a0f0d !important;
-        }
-
-        .ps-img-btn,
-        form button[type=submit] {
-            color: white !important;
-            font-weight: 700;
-            border: none;
-            background: linear-gradient(135deg, #795548 0%, #3E2723 100%);
-            padding: 8px 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        form button[type=submit]:hover {
+        #registration-form .form-control:focus,
+        #registration-form .form-select:focus {
+            background-color: #fff;
+            border-color: var(--medium-brown);
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
             transform: translateY(-1px);
-            filter: brightness(1.2);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
         }
 
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        #add-family-member-form .section-title {
+            position: relative;
+            padding-left: 1rem;
+            font-weight: 700;
+            color: var(--primary-brown) !important;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem !important;
         }
 
-        input[type=number] {
-            -moz-appearance: textfield;
+        #add-family-member-form .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--accent-gold);
+            border-radius: 2px;
+        }
+
+        #add-family-member-form .ps-img-btn,
+        #add-family-member-form form button[type=submit] {
+            color: white !important;
+            font-weight: 600;
+            border: none;
+            background: linear-gradient(135deg, var(--medium-brown) 0%, var(--primary-brown) 100%);
+            padding: 10px 28px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        #add-family-member-form form button[type=submit]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.4);
+            filter: brightness(1.1);
+        }
+
+        #add-family-member-form form button[type=submit]:active {
+            transform: translateY(0);
+        }
+
+        /* Integration buttons */
+        #add-family-member-form .btn-outline-primary {
+            border-color: #D7CCC8 !important;
+            color: var(--medium-brown) !important;
+            background: #fff;
+            border-radius: 0 10px 10px 0 !important;
+            font-weight: 500;
+        }
+
+        #add-family-member-form .btn-outline-primary:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        #whatsappnofield {
+            border-radius: 10px 0 0 10px !important;
         }
 
         #education_wrapper {
-            min-height: 38px;
-            background-color: #ffffff;
-            border: 1px solid #a1887f;
-            border-radius: 4px;
+            min-height: 44px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 4px 8px !important;
+            transition: all 0.25s ease;
+        }
+
+        #education_wrapper:focus-within {
+            border-color: var(--medium-brown);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(62, 39, 35, 0.1);
         }
 
         #education_tags .badge {
-            margin-right: 4px;
-            margin-bottom: 4px;
-            background-color: #3E2723 !important;
+            margin: 2px;
+            background-color: var(--primary-brown) !important;
             color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .education-option:hover {
-            background-color: #efebe9;
+        .education-option {
+            padding: 10px 15px;
+            transition: background 0.2s;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
-        .bi-person-circle,
-        .bi-briefcase-fill {
-            color: #3E2723 !important;
+        #add-family-member-form .education-option:hover {
+            background-color: #F5F5F5;
+            color: var(--primary-brown);
         }
 
-        .mb-2 span {
-            color: #000000 !important;
-            font-weight: 600;
+        .status-modal-content {
+            border-radius: 28px !important;
+            background: var(--glass-white) !important;
+            backdrop-filter: blur(5px);
+        }
+
+        .exit-form-btn {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border: 1.5px solid var(--border-white) !important;
+            color: var(--primary-brown) !important;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: blur(8px);
+            border-radius: 50% !important;
+        }
+
+        .exit-form-btn:hover {
+            background: var(--primary-brown) !important;
+            color: #fff !important;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.25) !important;
+            border-color: var(--primary-brown) !important;
+        }
+
+        .exit-form-btn i {
+            font-size: 1.3rem;
+            line-height: 0;
+            display: block;
+        }
+
+        /* Ensure inner cards are transparent to maintain glass effect */
+        #add-family-member-form .card-body .card {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 15px !important;
+            margin-bottom: 1.5rem !important;
+        }
+        
+        #add-family-member-form .text-danger { color: #E53935 !important; }
+
+        /* Premium radio styling */
+        #add-family-member-form .form-check-input:checked {
+            background-color: var(--primary-brown);
+            border-color: var(--primary-brown);
         }
 
         .btn-copy-address {
-            background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%);
-            color: white !important;
-            border: none;
-            border-radius: 50px;
-            padding: 8px 18px;
-            font-weight: 700;
+            background-color: transparent;
+            border: 1px solid var(--primary-brown);
+            color: var(--primary-brown);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 600;
             font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-flex;
+            transition: all 0.3s ease;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            gap: 6px;
         }
+
         .btn-copy-address:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 15px rgba(26, 35, 126, 0.3);
-            filter: brightness(1.1);
-        }
-        .btn-copy-address:active {
-            transform: translateY(0) scale(0.98);
-        }
-        .btn-copy-address:disabled {
-            background: #cbd5e1;
-            color: #94a3b8 !important;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .btn-copy-address i {
-            font-size: 1rem;
+            background-color: var(--primary-brown);
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 27, 24, 0.15);
         }
     </style>
-</head>
 
-<body>
 
-    <div class="login-image">
-        <img src="<?= base_url('assets/ewaran kovil 1.jpg') ?>" alt="Kaadaisoft Temple">
-    </div>
-
-    <div class="container py-4">
         <!---------------------register-status-modal---------------------->
         <style>
             .status-modal-content {
@@ -249,9 +347,9 @@
                 flex: 1;
             }
             .ps-file-upload-btn.file-selected {
-                border-color: #0d6efd;
-                background-color: #e7f1ff;
-                color: #0a3d91;
+                border-color: var(--primary-brown);
+                background-color: rgba(93, 64, 55, 0.1);
+                color: var(--primary-brown);
                 font-weight: 500;
             }
         </style>
@@ -333,37 +431,36 @@
             <div class="card shadow-lg border-0 rounded-3">
 
                 <!-- Sticky header -->
-                <div class="card-header bg-white border-0 py-3" style="z-index:10;">
+                <div class="card-header border-0 py-3" style="z-index:10;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0 text-secondary">
+                        <h4 class="mb-0">
                             Kaadaikulam.org / Registration Form(For Family Members)
                         </h4>
-                        <button type="button" class="btn btn-light p-2 rounded-circle" aria-label="Exit form"
-                            onclick="window.history.back();" style="box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                            <i class="bi bi-x-lg fs-5"></i>
+                        <button type="button" class="btn exit-form-btn" aria-label="Exit form"
+                            onclick="hideAddFamilyMemberModal();">
+                            <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="card-body bg-light">
-                    <form name="memberregistration" id="registration-form" class="p-2"
+                <div class="card-body">
+                    <form name="memberregistration" id="registration-form" class="p-3"
                         onsubmit="return validateMemberform()" action="<?= base_url("members/addFamilyMember"); ?>"
                         method="post" enctype="multipart/form-data" autocomplete="off">
 
-                        <div class="mb-2">
-                            <span style="color:#295CF5;">
-                                Note: <span style="color:red;font-weight:500;">*</span> Indicates Mandatory.
+                        <div class="mb-3 px-2">
+                            <span style="color: var(--medium-brown); font-weight: 500;">
+                                Note: <span style="color: #E53935; font-weight: 700;">*</span> Indicates Mandatory.
                             </span>
                         </div>
 
                         <!-- Basic details section -->
                         <div class="card mb-3 border-0">
                             <div class="card-body">
-                                <h5 class="mb-3 section-title">
-                                    <i class="bi bi-person-circle text-primary me-2"></i>Basic Details
+                                <h5 class="mb-4 section-title">
+                                    <i class="bi bi-person-circle fs-5 me-2"></i>Basic Details
                                 </h5>
-
-                                <div class="row g-3">
+                                <div class="row g-4">
                                     <!-- Relationship -->
                                     <div class="col-md-4">
                                         <label for="relationshipfield">Relationship <span
@@ -623,10 +720,10 @@
                         <!-- Occupation Details -->
                         <div class="card mb-3 border-0">
                             <div class="card-body">
-                                <h5 class="mb-3 section-title">
-                                    <i class="bi bi-briefcase-fill text-primary me-2"></i>Education & Career Details
+                                <h5 class="mb-4 section-title">
+                                    <i class="bi bi-briefcase-fill fs-5 me-2"></i>Education & Career Details
                                 </h5>
-                                <div class="row g-3">
+                                <div class="row g-4">
 
                                     <!-- Education (tag style like skills) -->
                                     <div class="col-md-4">
@@ -1776,12 +1873,34 @@
             // Email live validation
             if (field_name === "email") {
                 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+                const emailErr = document.getElementById("emailerror");
+                const emailInput = document.getElementById("emailfield");
+
                 if (field_value === "") {
-                    document.getElementById("emailerror").innerHTML = "";
+                    emailErr.innerHTML = "";
+                    emailInput.removeAttribute('data-exists');
                 } else if (!emailRegex.test(field_value)) {
-                    document.getElementById("emailerror").innerHTML = "Enter a valid email like name@example.com";
+                    emailErr.innerHTML = "Enter a valid email like name@example.com";
+                    emailInput.removeAttribute('data-exists');
                 } else {
-                    document.getElementById("emailerror").innerHTML = "";
+                    emailErr.innerHTML = "";
+                    // AJAX check for existence
+                    $.ajax({
+                        type: "POST",
+                        url: "<?= base_url('members/checkExistEmail') ?>",
+                        data: { "email": field_value },
+                        success: (result) => {
+                            if (result.trim() == "true") {
+                                emailErr.innerHTML = "Email address already registered.";
+                                emailInput.setAttribute('data-exists', 'true');
+                            } else {
+                                emailInput.setAttribute('data-exists', 'false');
+                            }
+                        },
+                        error: () => {
+                            console.error("Error checking email existence");
+                        }
+                    });
                 }
             }
 
@@ -2079,11 +2198,17 @@
             if (!kulam)
                 setErr('kulamerror', 'Kulam is required.', document.getElementById('kulamfield'));
 
-            // Email *  ✅ NEW
+            // Email *
+            const email_field = document.getElementById('emailfield');
             const email = f.email.value.trim();
-            // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!email)
-                setErr('emailerror', 'Email is mandatory.', document.getElementById('emailfield'));
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (!email) {
+                setErr('emailerror', 'Email is mandatory.', email_field);
+            } else if (!emailRegex.test(email)) {
+                setErr('emailerror', 'Enter a valid email like name@example.com', email_field);
+            } else if (email_field.getAttribute('data-exists') === 'true') {
+                setErr('emailerror', 'Email address already registered.', email_field);
+            }
 
 
             // Married * ✅ NEW
@@ -2344,6 +2469,13 @@
             const n_doorno = document.getElementById("doornofield");
             const n_pincode = document.getElementById("pincodefield");
 
+            // Validation: Ensure all native fields have values
+            if (!n_district.value || !n_taluk.value || !n_panchayat.value || !n_village.value || 
+                !n_street.value || !n_doorno.value || !n_pincode.value) {
+                psShowToast('error', 'Please fill all native address fields before copying.');
+                return;
+            }
+
             // Current fields
             const c_state = document.getElementById("cur_states_dropdown");
             const c_district = document.getElementById("cur_districts_dropdown");
@@ -2359,13 +2491,11 @@
             c_doorno.value = n_doorno.value;
             c_pincode.value = n_pincode.value;
 
-            // Copy state, then load and choose district/taluk/panchayat through AJAX
-
             // 1. State
             c_state.value = n_state.value;
-            validateInputfield(c_state);  // clear state error
+            validateInputfield(c_state);
 
-            // 2. District (needs AJAX fill for current dropdown)
+            // 2. District
             $.ajax({
                 type: "get",
                 url: "<?= base_url('members/getDistrictsfordropdown') ?>",
@@ -2373,7 +2503,7 @@
                 success: function (result) {
                     c_district.innerHTML = result;
                     c_district.value = n_district.value;
-                    validateInputfield(c_district); // clear district error
+                    validateInputfield(c_district);
 
                     // 3. Taluk
                     if (n_taluk.value === 'Others') {
@@ -2383,9 +2513,9 @@
                         document.getElementById('cur_taluk_others_input_member').value = document.getElementById('taluk_others_input_member').value;
                         validateInputfield(c_taluk);
 
-                        // 4. Panchayat (Must be Others too if Taluk is Others)
+                        // 4. Panchayat
                         c_panchayat.innerHTML = '<option value="">Select Panchayat</option><option value="Others">Others</option>';
-                        c_panchayat.value = n_panchayat.value; // Likely 'Others'
+                        c_panchayat.value = n_panchayat.value;
                         togglePanchayatOthersCurrentMember(c_panchayat);
                         if (n_panchayat.value === 'Others') {
                             document.getElementById('cur_panchayat_others_input_member').value = document.getElementById('panchayat_others_input_member').value;
@@ -2469,23 +2599,30 @@
                                                 }
                                                 validateInputfield(c_village);
                                             }, 500);
+                                        },
+                                        error: function () {
+                                            psShowToast('error', 'Failed to fetch panchayat data. Please try again.');
                                         }
                                     });
                                 }
+                            },
+                            error: function () {
+                                psShowToast('error', 'Failed to fetch taluk data. Please try again.');
                             }
                         });
                     }
                 },
                 error: function () {
-                    // keep old options if error
+                    psShowToast('error', 'Failed to fetch district listing. Please try again.');
                 }
             });
 
-            // Validate copied text fields also (to hide errors)
-            validateInputfield(c_village);
+            // Validate immediately for aesthetic feedback
             validateInputfield(c_street);
             validateInputfield(c_doorno);
             validateInputfield(c_pincode);
+
+            psShowToast('success', 'Native address copied to current address!');
         }
 
         var selectedEducations = [];
@@ -3025,9 +3162,3 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-</body>
-
-</html>

@@ -703,6 +703,62 @@
             overflow: visible !important;
           }
       }
+      /* Image Viewer Modal Styling */
+      #image-viewer-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(15, 23, 42, 0.95);
+          backdrop-filter: blur(8px);
+          z-index: 9999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          cursor: zoom-out;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+      }
+      #image-viewer-modal.show {
+          display: flex;
+          opacity: 1;
+      }
+      #full-size-image {
+          max-width: 90%;
+          max-height: 85%;
+          object-fit: contain;
+          border-radius: 12px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          transform: scale(0.9);
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          border: 4px solid rgba(255, 255, 255, 0.1);
+      }
+      #image-viewer-modal.show #full-size-image {
+          transform: scale(1);
+      }
+      .close-viewer {
+          position: absolute;
+          top: 30px;
+          right: 40px;
+          width: 45px;
+          height: 45px;
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          z-index: 10000;
+      }
+      .close-viewer:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: rotate(90deg);
+      }
     </style>
 </head>
 <body>
@@ -949,10 +1005,10 @@ function renderEvents(data, sNo) {
                 <td class="fw-bold text-muted">${i}</td>
                 <td class="fw-bold text-dark">${value.EventName}</td>
                 <td>
-                    <div class="event-banner-wrapper">
+                    <div class="event-banner-wrapper" onclick="showImageFullSize('${imagePath}')">
                         <img class="event-banner-img" src="${imagePath}" alt="${value.EventName}"/>
                         <button class="banner-change-overlay" <?=(session()->get('role') == 2) ? 'hidden' : (session()->get('role') == 3 ? 'hidden' : '')?> 
-                                onclick='showupdateeventbannermodal(${value.Id}, "${value.EventName}")'>
+                                onclick='event.stopPropagation(); showupdateeventbannermodal(${value.Id}, "${value.EventName}")'>
                             CHANGE
                         </button>
                     </div>
@@ -1075,6 +1131,19 @@ function closeMobileMenu() {
   document.getElementById('custom-mobile-menu').style.display = 'none';
 }
 
+// Highlight active sidebar menu item after AJAX load
+function highlightActiveMenu() {
+  const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+  document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+    link.classList.remove('active-menu-item');
+    const linkPage = link.getAttribute('data-page');
+    if (pathSegments.some(seg => seg === linkPage) ||
+        (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+      link.classList.add('active-menu-item');
+    }
+  });
+}
+
 $.ajax({
       type:"get",
       url:"events/sidemenu",
@@ -1082,6 +1151,7 @@ $.ajax({
            document.getElementById("menu-bar").innerHTML = result;
            // Populate custom mobile menu content
            document.getElementById("mobile-menu-content").innerHTML = result;
+           highlightActiveMenu();
       },
       error:(error)=>{
            document.getElementById("menu-bar").innerHTML = "Error fetching menu";
@@ -1264,7 +1334,7 @@ $.ajax({
         url: baseUrl + "events/movetotrash",
         data:{"id":id},
         success:function(result){
-          alert("Moved to trash successfully");
+                psShowToast('success', 'Moved to trash successfully!');
           window.location.reload();
         },
         error:function(error){
@@ -1418,6 +1488,7 @@ $.ajax({
           if(document.getElementById("mobile-menu-content")) {
               document.getElementById("mobile-menu-content").innerHTML = result;
           }
+          highlightActiveMenu();
       }
   });
 
@@ -1445,6 +1516,28 @@ $.ajax({
   function closeMobileMenu() {
       document.getElementById('custom-mobile-menu').style.display = 'none';
   }
+
+  function showImageFullSize(src) {
+      const modal = document.getElementById('image-viewer-modal');
+      const fullImg = document.getElementById('full-size-image');
+      if(modal && fullImg) {
+          fullImg.src = src;
+          modal.style.display = 'flex';
+          setTimeout(() => {
+              modal.classList.add('show');
+          }, 10);
+      }
+  }
+
+  function hideImageViewer() {
+      const modal = document.getElementById('image-viewer-modal');
+      if(modal) {
+          modal.classList.remove('show');
+          setTimeout(() => {
+              modal.style.display = 'none';
+          }, 300);
+      }
+  }
    </script>
     <!---------------------Custom Mobile Menu-------------------------->
     <div id="custom-mobile-menu">
@@ -1454,6 +1547,11 @@ $.ajax({
         </div>
     </div>
     <!---------------------Custom Mobile Menu End-------------------------------->
+    
+    <div id="image-viewer-modal" onclick="hideImageViewer()">
+        <span class="close-viewer" onclick="hideImageViewer()">&times;</span>
+        <img id="full-size-image" src="" alt="Full Size Image">
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> 
     

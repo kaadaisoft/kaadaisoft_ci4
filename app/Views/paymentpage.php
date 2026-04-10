@@ -1011,6 +1011,19 @@
         document.getElementById('custom-mobile-menu').style.display = 'none';
     }
 
+    // Highlight active sidebar menu item after AJAX load
+    function highlightActiveMenu() {
+      const pathSegments = window.location.pathname.split('/').filter(s => s !== '');
+      document.querySelectorAll('#menu-bar [data-page], #mobile-menu-content [data-page]').forEach(function(link) {
+        link.classList.remove('active-menu-item');
+        const linkPage = link.getAttribute('data-page');
+        if (pathSegments.some(seg => seg === linkPage) ||
+            (pathSegments.length === 0 && linkPage === 'admindashboard')) {
+          link.classList.add('active-menu-item');
+        }
+      });
+    }
+
     $.ajax({
       type: "get",
       url: "<?= base_url('payments/sidemenu'); ?>",
@@ -1020,6 +1033,7 @@
         if(document.getElementById("mobile-menu-content")) {
             document.getElementById("mobile-menu-content").innerHTML = result;
         }
+        highlightActiveMenu();
       },
       error: (error) => {
         document.getElementById("menu-bar").innerHTML = "Error loading menu";

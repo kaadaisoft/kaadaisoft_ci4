@@ -7,9 +7,12 @@ class CoordinatorsModel extends Model
 {
     protected $db;
 
+    protected $encrypter;
+
     public function __construct() {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function getTotalCoordinators()
@@ -34,7 +37,15 @@ class CoordinatorsModel extends Model
         }
         
         $query = $this->db->query($sql);
-        return $query->getResult();
+        $results = $query->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getUndermember($counts, $coordid)
@@ -69,11 +80,20 @@ class CoordinatorsModel extends Model
 
     public function getCoordinatorsSearchfields($searchfields)
     {
+        $aadhar_hash = hash('sha256', $searchfields);
         $query = $this->db->query("SELECT km.*, 
        GROUP_CONCAT(vt.village_name) AS VillageNames FROM kaadaimembers AS km
-       LEFT JOIN village_table AS vt ON (km.Familymembershipid = vt.Coordinator_id OR km.Familymembershipid = vt.Coordinator_Two_id) WHERE (km.Name LIKE '%$searchfields%' OR km.Familymembershipid LIKE '%$searchfields%' OR km.Phonenumber LIKE '%$searchfields%' OR km.Aadharnumber LIKE '%$searchfields%' OR km.State LIKE '%$searchfields%'  OR km.District LIKE '%$searchfields%' OR km.Taluk LIKE '%$searchfields%' OR km.Panchayat LIKE '%$searchfields%') AND km.Role = 2 AND km.isShow = 1 GROUP BY km.Familymembershipid;");
+       LEFT JOIN village_table AS vt ON (km.Familymembershipid = vt.Coordinator_id OR km.Familymembershipid = vt.Coordinator_Two_id) WHERE (km.Name LIKE '%$searchfields%' OR km.Familymembershipid LIKE '%$searchfields%' OR km.Phonenumber LIKE '%$searchfields%' OR km.Aadhar_hash = '$aadhar_hash' OR km.State LIKE '%$searchfields%'  OR km.District LIKE '%$searchfields%' OR km.Taluk LIKE '%$searchfields%' OR km.Panchayat LIKE '%$searchfields%') AND km.Role = 2 AND km.isShow = 1 GROUP BY km.Familymembershipid;");
 
-        return $query->getResult();
+        $results = $query->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function addCoordinator($name, $aadhar, $phoneno, $village, $email, $role)
@@ -99,7 +119,13 @@ class CoordinatorsModel extends Model
     public function getCoordinatorsdata($id)
     {
         $getCoordinator = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$id'");
-        return $getCoordinator->getRow();
+        $row = $getCoordinator->getRow();
+        if ($row && !empty($row->Aadharnumber)) {
+            try {
+                $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+            } catch (\Exception $e) {}
+        }
+        return $row;
     }
 
     public function assignCoordinator($aadhar)
@@ -142,7 +168,13 @@ class CoordinatorsModel extends Model
     {
         $coord_data = $this->db->query("SELECT km.*, GROUP_CONCAT(vt.village_name) AS VillageNames
         FROM kaadaimembers AS km LEFT JOIN village_table AS vt ON (km.Familymembershipid = vt.Coordinator_id OR km.Familymembershipid = vt.Coordinator_Two_id) WHERE km.Familymembershipid = '$coord_id' AND km.isShow = 1 GROUP BY km.Familymembershipid;");
-        return $coord_data->getRow();
+        $row = $coord_data->getRow();
+        if ($row && !empty($row->Aadharnumber)) {
+            try {
+                $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+            } catch (\Exception $e) {}
+        }
+        return $row;
     }
 
     public function processCoordinatorupdate($Familymembershipid, $data)
@@ -179,14 +211,18 @@ class CoordinatorsModel extends Model
         
         // Aadhaar uniqueness check
         if (!empty($data['Aadharnumber'])) {
+            $aadhar_hash = hash('sha256', $data['Aadharnumber']);
             $checkAadhar = $this->db->table('kaadaimembers')
-                ->where('Aadharnumber', $data['Aadharnumber'])
+                ->where('Aadhar_hash', $aadhar_hash)
                 ->where('Familymembershipid !=', $Familymembershipid)
                 ->countAllResults();
             if ($checkAadhar > 0) {
                  $session->setFlashdata("coorderrorstatus", "Aadhar number already exists.");
                  return false;
             }
+            $data['Aadhar_hash'] = $aadhar_hash;
+            $data['Aadharnumber'] = base64_encode($this->encrypter->encrypt($data['Aadharnumber']));
+            $data['Aadhar_hash'] = $aadhar_hash;
         }
 
         // Check if anything actually changed (ignoring updated_at)
@@ -233,7 +269,13 @@ class CoordinatorsModel extends Model
     public function getMemberdata($member_id)
     {
         $member_data = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$member_id'");
-        return $member_data->getRowArray();
+        $row = $member_data->getRowArray();
+        if ($row && !empty($row['Aadharnumber'])) {
+            try {
+                $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+            } catch (\Exception $e) {}
+        }
+        return $row;
     }
 
     public function getMembereventparticipation($member_id)
@@ -246,21 +288,14 @@ class CoordinatorsModel extends Model
     public function getPendingamount($member_id) {
     $pending_amount = $this->db->query("
         SELECT el.Id, el.EventName as eventname, el.TaxAmount as Taxamount,
-        IFNULL(pr.balanceamount, el.TaxAmount) AS balanceamount,
+        (el.TaxAmount - IFNULL(pr.total_paid, 0)) AS balanceamount,
         pr.max_dues as dues
         FROM eventlist el
         LEFT JOIN (
-            SELECT pr.Eventid, pr.eventname, pr.Taxamount, pr.balanceamount, max_dues_subquery.max_dues
-            FROM paymentreceipts pr
-            JOIN (
-                SELECT Eventid, MAX(dues) AS max_dues
-                FROM paymentreceipts
-                WHERE Familymembershipid = '$member_id'
-                GROUP BY Eventid
-            ) max_dues_subquery
-            ON pr.Eventid = max_dues_subquery.Eventid
-            AND pr.dues = max_dues_subquery.max_dues
-            WHERE pr.Familymembershipid = '$member_id'
+            SELECT Eventid, SUM(paidamount) as total_paid, MAX(dues) as max_dues
+            FROM paymentreceipts
+            WHERE Familymembershipid = '$member_id'
+            GROUP BY Eventid
         ) pr ON el.Id = pr.Eventid
         WHERE el.isShow = 1
     ");

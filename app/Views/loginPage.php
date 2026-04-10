@@ -281,66 +281,7 @@
             opacity: 0.9; /* Higher visibility */
         }
 
-        /* MUI Alert Styles */
-        .mui-alert-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            width: 100%;
-            max-width: 400px;
-            padding: 0 20px;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
 
-        .mui-alert {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            pointer-events: auto;
-            animation: muiSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        @keyframes muiSlideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .mui-alert-icon {
-            margin-right: 12px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .mui-alert-message {
-            flex-grow: 1;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .mui-alert-close {
-            margin-left: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            opacity: 0.6;
-            background: transparent;
-            border: none;
-            color: inherit;
-        }
-
-        .mui-alert-success { background: #edf7ed; color: #1e4620; }
-        .mui-alert-error { background: #fdeded; color: #5f2120; }
-        .mui-alert-warning { background: #fff4e5; color: #663c00; }
-        .mui-alert-info { background: #e5f6fd; color: #014361; }
 
         @media (max-height: 700px) {
             .login-container {
@@ -426,7 +367,8 @@
 </head>
 
 <body>
-    <div id="mui-alert-container" class="mui-alert-container"></div>
+    <?= view('notification_toast') ?>
+
     <div class="login-wrapper">
         <!-- Full Screen Background Image -->
         <div class="login-image">
@@ -518,66 +460,34 @@
             form.addEventListener('submit', function (e) {
                 if (username.value.trim() === "") {
                     e.preventDefault();
-                    showMuiAlert('warning', '<strong>Mobile Number Required</strong><br>Please enter your Mobile Number.');
+                    psShowAlert('warning', 'Mobile Number Required', 'Please enter your Mobile Number.');
                     return;
                 }
 
                 if (password.value.trim() === "") {
                     e.preventDefault();
-                    showMuiAlert('warning', '<strong>Password Required</strong><br>Please enter your password.');
+                    psShowAlert('warning', 'Password Required', 'Please enter your password.');
                     return;
                 }
             });
 
-            // MUI Alert Function
-            window.showMuiAlert = function(type, message, duration = 5000) {
-                const container = document.getElementById('mui-alert-container');
-                const alert = document.createElement('div');
-                alert.className = `mui-alert mui-alert-${type}`;
-                
-                let icon = '';
-                if (type === 'success') icon = '<i class="fa-solid fa-circle-check"></i>';
-                else if (type === 'error') icon = '<i class="fa-solid fa-circle-xmark"></i>';
-                else if (type === 'warning') icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                else icon = '<i class="fa-solid fa-circle-info"></i>';
-
-                alert.innerHTML = `
-                    <div class="mui-alert-icon">${icon}</div>
-                    <div class="mui-alert-message">${message}</div>
-                    <button class="mui-alert-close" onclick="closeMuiAlert(this.parentElement)">&times;</button>
-                `;
-
-                container.appendChild(alert);
-
-                if (duration > 0) {
-                    setTimeout(() => {
-                        closeMuiAlert(alert);
-                    }, duration);
-                }
-            };
-
-            window.closeMuiAlert = function(alertElement) {
-                alertElement.style.opacity = '0';
-                alertElement.style.transform = 'translateY(-10px)';
-                setTimeout(() => alertElement.remove(), 300);
-            };
-
             // Handle Server Side Errors
             <?php if (isset($usererror)): ?>
-                showMuiAlert('error', '<strong>Login Error</strong><br><?= addslashes($usererror) ?>');
+                psShowAlert('error', 'Login Error', '<?= addslashes($usererror) ?>');
             <?php endif; ?>
 
             <?php if (isset($passworderror)): ?>
-                showMuiAlert('error', '<strong>Invalid Password</strong><br><?= addslashes($passworderror) ?>');
+                psShowAlert('error', 'Invalid Password', '<?= addslashes($passworderror) ?>');
             <?php endif; ?>
 
             <?php if (session()->getFlashdata('error')): ?>
-                showMuiAlert('error', '<strong>Error</strong><br><?= addslashes(session()->getFlashdata('error')) ?>');
+                psShowAlert('error', 'Error', '<?= addslashes(session()->getFlashdata('error')) ?>');
             <?php endif; ?>
 
             <?php if (session()->getFlashdata('success')): ?>
-                showMuiAlert('success', '<strong>Success</strong><br><?= addslashes(session()->getFlashdata('success')) ?>');
+                psShowAlert('success', 'Success', '<?= addslashes(session()->getFlashdata('success')) ?>');
             <?php endif; ?>
+
 
             <?php if (isset($rejectreason)): ?>
                 Swal.fire({

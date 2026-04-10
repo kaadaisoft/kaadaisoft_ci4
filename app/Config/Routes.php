@@ -14,6 +14,10 @@ $routes->get('/', 'Loginpage::index');
 $routes->add('login', 'Loginpage::login'); // Changed to add to match get/post if needed, or keep post. keeping post is fine but user had login redirect issues before.
 $routes->get('logout', 'AdminDashboard::logout');
 
+// Secure Document Route
+$routes->get('documents/view/(:any)', 'DocumentController::view/$1');
+
+
 
 // Terms and Policy
 $routes->get('terms-and-conditions', 'Loginpage::terms_and_conditions');
@@ -22,6 +26,7 @@ $routes->get('privacy-policy', 'Loginpage::privacy_policy');
 // Forgot Password Routes
 $routes->get('forgot-password', 'Loginpage::forgot_password');
 $routes->post('send-otp', 'Loginpage::send_otp');
+$routes->get('resend-otp/(:any)', 'Loginpage::resend_otp/$1');
 $routes->get('verify-otp', 'Loginpage::verify_otp_view');
 $routes->post('verify-otp', 'Loginpage::verify_otp');
 $routes->get('reset-password', 'Loginpage::reset_password_view');
@@ -130,6 +135,7 @@ $routes->get('members/getPanchayatsfordropdown', 'Members::getPanchayatsfordropd
 $routes->get('members/getVillagesfordropdown', 'Members::getVillagesfordropdown');
 $routes->post('members/checkExistphoneno', 'Members::checkExistphoneno');
 $routes->post('members/checkExistaadharno', 'Members::checkExistaadharno');
+$routes->post('members/checkExistEmail', 'Members::checkExistEmail');
 $routes->get('members/getmember', 'Members::getmember');
 $routes->get('members/sidemenu', 'Members::sidemenu');
 $routes->get('members/topmenu', 'Members::topmenu');

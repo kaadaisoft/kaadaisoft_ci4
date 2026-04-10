@@ -85,12 +85,20 @@ class AdminDashboard extends BaseController {
         $district = $this->request->getPost("userdistrict");
         $taluk = $this->request->getPost("talukname");
         $village = $this->request->getPost("villagename");
+
+        // Fetch member email & name before approval (they exist in the pending record)
+        $pendingMember = $this->db->table('kaadaimembers')->where('Id', $applicationid)->get()->getRow();
+
         $member_id = $this->adminDashboardModel->approveMember($applicationid,$userid,$username,$district,$taluk,$village);
         if(!$member_id){
             $this->session->set("approvederror","Unexpected error acquired. Please try again");
             return redirect()->to("viewreceivedapplications");
         }
         else{
+            // Send approval email to member if they have an email address
+            if ($pendingMember && !empty($pendingMember->Email)) {
+                $this->sendMemberApprovalEmail($pendingMember->Email, $pendingMember->Name, $member_id);
+            }
             $this->session->set("approvedsuccess","Approved successfully. Family membership Id is $member_id");
             return redirect()->to("viewreceivedapplications");
         }
@@ -104,14 +112,21 @@ class AdminDashboard extends BaseController {
             return redirect()->to('admindashboard');
         }
         $applicationid = $this->request->getPost("applicationid");
-        $rejectreason = $this->request->getPost("rejectreason");
-        
+        $rejectreason  = $this->request->getPost("rejectreason");
+
+        // Fetch member email & name BEFORE rejecting (record will be hidden after)
+        $pendingMember = $this->db->table('kaadaimembers')->where('Id', $applicationid)->get()->getRow();
+
         $result = $this->adminDashboardModel->rejectMember($applicationid, $rejectreason);
         if(!$result){
             $this->session->set("applicationerrorstatus","Failed to reject application. Please try again");
-            return redirect()->back(); // Redirect to referer
+            return redirect()->back();
         }
         else{
+            // Send rejection email to member if they have an email address
+            if ($pendingMember && !empty($pendingMember->Email)) {
+                $this->sendMemberRejectionEmail($pendingMember->Email, $pendingMember->Name, $rejectreason);
+            }
             $this->session->set("rejectedsuccess","Rejected successfully.");
             return redirect()->back();
         }
@@ -130,7 +145,17 @@ class AdminDashboard extends BaseController {
             }
             else{
             foreach ($membersdata as $key => $value){
-              echo "<li class='assignmember p-2 fw-bold' onclick='assignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>".($value->Role == 'coordinator' ? 'C' : 'M')."</span>&nbsp;".($value->Role == 'coordinator' ? "<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>" : '')."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
+              $areas_label = ($value->Assigned_areas_count > 0) ? "<span class='badge ".($value->Assigned_areas_count < 4 ? 'bg-success' : 'bg-danger')." text-white' style='font-size: 0.70rem; white-space: nowrap;'>Assigned: $value->Assigned_areas_count</span>" : "";
+              $json_val = htmlspecialchars(json_encode($value), ENT_QUOTES, 'UTF-8');
+              echo "<li class='assignmember p-2 border-bottom' style='cursor:pointer;' onclick='assignForcoordinator({$json_val})'>
+                      <div class='d-flex justify-content-between align-items-start mb-1'>
+                          <span class='fw-bold text-dark text-wrap pe-2'>$value->Name</span>
+                          $areas_label
+                      </div>
+                      <div class='text-muted small text-wrap' style='line-height: normal;'>
+                          $value->Familymembershipid - $value->Phonenumber - $value->District
+                      </div>
+                    </li>";
             }
             }
         }
@@ -149,7 +174,17 @@ class AdminDashboard extends BaseController {
             }
             else{
             foreach ($membersdata as $key => $value){
-              echo "<li class='assignmember p-2 fw-bold' onclick='reassignForcoordinator(".json_encode($value).")'><span style='width:10px;' class='shadow px-1 rounded-circle text-success border border-success'>C</span>&nbsp;"."<span style='width:10px;' class='shadow px-1 rounded-circle ".($value->Assigned_areas_count < 4 ? 'border border-success text-success' : 'border border-danger text-danger')."'>$value->Assigned_areas_count</span>"."&nbsp; <img style='width:40px;height:40px;' class='rounded-circle' src='assets/membersdocuments/$value->Memberimage'>&nbsp;$value->Name - $value->Familymembershipid - $value->Phonenumber - $value->Taluk</li>";
+              $areas_label = "<span class='badge ".($value->Assigned_areas_count < 4 ? 'bg-success' : 'bg-danger')." text-white' style='font-size: 0.70rem; white-space: nowrap;'>Assigned: $value->Assigned_areas_count</span>";
+              $json_val = htmlspecialchars(json_encode($value), ENT_QUOTES, 'UTF-8');
+              echo "<li class='assignmember p-2 border-bottom' style='cursor:pointer;' onclick='reassignForcoordinator({$json_val})'>
+                      <div class='d-flex justify-content-between align-items-start mb-1'>
+                          <span class='fw-bold text-dark text-wrap pe-2'>$value->Name</span>
+                          $areas_label
+                      </div>
+                      <div class='text-muted small text-wrap' style='line-height: normal;'>
+                          $value->Familymembershipid - $value->Phonenumber - $value->District
+                      </div>
+                    </li>";
             }
             }
         }
@@ -214,9 +249,9 @@ class AdminDashboard extends BaseController {
         $memberid = $this->request->getPost("memberid");
         $assignerid = $this->request->getPost("assignerid");
         $assignername = $this->request->getPost("assignername");
-        $get_count = $this->db->query("SELECT Assigned_areas_count FROM kaadaimembers WHERE Familymembershipid = '$memberid'");
+        $get_count = $this->db->query("SELECT COUNT(*) as count FROM village_table WHERE (Coordinator_id = '$memberid' OR Coordinator_Two_id = '$memberid') AND isAssigned = 1");
         $count = $get_count->getRow();
-        $assigned_areas_count = $count->Assigned_areas_count;
+        $assigned_areas_count = $count->count;
         $villagesLimit = count($villageslist) + $assigned_areas_count;
 
         if($villagesLimit > 4) {
@@ -319,11 +354,10 @@ class AdminDashboard extends BaseController {
             $district = $this->request->getPost("district");
             $data = $this->adminDashboardModel->reassignCoordinator($coordid,$village,$panchayat,$taluk,$district);
              if(!$data) {
-                return false;
-                
+                echo "error";
             }
             else{
-                return true;
+                echo "success";
             } 
         } 
     }
@@ -484,7 +518,7 @@ class AdminDashboard extends BaseController {
             // Code below assumes 10MB max roughly, CI4 default is similar or in php.ini
             
             try {
-                $file->move('assets/membersdocuments/', $file_name);
+                $file->move(WRITEPATH . 'uploads/membersdocuments/', $file_name);
                 $documents[$i] = $file_name;
             } catch (\Exception $e) {
                  $this->session->setFlashdata("registerprocessfailure", $e->getMessage());
@@ -668,7 +702,20 @@ public function change_password() {
         $villages = [];
 
         if($manager) {
-            // Validate inputs before calling model methods to prevent SQL errors
+            // Fallback for state_id if missing but State name exists
+            if (empty($manager->state_id) && !empty($manager->State)) {
+                foreach ($states as $st) {
+                    if (strtolower(str_replace(' ', '', $st->state_title)) == strtolower(str_replace(' ', '', $manager->State))) {
+                        $manager->state_id = $st->state_id;
+                        break;
+                    }
+                }
+            }
+            // If still empty, default to Tamil Nadu (id 35 typically)
+            if (empty($manager->state_id)) {
+                $manager->state_id = 35; 
+            }
+
             if(!empty($manager->state_id)) {
                 $districts = $this->adminDashboardModel->getDistricts($manager->state_id); 
             }
@@ -811,7 +858,7 @@ public function change_password() {
             if($file && $file->isValid() && !$file->hasMoved()){
                  $newName = str_replace(' ', '-', ($data['Name'] ?? 'manager') . $trimaadhar . $trimphoneno . $imgField . time() . "." . $file->getExtension());
                  try {
-                     $file->move('assets/membersdocuments/', $newName);
+                     $file->move(WRITEPATH . 'uploads/membersdocuments/', $newName);
                      $data[$imgField] = $newName;
                  } catch (\Exception $e) {
                      // Log or ignore
@@ -843,5 +890,83 @@ public function change_password() {
         $this->session->destroy();
         return redirect()->to('/');
     }
+
+    private function sendMemberApprovalEmail($email_address, $name, $membership_id)
+    {
+        if (empty($email_address)) {
+            return false;
+        }
+
+        $email = \Config\Services::email();
+        $email->setTo($email_address);
+        $email->setSubject('🎉 Membership Approved - Poondurai Kaadai Kulam');
+        $email->setMailType('html');
+
+        // Attach logo inline
+        $imagePath = FCPATH . 'assets/logo_small.png';
+        if (file_exists($imagePath)) {
+            $email->attach($imagePath, 'inline');
+            $cid = $email->setAttachmentCID($imagePath);
+            $logoUrl = 'cid:' . $cid;
+        } else {
+            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
+        }
+
+        $emailData = [
+            'title' => 'Membership Approved!',
+            'subtitle' => 'Congratulations',
+            'logo_url' => $logoUrl,
+            'name' => $name,
+            'message' => 'We are delighted to inform you that your membership with <strong>Poondurai Kaadai Kulam</strong> has been officially approved!',
+            'highlight_box' => $membership_id,
+            'highlight_label' => 'Membership ID',
+            'highlight_subtext' => 'Keep this for your records.',
+            'button_url' => base_url('/'),
+            'button_text' => 'Login to My Account',
+            'primary_color' => '#16a34a'
+        ];
+
+        $messageHtml = view('emails/common_email', $emailData);
+
+        $email->setMessage($messageHtml);
+        return $email->send();
+    }
+
+    private function sendMemberRejectionEmail($email_address, $name, $reason = '')
+    {
+        if (empty($email_address)) {
+            return false;
+        }
+
+        $email = \Config\Services::email();
+        $email->setTo($email_address);
+        $email->setSubject('Application Status Update - Poondurai Kaadai Kulam');
+        $email->setMailType('html');
+
+        // Attach logo inline
+        $imagePath = FCPATH . 'assets/logo_small.png';
+        if (file_exists($imagePath)) {
+            $email->attach($imagePath, 'inline');
+            $cid = $email->setAttachmentCID($imagePath);
+            $logoUrl = 'cid:' . $cid;
+        } else {
+            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
+        }
+
+        $emailData = [
+            'title' => 'Application Status Update',
+            'subtitle' => 'Poondurai Kaadai Kulam',
+            'logo_url' => $logoUrl,
+            'name' => $name,
+            'message' => 'Thank you for your interest in joining <strong>Poondurai Kaadai Kulam</strong>. After reviewing your application, we regret to inform you that we are unable to approve your membership at this time.',
+            'extra_info' => !empty($reason) ? '<strong>Reason for Rejection:</strong><br>' . $reason : null,
+            'primary_color' => '#dc2626'
+        ];
+
+        $messageHtml = view('emails/common_email', $emailData);
+
+        $email->setMessage($messageHtml);
+        return $email->send();
+    }
 }
-?>    
+?>

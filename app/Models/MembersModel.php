@@ -7,9 +7,12 @@ class MembersModel extends Model
 {
     protected $db;
 
+    protected $encrypter;
+
     public function __construct() {
         parent::__construct();
         $this->db = \Config\Database::connect();
+        $this->encrypter = \Config\Services::encrypter();
     }
 
     public function getTotalMembers()
@@ -33,10 +36,18 @@ class MembersModel extends Model
         if ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
             $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC LIMIT $limit OFFSET $offset");
-            return $query->getResult();
+        } else {
+            $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC LIMIT $limit OFFSET $offset");
         }
-        $query = $this->db->query("SELECT * FROM kaadaimembers WHERE Role = 3 AND isShow = 1 AND Approvedstatus = 'Verified' AND MemberRole = 'Head' ORDER BY updated_at DESC LIMIT $limit OFFSET $offset");
-        return $query->getResult();
+        $results = $query->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function processRegisteration(
@@ -89,8 +100,12 @@ class MembersModel extends Model
         $checkexistphoneno = $this->db->query("SELECT * FROM kaadaimembers WHERE Phonenumber = '$phoneno'");
         $existphoneno = $checkexistphoneno->getNumRows();
 
-        $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadharnumber = '$aadharno'");
+        $aadhar_hash = hash('sha256', $aadharno);
+        $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadhar_hash = '$aadhar_hash'");
         $existaadharno = $checkexistaadharno->getNumRows();
+
+        $checkexistemail = $this->db->query("SELECT * FROM kaadaimembers WHERE Email = '$email'");
+        $existemail = $checkexistemail->getNumRows();
 
         // Validate Phone Number Logic
         $phone_allowed = true;
@@ -109,8 +124,14 @@ class MembersModel extends Model
              }
         }
 
-        if ($existaadharno > 0 || !$phone_allowed) {
-            $msg = ($existaadharno > 0) ? "Aadharnumber already registered" : "Mobile number already registered";
+        if ($existaadharno > 0 || !$phone_allowed || $existemail > 0) {
+            if ($existaadharno > 0) {
+                $msg = "Aadharnumber already registered";
+            } else if (!$phone_allowed) {
+                $msg = "Mobile number already registered";
+            } else {
+                $msg = "Email address already registered";
+            }
             $session->setFlashdata("registerprocesssuccess", $msg);
             
             // In CI4 model, we return false to indicate failure. Controller handles redirect.
@@ -247,7 +268,8 @@ class MembersModel extends Model
 
             'Existfamilyid' => $existfamilyid,
             'Phonenumber' => $phoneno,
-            'Aadharnumber' => $aadharno,
+            'Aadharnumber' => base64_encode($this->encrypter->encrypt($aadharno)),
+            'Aadhar_hash' => $aadhar_hash,
             'Password' => $hashed_password,
             'Memberimage' => $memberimage,
             'Aadharfrontimage' => $aadharfrontimage,
@@ -327,7 +349,7 @@ class MembersModel extends Model
 
     public function getVillages($panchayat_name)
     {
-        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' ORDER BY village_name ASC");
+        $query = $this->db->query("SELECT distinct(village_name) AS village_name FROM village_table WHERE panchayat_name = '$panchayat_name' AND TRIM(village_name) != '' ORDER BY village_name ASC");
         return $query->getResult();
     }
 
@@ -340,6 +362,7 @@ class MembersModel extends Model
         $builder->where('Role', 3);
         $builder->where('isShow', 1);
         $builder->where('MemberRole', 'Head');
+        $builder->where('Approvedstatus', 'Verified');
 
         if (is_array($searchfields)) {
             // Address filters
@@ -354,6 +377,9 @@ class MembersModel extends Model
             }
             if (!empty($searchfields['panchayat'])) {
                 $builder->where('Panchayat', $searchfields['panchayat']);
+            }
+            if (!empty($searchfields['village'])) {
+                $builder->where('Village', $searchfields['village']);
             }
 
             // Extra filters
@@ -373,7 +399,9 @@ class MembersModel extends Model
                 $builder->orLike('Email', $term);
                 $builder->orLike('Familymembershipid', $term);
                 $builder->orLike('Phonenumber', $term);
-                $builder->orLike('Aadharnumber', $term);
+                if (preg_match('/^[0-9]{12}$/', $term)) {
+                    $builder->orWhere('Aadhar_hash', hash('sha256', $term));
+                }
                 $builder->orLike('District', $term);
                 $builder->groupEnd();
             }
@@ -384,12 +412,20 @@ class MembersModel extends Model
             $builder->orLike('Email', $searchfields);
             $builder->orLike('Familymembershipid', $searchfields);
             $builder->orLike('Phonenumber', $searchfields);
-            $builder->orLike('Aadharnumber', $searchfields);
+            if (preg_match('/^[0-9]{12}$/', $searchfields)) {
+                $builder->orWhere('Aadhar_hash', hash('sha256', $searchfields));
+            }
             $builder->orLike('District', $searchfields);
             $builder->groupEnd();
         }
 
-        if (session()->get('role') == 2) {
+        if (isset($searchfields['coordinator_id']) && !empty($searchfields['coordinator_id'])) {
+            $coord_id = $searchfields['coordinator_id'];
+            $builder->groupStart()
+                    ->where('Coordinator_id', $coord_id)
+                    ->orWhere('Coordinator_Two_id', $coord_id)
+                    ->groupEnd();
+        } elseif (session()->get('role') == 2) {
             $coord_id = session()->get("Kaadaisoft_userId");
             $builder->groupStart()
                     ->where('Coordinator_id', $coord_id)
@@ -397,7 +433,15 @@ class MembersModel extends Model
                     ->groupEnd();
         }
 
-        return $builder->get()->getResult();
+        $results = $builder->get()->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
     public function getMembersSearchfieldsPaginated($searchfields, $offset = 0, $limit = 10)
@@ -406,12 +450,14 @@ class MembersModel extends Model
         $builder->where('Role', 3);
         $builder->where('isShow', 1);
         $builder->where('MemberRole', 'Head');
+        $builder->where('Approvedstatus', 'Verified');
 
         if (is_array($searchfields)) {
             if (!empty($searchfields['state_id'])) $builder->where('state_id', $searchfields['state_id']);
             if (!empty($searchfields['district'])) $builder->where('District', $searchfields['district']);
             if (!empty($searchfields['taluk'])) $builder->where('Taluk', $searchfields['taluk']);
             if (!empty($searchfields['panchayat'])) $builder->where('Panchayat', $searchfields['panchayat']);
+            if (!empty($searchfields['village'])) $builder->where('Village', $searchfields['village']);
             if (!empty($searchfields['bloodgroup'])) $builder->where('Bloodgroup', $searchfields['bloodgroup']);
             if (!empty($searchfields['gender'])) $builder->where('Gender', $searchfields['gender']);
             if (!empty($searchfields['occupation'])) $builder->where('Profession', $searchfields['occupation']);
@@ -422,7 +468,9 @@ class MembersModel extends Model
                 $builder->orLike('Email', $term);
                 $builder->orLike('Familymembershipid', $term);
                 $builder->orLike('Phonenumber', $term);
-                $builder->orLike('Aadharnumber', $term);
+                if (preg_match('/^[0-9]{12}$/', $term)) {
+                    $builder->orWhere('Aadhar_hash', hash('sha256', $term));
+                }
                 $builder->orLike('District', $term);
                 $builder->groupEnd();
             }
@@ -439,7 +487,15 @@ class MembersModel extends Model
         $builder->orderBy('updated_at', 'DESC');
         $builder->limit($limit, $offset);
 
-        return $builder->get()->getResult();
+        $results = $builder->get()->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
     }
 
 
@@ -458,7 +514,10 @@ class MembersModel extends Model
         $newid = $fetchnewid + 1;
         $newmemberid = str_pad($newid, 4, "0", STR_PAD_LEFT);
         $userid = "KAADAIMEM" . $newmemberid;
-        $addmember = $this->db->query("INSERT INTO kaadai(Name,Userid,Aadhar,Mobile,Villageid,Email,Role,password) VALUES('$name','$userid','$aadhar','$phoneno',$village,'$email','$role',123456)");
+        $hashed_initial_password = password_hash('123456', PASSWORD_BCRYPT);
+        $encrypted_aadhar = base64_encode($this->encrypter->encrypt($aadhar));
+        $aadhar_hash = hash('sha256', $aadhar);
+        $addmember = $this->db->query("INSERT INTO kaadai(Name,Userid,Aadhar,Mobile,Villageid,Email,Role,password,Aadhar_hash) VALUES('$name','$userid','$encrypted_aadhar','$phoneno',$village,'$email','$role','$hashed_initial_password','$aadhar_hash')");
         $geteventname = $this->db->query("SELECT EventName FROM eventtaxes WHERE SNo = (SELECT MAX(SNo) FROM eventtaxes);");
         $lasteventname = $geteventname->getRow();
         $eventname = $lasteventname->EventName;
@@ -505,8 +564,15 @@ class MembersModel extends Model
 
     public function getMemberdata($member_id)
     {
-        $member_data = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$member_id'");
-        return $member_data->getRow();
+        $member_data = $this->db->query("SELECT * FROM kaadaimembers WHERE Familymembershipid = '$member_id'")->getRow();
+        if ($member_data && !empty($member_data->Aadharnumber)) {
+            try {
+                $member_data->Aadharnumber = $this->encrypter->decrypt(base64_decode($member_data->Aadharnumber));
+            } catch (\Exception $e) {
+                // Keep encrypted if decryption fails (e.g. old data)
+            }
+        }
+        return $member_data;
     }
 
     public function checkExistphoneno($phoneno)
@@ -516,8 +582,14 @@ class MembersModel extends Model
 
     public function checkExistaadharno($aadharno)
     {
-        $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadharnumber = $aadharno");
+        $aadhar_hash = hash('sha256', $aadharno);
+        $checkexistaadharno = $this->db->query("SELECT * FROM kaadaimembers WHERE Aadhar_hash = '$aadhar_hash'");
         return $checkexistaadharno;
+    }
+
+    public function checkExistemail($email)
+    {
+        return $this->db->table('kaadaimembers')->where('Email', $email)->get();
     }
 
     public function saveUpdateMemberRequest($Familymembershipid, $data)
@@ -531,6 +603,14 @@ class MembersModel extends Model
              if ($key === 'updated_at') continue;
              $dbVal = $member_row[$key] ?? '';
              $newVal = $value ?? '';
+             
+             // Special handling for Aadharnumber comparison (encrypted vs plain)
+             if ($key === 'Aadharnumber' && !empty($dbVal)) {
+                 try {
+                     $dbVal = $this->encrypter->decrypt(base64_decode($dbVal));
+                 } catch (\Exception $e) {}
+             }
+
              if (trim((string)$dbVal) !== trim((string)$newVal)) {
                  $changed = true;
                  break;
@@ -593,14 +673,18 @@ class MembersModel extends Model
 
         // Search uniqueness check for Aadhaar
         if (!empty($data['Aadharnumber'])) {
+            $aadhar_hash = hash('sha256', $data['Aadharnumber']);
             $checkAadhar = $this->db->table('kaadaimembers')
-                ->where('Aadharnumber', $data['Aadharnumber'])
+                ->where('Aadhar_hash', $aadhar_hash)
                 ->where('TRIM(Familymembershipid) !=', $Familymembershipid)
                 ->countAllResults();
             if ($checkAadhar > 0) {
                 $session->setFlashdata($errorKey, "Aadhar number already exists.");
                 return false;
             }
+            // Encrypt for storage
+            $data['Aadharnumber'] = base64_encode($this->encrypter->encrypt($data['Aadharnumber']));
+            $data['Aadhar_hash'] = $aadhar_hash;
         }
 
         // Composite Check to prevent DB crash on unique key 'phoneno_aadharno'
@@ -652,14 +736,26 @@ class MembersModel extends Model
     public function getMembersdetails()
     {
         $session = session();
+        $results = [];
         if ($session->get('role') == 1) {
             $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Aadharnumber FROM kaadaimembers WHERE isShow = 1 AND Approvedstatus = 'Verified'");
-            return $query->getResultArray();
+            $results = $query->getResultArray();
         } elseif ($session->get('role') == 2) {
             $coord_id = $session->get("Kaadaisoft_userId");
             $query = $this->db->query("SELECT Name,State,District,Taluk,Panchayat,Village,Street,Doornumber,Pincode,Existfamilyid,Phonenumber,Aadharnumber FROM kaadaimembers WHERE Role = 3 AND (Coordinator_id = '$coord_id' OR Coordinator_Two_id = '$coord_id') AND isShow = 1 AND Approvedstatus = 'Verified'");
-            return $query->getResultArray();
+            $results = $query->getResultArray();
         }
+
+        if (!empty($results)) {
+            foreach ($results as &$row) {
+                if (!empty($row['Aadharnumber'])) {
+                    try {
+                        $row['Aadharnumber'] = $this->encrypter->decrypt(base64_decode($row['Aadharnumber']));
+                    } catch (\Exception $e) {}
+                }
+            }
+        }
+        return $results;
     }
 
     public function getCoordinatorId($taluk)
@@ -698,7 +794,18 @@ class MembersModel extends Model
         }
 
         $query = $this->db->query("SELECT *, (SELECT status FROM member_edit_requests WHERE Familymembershipid = kaadaimembers.Familymembershipid AND status = 'Pending' LIMIT 1) as pending_status FROM kaadaimembers WHERE (Existfamilyid = '$familyId' OR Familymembershipid = '$familyId' OR Existfamilyid IN (SELECT Familymembershipid FROM kaadaimembers WHERE Existfamilyid = '$familyId')) AND isShow = 1 AND (Approvedstatus = 'Verified' OR Role IN (1, 2)) ORDER BY Dob ASC");
-        return $query->getResult();
+        $results = $query->getResult();
+        
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {
+                    // Do nothing
+                }
+            }
+        }
+        return $results;
     }
 
     /**

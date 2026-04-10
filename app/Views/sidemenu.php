@@ -94,12 +94,16 @@
         transition: transform 0.3s ease;
       }
       
-      /* Active state - Old Design Black Box */
+      /* Active state - Vibrant Highlight */
       .active-menu-item {
-        background-color: #000000 !important; 
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(99, 102, 241, 0.25)) !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2), inset 0 0 0 1px rgba(56, 189, 248, 0.3);
         border-radius: 8px;
+        border-left: 3px solid #38bdf8 !important;
+      }
+      .active-menu-item span {
+        color: #ffffff !important;
       }
 
       /* Premium Icon Context Colors */
@@ -118,38 +122,38 @@
 <ul id="sidemenu-nav" style="font-size:16px; padding-bottom: 80px;" class="d-flex flex-column list-unstyled mt-3">
 
 <li class="nav-item">
-<a href="<?=base_url('admindashboard')?>" style="outline:none;border:none;" name="dashboard" class="text-decoration-none">
+<a href="<?=base_url('admindashboard')?>" data-page="admindashboard" style="outline:none;border:none;" class="text-decoration-none">
 <span class="icon icon-dash"><i class="fa-solid fa-chart-simple"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Dashboard</span></a></li>
 
 <li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item">
-  <a href="<?=base_url('view-manager-data')?>" style="outline:none;border:none;" class="text-decoration-none">
+  <a href="<?=base_url('view-manager-data')?>" data-page="view-manager-data" style="outline:none;border:none;" class="text-decoration-none">
     <span class="icon icon-managers"><i class="fa-solid fa-user-tie"></i></span>&nbsp;&nbsp;
     <span class="fw-semibold"><?= (session()->get('role') == 1) ? 'My Details' : 'Managers' ?></span>
   </a>
 </li>
 
 <li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item">
-  <a href="<?php if(session()->get('role') == 2) {echo base_url('view-coordinator-data');} else{echo base_url('coordinators');}?>" style="outline:none;border:none;" class="text-decoration-none">
+  <a href="<?php if(session()->get('role') == 2) {echo base_url('view-coordinator-data');} else{echo base_url('coordinators');}?>" data-page="<?= (session()->get('role') == 2) ? 'view-coordinator-data' : 'coordinators' ?>" style="outline:none;border:none;" class="text-decoration-none">
     <span class="icon icon-coords"><i class="fa-sharp fa-solid fa-cart-shopping"></i></span>&nbsp;&nbsp;
     <span class="fw-semibold"><?= (session()->get('role') == 2) ? 'My Details' : 'Coordinators' ?></span>
   </a>
 </li>
 
 <li class="nav-item">
-  <a href="<?php if(session()->get('role') == 3) {echo base_url('view-member-data');} else{echo base_url('members');}?>" class="text-decoration-none">
+  <a href="<?php if(session()->get('role') == 3) {echo base_url('view-member-data');} else{echo base_url('members');}?>" data-page="<?= (session()->get('role') == 3) ? 'view-member-data' : 'members' ?>" class="text-decoration-none">
     <span class="icon icon-members"><i class="fa-solid fa-user-group"></i></span>&nbsp;&nbsp;
     <span class="fw-semibold"><?= (session()->get('role') == 3) ? 'My Details' : 'Members' ?></span>
   </a>
 </li>
 
-<li class="nav-item"><a href="<?=base_url("events")?>" class="text-decoration-none"><span class="icon icon-events"><i class="fa-solid fa-list"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Events</span></a></li>
+<li class="nav-item"><a href="<?=base_url("events")?>" data-page="events" class="text-decoration-none"><span class="icon icon-events"><i class="fa-solid fa-list"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Events</span></a></li>
 
 <li class="nav-item">
-  <a href="<?php if(session()->get('role') == 3) {echo base_url('payment-receipt-list');} else{echo base_url('paymentpage');}?>" class="text-decoration-none"><span class="icon icon-payments"><i class="fa-regular fa-credit-card"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Payments</span></a></li>
+  <a href="<?php if(session()->get('role') == 3) {echo base_url('payment-receipt-list');} else{echo base_url('paymentpage');}?>" data-page="<?= (session()->get('role') == 3) ? 'payment-receipt-list' : 'paymentpage' ?>" class="text-decoration-none"><span class="icon icon-payments"><i class="fa-regular fa-credit-card"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Payments</span></a></li>
 
-<li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("reports")?>" class="text-decoration-none"><span class="icon icon-reports"><i class="fa-solid fa-file-invoice"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Reports</span></a></li>
+<li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("reports")?>" data-page="reports" class="text-decoration-none"><span class="icon icon-reports"><i class="fa-solid fa-file-invoice"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Reports</span></a></li>
 
-<li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("view-member-update-requests")?>" class="text-decoration-none"><span class="icon icon-updates"><i class="fa-solid fa-user-pen"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Update Requests</span></a></li>
+<li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("view-member-update-requests")?>" data-page="view-member-update-requests" class="text-decoration-none"><span class="icon icon-updates"><i class="fa-solid fa-user-pen"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Update Requests</span></a></li>
 
 <li class="nav-item border-top border-secondary mt-3 pt-3">
   <a href="<?=base_url('logout')?>" class="text-decoration-none"><span class="icon icon-logout"><i class="fa-solid fa-power-off"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Logout</span></a></li>
@@ -157,36 +161,37 @@
 </ul>
 
 <script>
-// Logic to highlight current page
+// Logic to highlight the active sidebar menu item based on current URL
 (function() {
     function highlight() {
-        // Use full URL or pathname for more accurate matching
-        const currentUrl = window.location.href;
         const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('#sidemenu-nav .nav-item a');
-        
-        let found = false;
+        // Extract the first path segment (e.g. /kaadaisoft_ci4/admindashboard -> admindashboard)
+        const segments = currentPath.replace(/^\//, '').split('/');
+        // The page slug is the last meaningful segment that matches our routes
+        // We try from the end backward to find a matching data-page
+        const navLinks = document.querySelectorAll('#sidemenu-nav .nav-item a[data-page]');
 
-        // Try exact match first
+        let matched = false;
+
+        // First pass: exact match on data-page vs any URL segment
         navLinks.forEach(link => {
-            if (link.href === currentUrl || link.href === window.location.origin + currentPath) {
+            const page = link.getAttribute('data-page');
+            if (segments.includes(page)) {
                 link.classList.add('active-menu-item');
-                found = true;
+                matched = true;
             }
         });
 
-        // Try partial match if no exact match
-        if (!found) {
+        // Second pass: fallback - check if any segment starts with the data-page value
+        if (!matched) {
             navLinks.forEach(link => {
-                const linkUrl = new URL(link.href);
-                if (linkUrl.pathname.length > 1 && currentPath.includes(linkUrl.pathname)) {
+                const page = link.getAttribute('data-page');
+                if (segments.some(seg => seg.startsWith(page) || page.startsWith(seg))) {
                     link.classList.add('active-menu-item');
-                    found = true;
                 }
             });
         }
     }
     highlight();
-    setTimeout(highlight, 100);
 })();
 </script>
