@@ -407,6 +407,12 @@
                                 <input type="text" id="email-otp-manager" class="form-control" placeholder="6-digit OTP" maxlength="6">
                                 <button type="button" class="btn btn-success" onclick="verifyUpdateEmailOTPManager()">Verify OTP</button>
                             </div>
+                            <div class="mt-2 text-end">
+                                <div id="resend_timer_div-manager" class="small text-muted" style="display: none;">
+                                    Resend OTP in <span id="resend_seconds-manager" class="fw-bold" style="color: #be123c;">60</span> seconds
+                                </div>
+                                <a href="javascript:void(0)" id="resend_otp_link-manager" onclick="sendUpdateEmailOTPManager()" style="display: none;" class="text-primary text-decoration-none fw-bold small">Resend OTP</a>
+                            </div>
                             <small id="email-otp-error-manager" class="text-danger"></small>
                         </div>
 
@@ -1652,19 +1658,50 @@
             return isValid;
         }
 
+        let resendTimerManager;
+        function startResendTimerManager() {
+            let timeLeft = 60;
+            const timerElem = document.getElementById('resend_timer_div-manager');
+            const resendLink = document.getElementById('resend_otp_link-manager');
+            const timerSeconds = document.getElementById('resend_seconds-manager');
+            
+            resendLink.style.display = 'none';
+            timerElem.style.display = 'block';
+            timerSeconds.innerHTML = timeLeft;
+            
+            if (resendTimerManager) clearInterval(resendTimerManager);
+            
+            resendTimerManager = setInterval(() => {
+                timeLeft--;
+                timerSeconds.innerHTML = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(resendTimerManager);
+                    timerElem.style.display = 'none';
+                    resendLink.style.display = 'block';
+                }
+            }, 1000);
+        }
+
         function sendUpdateEmailOTPManager() {
             const email = document.getElementById('email-update').value;
             const errorElem = document.getElementById('emailerror-update');
             const otpSection = document.getElementById('email-otp-section-manager');
             const btn = document.getElementById('verify-email-btn-manager');
+            const resendLink = document.getElementById('resend_otp_link-manager');
 
             if (!email || !email.includes('@')) {
                 errorElem.textContent = "Please enter a valid email address.";
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerText = "Sending...";
+            // If it's a resend, show loading on the link
+            if (resendLink.style.display !== 'none') {
+                resendLink.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Sending...';
+                resendLink.style.pointerEvents = 'none';
+            } else {
+                btn.disabled = true;
+                btn.innerText = "Sending...";
+            }
 
             $.ajax({
                 type: "POST",
@@ -1672,11 +1709,16 @@
                 data: { email: email },
                 dataType: "json",
                 success: function(response) {
+                    // Reset resend link state
+                    resendLink.innerHTML = 'Resend OTP';
+                    resendLink.style.pointerEvents = 'auto';
+
                     if (response.status === 'success') {
                         psShowToast('success', response.message);
                         otpSection.style.display = 'block';
                         errorElem.textContent = "";
                         btn.style.display = 'none';
+                        startResendTimerManager();
                     } else {
                         btn.disabled = false;
                         btn.innerText = "Verify";
@@ -1684,6 +1726,8 @@
                     }
                 },
                 error: function() {
+                    resendLink.innerHTML = 'Resend OTP';
+                    resendLink.style.pointerEvents = 'auto';
                     btn.disabled = false;
                     btn.innerText = "Verify";
                     errorElem.textContent = "Server error occurred. Please try again.";

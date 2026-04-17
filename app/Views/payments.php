@@ -291,11 +291,13 @@
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       border: 1px solid #e2e8f0;
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       margin-bottom: 2rem;
     }
     .custom-table-premium {
       width: 100%;
+      min-width: 1000px;
       margin-bottom: 0;
       border-collapse: separate;
       border-spacing: 0;
@@ -387,7 +389,10 @@
                 <th>Name</th>
                 <th>Aadhar</th>
                 <th>Mobile</th>
-                <th>Address</th>
+                <th>District</th>
+                <th>Taluk</th>
+                <th>Panchayat</th>
+                <th>Village</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -402,7 +407,10 @@
                     <td class='fw-bold text-dark'>$value[Name]</td>
                     <td>$value[Aadhar]</td>
                     <td>$value[Mobile]</td>
-                    <td>$value[Area]</td>
+                    <td>$value[District]</td>
+                    <td>$value[Taluk]</td>
+                    <td>$value[Panchayat]</td>
+                    <td>$value[Village]</td>
                     <td><a href='paymentpage?id=$value[id]' class='btn-action-premium btn-pay-premium'><i class='fa-solid fa-indian-rupee-sign'></i>Pay Tax</a></td>
                     </tr>";
                     $i++;

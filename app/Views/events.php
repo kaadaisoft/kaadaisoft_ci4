@@ -911,23 +911,14 @@
     
 <!--------------------------delete-modal---------------------->
 
-<div class="modal fade" id="deletemodal">
-
-<div class="modal-dialog">
-   <div class="modal-content">
-      
-       <div class="modal-header">
-          <h4 style="color:red;">Alert</h4>
-          <button class="btn btn-close" data-bs-dismiss="modal"></button>
-       </div>
-
-       <div id="deletebox" class="modal-body">
-        
-       </div>
-
-   </div>
-</div>
-
+<div class="modal fade" id="deletemodal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            <div id="deletebox" class="modal-body p-0">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--------------------------delete-modal-end------------------>
@@ -1318,15 +1309,22 @@ $.ajax({
 
     function deleteevent(id,name){
       let baseUrl = "<?= base_url('events/trash/') ?>"; 
-    document.getElementById("deletebox").innerHTML = `<div class="d-flex justify-content-center "><span style="font-size:66px;color:red;"><i class="fa-regular fa-trash-can"></i></span></div>
-    <p class="text-center fs-4">Move to trash <span style="color:green;" class="fs-4">${name}</span> </p> 
-    <div class="d-flex justify-content-center">
-    <div class="col-md-6 d-flex justify-content-evenly"> 
-    <a style="border:none;outline:none;" class="px-2 py-1 btn btn-success rounded-3" href="${baseUrl}${id}">Confirm</a>&nbsp;&nbsp;<button style="border:none;outline:none;background-color:red;" class="px-2 py-1 btn text-white rounded-3" data-bs-dismiss="modal">Cancel</button>
-    </div>
-    </div>
-    `; 
-  }
+      document.getElementById("deletebox").innerHTML = `
+        <div class="text-center p-4">
+            <div class="mb-4">
+                <div class="mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 70px; height: 70px; background-color: #fff1f2; border: 4px solid #fff;">
+                    <i class="fa-solid fa-trash-can fa-xl" style="color: #e11d48;"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: #0f172a; font-size: 1.25rem;">Move to Trash?</h3>
+            <p class="mb-4 text-muted small" style="line-height: 1.5;">Are you sure you want to move <strong>${name}</strong> to the trash?</p>
+            <div class="d-grid gap-2 mt-2">
+                <button type="button" class="btn btn-sm px-4 py-2 fw-bold text-secondary border-0" data-bs-dismiss="modal" style="border-radius: 10px; background-color: #f1f5f9;">Cancel</button>
+                <a href="${baseUrl}${id}" class="btn btn-sm px-4 py-2 fw-bold text-white shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, #e11d48, #be123c); border: none;">Confirm Delete</a>
+            </div>
+        </div>
+      `; 
+    }
 
     function movetotrash(id){
     $.ajax({

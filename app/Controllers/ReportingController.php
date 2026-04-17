@@ -157,6 +157,7 @@ class ReportingController extends BaseController
         $year          = $this->request->getGet('year');
         $event         = $this->request->getGet('event'); // legacy
         $status        = $this->request->getGet('status');
+        $districtname  = $this->request->getGet('districtname');
         $talukname     = $this->request->getGet('talukname');
         $panchayatname = $this->request->getGet('panchayatname');
         $villagename   = $this->request->getGet('villagename');
@@ -171,14 +172,15 @@ class ReportingController extends BaseController
         }
 
         if (!empty($talukname) && !empty($eventid) && $status) {
-            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($eventid, $status, $talukname, $panchayatname, $villagename);
+            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($eventid, $status, $talukname, $panchayatname, $villagename, $districtname);
             $heading = ucfirst($talukname) . (!empty($panchayatname) ? ' - ' . ucfirst($panchayatname) : '') . (!empty($villagename) ? ' - ' . ucfirst($villagename) : '') . " - Event Name : " . $eventname . " - Status : " . ucfirst($status);
             $safeTaluk = preg_replace('/[^A-Za-z0-9]/', '', $talukname);
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
             $filename = "{$safeTaluk}-{$safeStatus}-report-" . date('Y-m-d') . ".xlsx";
         } else {
-            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($event ?: $eventid, $status);
-            $heading = "Year: " . ($year ?: 'All') . " - Event Name : " . $eventname . " - Status : " . ucfirst($status);
+            $filteredusers = $this->reportsModel->getMembersHistoryForDownload($event ?: $eventid, $status, null, null, null, $districtname);
+            $locationLabel = !empty($districtname) ? ucfirst($districtname) . ' - ' : '';
+            $heading = $locationLabel . "Year: " . ($year ?: 'All') . " - Event Name : " . $eventname . " - Status : " . ucfirst($status);
             $safeYear = preg_replace('/[^A-Za-z0-9]/', '', $year ?: 'All');
             $safeStatus = preg_replace('/[^A-Za-z0-9]/', '', $status);
             $filename = "Report-Year{$safeYear}-Status-{$safeStatus}-" . date('Y-m-d') . ".xlsx";
@@ -191,39 +193,124 @@ class ReportingController extends BaseController
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $spreadsheet->getProperties()->setCreator('Poondurai Kaadai Kulam')->setTitle('Event Report');
 
+        // Row 1: Heading (merged)
         $sheet->setCellValue('A1', $heading);
-        $columns = array_keys($filteredusers[0]);
-        $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($columns));
-        $sheet->mergeCells("A1:{$lastCol}1");
+        $sheet->mergeCells('A1:N1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('1E293B');
+        $sheet->getStyle('A1')->getFont()->getColor()->setRGB('FFFFFF');
 
-        $colIndex = 1;
-        foreach ($columns as $column) {
-            $sheet->setCellValue([$colIndex, 2], ucfirst($column));
-            $colIndex++;
+        // Row 2: Column headers
+        $headers = [
+            'A' => 'S.No',
+            'B' => 'Family Membership ID',
+            'C' => 'Name',
+            'D' => 'Role',
+            'E' => 'Mobile',
+            'F' => 'District',
+            'G' => 'Taluk',
+            'H' => 'Panchayat',
+            'I' => 'Village',
+            'J' => 'Event Money (₹)',
+            'K' => 'Paid Cash (₹)',
+            'L' => 'Pending (₹)',
+            'M' => 'Status',
+            'N' => 'Last Paid Date',
+        ];
+        foreach ($headers as $col => $label) {
+            $sheet->setCellValue($col . '2', $label);
         }
-        $sheet->getStyle("A2:{$lastCol}2")->getFont()->setBold(true);
+        $sheet->getStyle('A2:N2')->getFont()->setBold(true);
+        $sheet->getStyle('A2:N2')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('0F172A');
+        $sheet->getStyle('A2:N2')->getFont()->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle('A2:N2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Set text format for columns that may contain large numbers
+        $textFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT;
 
         $rowIndex = 3;
+        $sno = 1;
         foreach ($filteredusers as $value) {
-            $colIndex = 1;
-            foreach ($columns as $column) {
-                $sheet->setCellValue([$colIndex, $rowIndex], $value[$column]);
-                $colIndex++;
+            $tax     = floatval($value['EventMoney'] ?? $value['Taxamount'] ?? 0);
+            $paid    = floatval($value['PaidCash']   ?? $value['paidamount'] ?? 0);
+            $pending = floatval($value['Pending']    ?? $value['balancemount'] ?? $value['balanceamount'] ?? $tax);
+
+            if ($tax > 0 && $pending == $tax) {
+                $statusText = 'UN PAID';
+            } elseif ($pending == 0 && $tax > 0) {
+                $statusText = 'PAID';
+            } elseif ($pending > 0 && $pending < $tax) {
+                $statusText = 'PARTIALLY PAID';
+            } else {
+                $statusText = 'N/A';
             }
+
+            // Row fill (alternating)
+            $rowFill = ($rowIndex % 2 == 0) ? 'F8FAFC' : 'FFFFFF';
+
+            $sheet->setCellValue('A' . $rowIndex, $sno);
+            $sheet->setCellValue('B' . $rowIndex, $value['Familymembershipid'] ?? '');
+            $sheet->setCellValue('C' . $rowIndex, $value['Name'] ?? '');
+            $sheet->setCellValue('D' . $rowIndex, $value['Role'] ?? '');
+
+            // Mobile as text to prevent truncation
+            $sheet->getCell('E' . $rowIndex)->setValueExplicit(
+                $value['Mobile'] ?? $value['Phonenumber'] ?? '',
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+            );
+
+            $sheet->setCellValue('F' . $rowIndex, $value['District'] ?? '');
+            $sheet->setCellValue('G' . $rowIndex, $value['Taluk'] ?? '');
+            $sheet->setCellValue('H' . $rowIndex, $value['Panchayat'] ?? '');
+            $sheet->setCellValue('I' . $rowIndex, $value['Village'] ?? '');
+            $sheet->setCellValue('J' . $rowIndex, $tax);
+            $sheet->setCellValue('K' . $rowIndex, $paid);
+            $sheet->setCellValue('L' . $rowIndex, $pending);
+            $sheet->setCellValue('M' . $rowIndex, $statusText);
+            $sheet->setCellValue('N' . $rowIndex, $value['LastPaidDate'] ?? $value['paymentdate'] ?? '-');
+
+            // Style status cell color
+            $statusColor = match($statusText) {
+                'PAID'           => '16A34A',
+                'UN PAID'        => 'DC2626',
+                'PARTIALLY PAID' => '2563EB',
+                default          => '64748B',
+            };
+            $sheet->getStyle('M' . $rowIndex)->getFont()->getColor()->setRGB($statusColor);
+            $sheet->getStyle('M' . $rowIndex)->getFont()->setBold(true);
+
+            // Alternating row background
+            $sheet->getStyle("A{$rowIndex}:N{$rowIndex}")->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setRGB($rowFill);
+
             $rowIndex++;
+            $sno++;
         }
 
-        foreach (range('A', $lastCol) as $col) {
+        // Auto-size all columns
+        foreach (range('A', 'N') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Add borders to the data area
+        $lastRow = $rowIndex - 1;
+        if ($lastRow >= 2) {
+            $sheet->getStyle("A2:N{$lastRow}")->getBorders()->getAllBorders()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         }
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
-        
+
         ob_clean();
         flush();
 

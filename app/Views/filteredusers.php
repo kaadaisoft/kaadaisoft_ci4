@@ -424,12 +424,14 @@
       border-radius: 12px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       border: 1px solid #e2e8f0;
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       margin-bottom: 2rem;
     }
     .custom-table-modern {
       margin-bottom: 0;
       width: 100%;
+      min-width: 1000px;
     }
     .custom-table-modern caption {
       padding: 1rem;
@@ -573,7 +575,7 @@
          <div class="pt-2 px-3 pb-4"><!----------filter-start------------>
          <div class="d-flex justify-content-between align-items-center">
          <span class="text-secondary fs-4 fw-bold">Payment Status Filter</span>
-                   <a href='download_excel?stateid=<?=$filterlist['stateid']?>&districtname=<?=$filterlist['districtname']?>&talukname=<?=$filterlist['talukname']?>&panchayatname=<?=$filterlist['panchayatname']?>&villagename=<?=$filterlist['villagename']?>&eventid=<?=$filterlist['eventid']?>&year=<?=$filterlist['eventyear']?>&status=<?=$filterlist['paymentstatus']?>' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id ='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
+                   <button onclick="downloadFilteredData()" style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id ='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</button>
          </div> 
          <form id="filter-form-height" class="row filter-card-premium" method="post" action="<?=base_url('get-filtered-users')?>">
          <div class="col-md-3 mb-3"><!------------state-choose------------>
@@ -714,7 +716,10 @@
                 <th>Family ID</th>
                 <th>Name</th>
                 <th>Mobile</th>
-                <th>Address</th>
+                <th>District</th>
+                <th>Taluk</th>
+                <th>Panchayat</th>
+                <th>Village</th>
                 <th class='text-center'>Actions</th>
                 </tr>
                 </thead>
@@ -724,7 +729,7 @@
                     
                    if(count($filteredusers) == 0){
                     echo "<tr>
-                    <td class='fw-bold text-center py-4 text-muted' colspan='6'><i class='fas fa-search me-2'></i>No results found</td>
+                    <td class='fw-bold text-center py-4 text-muted' colspan='9'><i class='fas fa-search me-2'></i>No results found</td>
                     </tr>";
                     }
                     elseif(count($filteredusers) > 0){
@@ -737,7 +742,10 @@
                     <td class='fw-bold' style='color: #2563eb;'>$value[Familymembershipid]</td>
                     <td class='fw-medium'>$value[Name]</td>
                     <td class='text-muted'>$value[Mobile]</td>
+                    <td class='text-muted'>$value[District]</td>
                     <td class='text-muted'>$value[MemberTaluk]</td>
+                    <td class='text-muted'>$value[Panchayat]</td>
+                    <td class='text-muted'>$value[Village]</td>
                     <td>
                       <div class='d-flex justify-content-center align-items-center gap-2'>
                         " . (($filterlist['paymentstatus'] != 'Paid') ? "<a href='filtered-user-payment-form?memberid=$value[Familymembershipid]&eventid=$eventid' class='btn-pay-modern'>Pay Now</a>" : "") . "
@@ -1131,6 +1139,34 @@
 
 
 
+    function downloadFilteredData() {
+        var year = $('#eventyear').val();
+        var eventId = $('#eventid').val();
+        var status = $('input[name="paymentstatus"]:checked').val() || $('#currentstatus').val();
+        
+        // Basic Validation
+        if (!year || !eventId || !status) {
+            psShowToast('error', "Please select Event Year, Event, and Payment Status before downloading data.");
+            return;
+        }
+
+        // Gather all filter params
+        var district = $('#districtstitle').val();
+        var taluk = $('#talukslist').val();
+        var panchayat = $('#panchayatlist').val();
+        var village = $('#villagelist').val();
+
+        var downloadUrl = "<?= base_url('download_excel') ?>" 
+            + "?year=" + encodeURIComponent(year)
+            + "&eventid=" + encodeURIComponent(eventId)
+            + "&status=" + encodeURIComponent(status)
+            + "&districtname=" + encodeURIComponent(district)
+            + "&talukname=" + encodeURIComponent(taluk)
+            + "&panchayatname=" + encodeURIComponent(panchayat)
+            + "&villagename=" + encodeURIComponent(village);
+
+        window.location.href = downloadUrl;
+    }
   </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

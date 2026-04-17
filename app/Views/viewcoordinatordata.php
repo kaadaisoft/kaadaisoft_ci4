@@ -2588,7 +2588,18 @@ else{
         }
         else{
            document.getElementById("showparticipation").innerHTML = eventparticipation.map((participation,index)=> { 
-            return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.Collectedamount}</td><td>${participation.balanceamount}</td><td>${participation.paymentdate}</td></tr>`;
+            let tax = parseFloat(participation.Taxamount || 0);
+            let pending = parseFloat(participation.balanceamount || 0);
+            let balance_display = participation.balanceamount || 0;
+            
+            if (tax > 0 && pending === tax) {
+                balance_display = `<span class="badge bg-danger">UN PAID</span>`;
+            } else if (pending === 0 && tax > 0) {
+                balance_display = `<span class="badge bg-success">PAID</span>`;
+            } else if (pending > 0 && pending < tax) {
+                balance_display = `<span class="badge bg-primary text-white">PARTIALLY PAID</span>`;
+            }
+            return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.Collectedamount}</td><td>${balance_display}</td><td>${participation.paymentdate}</td></tr>`;
            }).join("");
           }
         },

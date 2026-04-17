@@ -2088,6 +2088,39 @@ $.ajax({
       });
     }
 
+    function viewMembereventparticipation(id) {
+          $.ajax({
+              type:"post",
+              url:"<?= base_url('event-participation') ?>",
+              data:{"id":id},
+              success:function(result){
+                  let eventparticipation = JSON.parse(result);
+                  if(eventparticipation.length < 1){
+                      document.getElementById("showparticipation").innerHTML = `<tr><td class="text-center" colspan="6">No records found</td></tr>`;
+                  }
+                  else{
+                      document.getElementById("showparticipation").innerHTML = eventparticipation.map((participation,index)=> {
+                          let tax = parseFloat(participation.Taxamount || 0);
+                          let pending = parseFloat(participation.balanceamount || 0);
+                          let balance_display = participation.balanceamount || 0;
+                          
+                          if (tax > 0 && pending === tax) {
+                              balance_display = `<span class="badge bg-danger">UN PAID</span>`;
+                          } else if (pending === 0 && tax > 0) {
+                              balance_display = `<span class="badge bg-success">PAID</span>`;
+                          } else if (pending > 0 && pending < tax) {
+                              balance_display = `<span class="badge bg-primary text-white">PARTIALLY PAID</span>`;
+                          }
+                          return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.paidamount || participation.Collectedamount || 0}</td><td>${balance_display}</td><td>${participation.paymentdate}</td></tr>`;
+                      }).join("");
+                  }
+              },
+              error:function(error){
+                  console.error("Error fetching event participation:", error);
+              }
+          });
+      }
+
     function viewMemberdocuments(aadharfrontimage,aadharbackimage,communitycertificate) {
          document.getElementById("showdocuments").innerHTML = `
     <div style="width:fit-content;">

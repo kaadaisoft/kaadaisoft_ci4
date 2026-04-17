@@ -372,7 +372,7 @@
     <div class="login-wrapper">
         <!-- Full Screen Background Image -->
         <div class="login-image">
-            <img src="<?= base_url('assets/perumal kovil.jpg') ?>" alt="Kaadaisoft Temple">
+            <img src="<?= base_url('assets/Kovil.jpeg') ?>" alt="Kaadaisoft Temple">
         </div>
 
         <!-- Transparent Login Container -->

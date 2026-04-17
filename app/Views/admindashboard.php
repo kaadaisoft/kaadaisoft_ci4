@@ -934,13 +934,18 @@
         let paginatedItems = data.slice(startIndex, startIndex + pendingItemsPerPage);
 
         paginatedItems.forEach(function(participation, index) {
+            let tax = parseFloat(participation.Taxamount);
             let pending = parseFloat(participation.balanceamount);
-            if (isNaN(pending)) pending = parseFloat(participation.Taxamount);
+            if (isNaN(pending)) pending = tax;
             
             let status_badge = "";
             if (pending <= 0) {
-                status_badge = `<span class="badge bg-success-soft text-success border border-success ms-2" style="font-size: 0.65rem; background-color: #f0fdf4;">PAID</span>`;
+                status_badge = `<span class="badge bg-success ms-2" style="font-size: 0.65rem;">PAID</span>`;
                 pending = 0;
+            } else if (pending == tax) {
+                status_badge = `<span class="badge bg-danger ms-2" style="font-size: 0.65rem;">UN PAID</span>`;
+            } else if (pending > 0 && pending < tax) {
+                status_badge = `<span class="badge bg-primary text-white ms-2" style="font-size: 0.65rem;">PARTIALLY PAID</span>`;
             }
 
             rows_html += `<tr onclick="handleRowClick('${participation.Id}')" style="cursor: pointer;">

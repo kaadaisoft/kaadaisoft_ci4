@@ -340,6 +340,10 @@
                                 <th>S.No</th>
                                 <th>Member Name</th>
                                 <th>Member ID</th>
+                                <th>District</th>
+                                <th>Taluk</th>
+                                <th>Panchayat</th>
+                                <th>Village</th>
                                 <th>Request Date</th>
                                 <th>Actions</th>
                             </tr>
@@ -501,7 +505,7 @@
             let i = startIndex + 1;
 
             if (data.length === 0) {
-                document.getElementById("requests_body").innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">No pending update requests found.</td></tr>`;
+                document.getElementById("requests_body").innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">No pending update requests found.</td></tr>`;
                 return;
             }
 
@@ -514,6 +518,10 @@
                         <td class="fw-bold text-muted">${i}</td>
                         <td class="fw-semibold text-primary">${req.MemberName}</td>
                         <td><span class="badge bg-light text-dark border">${req.Familymembershipid}</span></td>
+                        <td class="text-secondary">${req.old_District || '-'}</td>
+                        <td class="text-secondary">${req.old_Taluk || '-'}</td>
+                        <td class="text-secondary">${req.old_Panchayat || '-'}</td>
+                        <td class="text-secondary">${req.old_Village || '-'}</td>
                         <td class="text-secondary">${dateDisplay}</td>
                         <td class="text-center" onclick="event.stopPropagation();">
                             <button class="btn-action-premium btn-view-premium"

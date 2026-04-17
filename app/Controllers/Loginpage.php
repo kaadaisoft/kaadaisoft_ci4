@@ -209,7 +209,7 @@ class Loginpage extends BaseController {
     private function sendResetEmail($user, $otp) {
         $email = \Config\Services::email();
         $email->setTo($user->Email);
-        $email->setSubject('Password Reset OTP - Poondurai Kaadai Kulam');
+        $email->setSubject('Poondurai Kaadai Kulam - Password Reset OTP');
         $email->setMailType('html');
         
         $imagePath = FCPATH . 'assets/logo_small.png';
@@ -230,7 +230,7 @@ class Loginpage extends BaseController {
             'highlight_box' => $otp,
             'highlight_label' => 'Reset Code',
             'highlight_subtext' => 'This code will expire in 15 minutes.',
-            'primary_color' => '#38bdf8'
+            'primary_color' => '#16a34a'
         ];
 
         $messageHtml = view('emails/common_email', $emailData);

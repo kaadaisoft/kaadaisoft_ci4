@@ -280,9 +280,13 @@ class AdminDashboard extends BaseController {
             $p_name = $this->request->getPost("panchayat");
             $t_name = $this->request->getPost("taluk");
             $d_name = $this->request->getPost("district");
+            $m_id = $this->request->getPost("memberid");
 
-            $existvillage = $this->adminDashboardModel->getExistvillage($v_name, $p_name, $t_name, $d_name);
-            if(count($existvillage) > 0){
+            $existvillage = $this->adminDashboardModel->getExistvillage($v_name, $p_name, $t_name, $d_name, $m_id);
+            if($existvillage === "already_assigned"){
+                echo "already_assigned";
+            }
+            else if(count($existvillage) > 0){
                 echo "exist";
             }
             else{
@@ -899,7 +903,7 @@ public function change_password() {
 
         $email = \Config\Services::email();
         $email->setTo($email_address);
-        $email->setSubject('🎉 Membership Approved - Poondurai Kaadai Kulam');
+        $email->setSubject('Poondurai Kaadai Kulam - 🎉 Membership Approved');
         $email->setMailType('html');
 
         // Attach logo inline
@@ -940,7 +944,7 @@ public function change_password() {
 
         $email = \Config\Services::email();
         $email->setTo($email_address);
-        $email->setSubject('Application Status Update - Poondurai Kaadai Kulam');
+        $email->setSubject('Poondurai Kaadai Kulam - Membership Application Rejection');
         $email->setMailType('html');
 
         // Attach logo inline
@@ -954,12 +958,17 @@ public function change_password() {
         }
 
         $emailData = [
-            'title' => 'Application Status Update',
+            'title' => 'Membership Application Rejection',
             'subtitle' => 'Poondurai Kaadai Kulam',
             'logo_url' => $logoUrl,
             'name' => $name,
             'message' => 'Thank you for your interest in joining <strong>Poondurai Kaadai Kulam</strong>. After reviewing your application, we regret to inform you that we are unable to approve your membership at this time.',
             'extra_info' => !empty($reason) ? '<strong>Reason for Rejection:</strong><br>' . $reason : null,
+            'extra_bg' => '#fef2f2',
+            'extra_border' => '#dc2626',
+            'extra_color' => '#991b1b',
+            'contact_address' => 'Sri Angala Amman Kovil Temple, Avalpoondurai, Tamil Nadu 638115',
+            'contact_email' => 'contact@kaadaikulam.org',
             'primary_color' => '#dc2626'
         ];
 
@@ -969,4 +978,4 @@ public function change_password() {
         return $email->send();
     }
 }
-?>
+?>

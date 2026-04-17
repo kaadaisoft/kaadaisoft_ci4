@@ -134,27 +134,72 @@ class Coordinators extends BaseController{
 
     public function searchcoordinators(){
        $searchfields = $this->request->getGet('searchfields');
+       $district = $this->request->getGet('district');
+       $taluk = $this->request->getGet('taluk');
+       $panchayat = $this->request->getGet('panchayat');
+       $village = $this->request->getGet('village');
+
+       $filters = [
+           'searchfields' => $searchfields,
+           'district' => $district,
+           'taluk' => $taluk,
+           'panchayat' => $panchayat,
+           'village' => $village
+       ];
+
        if($this->request->isAJAX()){
-           if ($searchfields == "") {
-               $counts = $this->session->get('coordscounts') ?? 0;
-               $coordinators = $this->coordinatorsModel->getCoordinators($counts);
-               $html = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>$counts));
-               $total = $this->coordinatorsModel->getTotalCoordinators();
-               echo json_encode(["html" => $html, "total" => $total]);
-           } 
-           else {
-               $coordinators = $this->coordinatorsModel->getCoordinatorsSearchfields($searchfields);
-               $counts = count($coordinators);
-               $html = "";
-               if($counts == 0){
-                   $html = view('coordinatorslist',array("coordinators"=>[]));
-               }
-               else{
-                   $html = view('coordinatorslist',array("coordinators"=>$coordinators,"sno"=>0));
-               }
-               echo json_encode(["html" => $html, "total" => $counts]);
-           }
+           $counts = 0; // Reset to 0 for search
+           $coordinators = $this->coordinatorsModel->getFilteredCoordinators($counts, $filters);
+           $total = $this->coordinatorsModel->getTotalFilteredCoordinators($filters);
+           
+           $html = view('coordinatorslist', array("coordinators" => $coordinators, "sno" => $counts));
+           echo json_encode(["html" => $html, "total" => $total]);
        }
+    }
+
+    public function getDistricts(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $stateid = $this->request->getGet('stateid');
+            // Assuming we use MembersModel's getDistricts which returns objects
+            $districts = $this->membersModel->getDistricts($stateid);
+            echo json_encode($districts);
+        }
+    }
+
+    public function getTaluks(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $districtname = $this->request->getGet('districtname');
+            $taluks = $this->membersModel->getTaluks($districtname);
+            echo json_encode($taluks);
+        }    
+    }
+
+    public function getPanchayats(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $talukname = $this->request->getGet('talukname');
+            $panchayats = $this->membersModel->getPanchayats($talukname);
+            echo json_encode($panchayats);
+        }
+    }
+
+    public function getVillagesNew(){
+        if(!$this->session->has('Kaadaisoft_userId')){
+            return redirect()->to('/');
+        }
+        if($this->request->isAJAX()){
+            $panchayatname = $this->request->getGet('panchayatname');
+            $villages = $this->membersModel->getVillages($panchayatname);
+            echo json_encode($villages);
+        }
     }
 
     public function getareamembers(){
