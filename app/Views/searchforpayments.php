@@ -11,7 +11,10 @@ if (isset($members) && isset($sno)) {
             <td><span class='badge bg-light text-dark border px-2 py-1 rounded'>$roleText</span></td>
             <td>$value[Aadharnumber]</td>
             <td>$value[Phonenumber]</td>
+            <td>$value[District]</td>
             <td>$value[Taluk]</td>
+            <td>$value[Panchayat]</td>
+            <td>$value[Village]</td>
             <td>
                 <div class='d-flex justify-content-center align-items-center gap-2'>
                     <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-pay-modern'>Pay Now</a>
@@ -22,6 +25,6 @@ if (isset($members) && isset($sno)) {
         $i++;
     }
 } else {
-    echo "<tr><td colspan='8' class='text-center py-5 bg-light text-muted fw-medium'><i class='fas fa-search fa-2x d-block mb-3 opacity-25'></i>No search results found.</td></tr>";
+    echo "<tr><td colspan='11' class='text-center py-5 bg-light text-muted fw-medium'><i class='fas fa-search fa-2x d-block mb-3 opacity-25'></i>No search results found.</td></tr>";
 }
 ?>

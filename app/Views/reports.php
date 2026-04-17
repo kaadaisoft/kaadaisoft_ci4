@@ -444,7 +444,10 @@
                   <th>Role</th>
                   <th>Phone No</th>
                   <th>Aadhar Number</th>
+                  <th>District</th>
                   <th>Taluk</th>
+                  <th>Panchayat</th>
+                  <th>Village</th>
                 </tr>
               </thead>
               <tbody id="ps-reports">
@@ -460,7 +463,10 @@
                         <td><span class='badge bg-light text-dark border px-2 py-1 rounded'>$value[Role]</span></td>
                         <td>$value[Phonenumber]</td>
                         <td>$value[Aadharnumber]</td>
+                        <td>$value[District]</td>
                         <td>$value[Taluk]</td>             
+                        <td>$value[Panchayat]</td>             
+                        <td>$value[Village]</td>             
                     </tr>";
                     ++$i;
                   }

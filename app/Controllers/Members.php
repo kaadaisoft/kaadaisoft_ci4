@@ -1073,7 +1073,7 @@ class Members extends BaseController
             $email = \Config\Services::email();
             
             $email->setTo($email_address);
-            $email->setSubject('Email Verification OTP - Poondurai Kaadai Kulam');
+            $email->setSubject('Poondurai Kaadai Kulam - Email Verification OTP');
             $email->setMailType('html');
 
             // Attach logo inline (same as password reset email)
@@ -1094,7 +1094,7 @@ class Members extends BaseController
                 'highlight_box' => $otp,
                 'highlight_label' => 'Verification Code',
                 'highlight_subtext' => 'This code will expire in 10 minutes.',
-                'primary_color' => '#38bdf8'
+                'primary_color' => '#16a34a'
             ];
 
             $messageHtml = view('emails/common_email', $emailData);
@@ -1161,7 +1161,7 @@ class Members extends BaseController
 
         $email = \Config\Services::email();
         $email->setTo($email_address);
-        $email->setSubject('Welcome to Poondurai Kaadai Kulam - Registration Received');
+        $email->setSubject('Poondurai Kaadai Kulam - Registration Received');
         $email->setMailType('html');
 
         // Attach logo inline
@@ -1181,7 +1181,10 @@ class Members extends BaseController
             'name' => $name,
             'message' => 'Thank you for registering with <strong>Poondurai Kaadai Kulam</strong>. Your application has been successfully submitted and is now under review by our team.',
             'extra_info' => '<strong>Next Steps:</strong><br>• Our administrators will verify your details within 48 hours.<br>• You will receive another notification once your membership is approved.<br>• You can then log in using your phone number and the password set during registration.',
-            'primary_color' => '#0ea5e9'
+            'extra_bg' => '#f0fdf4',
+            'extra_border' => '#16a34a',
+            'extra_color' => '#166534',
+            'primary_color' => '#16a34a'
         ];
 
         $messageHtml = view('emails/common_email', $emailData);

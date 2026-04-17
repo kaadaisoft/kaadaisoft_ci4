@@ -258,7 +258,19 @@ public function rejectMember($applicationid, $rejectreason){
    return $user;
   }
 
-  function getExistvillage($v_name, $p_name, $t_name, $d_name) {
+  function getExistvillage($v_name, $p_name, $t_name, $d_name, $memberid = null) {
+    if ($memberid) {
+        $checkSelf = $this->db->query("SELECT * FROM village_table 
+                                   WHERE village_name = " . $this->db->escape($v_name) . " 
+                                   AND panchayat_name = " . $this->db->escape($p_name) . " 
+                                   AND taluk_name = " . $this->db->escape($t_name) . " 
+                                   AND district_name = " . $this->db->escape($d_name) . "
+                                   AND (Coordinator_id = '$memberid' OR Coordinator_Two_id = '$memberid')");
+        if($checkSelf->getNumRows() > 0) {
+            return "already_assigned";
+        }
+    }
+
     $query = $this->db->query("SELECT * FROM village_table 
                                WHERE village_name = " . $this->db->escape($v_name) . " 
                                AND panchayat_name = " . $this->db->escape($p_name) . " 

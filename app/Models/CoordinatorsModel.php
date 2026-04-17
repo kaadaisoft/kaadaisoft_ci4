@@ -96,6 +96,88 @@ class CoordinatorsModel extends Model
         return $results;
     }
 
+    public function getFilteredCoordinators($counts, $filters = [])
+    {
+        $builder = $this->db->table('kaadaimembers km');
+        $builder->select('km.*, GROUP_CONCAT(vt.village_name) AS VillageNames');
+        $builder->join('village_table vt', '(km.Familymembershipid = vt.Coordinator_id OR km.Familymembershipid = vt.Coordinator_Two_id)', 'left');
+        $builder->where('km.Role', 2);
+        $builder->where('km.isShow', 1);
+
+        if (!empty($filters['district'])) {
+            $builder->where('vt.district_name', $filters['district']);
+        }
+        if (!empty($filters['taluk'])) {
+            $builder->where('vt.taluk_name', $filters['taluk']);
+        }
+        if (!empty($filters['panchayat'])) {
+            $builder->where('vt.panchayat_name', $filters['panchayat']);
+        }
+        if (!empty($filters['village'])) {
+            $builder->where('vt.village_name', $filters['village']);
+        }
+        if (!empty($filters['searchfields'])) {
+            $search = $filters['searchfields'];
+            $aadhar_hash = hash('sha256', $search);
+            $builder->groupStart();
+            $builder->like('km.Name', $search);
+            $builder->orLike('km.Familymembershipid', $search);
+            $builder->orLike('km.Phonenumber', $search);
+            $builder->orWhere('km.Aadhar_hash', $aadhar_hash);
+            $builder->groupEnd();
+        }
+
+        $builder->groupBy('km.Familymembershipid');
+        $builder->orderBy('km.updated_at', 'DESC');
+        
+        if ($counts !== null) {
+            $builder->limit(10, $counts);
+        }
+
+        $results = $builder->get()->getResult();
+        foreach ($results as $row) {
+            if (!empty($row->Aadharnumber)) {
+                try {
+                    $row->Aadharnumber = $this->encrypter->decrypt(base64_decode($row->Aadharnumber));
+                } catch (\Exception $e) {}
+            }
+        }
+        return $results;
+    }
+
+    public function getTotalFilteredCoordinators($filters = [])
+    {
+        $builder = $this->db->table('kaadaimembers km');
+        $builder->join('village_table vt', '(km.Familymembershipid = vt.Coordinator_id OR km.Familymembershipid = vt.Coordinator_Two_id)', 'left');
+        $builder->where('km.Role', 2);
+        $builder->where('km.isShow', 1);
+
+        if (!empty($filters['district'])) {
+            $builder->where('vt.district_name', $filters['district']);
+        }
+        if (!empty($filters['taluk'])) {
+            $builder->where('vt.taluk_name', $filters['taluk']);
+        }
+        if (!empty($filters['panchayat'])) {
+            $builder->where('vt.panchayat_name', $filters['panchayat']);
+        }
+        if (!empty($filters['village'])) {
+            $builder->where('vt.village_name', $filters['village']);
+        }
+        if (!empty($filters['searchfields'])) {
+            $search = $filters['searchfields'];
+            $aadhar_hash = hash('sha256', $search);
+            $builder->groupStart();
+            $builder->like('km.Name', $search);
+            $builder->orLike('km.Familymembershipid', $search);
+            $builder->orLike('km.Phonenumber', $search);
+            $builder->orWhere('km.Aadhar_hash', $aadhar_hash);
+            $builder->groupEnd();
+        }
+
+        return $builder->countAllResults();
+    }
+
     public function addCoordinator($name, $aadhar, $phoneno, $village, $email, $role)
     {
         $lastid = $this->db->query("SELECT COUNT(id) AS lastid  FROM koorai WHERE Role = 2");

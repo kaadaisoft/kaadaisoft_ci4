@@ -392,7 +392,7 @@
       .custom-table-modern {
         margin-bottom: 0;
         width: 100%;
-        min-width: 800px;
+        min-width: 1000px;
       }
       .custom-table-modern thead th {
         background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -569,19 +569,7 @@
 
   <div class="container-fluid layout-container p-0">
 
-    <?php if (session()->getFlashdata('paymentsuccessstatus')): ?>
-      <div class="alert alert-success alert-dismissible fade show mt-3 mx-3" style="position:absolute; top:70px; right:20px; z-index:9999;" role="alert">
-        <?= session()->getFlashdata('paymentsuccessstatus'); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')): ?>
-      <div class="alert alert-danger alert-dismissible fade show mt-3 mx-3" style="position:absolute; top:70px; right:20px; z-index:9999;" role="alert">
-        <?= session()->getFlashdata('error'); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    <?php endif; ?>
+    <?= view('notification_toast') ?>
 
     <!-- Bulk Upload Modal (same output) -->
     <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel"
@@ -684,22 +672,23 @@
             ><!------------------------------->
             <div class="d-flex justify-content-between">
               <span class="text-secondary fs-4 fw-bold">Payment Status Filter</span>
-              <a href='download_members_data' style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</a>
+              <button onclick="downloadFilteredData()" style='height:fit-content;' class='btn btn-warning text-dark fw-bold btn-sm rounded shadow-sm' id='download' role='button'><i class="fas fa-file-download me-2"></i>Download Data</button>
             </div>
             <div class="pt-2 pb-4 px-3"><!----------filter-start------------>
               <form class="row filter-card-premium" method="POST" action="<?= base_url("get-filtered-users") ?>">
-                <div class="col-md-3 mb-3"><!------------state-choose------------>
-                  <label class="form-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>State</label>
-                  <select onchange="getDistricts(this)" class="form-select" name="stateid" id="stateid">
-                      <option value=''>Choose State</option>
-                      <?php if (isset($states) || session()->get('filterdata')):
-                        $statesData = isset($states) ? $states : session()->get('filterdata')['states'];
-                        foreach ($statesData as $key => $value): ?>
-                          <option value='<?= $value['state_id'] ?>'><?= $value['state_title'] ?></option>
-                        <?php endforeach; 
-                      endif; ?>
-                    </select>
-                </div><!------------state-choose-end----------->
+                <!------------state-hidden-default-TN------------>
+                <?php
+                  $tn_state_id = '';
+                  $statesSource = isset($states) ? $states : (session()->get('filterdata')['states'] ?? []);
+                  foreach ($statesSource as $sv) {
+                    if (trim($sv['state_title']) === 'Tamil Nadu') {
+                      $tn_state_id = $sv['state_id'];
+                      break;
+                    }
+                  }
+                ?>
+                <input type="hidden" name="stateid" id="stateid_admin" value="<?= $tn_state_id ?>">
+                <!------------state-hidden-end----------->
 
                 <div class="col-md-3 mb-3"><!------------district-choose------------>
                   <label class="form-label"><i class="fas fa-map me-2 text-primary"></i>District</label>
@@ -822,14 +811,14 @@
                 </div>
               </div>
               <form class="row filter-card-premium" method="POST" action="<?= base_url("get-filtered-users") ?>">
-                <div class="col-md-3 mb-3"><!------------state-choose------------>
+                <div class="d-none col-md-3"><!------------state-choose------------>
                   <label class="form-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>State</label>
-                  <input class="form-control bg-light" name="statename" id="statename" readonly value="<?= isset($memberdata) ? $memberdata->State : "" ?>" required>
+                  <input class="form-control bg-light" name="statename" id="statename_coord" readonly value="<?= isset($memberdata) ? $memberdata->State : "Tamil Nadu" ?>" required>
                 </div><!------------state-choose-end----------->
 
                 <div class="d-none col-md-3"><!------------state-choose------------>
                   <label class="form-label">State</label>
-                  <input onchange="getDistricts(this)" class="form-control bg-light" name="stateid" id="stateid" readonly value="<?= isset($memberdata) ? $memberdata->State_id : '' ?>" required>
+                  <input onchange="getDistricts(this)" class="form-control bg-light" name="stateid" id="stateid_coord" readonly value="<?= isset($memberdata) ? $memberdata->State_id : $tn_state_id ?>" required>
                 </div><!------------state-choose-end----------->
 
                 <div class="col-md-3 mb-3"><!------------district-choose------------>
@@ -932,7 +921,10 @@
                   <th>Role</th>
                   <th>Aadhar</th>
                   <th>Mobile</th>
-                  <th>Address</th>
+                  <th>District</th>
+                  <th>Taluk</th>
+                  <th>Panchayat</th>
+                  <th>Village</th>
                   <th class="text-center">Actions</th>
                 </tr>
               </thead>
@@ -951,7 +943,10 @@
                     <td><span class='badge bg-light text-dark border'>$roleText</span></td>
                     <td class='text-muted'>$value[Aadharnumber]</td>
                     <td class='text-muted'>$value[Phonenumber]</td>
+                    <td class='text-muted'>$value[District]</td>
                     <td class='text-muted'>$value[Taluk]</td>
+                    <td class='text-muted'>$value[Panchayat]</td>
+                    <td class='text-muted'>$value[Village]</td>
                     <td>
                       <div class='d-flex justify-content-center align-items-center gap-2'>
                         <a href='gopaymentpage?memberid=$value[Familymembershipid]' class='btn-pay-modern'>Pay Now</a>
@@ -1072,6 +1067,12 @@
 
     $(document).ready(function() {
       renderPagination(currentTotalCount, currentActivePage);
+      if(document.getElementById('stateid_admin')){
+        getDistricts(document.getElementById('stateid_admin'));
+      }
+      if(document.getElementById('stateid_coord')){
+        getDistricts(document.getElementById('stateid_coord'));
+      }
     });
 
     function renderPagination(totalCount, activePage) {
@@ -1516,6 +1517,35 @@
 
 
 
+
+    function downloadFilteredData() {
+        var year = $('#eventyear').val();
+        var eventId = $('#eventid').val();
+        var status = $('input[name="paymentstatus"]:checked').val();
+        
+        // Basic Validation
+        if (!year || !eventId || !status) {
+            psShowToast('error', "Please select Event Year, Event, and Payment Status before downloading data.");
+            return;
+        }
+
+        // Gather all filter params
+        var district = $('#districtstitle').val();
+        var taluk = $('#talukslist').val();
+        var panchayat = $('#panchayatlist').val();
+        var village = $('#villagelist').val();
+
+        var downloadUrl = "<?= base_url('download_excel') ?>" 
+            + "?year=" + encodeURIComponent(year)
+            + "&eventid=" + encodeURIComponent(eventId)
+            + "&status=" + encodeURIComponent(status)
+            + "&districtname=" + encodeURIComponent(district)
+            + "&talukname=" + encodeURIComponent(taluk)
+            + "&panchayatname=" + encodeURIComponent(panchayat)
+            + "&villagename=" + encodeURIComponent(village);
+
+        window.location.href = downloadUrl;
+    }
 
     function toggleFilterSection() {
         $("#filter-segment").slideToggle(400);

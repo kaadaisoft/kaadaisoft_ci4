@@ -100,6 +100,9 @@ $routes->get('changecoordinatorspagesetup', 'Coordinators::changecoordinatorspag
 $routes->get('changeviewcoordinatorspagesetup', 'Coordinators::changeViewcoordinatorspagesetup');
 $routes->match(['get', 'post'], 'coordinators/trash/(:any)', 'Coordinators::movetotrash/$1');
 $routes->get('coordinators/searchcoordinators', 'Coordinators::searchcoordinators');
+$routes->get('coordinators/getTaluks', 'Coordinators::getTaluks');
+$routes->get('coordinators/getPanchayats', 'Coordinators::getPanchayats');
+$routes->get('coordinators/getVillagesNew', 'Coordinators::getVillagesNew');
 $routes->get('coordinators/sidemenu', 'Coordinators::sidemenu');
 $routes->get('coordinators/topmenu', 'Coordinators::topmenu');
 $routes->get('coordinators/pslogo', 'Coordinators::pslogo');

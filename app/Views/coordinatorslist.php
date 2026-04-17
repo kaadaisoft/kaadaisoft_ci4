@@ -8,6 +8,7 @@
                     <td><?=$coordinator->District?></td>
                     <td><?=$coordinator->Taluk?></td>
                     <td><?=$coordinator->Panchayat?></td>
+                    <td><?=$coordinator->Village?></td>
                     <td class='<?=$coordinator->VillageNames ? '' : 'text-center'?>'>
                         <?=$coordinator->VillageNames ? '<span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start" style="line-height:1.5;">' . $coordinator->VillageNames . '</span>' : '-'?>
                     </td>
@@ -22,6 +23,6 @@
                   <?php endforeach;?>
                 <?php else:?>
                   <tr>
-                      <td colspan='9' class='text-center'>No results</td>
+                      <td colspan='10' class='text-center'>No results</td>
                   </tr>
                 <?php endif;?>

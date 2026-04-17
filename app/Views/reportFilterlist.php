@@ -461,7 +461,7 @@
                 echo "
             <thead>
             <tr>
-            <th>S.No</th><th>Familymembershipid</th><th>Name</th><th>Role</th><th>Phone No</th><th>EventMoney</th><th>PaidCash</th><th>Pending</th><th>lastPaid</th>
+            <th>S.No</th><th>Familymembershipid</th><th>Name</th><th>Role</th><th>Phone No</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Village</th><th>EventMoney</th><th>PaidCash</th><th>Pending</th><th>Status</th><th>lastPaid</th>
             </tr>
             </thead>";
               }
@@ -474,6 +474,21 @@
                   foreach ($reports as $key => $value) {
                     $j = $i + 1;
                     $rowBg = ($i % 2 == 0) ? "style='background-color:#f8fafc;'" : "";
+
+                    $tax = floatval($value['Taxamount'] ?? 0);
+                    $pending_amount = floatval($value['balancemount'] ?? 0);
+                    $status_badge = '<span class="badge bg-secondary text-white">N/A</span>';
+                    
+                    if ($tax > 0 && $pending_amount == $tax) {
+                        $status_badge = '<span class="badge bg-danger text-white">UN PAID</span>';
+                    } elseif ($pending_amount == 0 && $tax > 0) {
+                        $status_badge = '<span class="badge bg-success text-white">PAID</span>';
+                    } elseif ($pending_amount > 0 && $pending_amount < $tax) {
+                        $status_badge = '<span class="badge bg-primary text-white">PARTIALLY PAID</span>';
+                    }
+                    
+                    $pending_display = ($pending_amount > 0) ? $pending_amount : ($tax > 0 ? '0' : '_');
+
                     echo "
                    <tr $rowBg>
                        <td class='fw-medium text-muted'>$j</td>
@@ -481,17 +496,22 @@
                        <td class='fw-medium'>$value[Name]</td>
                        <td class='text-muted'>$value[Role]</td>
                        <td class='text-muted'>$value[Mobile]</td>
+                       <td class='text-muted'>$value[District]</td>
+                       <td class='text-muted'>$value[Taluk]</td>
+                       <td class='text-muted'>$value[Panchayat]</td>
+                       <td class='text-muted'>$value[Village]</td>
                        <td class='text-muted'>" . ($value['Taxamount'] ?? '_') . "</td>
                        <td class='text-muted'>" . ($value['paidamount'] ?? '_') . "</td>
-                       <td class='text-muted'>" . ($value['balancemount'] ?? '_') . "</td>
+                       <td class='fw-bold text-danger'>$pending_display</td>
+                       <td class='text-center'>$status_badge</td>
                        <td class='text-muted'>" . ($value['paymentdate'] ?? '_') . "</td>           
                    </tr>";
                     ++$i;
                   }
                 } else {
-                  echo "<tr>
-                      <td colspan='9' class='text-center'>No search results</td>
-                    </tr>";
+                   echo "<tr>
+                       <td colspan='14' class='text-center'>No search results</td>
+                     </tr>";
                 }
                 ?>
                 <!-- <td>

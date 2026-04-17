@@ -20,13 +20,16 @@
                     <td><span class='badge bg-light text-dark border px-2 py-1 rounded'>$value[Role]</span></td>
                     <td>$value[Phonenumber]</td>
                     <td>$value[Aadharnumber]</td>
+                    <td>$value[District]</td>
                     <td>$value[Taluk]</td>
+                    <td>$value[Panchayat]</td>
+                    <td>$value[Village]</td>
                 </tr>";
                 ++$i;
                }
            }
            else{
-            echo "<tr><td colspan='7' class='text-center py-5 bg-light text-muted fw-medium'><i class='fas fa-search fa-2x d-block mb-3 opacity-25'></i>No results found</td></tr>";
+            echo "<tr><td colspan='10' class='text-center py-5 bg-light text-muted fw-medium'><i class='fas fa-search fa-2x d-block mb-3 opacity-25'></i>No results found</td></tr>";
            }
            ?>
     

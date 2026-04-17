@@ -142,9 +142,29 @@
       .ps-add-btn {
          border: none;
          outline: none;
-         background-color: rgb(23, 23, 184);
-         border-radius: 25px;
+         background: linear-gradient(135deg, #2563eb, #1d4ed8);
+         color: white !important;
+         border-radius: 50px;
+         transition: all 0.3s ease;
+         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
 
+      .ps-add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+      }
+
+      .btn-premium-outline {
+        background-color: white;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .btn-premium-outline:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
 
       .active-page {
@@ -695,17 +715,20 @@
                    <button onclick="toggleFilterSection()" class="btn btn-sm btn-outline-primary fw-bold me-2 px-3 rounded-pill shadow-sm transition-all">
                        <i class="fas fa-filter me-1"></i>Filter
                    </button>
-                   <button onclick="downloadMembersExcel()" style="height:fit-content;" 
-                      class="btn btn-sm btn-success fw-bold float-end btn-warning" id="download"
-                      >Download</button>&nbsp;&nbsp;
+                   <button onclick="downloadMembersExcel()" id="download"
+                      class="btn btn-sm btn-premium-outline btn-outline-warning fw-bold me-2 px-3 shadow-sm">
+                      <i class="fas fa-download me-1"></i>Download
+                   </button>
                    <a <?php if (session()->get('role') == 2) {
                       echo "hidden";
-                    } ?> href="
-                      <?= base_url("assigncoordinator") ?>" class='text-decoration-none ps-add-btn text-white py-1
-                      px-4'>+&nbsp;Assign
-                   </a>&nbsp;
+                    } ?> href="<?= base_url("assigncoordinator") ?>" 
+                      class='text-decoration-none ps-add-btn py-1 px-4 shadow-sm'>
+                      <i class="fas fa-user-plus me-1"></i>Assign
+                   </a>
                    <a href="<?= base_url('registrationform') ?>"
-                      class='ps-add-btn float-end text-white py-1 px-4 text-decoration-none'>+&nbsp;Add</a>
+                      class='ps-add-btn py-1 px-4 text-decoration-none shadow-sm'>
+                      <i class="fas fa-plus me-1"></i>Add
+                   </a>
                 </div>
              </div>
 
@@ -950,6 +973,7 @@
                            <th>District</th>
                            <th>Taluk</th>
                            <th>Panchayat</th>
+                           <th>Village</th>
                            <th class="text-center">Actions</th>
                         </tr>
                      </thead>
@@ -2365,30 +2389,80 @@
          document.getElementById("deletebox").innerHTML = `
         <form id="memberRejectForm" method="POST" action="<?= base_url('rejectmember') ?>">
             <input type="hidden" name="applicationid" value="${id}">
-            <div class="d-flex justify-content-center ">
-                <span style="font-size:66px;color:red;"><i class="fa-solid fa-user-xmark"></i></span>
+            <div class="d-flex justify-content-center mb-3">
+                <span style="font-size:60px;color:red;"><i class="fa-solid fa-user-xmark"></i></span>
             </div>
-            <p class="text-center fs-4">
-                Reject Member <br><span style="color:green;" class="fs-5">${name} (${area})</span>
-            </p> 
+            <p class="text-center fs-5 fw-bold mb-1">Reject Member</p>
+            <p class="text-center text-muted mb-4">${name} (${area})</p>
+            
             <div class="mb-3">
-                <label for="rejectreason" class="form-label fw-bold">Reject Reason:</label>
-                <textarea name="rejectreason" id="member_reject_reason" class="form-control" rows="3" required placeholder="Enter reason for rejection..."></textarea>
+                <label for="reject_reason_select" class="form-label fw-bold">Select Reason:</label>
+                <select id="reject_reason_select" class="form-select border rounded-3 mb-2" onchange="toggleManualReason(this)">
+                    <option value="">-- Choose a reason --</option>
+                    <option value="Incorrect Aadhaar Information">Incorrect Aadhaar Information</option>
+                    <option value="Aadhaar Card is incomplete or cropped">Aadhaar Card is incomplete or cropped</option>
+                    <option value="Documents are not clear / blurry">Documents are not clear / blurry</option>
+                    <option value="Photograph is not clear or incorrect">Photograph is not clear or incorrect</option>
+                    <option value="Duplicate application or existing member">Duplicate application or existing member</option>
+                    <option value="Incomplete Address (Street / Door No missing)">Incomplete Address (Street / Door No missing)</option>
+                    <option value="Native address not matching with documents">Native address not matching with documents</option>
+                    <option value="Community details incomplete">Community details incomplete</option>
+                    <option value="Not eligible (Out of association area)">Not eligible (Out of association area)</option>
+                    <option value="Other">Other (Enter manually)</option>
+                </select>
             </div>
-            <div class="d-flex justify-content-center gap-3">
-                <button type="button" onclick="submitMemberRejection()" class="btn btn-danger rounded-3 px-4">Confirm Reject</button>
+
+            <div id="manual_reason_container" class="mb-3" style="display:none;">
+                <label for="member_reject_reason" class="form-label fw-bold">Manual Reason:</label>
+                <textarea name="rejectreason" id="member_reject_reason" class="form-control" rows="3" placeholder="Enter reason for rejection..." maxlength="150" onkeyup="updateCharCount(this)"></textarea>
+                <div class="text-end small text-muted"><span id="char_count">0</span> / 150 characters</div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 pt-2">
+                <button type="button" onclick="submitMemberRejection()" class="btn btn-danger rounded-3 px-4 shadow-sm">Confirm Reject</button>
                 <button type="button" class="btn btn-secondary rounded-3 px-4" data-bs-dismiss="modal">Cancel</button>
             </div>
         </form>
     `;
       }
 
-      function submitMemberRejection() {
-          let reason = document.getElementById("member_reject_reason").value;
-          if(reason.trim() == "") {
-              psShowToast('warning', 'Please enter a reason for rejection.');
-              return;
+      function toggleManualReason(select) {
+          const container = document.getElementById("manual_reason_container");
+          const textarea = document.getElementById("member_reject_reason");
+          if (select.value === "Other") {
+              container.style.display = "block";
+              textarea.setAttribute("required", "required");
+          } else {
+              container.style.display = "none";
+              textarea.removeAttribute("required");
           }
+      }
+
+      function updateCharCount(textarea) {
+          document.getElementById("char_count").innerText = textarea.value.length;
+      }
+
+      function submitMemberRejection() {
+          const select = document.getElementById("reject_reason_select");
+          const textarea = document.getElementById("member_reject_reason");
+          
+          let finalReason = "";
+          if (select.value === "") {
+              psShowToast('warning', 'Please select a reason for rejection.');
+              return;
+          } else if (select.value === "Other") {
+              if (textarea.value.trim() === "") {
+                  psShowToast('warning', 'Please enter the manual reason.');
+                  return;
+              }
+              finalReason = textarea.value.trim();
+          } else {
+              finalReason = select.value;
+          }
+          
+          // To send the correct reason to the server, we'll put the selected or manual reason into the textarea
+          // which is the field with name="rejectreason"
+          textarea.value = finalReason;
           document.getElementById("memberRejectForm").submit();
       }
 

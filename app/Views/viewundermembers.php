@@ -679,23 +679,14 @@
 
 <!--------------------------delete-modal---------------------->
 
-<div class="modal fade" id="deletemodal">
-
-<div class="modal-dialog">
-   <div class="modal-content">
-      
-       <div class="modal-header">
-          <h4 style="color:red;">Alert</h4>
-          <button class="btn btn-close" data-bs-dismiss="modal"></button>
-       </div>
-
-       <div id="deletebox" class="modal-body">
-        
-       </div>
-
-   </div>
-</div>
-
+<div class="modal fade" id="deletemodal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            <div id="deletebox" class="modal-body p-0">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--------------------------delete-modal-end------------------>
@@ -1141,13 +1132,20 @@ function setDropdownpanchayat(taluk){
   }
 
   function trashmember(id,name,area){
-    document.getElementById("deletebox").innerHTML = `<div class="d-flex justify-content-center "><span style="font-size:66px;color:red;"><i class="fa-regular fa-trash-can"></i></span></div>
-    <p class="text-center fs-4">Move to trash <span style="color:green;" class="fs-4">${name}-${id}-${area}</span> </p> 
-    <div class="d-flex justify-content-center">
-    <div class="col-md-6 d-flex justify-content-evenly"> 
-    <button style="border:none;outline:none;" class="px-2 py-1 btn btn-success rounded-3" onclick="movetotrash('${id}')" data-bs-dismiss="modal">Confirm</button>&nbsp;&nbsp;<button style="border:none;outline:none;background-color:red;" class="px-2 py-1 btn text-white rounded-3" data-bs-dismiss="modal">Cancel</button>
-    </div>
-    </div>
+    document.getElementById("deletebox").innerHTML = `
+        <div class="text-center p-5">
+            <div class="mb-4">
+                <div class="mx-auto d-flex align-items-center justify-content-center rounded-circle" style="width: 110px; height: 110px; background-color: #fff1f2;">
+                    <i class="fa-solid fa-trash-can fa-3x" style="color: #e11d48;"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-3" style="color: #0f172a; font-size: 1.5rem;">Move to Trash?</h3>
+            <p class="mb-4" style="color: #64748b; font-size: 1.05rem; line-height: 1.6;">Are you sure you want to move <strong>${name}-${id}-${area}</strong> to the trash?</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-2">
+                <button type="button" class="btn btn-light px-4 py-2 fw-bold text-secondary border-0" data-bs-dismiss="modal" style="min-width: 140px; border-radius: 12px; background-color: #f1f5f9;">Cancel</button>
+                <button type="button" class="btn px-4 py-2 fw-bold text-white shadow-sm" onclick="movetotrash('${id}')" data-bs-dismiss="modal" style="min-width: 140px; border-radius: 12px; background: linear-gradient(135deg, #e11d48, #be123c); border: none;">Confirm Delete</button>
+            </div>
+        </div>
     `; 
   }
 
@@ -1284,7 +1282,19 @@ function setDropdownpanchayat(taluk){
         let eventparticipation = event[0]
         console.log(eventparticipation)
            document.getElementById("showparticipation").innerHTML = eventparticipation.map((participation,index)=> {
-            return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.paidamount}</td><td>${participation.balanceamount}</td><td>${participation.paymentdate}</td></tr>`;
+            let tax = parseFloat(participation.Taxamount || 0);
+            let pending = parseFloat(participation.balanceamount || 0);
+            let balance_display = participation.balanceamount || 0;
+            
+            if (tax > 0 && pending === tax) {
+                balance_display = `<span class="badge bg-danger">UN PAID</span>`;
+            } else if (pending === 0 && tax > 0) {
+                balance_display = `<span class="badge bg-success">PAID</span>`;
+            } else if (pending > 0 && pending < tax) {
+                balance_display = `<span class="badge bg-primary text-white">PARTIALLY PAID</span>`;
+            }
+            
+            return `<tr><td>${index+1}</td><td>${participation.eventname}</td><td>${participation.Taxamount}</td><td>${participation.paidamount}</td><td>${balance_display}</td><td>${participation.paymentdate}</td></tr>`;
            } ).join("");
         },
         error:function(error){

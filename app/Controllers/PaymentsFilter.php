@@ -338,7 +338,10 @@ class PaymentsFilter extends BaseController {
                      'Familymembershipid' => $m['Userid'] ?? ($m['Familymembershipid'] ?? ''),
                      'Name' => $m['Name'] ?? '',
                      'Mobile' => $m['Mobile'] ?? '',
-                     'MemberTaluk' => $m['Area'] ?? ($m['MemberTaluk'] ?? ($m['Taluk'] ?? ''))
+                     'District' => $m['District'] ?? '',
+                     'MemberTaluk' => $m['Area'] ?? ($m['MemberTaluk'] ?? ($m['Taluk'] ?? '')),
+                     'Panchayat' => $m['Panchayat'] ?? '',
+                     'Village' => $m['Village'] ?? ''
                  ];
              }
              

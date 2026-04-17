@@ -148,6 +148,27 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
       }
+      .btn-filter-toggle {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0 !important;
+        color: #475569;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+      .btn-filter-toggle:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1 !important;
+        color: #0f172a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .btn-filter-toggle.active {
+        background-color: #f1f5f9;
+        border-color: #94a3b8 !important;
+        color: #0f172a;
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+      }
 
       .active-page{
         background-color:#6495ED;
@@ -239,15 +260,34 @@
     .btn-edit-premium:hover { background: #0891b2; color: #fff; }
     .btn-trash-premium:hover { background: #dc2626; color: #fff; }
 
-    .table-container-premium::-webkit-scrollbar {
-      height: 8px;
+    /* Hide Vertical Scrollbars */
+    #main-dashboard-content::-webkit-scrollbar,
+    #menu-bar::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
-    .table-container-premium::-webkit-scrollbar-track {
-      background: #f1f5f9;
+
+    /* Keep Exact Scrollbar Design for Table and Modals */
+    .table-container-premium::-webkit-scrollbar,
+    #update-coords-section::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
     }
-    .table-container-premium::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
+    .table-container-premium::-webkit-scrollbar-track,
+    #update-coords-section::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb,
+    #update-coords-section::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+      border: 2px solid #f1f1f1;
+    }
+    .table-container-premium::-webkit-scrollbar-thumb:hover,
+    #update-coords-section::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
     }
 
       #coords-form div > input{
@@ -709,12 +749,71 @@
             
         <div id="main-dashboard-content" style="overflow-y:auto; padding-bottom:50px; overflow-x:auto;" class="col-md-10"><!-----------main-dashboard------------------------->
          
-        <div class="container-fluid px-4 pt-4 d-flex justify-content-between coordpadd">
-         <span class="h5">Coordinators</span>
-         <div>
-         <a href="<?=base_url("assigncoordinator")?>" class='text-decoration-none ps-add-btn text-white py-1 px-4'>+&nbsp;Assign</a>
-      
-         </div>
+        <div class="container-fluid px-4 pt-4 coordpadd">
+            <div class="row align-items-center gy-3">
+                <div class="col-12 col-md-auto">
+                    <span class="h5 mb-0 fw-bold d-block d-md-inline" style="color: #0f172a;">Coordinators Management</span>
+                </div>
+                <div class="col-12 col-md-auto ms-md-auto d-flex flex-row flex-md-row gap-2 justify-content-end align-items-center">
+                    <button id="toggle-filter-btn" onclick="toggleFilter()" class='btn btn-filter-toggle py-2 px-3 d-inline-flex align-items-center shadow-sm' style="white-space: nowrap;">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                    <a href="<?=base_url("assigncoordinator")?>" class='text-decoration-none ps-add-btn py-2 px-4 d-inline-flex align-items-center' style="white-space: nowrap;">
+                        <i class="fa-solid fa-user-plus me-1 text-white"></i> Assign
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div id="filter-section-container" class="container-fluid px-4 mt-3" style="display: none;">
+            <div class="bg-white p-3 rounded-3 shadow-sm border">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">District</label>
+                        <select id="filter-district" class="form-select form-select-sm shadow-none border-secondary-soft" onchange="loadFilterTaluks(this); filterCoordinators();">
+                            <option value="">All Districts</option>
+                            <?php if(isset($states)): ?>
+                                <?php 
+                                    // Normally we'd first pick a state, but let's assume Tamil Nadu (id 31 usually in this DB)
+                                    // or just fetch all districts from village_table for simplification
+                                    $db = \Config\Database::connect();
+                                    $districts_query = $db->query("SELECT DISTINCT(district_name) as name FROM village_table ORDER BY name ASC");
+                                    foreach($districts_query->getResult() as $d):
+                                ?>
+                                    <option value="<?= $d->name ?>"><?= $d->name ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">Taluk</label>
+                        <select id="filter-taluk" class="form-select form-select-sm shadow-none border-secondary-soft" onchange="loadFilterPanchayats(this); filterCoordinators();" disabled>
+                            <option value="">All Taluks</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">Panchayat</label>
+                        <select id="filter-panchayat" class="form-select form-select-sm shadow-none border-secondary-soft" onchange="loadFilterVillages(this); filterCoordinators();" disabled>
+                            <option value="">All Panchayats</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">Village</label>
+                        <select id="filter-village" class="form-select form-select-sm shadow-none border-secondary-soft" onchange="filterCoordinators();" disabled>
+                            <option value="">All Villages</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted">Search Name/ID/Mobile</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                            <input type="text" id="filter-search" class="form-control form-control-sm border-start-0 ps-0 shadow-none" placeholder="Search..." onkeyup="filterCoordinators();">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
          
         <div style="overflow:auto;" class="container-fluid pt-3 px-4 coordpadd"><!----------------table--------------->
@@ -723,14 +822,14 @@
             <table class="custom-table-premium">
                 <thead>
                 <tr>
-                <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Assigned Villages</th><th>Actions</th>
+                <th>S.No</th><th>User ID</th><th>Name</th><th>Mobile</th><th>District</th><th>Taluk</th><th>Panchayat</th><th>Village</th><th>Assigned Villages</th><th>Actions</th>
                 </tr>
                 </thead>
                 <tbody id="ps-coords">
                    <?php if(isset($coordinators) && count($coordinators) > 0): ?>
                        <?= view('coordinatorslist', ['coordinators' => $coordinators, 'sno' => $sno ?? 0]) ?>
                    <?php else: ?>
-                       <tr><td colspan='9' class='text-center'>No results found</td></tr>
+                       <tr><td colspan='10' class='text-center'>No results found</td></tr>
                    <?php endif; ?>
                 </tbody>
             </table>
@@ -778,23 +877,14 @@
 
 <!--------------------------delete-modal---------------------->
 
-<div class="modal fade" id="deletemodal">
-
-<div class="modal-dialog">
-   <div class="modal-content">
-      
-       <div class="modal-header">
-          <h4 style="color:red;">Alert</h4>
-          <button class="btn btn-close" data-bs-dismiss="modal"></button>
-       </div>
-
-       <div id="deletebox" class="modal-body">
-        
-       </div>
-
-   </div>
-</div>
-
+<div class="modal fade" id="deletemodal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            <div id="deletebox" class="modal-body p-0">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--------------------------delete-modal-end------------------>
@@ -944,14 +1034,31 @@ function goToPage(page) {
 }
 
 function commonSearch(coords) {
-   let searchfields = coords.value;
+   // This is likely called from topmenu. We'll sync it with our local filter-search
+   document.getElementById('filter-search').value = coords.value;
+   filterCoordinators();
+}
+
+function filterCoordinators() {
+   let searchfields = document.getElementById('filter-search').value;
+   let district = document.getElementById('filter-district').value;
+   let taluk = document.getElementById('filter-taluk').value;
+   let panchayat = document.getElementById('filter-panchayat').value;
+   let village = document.getElementById('filter-village').value;
+
    currentSearchQuery = searchfields;
    currentActivePage = 1;
 
    $.ajax({
       type: "get",
       url: "coordinators/searchcoordinators",
-      data: { "searchfields": searchfields },
+      data: { 
+          "searchfields": searchfields,
+          "district": district,
+          "taluk": taluk,
+          "panchayat": panchayat,
+          "village": village
+      },
       dataType: "json",
       success: (result) => {
           document.getElementById('ps-coords').innerHTML = result.html;
@@ -961,9 +1068,125 @@ function commonSearch(coords) {
           renderPagination(currentTotalCount, currentActivePage);
       },
       error: (error) => {
-          document.getElementById('ps-coords').innerHTML = "<tr><td colspan='9' class='text-center'>Error fetching data</td></tr>";
+          document.getElementById('ps-coords').innerHTML = "<tr><td colspan='10' class='text-center'>Error fetching data</td></tr>";
       }
    });
+}
+
+function loadFilterTaluks(district) {
+    let districtName = district.value;
+    const talukSelect = document.getElementById("filter-taluk");
+    const panchayatSelect = document.getElementById("filter-panchayat");
+    const villageSelect = document.getElementById("filter-village");
+
+    if (!districtName) {
+        talukSelect.innerHTML = '<option value="">All Taluks</option>';
+        talukSelect.disabled = true;
+        panchayatSelect.innerHTML = '<option value="">All Panchayats</option>';
+        panchayatSelect.disabled = true;
+        villageSelect.innerHTML = '<option value="">All Villages</option>';
+        villageSelect.disabled = true;
+        return;
+    }
+
+    $.ajax({
+        type: "get",
+        url: "coordinators/getTaluks",
+        data: { "districtname": districtName },
+        dataType: "json",
+        success: (result) => {
+            let html = '<option value="">All Taluks</option>';
+            result.forEach(t => {
+                html += `<option value="${t.taluk_name}">${t.taluk_name}</option>`;
+            });
+            talukSelect.innerHTML = html;
+            talukSelect.disabled = false;
+            
+            // Reset children
+            panchayatSelect.innerHTML = '<option value="">All Panchayats</option>';
+            panchayatSelect.disabled = true;
+            villageSelect.innerHTML = '<option value="">All Villages</option>';
+            villageSelect.disabled = true;
+        }
+    });
+}
+
+function loadFilterPanchayats(taluk) {
+    let talukName = taluk.value;
+    const panchayatSelect = document.getElementById("filter-panchayat");
+    const villageSelect = document.getElementById("filter-village");
+
+    if (!talukName) {
+        panchayatSelect.innerHTML = '<option value="">All Panchayats</option>';
+        panchayatSelect.disabled = true;
+        villageSelect.innerHTML = '<option value="">All Villages</option>';
+        villageSelect.disabled = true;
+        return;
+    }
+
+    $.ajax({
+        type: "get",
+        url: "coordinators/getPanchayats",
+        data: { "talukname": talukName },
+        dataType: "json",
+        success: (result) => {
+            let html = '<option value="">All Panchayats</option>';
+            result.forEach(p => {
+                html += `<option value="${p.panchayat_name}">${p.panchayat_name}</option>`;
+            });
+            panchayatSelect.innerHTML = html;
+            panchayatSelect.disabled = false;
+            
+            // Reset children
+            villageSelect.innerHTML = '<option value="">All Villages</option>';
+            villageSelect.disabled = true;
+        }
+    });
+}
+
+function loadFilterVillages(panchayat) {
+    let panchayatName = panchayat.value;
+    const villageSelect = document.getElementById("filter-village");
+
+    if (!panchayatName) {
+        villageSelect.innerHTML = '<option value="">All Villages</option>';
+        villageSelect.disabled = true;
+        return;
+    }
+
+    $.ajax({
+        type: "get",
+        url: "coordinators/getVillagesNew",
+        data: { "panchayatname": panchayatName },
+        dataType: "json",
+        success: (result) => {
+            let html = '<option value="">All Villages</option>';
+            result.forEach(v => {
+                html += `<option value="${v.village_name}">${v.village_name}</option>`;
+            });
+            villageSelect.innerHTML = html;
+            villageSelect.disabled = false;
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('filter-search').value = "";
+    document.getElementById('filter-district').value = "";
+    loadFilterTaluks(document.getElementById('filter-district'));
+    filterCoordinators();
+}
+
+function toggleFilter() {
+    const filterSection = document.getElementById('filter-section-container');
+    const filterBtn = document.getElementById('toggle-filter-btn');
+    if (filterSection.style.display === 'none') {
+        filterSection.style.display = 'block';
+        filterBtn.classList.add('active');
+    } else {
+        filterSection.style.display = 'none';
+        filterBtn.classList.remove('active');
+    }
 }
 
 // Mobile Menu Functions
@@ -1750,13 +1973,20 @@ else{
 
   function deletecoord(id,name,area) {
     let baseUrl = "<?= base_url('coordinators/trash/') ?>"; 
-    document.getElementById("deletebox").innerHTML = `<div class="d-flex justify-content-center "><span style="font-size:66px;color:red;"><i class="fa-regular fa-trash-can"></i></span></div>
-    <p class="text-center fs-4">Move to trash <span style="color:green;" class="fs-4">${name}-${id}-${area}</span> </p> 
-    <div class="d-flex justify-content-center">
-    <div class="col-md-6 d-flex justify-content-evenly"> 
-    <a style="border:none;outline:none;" class="px-2 py-1 btn btn-success rounded-3" href="${baseUrl}${id}">Confirm</a>&nbsp;&nbsp;<button style="border:none;outline:none;background-color:red;" class="px-2 py-1 btn text-white rounded-3" data-bs-dismiss="modal">Cancel</button>
-    </div>
-    </div>
+    document.getElementById("deletebox").innerHTML = `
+        <div class="text-center p-4">
+            <div class="mb-4">
+                <div class="mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 70px; height: 70px; background-color: #fff1f2; border: 4px solid #fff;">
+                    <i class="fa-solid fa-trash-can fa-xl" style="color: #e11d48;"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: #0f172a; font-size: 1.25rem;">Move to Trash?</h3>
+            <p class="mb-4 text-muted small" style="line-height: 1.5;">Are you sure you want to move <strong>${name}-${id}-${area}</strong> to the trash?</p>
+            <div class="d-grid gap-2 mt-2">
+                <button type="button" class="btn btn-sm px-4 py-2 fw-bold text-secondary border-0" data-bs-dismiss="modal" style="border-radius: 10px; background-color: #f1f5f9;">Cancel</button>
+                <a href="${baseUrl}${id}" class="btn btn-sm px-4 py-2 fw-bold text-white shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, #e11d48, #be123c); border: none;">Confirm Delete</a>
+            </div>
+        </div>
     `; 
   }
 

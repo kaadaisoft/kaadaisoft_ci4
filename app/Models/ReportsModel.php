@@ -114,9 +114,16 @@ class ReportsModel extends Model
 
     public function getMembersHistory($eventid, $status)
     {
-        $builder = $this->db->table('kaadaimembers km');
-        $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
         $escapedEventId = (int)$eventid;
+        $event = $this->db->table('eventlist')->where('Id', $escapedEventId)->get()->getRow();
+        $defaultTax = $event ? $event->TaxAmount : 0;
+
+        $builder = $this->db->table('kaadaimembers km');
+        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.District, km.Taluk, km.Panchayat, km.Village,
+            COALESCE(MAX(pr.Taxamount), $defaultTax) AS Taxamount,
+            COALESCE(SUM(pr.paidamount), 0) AS paidamount,
+            COALESCE(MIN(pr.balanceamount), $defaultTax) AS balancemount,
+            MAX(pr.paymentdate) AS paymentdate");
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
         if ($status == 'Paid') {
@@ -163,9 +170,16 @@ class ReportsModel extends Model
     }
     
     public function getFilteredeventreports($eventname, $status, $counts) {
-         $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
          $escapedEventId = (int)$eventname;
+         $event = $this->db->table('eventlist')->where('Id', $escapedEventId)->get()->getRow();
+         $defaultTax = $event ? $event->TaxAmount : 0;
+
+         $builder = $this->db->table('kaadaimembers km');
+         $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.District, km.Taluk, km.Panchayat, km.Village,
+             COALESCE(MAX(pr.Taxamount), $defaultTax) AS Taxamount,
+             COALESCE(SUM(pr.paidamount), 0) AS paidamount,
+             COALESCE(MIN(pr.balanceamount), $defaultTax) AS balancemount,
+             MAX(pr.paymentdate) AS paymentdate");
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
          if ($status == 'Paid') {
@@ -178,7 +192,7 @@ class ReportsModel extends Model
          $builder->where('km.isShow', 1);
          $builder->where('km.Approvedstatus', 'Verified');
          $builder->groupBy('km.Familymembershipid');
-         $builder->limit(10, $counts); // limit 10 offset $counts
+         $builder->limit(10, $counts);
          
          $results = $builder->get()->getResultArray();
          foreach ($results as &$row) {
@@ -197,9 +211,16 @@ class ReportsModel extends Model
     }
     
     public function getFilteredReportsSearchfields($searchfields, $eventname, $status) {
-         $builder = $this->db->table('kaadaimembers km');
-         $builder->select('km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, MAX(pr.Taxamount) AS Taxamount, SUM(pr.paidamount) AS paidamount, MIN(pr.balanceamount) AS balancemount, MAX(pr.paymentdate) AS paymentdate');
          $escapedEventId = (int)$eventname;
+         $event = $this->db->table('eventlist')->where('Id', $escapedEventId)->get()->getRow();
+         $defaultTax = $event ? $event->TaxAmount : 0;
+
+         $builder = $this->db->table('kaadaimembers km');
+         $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.District, km.Taluk, km.Panchayat, km.Village,
+             COALESCE(MAX(pr.Taxamount), $defaultTax) AS Taxamount,
+             COALESCE(SUM(pr.paidamount), 0) AS paidamount,
+             COALESCE(MIN(pr.balanceamount), $defaultTax) AS balancemount,
+             MAX(pr.paymentdate) AS paymentdate");
          $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
          
          $builder->groupStart()
@@ -235,7 +256,7 @@ class ReportsModel extends Model
         return count($this->getTotalmembershistory($eventname, $status));
     }
 
-    public function getMembersHistoryForDownload($eventid, $status, $talukname = null, $panchayatname = null, $villagename = null)
+    public function getMembersHistoryForDownload($eventid, $status, $talukname = null, $panchayatname = null, $villagename = null, $districtname = null)
     {
         if (empty($eventid)) {
             return [];
@@ -246,13 +267,16 @@ class ReportsModel extends Model
         $defaultTax = $event ? $event->TaxAmount : 0;
         
         $builder = $this->db->table('kaadaimembers km');
-        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.Taluk, km.Panchayat, km.Village, 
+        $builder->select("km.Familymembershipid, km.Role, km.Name, km.Phonenumber AS Mobile, km.Aadharnumber, km.District, km.Taluk, km.Panchayat, km.Village, 
             COALESCE(MAX(pr.Taxamount), $defaultTax) AS EventMoney, 
             COALESCE(SUM(pr.paidamount), 0) AS PaidCash, 
             COALESCE(MIN(pr.balanceamount), $defaultTax) AS Pending, 
             MAX(pr.paymentdate) AS LastPaidDate");
         $builder->join('paymentreceipts pr', "pr.Familymembershipid = km.Familymembershipid AND pr.eventid = $escapedEventId", 'left');
 
+        if (!empty($districtname)) {
+            $builder->where('km.District', $districtname);
+        }
         if (!empty($talukname)) {
             $builder->where('km.Taluk', $talukname);
         }
