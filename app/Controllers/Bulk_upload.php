@@ -230,8 +230,8 @@ class Bulk_upload extends BaseController {
             $approvedstatus = $row[$headerIndex['Approvedstatus']] ?? '';
 
 
-            if (empty(trim($name)) || empty(trim($original_phone)) || empty(trim($aadharnumber))) {
-                $errors[] = "Row " . ($i + 1) . ": Missing Name, Phone, or Aadhar.";
+            if (empty(trim($name)) || empty(trim($original_phone))) {
+                $errors[] = "Row " . ($i + 1) . ": Missing Name or Phone.";
                 continue;
             }
 
@@ -304,8 +304,8 @@ class Bulk_upload extends BaseController {
                  $coordid_two = null; 
             }
 
-            $aadhar_hash = hash('sha256', $aadharnumber);
-            $encrypted_aadhar = base64_encode($this->encrypter->encrypt($aadharnumber));
+            $aadhar_hash = !empty(trim($aadharnumber)) ? hash('sha256', $aadharnumber) : '';
+            $encrypted_aadhar = !empty(trim($aadharnumber)) ? base64_encode($this->encrypter->encrypt($aadharnumber)) : '';
 
             $data[] = array(
                 'Familymembershipid' => $familyMembershipId,

@@ -115,6 +115,7 @@
       .icon-payments { color: #2dd4bf; }
       .icon-reports { color: #a78bfa; }
       .icon-updates { color: #fb923c; }
+      .icon-benefits { color: #f472b6; }
       .icon-logout { color: #f87171; }
 
 </style>
@@ -154,6 +155,8 @@
 <li <?php if(session()->get('role') != 1){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("reports")?>" data-page="reports" class="text-decoration-none"><span class="icon icon-reports"><i class="fa-solid fa-file-invoice"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Reports</span></a></li>
 
 <li <?php if(session()->get('role') == 3){ echo "hidden";}?> class="nav-item"><a href="<?=base_url("view-member-update-requests")?>" data-page="view-member-update-requests" class="text-decoration-none"><span class="icon icon-updates"><i class="fa-solid fa-user-pen"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Update Requests</span></a></li>
+
+<li class="nav-item"><a href="https://kaadaikulam.org/id-card-benefits" target="_blank" data-page="id-card-benefits" class="text-decoration-none"><span class="icon icon-benefits"><i class="fa-solid fa-id-card"></i></span>&nbsp;&nbsp;<span class="fw-semibold">ID Card Benefits</span></a></li>
 
 <li class="nav-item border-top border-secondary mt-3 pt-3">
   <a href="<?=base_url('logout')?>" class="text-decoration-none"><span class="icon icon-logout"><i class="fa-solid fa-power-off"></i></span>&nbsp;&nbsp;<span class="fw-semibold">Logout</span></a></li>
