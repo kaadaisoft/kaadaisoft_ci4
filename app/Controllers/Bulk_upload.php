@@ -143,6 +143,67 @@ class Bulk_upload extends BaseController {
         }
     }
 
+    public function manual_entry() {
+        $headers = ['Name', 'Phonenumber', 'State', 'District', 'Taluk', 'Panchayat', 'Village', 'Street', 'Doornumber', 'Pincode', 'Aadharnumber', 'Approvedstatus'];
+        
+        $row = [];
+        foreach ($headers as $header) {
+            $row[] = $this->request->getPost($header) ?? '';
+        }
+
+        $newName = 'manual_' . time() . '_' . rand(1000, 9999) . '.xlsx';
+        $file_path = 'assets/bulk_uploads/' . $newName;
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Add headers
+        $column = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($column . '1', $header);
+            $column++;
+        }
+        // Add data
+        $column = 'A';
+        foreach ($row as $val) {
+            $sheet->setCellValue($column . '2', $val);
+            $column++;
+        }
+        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($file_path);
+
+        try {
+            $result = $this->parse_excel($file_path);
+        } catch (Exception $e) {
+            $this->session->setFlashdata('upload_error', 'Error processing entry: ' . $e->getMessage());
+            @unlink($file_path);
+            return redirect()->back();
+        }
+        
+        @unlink($file_path);
+        
+        $data = $result['valid_data'];
+        $errors = $result['errors'];
+
+        if (!empty($errors)) {
+            $this->session->setFlashdata('upload_error', "Error saving record: <br>" . implode("<br>", $errors));
+            return redirect()->back();
+        }
+
+        if (!empty($data)) {
+            try {
+                if ($this->bulk_upload_model->bulk_insert($data)) {
+                    $this->session->setFlashdata('upload_success', "Manual record saved successfully!");
+                }
+            } catch (Exception $e) {
+                $this->session->setFlashdata('upload_error', 'Something went wrong: ' . $e->getMessage());
+            }
+        }
+        
+        return redirect()->back();
+    }
+
     private function parse_excel($file_path) {
         $data = [];
         $errors = [];

@@ -734,25 +734,190 @@
 
             <?php if (session()->get('role') == 1 || session()->get('role') == 2): ?>
              <div id="bulk-upload-segment" class="container-fluid px-4 pt-3" style="display: none;">
-                <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
-                   <div class="card-header bg-info text-white border-0 py-3">
-                      <h5 class="mb-0 fw-bold"><i class="fas fa-file-upload me-2 border p-1 rounded bg-white text-info" style="font-size: 0.8rem;"></i>Upload Members Bulk Data</h5>
+                <div class="row">
+                   <div class="col-md-6 mb-3">
+                      <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; overflow: hidden;">
+                         <div class="card-header bg-info text-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-file-excel me-2 border p-1 rounded bg-white text-info" style="font-size: 0.8rem;"></i>Upload Members Bulk Data (Excel)</h5>
+                         </div>
+                         <div class="card-body bg-white p-4">
+                            <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold text-muted small">Select Excel File (.xlsx, .xls)</label>
+                                    <input type="file" class="form-control" name="file" id="file" required accept=".xlsx, .xls">
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <button class="btn btn-primary w-100 fw-bold shadow-sm" type="submit"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Data</button>
+                                </div>
+                            </form>
+                            <div class="mt-4 small text-muted text-center border-top pt-3">
+                              <i class="fas fa-info-circle me-1 text-info"></i> Ensure your file matches the template.<br> 
+                              <a href="<?= base_url('bulk_upload/download_sample') ?>" class="text-primary fw-bold text-decoration-none d-inline-block mt-2">
+                                  <i class="fas fa-download me-1"></i>Download Sample Format
+                              </a>
+                            </div>
+                         </div>
+                      </div>
                    </div>
-                   <div class="card-body bg-white p-4">
-                      <form action="<?php echo base_url('bulk_upload/upload_file'); ?>" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
-                          <div class="col-md-9">
-                              <label class="form-label fw-bold text-muted small">Select Excel File (.xlsx, .xls)</label>
-                              <input type="file" class="form-control" name="file" id="file" required accept=".xlsx, .xls">
-                          </div>
-                          <div class="col-md-3">
-                              <button class="btn btn-primary w-100 fw-bold shadow-sm" type="submit"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Data</button>
-                          </div>
-                      </form>
-                      <div class="mt-3 small text-muted">
-                        <i class="fas fa-info-circle me-1 text-info"></i> Please ensure your Excel file matches the required template format before uploading. 
-                        <a href="<?= base_url('bulk_upload/download_sample') ?>" class="text-primary fw-bold text-decoration-none ms-2">
-                            <i class="fas fa-download me-1"></i>Download Sample Format
-                        </a>
+                   <div class="col-md-6 mb-3">
+                      <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; overflow: hidden;">
+                         <div class="card-header bg-primary text-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-keyboard me-2 border p-1 rounded bg-white text-primary" style="font-size: 0.8rem;"></i>Manual Quick Entry</h5>
+                         </div>
+                         <div class="card-body bg-white p-4">
+                            <form action="<?php echo base_url('bulk_upload/manual_entry'); ?>" method="post" class="row g-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control form-control-sm" name="Name" placeholder="Name *" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control form-control-sm" name="Phonenumber" placeholder="Phone Number *" required oninput="checkManualPhoneExists(this.value)">
+                                    <small id="manualPhoneError" class="text-danger"></small>
+                                </div>
+                                <input type="hidden" name="State" value="Tamil Nadu">
+                                <div class="col-md-6">
+                                    <select class="form-select form-select-sm" name="District" data-name="District" id="manual-district" onchange="setManualTaluks(this); checkManualOthers(this, 'manual-district-text')">
+                                        <option value="">Select District</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                    <input type="text" class="form-control form-control-sm mt-1" id="manual-district-text" style="display:none;" placeholder="Enter District Manually">
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select form-select-sm" name="Taluk" data-name="Taluk" id="manual-taluk" onchange="setManualPanchayats(this); checkManualOthers(this, 'manual-taluk-text')">
+                                        <option value="">Select Taluk</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                    <input type="text" class="form-control form-control-sm mt-1" id="manual-taluk-text" style="display:none;" placeholder="Enter Taluk Manually">
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select form-select-sm" name="Panchayat" data-name="Panchayat" id="manual-panchayat" onchange="setManualVillages(this); checkManualOthers(this, 'manual-panchayat-text')">
+                                        <option value="">Select Panchayat</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                    <input type="text" class="form-control form-control-sm mt-1" id="manual-panchayat-text" style="display:none;" placeholder="Enter Panchayat Manually">
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select form-select-sm" name="Village" data-name="Village" id="manual-village" onchange="checkManualOthers(this, 'manual-village-text')">
+                                        <option value="">Select Village</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                    <input type="text" class="form-control form-control-sm mt-1" id="manual-village-text" style="display:none;" placeholder="Enter Village Manually">
+                                </div>
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control form-control-sm" name="Street" placeholder="Street">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control form-control-sm" name="Doornumber" placeholder="Door Number">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control form-control-sm" name="Pincode" placeholder="Pincode">
+                                </div>
+                                <input type="hidden" name="Approvedstatus" value="Verified">
+                                <div class="col-md-12 mt-3">
+                                    <button id="manualSubmitBtn" class="btn btn-primary w-100 fw-bold shadow-sm" type="submit"><i class="fas fa-save me-2"></i>Save Record</button>
+                                </div>
+                            </form>
+                            <script>
+                               $(document).ready(function () {
+                                   let tn_id = $('#hidden-tn-id').val();
+                                   if (tn_id) {
+                                      $.ajax({
+                                         type: 'get',
+                                         url: '<?= base_url('AdminDashboard/getDistrictsfordropdown') ?>',
+                                         data: { state_id: tn_id },
+                                         success: function(result) {
+                                            $('#manual-district').html(result + '<option value="Others">Others</option>');
+                                         }
+                                      });
+                                   }
+                               });
+
+                               function setManualTaluks(districtDropdown) {
+                                  $('#manual-taluk').html('<option value="">Select Taluk</option><option value="Others">Others</option>');
+                                  $('#manual-panchayat').html('<option value="">Select Panchayat</option><option value="Others">Others</option>');
+                                  $('#manual-village').html('<option value="">Select Village</option><option value="Others">Others</option>');
+                                  if(districtDropdown.value && districtDropdown.value !== 'Others') {
+                                      $.ajax({
+                                          type: 'get',
+                                          url: '<?= base_url('members/getTaluksfordropdown') ?>',
+                                          data: { district_name: districtDropdown.value },
+                                          success: function(result) {
+                                              $('#manual-taluk').html(result + '<option value="Others">Others</option>');
+                                          }
+                                      });
+                                  }
+                               }
+
+                               function setManualPanchayats(talukDropdown) {
+                                  $('#manual-panchayat').html('<option value="">Select Panchayat</option><option value="Others">Others</option>');
+                                  $('#manual-village').html('<option value="">Select Village</option><option value="Others">Others</option>');
+                                  if(talukDropdown.value && talukDropdown.value !== 'Others') {
+                                      $.ajax({
+                                          type: 'get',
+                                          url: '<?= base_url('members/getPanchayatsfordropdown') ?>',
+                                          data: { taluk_name: talukDropdown.value },
+                                          success: function(result) {
+                                              $('#manual-panchayat').html(result + '<option value="Others">Others</option>');
+                                          }
+                                      });
+                                  }
+                               }
+
+                               function setManualVillages(panchayatDropdown) {
+                                  $('#manual-village').html('<option value="">Select Village</option><option value="Others">Others</option>');
+                                  if(panchayatDropdown.value && panchayatDropdown.value !== 'Others') {
+                                      $.ajax({
+                                          type: 'get',
+                                          url: '<?= base_url('members/getVillagesfordropdown') ?>',
+                                          data: { panchayat_name: panchayatDropdown.value },
+                                          success: function(result) {
+                                              $('#manual-village').html(result + '<option value="Others">Others</option>');
+                                          }
+                                      });
+                                  }
+                               }
+
+                               function checkManualOthers(selectEl, textId) {
+                                   let textEl = document.getElementById(textId);
+                                   let originalName = selectEl.getAttribute('data-name');
+                                   if(selectEl.value === 'Others') {
+                                       textEl.style.display = 'block';
+                                       textEl.name = originalName;
+                                       textEl.required = true;
+                                       selectEl.removeAttribute('name');
+                                   } else {
+                                       textEl.style.display = 'none';
+                                       selectEl.name = originalName;
+                                       textEl.removeAttribute('name');
+                                       textEl.required = false;
+                                       textEl.value = '';
+                                   }
+                               }
+
+                               function checkManualPhoneExists(val) {
+                                  let btn = document.getElementById('manualSubmitBtn');
+                                  let err = document.getElementById('manualPhoneError');
+                                  if(val.length >= 10) {
+                                      $.ajax({
+                                          type: 'post',
+                                          url: '<?php echo base_url('members/checkExistphoneno'); ?>',
+                                          data: { phoneno: val },
+                                          success: function(res) {
+                                              if(res.trim() === 'true') {
+                                                  err.innerHTML = 'Phone number already exists.';
+                                                  btn.disabled = true;
+                                              } else {
+                                                  err.innerHTML = '';
+                                                  btn.disabled = false;
+                                              }
+                                          }
+                                      });
+                                  } else {
+                                      err.innerHTML = '';
+                                      btn.disabled = false;
+                                  }
+                               }
+                            </script>
+                         </div>
                       </div>
                    </div>
                 </div>
@@ -777,7 +942,7 @@
                           }
                           ?>
                           <!-- Hidden State (Default: Tamil Nadu) -->
-                          <input type="hidden" id="states-dropdown" value="<?= $tn_id ?>">
+                          <input type="hidden" id="hidden-tn-id" value="<?= $tn_id ?>">
 
                           <!-- District -->
                           <div class="col-md-3">
@@ -2606,7 +2771,7 @@ function resetMemberFilters() {
   if (globalInput) globalInput.value = "";
   
   // Reload TN districts
-  let tnId = document.getElementById("states-dropdown").value;
+  let tnId = document.getElementById("hidden-tn-id").value;
   if(tnId) {
       setDropdowndistricts({value: tnId});
   }
@@ -2615,7 +2780,7 @@ function resetMemberFilters() {
 }
 
 $(document).ready(function() {
-    let tnId = document.getElementById("states-dropdown").value;
+    let tnId = document.getElementById("hidden-tn-id").value;
     if(tnId) {
         setDropdowndistricts({value: tnId});
     }

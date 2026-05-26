@@ -39,6 +39,7 @@ $routes->get('dashboard/pslogo', 'Dashboard::pslogo');
 
 // Admin Dashboard Routes
 $routes->get('admindashboard', 'AdminDashboard::index');
+$routes->get('id-card-benefits', 'AdminDashboard::idCardBenefits');
 $routes->get('admindashboard/getmanager', 'AdminDashboard::getmanager'); // For Update Manager Modal
 $routes->post('admindashboard/update-manager', 'AdminDashboard::updateManager'); // For Manager Update Submit
 $routes->get('viewreceivedapplications', 'AdminDashboard::viewReceivedapplications');
@@ -53,6 +54,9 @@ $routes->match(['get', 'post'], 'get-overall-status', 'AdminDashboard::getOveral
 $routes->match(['get', 'post'], 'register_manager', 'AdminDashboard::register_manager');
 $routes->match(['get', 'post'], 'change_password', 'AdminDashboard::change_password');
 $routes->get('view-manager-data', 'AdminDashboard::viewManagerdata');
+
+// Bulk Upload routes
+$routes->post('bulk_upload/manual_entry', 'Bulk_upload::manual_entry');
 
 // AdminDashboard AJAX & Form Routes
 $routes->post('AdminDashboard/check-exist-village', 'AdminDashboard::checkExistvillage');

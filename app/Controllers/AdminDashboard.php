@@ -24,6 +24,13 @@ class AdminDashboard extends BaseController {
         $this->db = \Config\Database::connect();
     }
     
+    public function idCardBenefits() {
+        if(!$this->session->get("Kaadaisoft_userId")){
+             return redirect()->to("/");
+        }
+        return view("id_card_benefits");
+    }
+
     public function index(){
         if($this->session->get("role") !== "1" && $this->session->get("role") !== 1 && !$this->session->get("Kaadaisoft_userId")){
                return redirect()->to("/");
