@@ -1077,14 +1077,7 @@ class Members extends BaseController
             $email->setMailType('html');
 
             // Attach logo inline (same as password reset email)
-            $imagePath = FCPATH . 'assets/logo_small.png';
-            if (file_exists($imagePath)) {
-                $email->attach($imagePath, 'inline');
-                $cid = $email->setAttachmentCID($imagePath);
-                $logoUrl = 'cid:' . $cid;
-            } else {
-                $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
-            }
+            $logoUrl = 'https://iili.io/C3iqjrG.png';
 
             $emailData = [
                 'title' => 'Email Verification',
@@ -1099,13 +1092,9 @@ class Members extends BaseController
 
             $messageHtml = view('emails/common_email', $emailData);
 
-            $email->setMessage($messageHtml);
-
-            if ($email->send()) {
+            if ($this->sendResendEmail($email_address, 'Poondurai Kaadai Kulam - Email Verification', $messageHtml)) {
                 return $this->response->setJSON(['status' => 'success', 'message' => 'OTP sent successfully']);
             } else {
-                $data = $email->printDebugger(['headers']);
-                log_message('error', 'Email Error: ' . $data);
                 return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to send OTP. Please check email address.']);
             }
 
@@ -1159,20 +1148,7 @@ class Members extends BaseController
             return false;
         }
 
-        $email = \Config\Services::email();
-        $email->setTo($email_address);
-        $email->setSubject('Poondurai Kaadai Kulam - Registration Received');
-        $email->setMailType('html');
-
-        // Attach logo inline
-        $imagePath = FCPATH . 'assets/logo_small.png';
-        if (file_exists($imagePath)) {
-            $email->attach($imagePath, 'inline');
-            $cid = $email->setAttachmentCID($imagePath);
-            $logoUrl = 'cid:' . $cid;
-        } else {
-            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
-        }
+        $logoUrl = 'https://iili.io/C3iqjrG.png';
 
         $emailData = [
             'title' => 'Registration Received!',
@@ -1188,10 +1164,7 @@ class Members extends BaseController
         ];
 
         $messageHtml = view('emails/common_email', $emailData);
-
-        $email->setMessage($messageHtml);
-
-        return $email->send();
+        return $this->sendResendEmail($email_address, 'Poondurai Kaadai Kulam - Registration Received', $messageHtml);
     }
 }
 ?>

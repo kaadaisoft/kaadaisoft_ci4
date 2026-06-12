@@ -59,4 +59,44 @@ abstract class BaseController extends Controller
             }
         }
     }
+
+    /**
+     * Send email using Resend API
+     */
+    protected function sendResendEmail($to, $subject, $htmlMessage) {
+        $apiKey = env('RESEND_API_KEY');
+        if (empty($apiKey)) {
+            log_message('error', 'RESEND_API_KEY is not set in .env');
+            return false;
+        }
+
+        $fromEmail = env('email.fromEmail') ?: 'support@mail.kaadaikulam.org';
+        $fromName  = env('email.fromName') ?: 'Poondurai Kaadai Kulam';
+
+        $client = \Config\Services::curlrequest();
+
+        try {
+            $response = $client->post('https://api.resend.com/emails', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type'  => 'application/json'
+                ],
+                'json' => [
+                    'from'    => $fromName . ' <' . $fromEmail . '>',
+                    'to'      => [$to],
+                    'subject' => $subject,
+                    'html'    => $htmlMessage
+                ]
+            ]);
+
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                return true;
+            }
+            log_message('error', 'Resend API Error: ' . $response->getBody());
+            return false;
+        } catch (\Exception $e) {
+            log_message('error', 'Resend Exception: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

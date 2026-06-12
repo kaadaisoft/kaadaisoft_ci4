@@ -908,24 +908,11 @@ public function change_password() {
             return false;
         }
 
-        $email = \Config\Services::email();
-        $email->setTo($email_address);
-        $email->setSubject('Poondurai Kaadai Kulam - 🎉 Membership Approved');
-        $email->setMailType('html');
-
-        // Attach logo inline
-        $imagePath = FCPATH . 'assets/logo_small.png';
-        if (file_exists($imagePath)) {
-            $email->attach($imagePath, 'inline');
-            $cid = $email->setAttachmentCID($imagePath);
-            $logoUrl = 'cid:' . $cid;
-        } else {
-            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
-        }
+        $logoUrl = 'https://iili.io/C3iqjrG.png';
 
         $emailData = [
-            'title' => 'Membership Approved!',
-            'subtitle' => 'Congratulations',
+            'title' => 'Membership Approved',
+            'subtitle' => 'Poondurai Kaadai Kulam',
             'logo_url' => $logoUrl,
             'name' => $name,
             'message' => 'We are delighted to inform you that your membership with <strong>Poondurai Kaadai Kulam</strong> has been officially approved!',
@@ -938,9 +925,7 @@ public function change_password() {
         ];
 
         $messageHtml = view('emails/common_email', $emailData);
-
-        $email->setMessage($messageHtml);
-        return $email->send();
+        return $this->sendResendEmail($email_address, 'Poondurai Kaadai Kulam - Membership Approved', $messageHtml);
     }
 
     private function sendMemberRejectionEmail($email_address, $name, $reason = '')
@@ -949,20 +934,7 @@ public function change_password() {
             return false;
         }
 
-        $email = \Config\Services::email();
-        $email->setTo($email_address);
-        $email->setSubject('Poondurai Kaadai Kulam - Membership Application Rejection');
-        $email->setMailType('html');
-
-        // Attach logo inline
-        $imagePath = FCPATH . 'assets/logo_small.png';
-        if (file_exists($imagePath)) {
-            $email->attach($imagePath, 'inline');
-            $cid = $email->setAttachmentCID($imagePath);
-            $logoUrl = 'cid:' . $cid;
-        } else {
-            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
-        }
+        $logoUrl = 'https://iili.io/C3iqjrG.png';
 
         $emailData = [
             'title' => 'Membership Application Rejection',
@@ -980,9 +952,7 @@ public function change_password() {
         ];
 
         $messageHtml = view('emails/common_email', $emailData);
-
-        $email->setMessage($messageHtml);
-        return $email->send();
+        return $this->sendResendEmail($email_address, 'Poondurai Kaadai Kulam - Membership Application Rejection', $messageHtml);
     }
 }
 ?>

@@ -207,19 +207,7 @@ class Loginpage extends BaseController {
     }
 
     private function sendResetEmail($user, $otp) {
-        $email = \Config\Services::email();
-        $email->setTo($user->Email);
-        $email->setSubject('Poondurai Kaadai Kulam - Password Reset OTP');
-        $email->setMailType('html');
-        
-        $imagePath = FCPATH . 'assets/logo_small.png';
-        if (file_exists($imagePath)) {
-            $email->attach($imagePath, 'inline');
-            $cid = $email->setAttachmentCID($imagePath);
-            $logoUrl = 'cid:' . $cid;
-        } else {
-            $logoUrl = base_url('assets/poondurai kaadaikulam image.png');
-        }
+        $logoUrl = 'https://iili.io/C3iqjrG.png';
 
         $emailData = [
             'title' => 'Password Reset OTP',
@@ -234,13 +222,11 @@ class Loginpage extends BaseController {
         ];
 
         $messageHtml = view('emails/common_email', $emailData);
-        $email->setMessage($messageHtml);
 
-        if ($email->send()) {
+        if ($this->sendResendEmail($user->Email, 'Poondurai Kaadai Kulam - Password Reset OTP', $messageHtml)) {
             return true;
         } else {
-            $errData = $email->printDebugger(['headers']);
-            log_message('error', 'Email failed to send: ' . $errData);
+            log_message('error', 'Email failed to send via Resend.');
             return false;
         }
     }
