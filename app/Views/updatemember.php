@@ -2354,10 +2354,12 @@
                 dataType: "json",
                 success: function(response) {
                     if (response.status === 'success') {
-                        document.getElementById('otp_section-member').style.display = 'block';
-                        btn.style.display = 'none';
-                        startResendTimerMember();
-                        psShowToast('success', response.message);
+                        setTimeout(function() {
+                            document.getElementById('otp_section-member').style.display = 'block';
+                            btn.style.display = 'none';
+                            startResendTimerMember();
+                            psShowToast('success', response.message);
+                        }, 3000);
                     } else {
                         if (!isResend) {
                             btn.disabled = false;

@@ -73,26 +73,41 @@ abstract class BaseController extends Controller
         $fromEmail = env('email.fromEmail') ?: 'support@mail.kaadaikulam.org';
         $fromName  = env('email.fromName') ?: 'Poondurai Kaadai Kulam';
 
-        $client = \Config\Services::curlrequest();
-
         try {
-            $response = $client->post('https://api.resend.com/emails', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type'  => 'application/json'
-                ],
-                'json' => [
-                    'from'    => $fromName . ' <' . $fromEmail . '>',
-                    'to'      => [$to],
-                    'subject' => $subject,
-                    'html'    => $htmlMessage
-                ]
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.resend.com/emails');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                'from'    => $fromName . ' <' . $fromEmail . '>',
+                'to'      => [$to],
+                'subject' => $subject,
+                'html'    => $htmlMessage
+            ]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json'
             ]);
+            
+            // Critical settings to prevent 20-30s delays on live servers
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // Force IPv4 to prevent IPv6 timeout delays
 
-            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $result = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+
+            if ($result === false) {
+                log_message('error', 'Resend cURL Error: ' . $curlError);
+                return false;
+            }
+
+            if ($httpCode >= 200 && $httpCode < 300) {
                 return true;
             }
-            log_message('error', 'Resend API Error: ' . $response->getBody());
+            log_message('error', 'Resend API Error (HTTP ' . $httpCode . '): ' . $result);
             return false;
         } catch (\Exception $e) {
             log_message('error', 'Resend Exception: ' . $e->getMessage());

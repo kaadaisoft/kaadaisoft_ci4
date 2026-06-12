@@ -2946,10 +2946,13 @@
                 dataType: "json",
                 success: function(response) {
                     if (response.status === 'success') {
-                        document.getElementById('otp_section').style.display = 'block';
-                        btn.style.display = 'none';
-                        psShowToast('success', response.message);
-                        startOtpCountdown();
+                        // Artificial delay of 3 seconds to keep "Sending..." visible
+                        setTimeout(function() {
+                            document.getElementById('otp_section').style.display = 'block';
+                            btn.style.display = 'none';
+                            psShowToast('success', response.message);
+                            startOtpCountdown();
+                        }, 3000);
                     } else {
                         btn.disabled = false;
                         btn.innerText = "Verify";

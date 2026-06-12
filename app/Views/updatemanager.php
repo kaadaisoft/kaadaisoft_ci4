@@ -1714,11 +1714,13 @@
                     resendLink.style.pointerEvents = 'auto';
 
                     if (response.status === 'success') {
-                        psShowToast('success', response.message);
-                        otpSection.style.display = 'block';
-                        errorElem.textContent = "";
-                        btn.style.display = 'none';
-                        startResendTimerManager();
+                        setTimeout(function() {
+                            psShowToast('success', response.message);
+                            otpSection.style.display = 'block';
+                            errorElem.textContent = "";
+                            btn.style.display = 'none';
+                            startResendTimerManager();
+                        }, 3000);
                     } else {
                         btn.disabled = false;
                         btn.innerText = "Verify";
